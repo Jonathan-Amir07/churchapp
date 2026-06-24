@@ -1,20 +1,11 @@
 import NextAuth from 'next-auth';
 import { authConfig } from '@/auth.config';
-import createMiddleware from 'next-intl/middleware';
-import { locales, defaultLocale } from './i18n/request';
 import { NextResponse } from 'next/server';
-
-const intlMiddleware = createMiddleware({
-  locales,
-  defaultLocale,
-  localePrefix: 'never',
-});
 
 const { auth } = NextAuth(authConfig);
 
 export default auth((req: any) => {
   const pathname = req.nextUrl.pathname;
-  const locale = req.cookies.get('NEXT_LOCALE')?.value || defaultLocale;
   const basePath = pathname;
 
   const isAuth = !!req.auth;
@@ -58,8 +49,7 @@ export default auth((req: any) => {
     }
   }
 
-  // Run intlMiddleware for normal paths
-  return intlMiddleware(req);
+  return NextResponse.next();
 });
 
 export const config = {
