@@ -1,0 +1,352 @@
+@import "tailwindcss";
+
+/* ============================================
+   JoyfulPath — Vibrant Faith Explorer Design System
+   ============================================ */
+
+@theme inline {
+  /* --- Primary (Blue) — Navigation, core actions, trust --- */
+  --color-primary: #0058be;
+  --color-primary-container: #2170e4;
+  --color-primary-fixed: #d8e2ff;
+  --color-primary-fixed-dim: #adc6ff;
+  --color-on-primary: #ffffff;
+  --color-on-primary-container: #fefcff;
+  --color-on-primary-fixed: #001a42;
+  --color-on-primary-fixed-variant: #004395;
+  --color-inverse-primary: #adc6ff;
+
+  /* --- Secondary (Gold) — Achievements, XP, rewards --- */
+  --color-secondary: #855300;
+  --color-secondary-container: #fea619;
+  --color-secondary-fixed: #ffddb8;
+  --color-secondary-fixed-dim: #ffb95f;
+  --color-on-secondary: #ffffff;
+  --color-on-secondary-container: #684000;
+  --color-on-secondary-fixed: #2a1700;
+  --color-on-secondary-fixed-variant: #653e00;
+
+  /* --- Tertiary (Green) — Correct answers, completion, go --- */
+  --color-tertiary: #006947;
+  --color-tertiary-container: #00855b;
+  --color-tertiary-fixed: #6ffbbe;
+  --color-tertiary-fixed-dim: #4edea3;
+  --color-on-tertiary: #ffffff;
+  --color-on-tertiary-container: #f5fff6;
+  --color-on-tertiary-fixed: #002113;
+  --color-on-tertiary-fixed-variant: #005236;
+
+  /* --- Error --- */
+  --color-error: #ba1a1a;
+  --color-error-container: #ffdad6;
+  --color-on-error: #ffffff;
+  --color-on-error-container: #93000a;
+
+  /* --- Surfaces --- */
+  --color-surface: #f7f9fb;
+  --color-surface-dim: #d8dadc;
+  --color-surface-bright: #f7f9fb;
+  --color-surface-container-lowest: #ffffff;
+  --color-surface-container-low: #f2f4f6;
+  --color-surface-container: #eceef0;
+  --color-surface-container-high: #e6e8ea;
+  --color-surface-container-highest: #e0e3e5;
+  --color-on-surface: #191c1e;
+  --color-on-surface-variant: #424754;
+  --color-inverse-surface: #2d3133;
+  --color-inverse-on-surface: #eff1f3;
+  --color-surface-tint: #005ac2;
+  --color-surface-variant: #e0e3e5;
+
+  /* --- Outline --- */
+  --color-outline: #727785;
+  --color-outline-variant: #c2c6d6;
+
+  /* --- Background --- */
+  --color-background: #f7f9fb;
+  --color-on-background: #191c1e;
+
+  /* --- Typography --- */
+  --font-sans: "Inter", "Noto Sans Arabic", system-ui, sans-serif;
+
+  /* --- Border Radius (Extreme Roundedness) --- */
+  --radius-sm: 0.25rem;
+  --radius-md: 0.5rem;
+  --radius-lg: 0.75rem;
+  --radius-xl: 1rem;
+  --radius-2xl: 1.5rem;
+  --radius-full: 9999px;
+
+  /* --- Shadows (Ambient Soft, Primary-tinted) --- */
+  --shadow-card: 0 4px 12px rgba(0, 88, 190, 0.08);
+  --shadow-card-hover: 0 8px 24px rgba(0, 88, 190, 0.14);
+  --shadow-elevated: 0 12px 36px rgba(0, 88, 190, 0.16);
+  --shadow-tactile: 0 4px 0 0 #004395;
+  --shadow-tactile-active: 0 2px 0 0 #004395;
+
+  /* --- Animations --- */
+  --animate-float: float 6s ease-in-out infinite;
+  --animate-pulse-soft: pulse-soft 2s ease-in-out infinite;
+  --animate-slide-up: slide-up 0.4s ease-out;
+  --animate-slide-in-right: slide-in-right 0.3s ease-out;
+  --animate-scale-in: scale-in 0.3s ease-out;
+  --animate-shimmer: shimmer 2s linear infinite;
+  --animate-celebrate: celebrate 0.6s ease-out;
+  --animate-bounce-in: bounce-in 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+/* ============================================
+   Keyframes
+   ============================================ */
+
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+}
+
+@keyframes pulse-soft {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.7; }
+}
+
+@keyframes slide-up {
+  from { transform: translateY(16px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+@keyframes slide-in-right {
+  from { transform: translateX(16px); opacity: 0; }
+  to { transform: translateX(0); opacity: 1; }
+}
+
+@keyframes scale-in {
+  from { transform: scale(0.9); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+@keyframes celebrate {
+  0% { transform: scale(0); opacity: 0; }
+  50% { transform: scale(1.2); opacity: 1; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+@keyframes bounce-in {
+  0% { transform: scale(0); }
+  50% { transform: scale(1.15); }
+  70% { transform: scale(0.95); }
+  100% { transform: scale(1); }
+}
+
+@keyframes spin-slow {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+/* ============================================
+   Base Styles
+   ============================================ */
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background: var(--color-background);
+  color: var(--color-on-surface);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* RTL Support */
+html[dir="rtl"] {
+  font-family: "Noto Sans Arabic", "Inter", system-ui, sans-serif;
+}
+
+/* ============================================
+   Tactile Button Styles (3D Push Effect)
+   ============================================ */
+
+.btn-tactile {
+  box-shadow: var(--shadow-tactile);
+  transition: all 0.1s ease;
+  position: relative;
+}
+
+.btn-tactile:hover {
+  filter: brightness(1.05);
+}
+
+.btn-tactile:active {
+  transform: translateY(2px);
+  box-shadow: var(--shadow-tactile-active);
+}
+
+.btn-tactile-secondary {
+  box-shadow: 0 4px 0 0 #653e00;
+}
+
+.btn-tactile-secondary:active {
+  transform: translateY(2px);
+  box-shadow: 0 2px 0 0 #653e00;
+}
+
+.btn-tactile-success {
+  box-shadow: 0 4px 0 0 #005236;
+}
+
+.btn-tactile-success:active {
+  transform: translateY(2px);
+  box-shadow: 0 2px 0 0 #005236;
+}
+
+/* ============================================
+   Card Styles
+   ============================================ */
+
+.card {
+  background: var(--color-surface-container-lowest);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-card);
+  border: 1px solid var(--color-outline-variant);
+  transition: box-shadow 0.2s ease, transform 0.2s ease;
+}
+
+.card-interactive:hover {
+  box-shadow: var(--shadow-card-hover);
+  transform: translateY(-2px);
+}
+
+.card-elevated {
+  box-shadow: var(--shadow-elevated);
+}
+
+/* ============================================
+   XP Progress Bar
+   ============================================ */
+
+.xp-bar-track {
+  background: var(--color-surface-container-high);
+  border-radius: var(--radius-full);
+  height: 12px;
+  overflow: hidden;
+}
+
+.xp-bar-fill {
+  height: 100%;
+  border-radius: var(--radius-full);
+  background: linear-gradient(90deg, var(--color-primary), var(--color-primary-container));
+  position: relative;
+  transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.xp-bar-fill::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 50%;
+  background: linear-gradient(180deg, rgba(255,255,255,0.25), transparent);
+  border-radius: var(--radius-full) var(--radius-full) 0 0;
+}
+
+/* ============================================
+   Badge Styles
+   ============================================ */
+
+.badge-icon {
+  border: 3px solid #f59e0b;
+  border-radius: var(--radius-full);
+  padding: 8px;
+  background: var(--color-surface-container-lowest);
+}
+
+.badge-icon-locked {
+  border-color: var(--color-outline-variant);
+  opacity: 0.5;
+  filter: grayscale(1);
+}
+
+/* ============================================
+   Speech Bubble (Instructor Tips)
+   ============================================ */
+
+.speech-bubble {
+  position: relative;
+  background: var(--color-surface-container-low);
+  border-radius: var(--radius-xl);
+  padding: 16px 20px;
+}
+
+.speech-bubble::after {
+  content: '';
+  position: absolute;
+  bottom: -10px;
+  left: 24px;
+  width: 0;
+  height: 0;
+  border-left: 10px solid transparent;
+  border-right: 10px solid transparent;
+  border-top: 10px solid var(--color-surface-container-low);
+}
+
+html[dir="rtl"] .speech-bubble::after {
+  left: auto;
+  right: 24px;
+}
+
+/* ============================================
+   Scrollbar Styling
+   ============================================ */
+
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--color-outline-variant);
+  border-radius: var(--radius-full);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-outline);
+}
+
+/* ============================================
+   Dot Pattern Background
+   ============================================ */
+
+.bg-dot-pattern {
+  background-image: radial-gradient(var(--color-primary-fixed) 1.5px, transparent 1.5px);
+  background-size: 32px 32px;
+}
+
+/* ============================================
+   Focus Styles (Accessibility)
+   ============================================ */
+
+*:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+  border-radius: var(--radius-sm);
+}
+
+/* ============================================
+   Selection
+   ============================================ */
+
+::selection {
+  background: var(--color-primary-fixed);
+  color: var(--color-on-primary-fixed);
+}

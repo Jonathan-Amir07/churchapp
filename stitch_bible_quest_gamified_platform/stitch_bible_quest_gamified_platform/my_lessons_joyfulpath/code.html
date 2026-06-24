@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>JoyfulPath - Lessons Explorer</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            vertical-align: middle;
+        }
+        .btn-3d {
+            transition: all 0.1s ease-in-out;
+            box-shadow: 0 4px 0 0 rgba(0, 0, 0, 0.1);
+        }
+        .btn-3d:active {
+            transform: translateY(2px);
+            box-shadow: 0 2px 0 0 rgba(0, 0, 0, 0.1);
+        }
+        .card-glow:hover {
+            box-shadow: 0 8px 24px -4px rgba(0, 88, 190, 0.15);
+        }
+    </style>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-tertiary-fixed-variant": "#005236",
+                        "surface-variant": "#e0e3e5",
+                        "on-secondary": "#ffffff",
+                        "secondary": "#855300",
+                        "surface-container-lowest": "#ffffff",
+                        "on-primary": "#ffffff",
+                        "outline": "#727785",
+                        "on-secondary-container": "#684000",
+                        "inverse-surface": "#2d3133",
+                        "tertiary": "#006947",
+                        "surface-container-highest": "#e0e3e5",
+                        "secondary-fixed": "#ffddb8",
+                        "surface-container-low": "#f2f4f6",
+                        "tertiary-container": "#00855b",
+                        "surface-dim": "#d8dadc",
+                        "on-tertiary-fixed": "#002113",
+                        "surface": "#f7f9fb",
+                        "on-primary-fixed": "#001a42",
+                        "primary-container": "#2170e4",
+                        "tertiary-fixed": "#6ffbbe",
+                        "error-container": "#ffdad6",
+                        "on-tertiary": "#ffffff",
+                        "surface-container-high": "#e6e8ea",
+                        "secondary-fixed-dim": "#ffb95f",
+                        "on-primary-container": "#fefcff",
+                        "on-secondary-fixed-variant": "#653e00",
+                        "primary-fixed-dim": "#adc6ff",
+                        "on-surface": "#191c1e",
+                        "inverse-on-surface": "#eff1f3",
+                        "background": "#f7f9fb",
+                        "primary": "#0058be",
+                        "error": "#ba1a1a",
+                        "on-error-container": "#93000a",
+                        "on-secondary-fixed": "#2a1700",
+                        "on-error": "#ffffff",
+                        "on-primary-fixed-variant": "#004395",
+                        "primary-fixed": "#d8e2ff",
+                        "surface-tint": "#005ac2",
+                        "tertiary-fixed-dim": "#4edea3",
+                        "secondary-container": "#fea619",
+                        "outline-variant": "#c2c6d6",
+                        "on-tertiary-container": "#f5fff6",
+                        "inverse-primary": "#adc6ff",
+                        "on-surface-variant": "#424754",
+                        "surface-container": "#eceef0",
+                        "on-background": "#191c1e",
+                        "surface-bright": "#f7f9fb"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "unit": "8px",
+                        "container-max": "1200px",
+                        "margin-mobile": "16px",
+                        "margin-desktop": "40px",
+                        "gutter": "24px"
+                    },
+                    "fontFamily": {
+                        "headline-lg-mobile": ["Inter"],
+                        "label-md": ["Inter"],
+                        "headline-md": ["Inter"],
+                        "body-lg": ["Inter"],
+                        "button-text": ["Inter"],
+                        "headline-lg": ["Inter"],
+                        "display-lg": ["Inter"],
+                        "body-md": ["Inter"]
+                    },
+                    "fontSize": {
+                        "headline-lg-mobile": ["24px", {"lineHeight": "32px", "fontWeight": "700"}],
+                        "label-md": ["14px", {"lineHeight": "20px", "letterSpacing": "0.05em", "fontWeight": "600"}],
+                        "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "700"}],
+                        "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "500"}],
+                        "button-text": ["18px", {"lineHeight": "24px", "fontWeight": "700"}],
+                        "headline-lg": ["32px", {"lineHeight": "40px", "fontWeight": "700"}],
+                        "display-lg": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "800"}],
+                        "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}]
+                    }
+                },
+            },
+        }
+    </script>
+</head>
+<body class="bg-background text-on-surface font-body-md min-h-screen overflow-x-hidden">
+<!-- TopAppBar -->
+<header class="fixed top-0 w-full z-50 flex justify-between items-center px-margin-mobile md:px-margin-desktop h-16 shadow-[0_4px_12px_rgba(0,88,190,0.12)] bg-surface dark:bg-inverse-surface">
+<div class="flex items-center gap-4">
+<span class="text-headline-md font-headline-md font-extrabold text-primary dark:text-inverse-primary">JoyfulPath</span>
+</div>
+<div class="flex items-center gap-4">
+<button class="material-symbols-outlined p-2 rounded-full hover:bg-surface-container-high transition-colors text-on-surface-variant dark:text-surface-variant">notifications</button>
+<button class="material-symbols-outlined p-2 rounded-full hover:bg-surface-container-high transition-colors text-on-surface-variant dark:text-surface-variant">stars</button>
+<div class="w-10 h-10 rounded-full border-2 border-primary-container overflow-hidden">
+<img class="w-full h-full object-cover" data-alt="A portrait of a cheerful young explorer avatar wearing a scouting hat, presented in a vibrant 3D stylized cartoon aesthetic. The background is a soft blue gradient, reflecting a joyful and educational digital environment. The character has an expressive, encouraging face, fitting a premium educational gamified app." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDULEaBsZPNqyDBfuzWIpr4ozLMw-e14CJscUTv9qvOVRKb1PObx4PBNosqV9ZLfL1mQL1VGpQlsIUWI7Fx0PPW8OSEj34NEfk9jax8RjdAMarf8KU3P70n1NfMvVDDDj2T2yAP74BE79YSyhJGegxHJzpJ2ELSBwkaLMnTHPpGpFVZvYhh93vHSwJjYgmV_rSZ2dUeMp_H6sG2WwYrKVEi36mexK9NyXM7z1xU0Brd0ZSmXacEmGNQLe-MG3NiOzxmozRBsMohJCU"/>
+</div>
+</div>
+</header>
+<!-- SideNavBar -->
+<nav class="hidden md:flex flex-col fixed left-0 top-16 h-[calc(100vh-64px)] p-6 bg-surface-container-low dark:bg-inverse-surface shadow-sm w-64">
+<div class="flex flex-col items-center mb-8 text-center">
+<div class="w-20 h-20 bg-primary-container rounded-xl flex items-center justify-center mb-3 shadow-md">
+<span class="material-symbols-outlined text-4xl text-on-primary-container" style="font-variation-settings: 'FILL' 1;">explore</span>
+</div>
+<h2 class="font-headline-md text-headline-md text-primary">Young Explorer</h2>
+<p class="font-label-md text-label-md text-on-surface-variant">Level 12 • 450 XP</p>
+<button class="mt-4 px-4 py-2 bg-secondary-container text-on-secondary-container rounded-full font-label-md text-label-md btn-3d border-b-4 border-secondary transition-all hover:scale-105">View Badges</button>
+</div>
+<div class="space-y-2">
+<a class="flex items-center gap-4 px-4 py-3 rounded-xl text-on-surface-variant hover:text-primary transition-all group active:scale-95" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+<span class="font-label-md text-label-md">Dashboard</span>
+</a>
+<a class="flex items-center gap-4 px-4 py-3 rounded-xl text-primary font-bold border-b-2 border-primary pb-1 group active:scale-95" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">auto_stories</span>
+<span class="font-label-md text-label-md">Lessons</span>
+</a>
+<a class="flex items-center gap-4 px-4 py-3 rounded-xl text-on-surface-variant hover:text-primary transition-all group active:scale-95" href="#">
+<span class="material-symbols-outlined">checklist</span>
+<span class="font-label-md text-label-md">Tasks</span>
+</a>
+<a class="flex items-center gap-4 px-4 py-3 rounded-xl text-on-surface-variant hover:text-primary transition-all group active:scale-95" href="#">
+<span class="material-symbols-outlined">leaderboard</span>
+<span class="font-label-md text-label-md">Leaderboard</span>
+</a>
+<a class="flex items-center gap-4 px-4 py-3 rounded-xl text-on-surface-variant hover:text-primary transition-all group active:scale-95" href="#">
+<span class="material-symbols-outlined">person</span>
+<span class="font-label-md text-label-md">Profile</span>
+</a>
+</div>
+</nav>
+<!-- Main Content Canvas -->
+<main class="md:ml-64 pt-20 pb-24 px-margin-mobile md:px-margin-desktop min-h-screen">
+<!-- Header Section -->
+<section class="mb-10 relative overflow-hidden rounded-[2rem] p-8 md:p-12 bg-primary-container text-on-primary-container">
+<div class="relative z-10 max-w-2xl">
+<h1 class="font-display-lg text-display-lg mb-4">Master Your Quest</h1>
+<p class="font-body-lg text-body-lg opacity-90 mb-6">Choose your next adventure and unlock powerful wisdom badges as you progress through the JoyfulPath journey.</p>
+<div class="flex items-center gap-4">
+<div class="flex -space-x-3">
+<div class="w-10 h-10 rounded-full border-2 border-primary-container bg-surface-container-high"></div>
+<div class="w-10 h-10 rounded-full border-2 border-primary-container bg-surface-container-high"></div>
+<div class="w-10 h-10 rounded-full border-2 border-primary-container bg-surface-container-high"></div>
+</div>
+<span class="font-label-md text-label-md">124 others are learning now!</span>
+</div>
+</div>
+<div class="absolute top-0 right-0 w-1/3 h-full opacity-20 transform translate-x-1/4">
+<span class="material-symbols-outlined text-[12rem]" style="font-variation-settings: 'FILL' 1;">auto_stories</span>
+</div>
+</section>
+<!-- Lessons Grid -->
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-gutter">
+<!-- Card 1: Noah's Ark -->
+<div class="bg-surface-container-lowest rounded-[2rem] p-6 shadow-[0_4px_12px_rgba(0,88,190,0.12)] card-glow border border-surface-variant transition-all flex flex-col group">
+<div class="relative aspect-video rounded-2xl overflow-hidden mb-6">
+<img class="w-full h-full object-cover transition-transform group-hover:scale-105 duration-500" data-alt="A stylized 3D digital illustration of a large wooden ark floating on calm blue waters under a bright rainbow. The art style is playful and friendly, using vibrant colors and soft lighting, perfectly suited for a children's educational lesson card. High-quality render with smooth textures and cheerful atmosphere." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDbyNnIl1aXM9pfvb_G8wYFqywasco-zD8uIJrwtCkGhFPK11mrhfpcY6wBdc69VYlemgxz3rzOWOvvEqBE3m1hjEAElb-ZgAT9-2AtMvwue5RKV3ruc2WmQBQztW7Pns4t5xBW-AsPI3mhdxyA7ASrfKOkC2BnjAk1lq4xAZAdJE8fqyYv1ejaH4zXIVlE1mF6Ya5M3tTojQWKipA2LX1NDdpMe04IR_g376v8L5ExkxXELQeJE7SfTSCNO7SLOTu3h9_0ax52p9A"/>
+<div class="absolute top-4 right-4 bg-tertiary-container text-on-tertiary-container px-3 py-1 rounded-full text-xs font-bold flex items-center gap-1 shadow-md">
+<span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+                        Completed
+                    </div>
+</div>
+<div class="flex-grow">
+<h3 class="font-headline-md text-headline-md mb-2 text-on-surface">Noah's Ark</h3>
+<p class="font-body-md text-body-md text-on-surface-variant mb-6">Discover the story of faith, family, and a giant wooden boat that saved the world's animals.</p>
+</div>
+<button class="w-full h-14 bg-primary text-on-primary rounded-xl font-button-text text-button-text flex items-center justify-center gap-2 btn-3d border-b-4 border-on-primary-fixed-variant transition-all">
+                    Open Lesson
+                    <span class="material-symbols-outlined">arrow_forward</span>
+</button>
+</div>
+<!-- Card 2: The Good Samaritan -->
+<div class="bg-surface-container-lowest rounded-[2rem] p-6 shadow-[0_4px_12px_rgba(0,88,190,0.12)] card-glow border border-surface-variant transition-all flex flex-col group">
+<div class="relative aspect-video rounded-2xl overflow-hidden mb-6">
+<img class="w-full h-full object-cover transition-transform group-hover:scale-105 duration-500" data-alt="A warm, sun-drenched digital painting of a desert path where two characters are helping each other. The style is inviting and modern, with soft brushstrokes and a palette of earthy oranges and sky blues. The scene conveys kindness and community, styled for a premium gamified learning app for kids." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAjJesvZc8zCFEGsQVAfw0i2ChWq1WwXuY0wEhb6l77633VZwy_ou9fgQsC1KfXVQVbvgMwTQ_nmT0watlEoANGonJ_bmSfhLuvVfqGHpzI39T_MBI0VQgNsXTsUGtglgRsMH8EwYiZNZqwFjZGYu5gsVXrTstnEbnJUDN78pqD0LgrZmcBlmwL0ksFY_BpjjM_eiikcFUn9E5ptriAIctu6wUeBmgYF4lLWoIQiPeMbBMmTaY5tfGf7iBUp2MPDhv6bf_WA-lnSIc"/>
+<div class="absolute top-4 right-4 bg-secondary-container text-on-secondary-container px-3 py-1 rounded-full text-xs font-bold flex items-center gap-1 shadow-md">
+<span class="material-symbols-outlined text-sm">pending</span>
+                        In Progress
+                    </div>
+</div>
+<div class="flex-grow">
+<h3 class="font-headline-md text-headline-md mb-2 text-on-surface">The Good Samaritan</h3>
+<p class="font-body-md text-body-md text-on-surface-variant mb-6">Learn what it means to be a neighbor and how a little kindness can change everything for someone.</p>
+</div>
+<button class="w-full h-14 bg-primary text-on-primary rounded-xl font-button-text text-button-text flex items-center justify-center gap-2 btn-3d border-b-4 border-on-primary-fixed-variant transition-all">
+                    Open Lesson
+                    <span class="material-symbols-outlined">arrow_forward</span>
+</button>
+</div>
+<!-- Card 3: David & Goliath -->
+<div class="bg-surface-container-lowest rounded-[2rem] p-6 shadow-[0_4px_12px_rgba(0,88,190,0.12)] card-glow border border-surface-variant transition-all flex flex-col group">
+<div class="relative aspect-video rounded-2xl overflow-hidden mb-6">
+<img class="w-full h-full object-cover transition-transform group-hover:scale-105 duration-500" data-alt="A dynamic, high-angle digital illustration showing a small young hero facing a massive stone giant in a sprawling valley. The perspective is epic yet safe, using bright greens and dramatic lighting to create a sense of adventure. Playful character designs with large eyes and expressive poses for a high-end UI." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCBf49bA-ECtdZ4PNF-uikpcNEUxYkw4Ly5wmLk6RHFICTib9fXNcmj3rL4pkHufca_GTUsj-aaR_Y8N_zn8CPSBYWeRtzbzZ8t1ow_US1WkU4TGnrYSDIYwX1RmDZaokx6noMVCirHBR_dYP-R0Oky2vAwDQm3txC44yCIRluOjW1GCStUqXmYcEJ4Wr0p1E_p9p7l1dOwyMi8gS3pmlNz-IQFYMF7xVv_UTkrH_kHMsopXTOoQ1JLg6oiYocUY026wlh0RR78Uvg"/>
+<div class="absolute top-4 right-4 bg-surface-variant text-on-surface-variant px-3 py-1 rounded-full text-xs font-bold shadow-sm">
+                        Not Started
+                    </div>
+</div>
+<div class="flex-grow">
+<h3 class="font-headline-md text-headline-md mb-2 text-on-surface">David &amp; Goliath</h3>
+<p class="font-body-md text-body-md text-on-surface-variant mb-6">Courage comes in all sizes! Explore how David used his talent and trust to overcome a huge challenge.</p>
+</div>
+<button class="w-full h-14 bg-primary text-on-primary rounded-xl font-button-text text-button-text flex items-center justify-center gap-2 btn-3d border-b-4 border-on-primary-fixed-variant transition-all">
+                    Open Lesson
+                    <span class="material-symbols-outlined">arrow_forward</span>
+</button>
+</div>
+<!-- Card 4: The Feeding of 5000 -->
+<div class="bg-surface-container-lowest rounded-[2rem] p-6 shadow-[0_4px_12px_rgba(0,88,190,0.12)] card-glow border border-surface-variant transition-all flex flex-col group">
+<div class="relative aspect-video rounded-2xl overflow-hidden mb-6">
+<img class="w-full h-full object-cover transition-transform group-hover:scale-105 duration-500" data-alt="An adorable basket overflowing with golden bread and fresh fish, set on a lush green hillside overlooking a sparkling lake. The lighting is soft and magical, with tiny glowing particles to suggest a miracle. Clean, bright colors and a modern storybook aesthetic for an educational app." src="https://lh3.googleusercontent.com/aida-public/AB6AXuD-iKgSNcNBsVQzEFzSbtwv_clqY_EBIOL0RwABA8q7HrjGfV4kPUevk4Pg9L85EuSqvJjyppgCinoj7XLKGrf2xTdhRkVeq_MPPE_hbh4gyRsGBfLR4o3y0SnQOVUHQJP5sqJO7q4xlkd7cFBvAa5ZOc3lGnk6VtOGFKLKNhuYOwT_xJjUmsbzDaTJiacHhjAgtULuJRRUTQSU51YoL08KXyyMexKmyfi15NNYtXpKK-5cuVZ00FdVqUuHoz-HmhEdfA2lU3DAxe4"/>
+<div class="absolute top-4 right-4 bg-tertiary-container text-on-tertiary-container px-3 py-1 rounded-full text-xs font-bold flex items-center gap-1 shadow-md">
+<span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+                        Completed
+                    </div>
+</div>
+<div class="flex-grow">
+<h3 class="font-headline-md text-headline-md mb-2 text-on-surface">The Feeding of 5000</h3>
+<p class="font-body-md text-body-md text-on-surface-variant mb-6">See how a small lunch became a massive feast for everyone through the power of sharing.</p>
+</div>
+<button class="w-full h-14 bg-primary text-on-primary rounded-xl font-button-text text-button-text flex items-center justify-center gap-2 btn-3d border-b-4 border-on-primary-fixed-variant transition-all">
+                    Open Lesson
+                    <span class="material-symbols-outlined">arrow_forward</span>
+</button>
+</div>
+<!-- Card 5: Daniel in the Lions' Den -->
+<div class="bg-surface-container-lowest rounded-[2rem] p-6 shadow-[0_4px_12px_rgba(0,88,190,0.12)] card-glow border border-surface-variant transition-all flex flex-col group">
+<div class="relative aspect-video rounded-2xl overflow-hidden mb-6">
+<img class="w-full h-full object-cover transition-transform group-hover:scale-105 duration-500" data-alt="A peaceful scene inside a grand stone room where a boy is sitting calmly among several large, sleepy, friendly-looking lions. Soft moonbeams filter through high windows, creating a serene and safe atmosphere. Professional 3D cartoon style with focus on character expression and texture." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCDYUBOlSYa-M1SSHdtm8BhwZ8nKRsqSs3pxYB5ftH22pQM1TtAVFSVR3-CFwJ_Imxq1Ozv1HnU3f07xmBJ-apn2jjuQCN71lqW46peJagv-rR_WE9E5s3HoYfx7ZGK5c6PB4LkVvxCYcfDqJvX3D0ieoo3fpoBogMnfZGT0XCfr_lVI1DEyRUT0pfyniHHMyuu2VloHmBLFSpT3GUMTkSWydkYJyTOVvDhFVMsVm7caPHNajNKvcMwGgENA7kXb5BwMlKQuDO2MfY"/>
+<div class="absolute top-4 right-4 bg-secondary-container text-on-secondary-container px-3 py-1 rounded-full text-xs font-bold flex items-center gap-1 shadow-md">
+<span class="material-symbols-outlined text-sm">pending</span>
+                        In Progress
+                    </div>
+</div>
+<div class="flex-grow">
+<h3 class="font-headline-md text-headline-md mb-2 text-on-surface">Daniel in the Lions' Den</h3>
+<p class="font-body-md text-body-md text-on-surface-variant mb-6">Learn about the strength of staying true to your heart even when things get a little scary.</p>
+</div>
+<button class="w-full h-14 bg-primary text-on-primary rounded-xl font-button-text text-button-text flex items-center justify-center gap-2 btn-3d border-b-4 border-on-primary-fixed-variant transition-all">
+                    Open Lesson
+                    <span class="material-symbols-outlined">arrow_forward</span>
+</button>
+</div>
+<!-- Card 6: Queen Esther -->
+<div class="bg-surface-container-lowest rounded-[2rem] p-6 shadow-[0_4px_12px_rgba(0,88,190,0.12)] card-glow border border-surface-variant transition-all flex flex-col group">
+<div class="relative aspect-video rounded-2xl overflow-hidden mb-6">
+<img class="w-full h-full object-cover transition-transform group-hover:scale-105 duration-500" data-alt="A regal and bright palace setting featuring a brave young queen in elegant robes standing tall. The background includes ornate columns and silk tapestries in shades of purple and gold. The mood is empowering and bold, using high-key lighting and a modern digital painting style." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAAw2lLBlPUR_DBjdcasAScW74Yw1vcc2xdtq3SFkx705L7em3xZvQfzePoKn-4mKIs4Zrr-HnDobRNusTskjgzaiNKQJN-jyXjL1CF7H2ySnNwqi1WKCMVPQoj5YAh0z5RyEhs1oh_S8qRKaQy1XeQ3RqyZITGYWX-8B1eq8sL3DVRmvOQDjwzAU0WEDAeUVEkNcvxEwUy2U-b4mc525v_H8FoBVKtC2MmvebcfBwDNI_wVZl0WQdIT5xydDWw_RoYh-KzSviuZvs"/>
+<div class="absolute top-4 right-4 bg-surface-variant text-on-surface-variant px-3 py-1 rounded-full text-xs font-bold shadow-sm">
+                        Not Started
+                    </div>
+</div>
+<div class="flex-grow">
+<h3 class="font-headline-md text-headline-md mb-2 text-on-surface">Queen Esther</h3>
+<p class="font-body-md text-body-md text-on-surface-variant mb-6">Uncover the brave story of a queen who used her voice to save her people at just the right moment.</p>
+</div>
+<button class="w-full h-14 bg-primary text-on-primary rounded-xl font-button-text text-button-text flex items-center justify-center gap-2 btn-3d border-b-4 border-on-primary-fixed-variant transition-all">
+                    Open Lesson
+                    <span class="material-symbols-outlined">arrow_forward</span>
+</button>
+</div>
+</div>
+<!-- Instructor Tip Bubble -->
+<div class="mt-16 flex justify-start">
+<div class="relative bg-surface-container-highest p-6 rounded-3xl max-w-lg border border-surface-variant shadow-sm flex items-start gap-4">
+<div class="w-12 h-12 shrink-0 rounded-full bg-tertiary flex items-center justify-center text-on-tertiary">
+<span class="material-symbols-outlined">lightbulb</span>
+</div>
+<div>
+<p class="font-label-md text-label-md text-on-tertiary-fixed-variant mb-1">Explorer Tip</p>
+<p class="font-body-md text-body-md text-on-surface">"Try completing 'Noah's Ark' today to earn the 'Rainmaker' badge! It looks great on your profile."</p>
+</div>
+<!-- Triangle Pointer -->
+<div class="absolute -bottom-3 left-8 w-0 h-0 border-l-[12px] border-l-transparent border-r-[12px] border-r-transparent border-t-[15px] border-t-surface-container-highest"></div>
+</div>
+</div>
+</main>
+<!-- Bottom Navigation for Mobile -->
+<nav class="md:hidden fixed bottom-0 left-0 w-full bg-surface-container shadow-[0_-4px_12px_rgba(0,0,0,0.05)] h-16 flex justify-around items-center px-4 z-50">
+<button class="flex flex-col items-center gap-1 text-on-surface-variant group">
+<span class="material-symbols-outlined">dashboard</span>
+<span class="text-[10px] font-bold">Dash</span>
+</button>
+<button class="flex flex-col items-center gap-1 text-primary group">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">auto_stories</span>
+<span class="text-[10px] font-bold">Lessons</span>
+</button>
+<button class="flex flex-col items-center gap-1 text-on-surface-variant group">
+<span class="material-symbols-outlined">checklist</span>
+<span class="text-[10px] font-bold">Tasks</span>
+</button>
+<button class="flex flex-col items-center gap-1 text-on-surface-variant group">
+<span class="material-symbols-outlined">person</span>
+<span class="text-[10px] font-bold">Me</span>
+</button>
+</nav>
+<script>
+        // Micro-interaction for lesson cards
+        document.querySelectorAll('.btn-3d').forEach(button => {
+            button.addEventListener('mousedown', () => {
+                button.style.transform = 'translateY(2px)';
+            });
+            button.addEventListener('mouseup', () => {
+                button.style.transform = 'translateY(0px)';
+            });
+            button.addEventListener('mouseleave', () => {
+                button.style.transform = 'translateY(0px)';
+            });
+        });
+
+        // Search Bar Logic (if needed later)
+        console.log('JoyfulPath Lessons Grid Initialized');
+    </script>
+</body></html>

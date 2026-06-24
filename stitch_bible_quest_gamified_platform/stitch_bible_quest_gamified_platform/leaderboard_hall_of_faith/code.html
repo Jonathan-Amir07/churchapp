@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>JoyfulPath - Leaderboard</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Theme Configuration -->
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "on-tertiary-fixed-variant": "#005236",
+                    "surface-variant": "#e0e3e5",
+                    "on-secondary": "#ffffff",
+                    "secondary": "#855300",
+                    "surface-container-lowest": "#ffffff",
+                    "on-primary": "#ffffff",
+                    "outline": "#727785",
+                    "on-secondary-container": "#684000",
+                    "inverse-surface": "#2d3133",
+                    "tertiary": "#006947",
+                    "surface-container-highest": "#e0e3e5",
+                    "secondary-fixed": "#ffddb8",
+                    "surface-container-low": "#f2f4f6",
+                    "tertiary-container": "#00855b",
+                    "surface-dim": "#d8dadc",
+                    "on-tertiary-fixed": "#002113",
+                    "surface": "#f7f9fb",
+                    "on-primary-fixed": "#001a42",
+                    "primary-container": "#2170e4",
+                    "tertiary-fixed": "#6ffbbe",
+                    "error-container": "#ffdad6",
+                    "on-tertiary": "#ffffff",
+                    "surface-container-high": "#e6e8ea",
+                    "secondary-fixed-dim": "#ffb95f",
+                    "on-primary-container": "#fefcff",
+                    "on-secondary-fixed-variant": "#653e00",
+                    "primary-fixed-dim": "#adc6ff",
+                    "on-surface": "#191c1e",
+                    "inverse-on-surface": "#eff1f3",
+                    "background": "#f7f9fb",
+                    "primary": "#0058be",
+                    "error": "#ba1a1a",
+                    "on-error-container": "#93000a",
+                    "on-secondary-fixed": "#2a1700",
+                    "on-error": "#ffffff",
+                    "on-primary-fixed-variant": "#004395",
+                    "primary-fixed": "#d8e2ff",
+                    "surface-tint": "#005ac2",
+                    "tertiary-fixed-dim": "#4edea3",
+                    "secondary-container": "#fea619",
+                    "outline-variant": "#c2c6d6",
+                    "on-tertiary-container": "#f5fff6",
+                    "inverse-primary": "#adc6ff",
+                    "on-surface-variant": "#424754",
+                    "surface-container": "#eceef0",
+                    "on-background": "#191c1e",
+                    "surface-bright": "#f7f9fb",
+                    "gold-accent": "#F59E0B",
+                    "silver-accent": "#94A3B8",
+                    "bronze-accent": "#B45309"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "unit": "8px",
+                    "container-max": "1200px",
+                    "margin-mobile": "16px",
+                    "margin-desktop": "40px",
+                    "gutter": "24px"
+            },
+            "fontFamily": {
+                    "headline-lg-mobile": ["Inter"],
+                    "label-md": ["Inter"],
+                    "headline-md": ["Inter"],
+                    "body-lg": ["Inter"],
+                    "button-text": ["Inter"],
+                    "headline-lg": ["Inter"],
+                    "display-lg": ["Inter"],
+                    "body-md": ["Inter"]
+            },
+            "fontSize": {
+                    "headline-lg-mobile": ["24px", {"lineHeight": "32px", "fontWeight": "700"}],
+                    "label-md": ["14px", {"lineHeight": "20px", "letterSpacing": "0.05em", "fontWeight": "600"}],
+                    "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "700"}],
+                    "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "500"}],
+                    "button-text": ["18px", {"lineHeight": "24px", "fontWeight": "700"}],
+                    "headline-lg": ["32px", {"lineHeight": "40px", "fontWeight": "700"}],
+                    "display-lg": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "800"}],
+                    "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        body { font-family: 'Inter', sans-serif; }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .joyful-shadow {
+            box-shadow: 0 4px 12px rgba(0, 88, 190, 0.12);
+        }
+        .btn-3d {
+            transition: all 0.1s ease;
+            box-shadow: 0 4px 0 0 rgba(0, 0, 0, 0.15);
+        }
+        .btn-3d:active {
+            transform: translateY(2px);
+            box-shadow: 0 2px 0 0 rgba(0, 0, 0, 0.15);
+        }
+        .podium-shine {
+            background: linear-gradient(135deg, rgba(255,255,255,0.4) 0%, rgba(255,255,255,0) 50%);
+        }
+    </style>
+</head>
+<body class="bg-surface text-on-surface">
+<!-- TopAppBar -->
+<header class="fixed top-0 w-full z-50 flex justify-between items-center px-margin-mobile md:px-margin-desktop h-16 shadow-[0_4px_12px_rgba(0,88,190,0.12)] bg-surface dark:bg-inverse-surface">
+<div class="flex items-center gap-4">
+<span class="text-headline-md font-headline-md font-extrabold text-primary dark:text-inverse-primary">JoyfulPath</span>
+</div>
+<div class="flex items-center gap-4">
+<button class="material-symbols-outlined text-primary hover:bg-surface-container-high p-2 rounded-full transition-colors">stars</button>
+<button class="material-symbols-outlined text-primary hover:bg-surface-container-high p-2 rounded-full transition-colors">notifications</button>
+<div class="w-10 h-10 rounded-full border-2 border-primary-container overflow-hidden">
+<img class="w-full h-full object-cover" data-alt="A friendly, high-quality 3D cartoon avatar of a young explorer student with a joyful expression, wearing a explorer hat and a blue vest. The lighting is soft and warm, highlighting a playful and safe learning environment for children." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCudFRAm1uhD9fe9oPuM1maHpuF9DU1UouRI2EkEvyNm8xTknHSigmxJiOg2tNwsKWfI8npdsqRcDFcYrCEs0ZPkoWKWdx4wU_tyOXyXRWHDbjWzc7hM4o6cTqWa6uvtRW-gcZ14zGlLLWOvi4Q7XW6wbkxSaiX29ggyDi4dHE-RP2ALwXEz5p3nq85klUNiZHlXPoi6Q6o-SsML_h-6gKC0M65RyT716o14GKh9Se25aALdIzF-OfXXmXxZky2u4-JA5OYERJ4rL8"/>
+</div>
+</div>
+</header>
+<!-- SideNavBar -->
+<nav class="hidden md:flex flex-col fixed left-0 top-16 h-[calc(100vh-64px)] p-6 bg-surface-container-low border-r-0 shadow-sm w-64 z-40">
+<div class="mb-8">
+<h2 class="font-headline-md text-headline-md text-primary">Young Explorer</h2>
+<p class="font-label-md text-label-md text-on-surface-variant">Level 12 • 450 XP</p>
+</div>
+<div class="space-y-4 flex-grow">
+<a class="flex items-center gap-4 text-on-surface-variant hover:text-primary transition-all p-2 rounded-lg" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+<span class="font-label-md text-label-md">Dashboard</span>
+</a>
+<a class="flex items-center gap-4 text-on-surface-variant hover:text-primary transition-all p-2 rounded-lg" href="#">
+<span class="material-symbols-outlined">auto_stories</span>
+<span class="font-label-md text-label-md">Lessons</span>
+</a>
+<a class="flex items-center gap-4 text-on-surface-variant hover:text-primary transition-all p-2 rounded-lg" href="#">
+<span class="material-symbols-outlined">checklist</span>
+<span class="font-label-md text-label-md">Tasks</span>
+</a>
+<a class="flex items-center gap-4 text-primary font-bold border-b-2 border-primary pb-1 p-2" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">leaderboard</span>
+<span class="font-label-md text-label-md">Leaderboard</span>
+</a>
+<a class="flex items-center gap-4 text-on-surface-variant hover:text-primary transition-all p-2 rounded-lg" href="#">
+<span class="material-symbols-outlined">person</span>
+<span class="font-label-md text-label-md">Profile</span>
+</a>
+</div>
+<button class="mt-auto bg-primary text-white font-button-text text-button-text py-3 px-6 rounded-xl btn-3d">
+            View Badges
+        </button>
+</nav>
+<!-- Main Content -->
+<main class="pt-24 pb-12 px-4 md:pl-72 md:pr-margin-desktop min-h-screen bg-background">
+<!-- Header Section -->
+<div class="mb-8 flex flex-col md:flex-row md:items-end justify-between gap-6">
+<div>
+<h1 class="font-display-lg text-display-lg text-primary mb-2">Champion Hall</h1>
+<p class="font-body-lg text-body-lg text-on-surface-variant">Celebrating our most dedicated young explorers!</p>
+</div>
+<!-- Filter Tabs -->
+<div class="bg-surface-container-high p-1 rounded-2xl flex gap-1 self-start md:self-end">
+<button class="px-6 py-2 rounded-xl font-button-text text-label-md bg-white text-primary shadow-sm transition-all" onclick="switchTab(this)">Weekly</button>
+<button class="px-6 py-2 rounded-xl font-button-text text-label-md text-on-surface-variant hover:bg-surface-container transition-all" onclick="switchTab(this)">Monthly</button>
+<button class="px-6 py-2 rounded-xl font-button-text text-label-md text-on-surface-variant hover:bg-surface-container transition-all" onclick="switchTab(this)">All-Time</button>
+</div>
+</div>
+<!-- Podium Top 3 (Asymmetric Bento) -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-gutter mb-12">
+<!-- Rank 2: Silver -->
+<div class="md:order-1 order-2 bg-white rounded-[2rem] p-8 joyful-shadow flex flex-col items-center justify-center relative overflow-hidden group hover:scale-[1.02] transition-transform">
+<div class="absolute top-0 left-0 w-full h-2 bg-silver-accent"></div>
+<div class="w-24 h-24 rounded-full border-4 border-silver-accent p-1 mb-4 relative z-10">
+<img class="w-full h-full object-cover rounded-full" data-alt="A diverse 3D character illustration of a young student girl with glasses and a curious expression, styled with vibrant colors and soft lighting on a clean white background. Modern Pixar-inspired aesthetic for children's learning platform." src="https://lh3.googleusercontent.com/aida-public/AB6AXuD3SBTjkbY8HaI1hdfO27TxiR9Vza9wOKp7UtiFERckI5bnMF45VkMDnTnPWooS1ufH2t4HuQCJkiNMbn_QZGaR26TG8gBmmUqTfAABGhR4WGD-6v09Gt_zLtrLLsFObh9ZzkGVj-hU84BNXBcr1TZs9idEM2tIsZZeZFA3Tur3N9QR-91Rxfd9uhVgUVWNo1upWmqVBi8aSyRFBGsPkAyl-7U_ugS1u45nEGe1xoogB_1G6JE3nOxdVTJq7NqM0bwjsjTvMS2nHr8"/>
+<div class="absolute -bottom-2 -right-2 bg-silver-accent text-white w-10 h-10 rounded-full flex items-center justify-center font-bold text-lg shadow-md">2</div>
+</div>
+<h3 class="font-headline-md text-headline-md text-on-surface text-center mb-1">Leo Light</h3>
+<p class="font-label-md text-label-md text-on-surface-variant mb-4 uppercase tracking-wider">Faith Warrior</p>
+<div class="bg-surface-container px-4 py-2 rounded-full">
+<span class="font-headline-md text-headline-md text-primary">1,150 XP</span>
+</div>
+<div class="podium-shine absolute inset-0 pointer-events-none"></div>
+</div>
+<!-- Rank 1: Gold -->
+<div class="md:order-2 order-1 bg-white rounded-[2rem] p-10 joyful-shadow flex flex-col items-center justify-center relative overflow-hidden group hover:scale-[1.05] transition-transform border-4 border-gold-accent">
+<div class="absolute top-0 left-0 w-full h-4 bg-gold-accent flex items-center justify-center">
+<span class="material-symbols-outlined text-white text-sm" style="font-variation-settings: 'FILL' 1;">workspace_premium</span>
+</div>
+<div class="w-32 h-32 rounded-full border-4 border-gold-accent p-1 mb-6 relative z-10">
+<img class="w-full h-full object-cover rounded-full" data-alt="A charismatic 3D rendered character of a young boy with curly hair and a huge smile, wearing a golden 'Top Student' badge. The background is slightly blurred with soft yellow and white bokeh, exuding joy and achievement in a modern digital art style." src="https://lh3.googleusercontent.com/aida-public/AB6AXuA-XnmIZ1rjpOie--J9lfj1nMwWRJzJPrgBEb2H-BOHyPt8xkC9rfnVk5iJTwm3ZFQ3mZdS_KMRVfrDveSbLV6zIA5-Ou6W6lsr7UNZ0fLKQ89NrfpMV0XkdmkMEqHmosP2JTReJbGFP3TpByx3QMqzvx4lDl-tJ9m81AWbwoKPt7HrMt2RDH269dvq_baRQ8lxA9clFYZH7yROaxO8LCXS50oiXkVUa-drOkXoFdpgxQV7vOvxgg__Nsnt5CxHVl4kOa5u_F5TaTQ"/>
+<div class="absolute -bottom-3 -right-3 bg-gold-accent text-white w-12 h-12 rounded-full flex items-center justify-center font-bold text-2xl shadow-lg border-4 border-white">1</div>
+</div>
+<h3 class="font-headline-lg text-headline-lg text-on-surface text-center mb-1">Sarah Joy</h3>
+<p class="font-label-md text-label-md text-secondary mb-6 font-bold uppercase tracking-widest">Master Disciple</p>
+<div class="bg-primary-container px-8 py-3 rounded-full shadow-lg">
+<span class="font-headline-md text-headline-md text-white">1,480 XP</span>
+</div>
+<div class="podium-shine absolute inset-0 pointer-events-none"></div>
+<!-- Sparkle Effects -->
+<span class="material-symbols-outlined absolute top-12 left-12 text-gold-accent opacity-30 animate-pulse">spark</span>
+<span class="material-symbols-outlined absolute bottom-12 right-12 text-gold-accent opacity-30 animate-pulse">spark</span>
+</div>
+<!-- Rank 3: Bronze -->
+<div class="md:order-3 order-3 bg-white rounded-[2rem] p-8 joyful-shadow flex flex-col items-center justify-center relative overflow-hidden group hover:scale-[1.02] transition-transform">
+<div class="absolute top-0 left-0 w-full h-2 bg-bronze-accent"></div>
+<div class="w-24 h-24 rounded-full border-4 border-bronze-accent p-1 mb-4 relative z-10">
+<img class="w-full h-full object-cover rounded-full" data-alt="A joyful 3D character portrait of a young student with a beanie, looking inspired. The lighting is dynamic and cheerful, with a color palette of deep blues and vibrant oranges. The style is clean, modern, and highly engaging for a gamified educational experience." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAH5sbuoUNB64ruuDmlBg0kAe4vQAElrpMUN_peRWR1R4-G33ZJawW-iI_p_v__nO-fc_bFz-JdUC20cW3vC1jfl0ebsxBUMaqHGQWjsWrBDrtyQbJUghUdFjCCfy9BywhXRmfoffI8n_DWBnAT3iq0znLQvbt8TD0T20oOoPyoOJcIvIy8xfVKJpEjoAKUHZZdbMr7osJkX0S-TkS8l1lEXL9ZdAhJGs-xzJ6OlPItvuAx88a_hZqoTxJeH9VbLTOYVho7Gk0kbIU"/>
+<div class="absolute -bottom-2 -right-2 bg-bronze-accent text-white w-10 h-10 rounded-full flex items-center justify-center font-bold text-lg shadow-md">3</div>
+</div>
+<h3 class="font-headline-md text-headline-md text-on-surface text-center mb-1">Micah Brave</h3>
+<p class="font-label-md text-label-md text-on-surface-variant mb-4 uppercase tracking-wider">Prayer Hero</p>
+<div class="bg-surface-container px-4 py-2 rounded-full">
+<span class="font-headline-md text-headline-md text-primary">920 XP</span>
+</div>
+<div class="podium-shine absolute inset-0 pointer-events-none"></div>
+</div>
+</div>
+<!-- The Rest of the Pack -->
+<div class="bg-white rounded-[2rem] joyful-shadow overflow-hidden mb-12">
+<div class="p-6 border-b border-surface-container-high flex justify-between items-center px-8">
+<h2 class="font-headline-md text-headline-md text-on-surface">Explorers Rank</h2>
+<div class="flex items-center gap-2 text-on-surface-variant">
+<span class="material-symbols-outlined text-sm">groups</span>
+<span class="font-label-md text-label-md">24 Active Students</span>
+</div>
+</div>
+<div class="divide-y divide-surface-container-high">
+<!-- Rank 4 -->
+<div class="flex items-center gap-4 p-6 px-8 hover:bg-surface-container-low transition-colors group cursor-pointer">
+<div class="w-12 font-display-lg text-headline-md text-on-surface-variant opacity-30 group-hover:opacity-100 transition-opacity">#4</div>
+<div class="w-14 h-14 rounded-full overflow-hidden bg-surface-container">
+<img class="w-full h-full object-cover" data-alt="A 3D stylized character portrait of a happy student boy with a backpack, designed in a soft, rounded aesthetic with vibrant colors. The lighting is cheerful and bright, matching a professional gamified UI environment." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDSRuZecxyect6_xUEw8k1P9Zu-tiPFUVQSlOl9dkymap5BJJ_iUl6UHpMzCIYFLbsYjCSJd9jNtXeSgZ24DUZBJ0Qq8viarAI6F4W04JZeWsxIDAEOZstrxNp2hWXDGFUYIA9-S11GHcyuaujT3NlYVai5CT-o5cDbHpdddwUgCM4IAFCQn7hJ5Y3FSBVy_dt0hmzvSbh9dJudIQ8kRa45xRm5UACpMwTTRUvmZbdLASTkAW2-MxjKfk4MlZf7l7X5EpuFsaGsh_o"/>
+</div>
+<div class="flex-grow">
+<h4 class="font-body-lg text-body-lg text-on-surface">Daniel Truth</h4>
+<p class="font-label-md text-label-md text-on-surface-variant">Heart Giver</p>
+</div>
+<div class="text-right">
+<div class="font-headline-md text-headline-md text-primary">850 XP</div>
+<div class="flex items-center justify-end gap-1 text-on-tertiary-fixed-variant text-[12px] font-bold">
+<span class="material-symbols-outlined text-sm">trending_up</span>
+<span>+2 POS</span>
+</div>
+</div>
+</div>
+<!-- Rank 5 -->
+<div class="flex items-center gap-4 p-6 px-8 hover:bg-surface-container-low transition-colors group cursor-pointer">
+<div class="w-12 font-display-lg text-headline-md text-on-surface-variant opacity-30 group-hover:opacity-100 transition-opacity">#5</div>
+<div class="w-14 h-14 rounded-full overflow-hidden bg-surface-container">
+<img class="w-full h-full object-cover" data-alt="A cheerful 3D avatar of a young girl student with braided hair, smiling brightly. The visual style is modern, friendly, and polished, utilizing a high-key lighting setup with soft shadows and a warm color palette." src="https://lh3.googleusercontent.com/aida-public/AB6AXuC9Iyu65wBgrBrJT9CUuONBAUo5IUTznWkwuu2dhpHWQXHFabxP3Ld5czn6BLsBAMhw4eOyaNY5zygz4_syM9_CwLY9_cxgkOn6lM7I-acPnhhqcLZZuzfQ-JVCQsIIQbqkgGrZ8Cwdaji2oQdAKyUfmtrEEvdsaJ_D7p7PObis53dt1Gql2vs2zQdaWXODpszOhkSqbHtZ71yx949qWgTvRB2HEnJrZsGVrQHbpjARsx42amM1IiWPcekqQhoF7Salk6Ug5_BN74I"/>
+</div>
+<div class="flex-grow">
+<h4 class="font-body-lg text-body-lg text-on-surface">Esther Grace</h4>
+<p class="font-label-md text-label-md text-on-surface-variant">Kind Helper</p>
+</div>
+<div class="text-right">
+<div class="font-headline-md text-headline-md text-primary">790 XP</div>
+<div class="flex items-center justify-end gap-1 text-on-surface-variant text-[12px] font-bold">
+<span class="material-symbols-outlined text-sm">remove</span>
+<span>0 POS</span>
+</div>
+</div>
+</div>
+<!-- Rank 6 -->
+<div class="flex items-center gap-4 p-6 px-8 hover:bg-surface-container-low transition-colors group cursor-pointer">
+<div class="w-12 font-display-lg text-headline-md text-on-surface-variant opacity-30 group-hover:opacity-100 transition-opacity">#6</div>
+<div class="w-14 h-14 rounded-full overflow-hidden bg-surface-container">
+<img class="w-full h-full object-cover" data-alt="A high-quality 3D character illustration of a young boy student wearing a yellow t-shirt and smiling. The art style is clean and playful, with focus on expressive eyes and a friendly demeanor, set against a soft blue background." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDxIhQFPePIRI7OOLWrNQ5IZavsZif0WRnghlYqVeyU-RBwKOeSoyETYZVcCnwZEykkVcZLWdIxzeuRtCBpUxCln-SL3w58DTcDYxJD6SEEbl7VLJd0DfUMJPmFvhFujj2w-87E4-zdGLbUUU-7834K5ZcJSsHthbBvk7eNASgeLiuROIdFvf8leg2B19y0EGs0e9KxRmGZGoOswvQLUvil01ZKlmp155e49izdpaadV5J3HVlvbT2nZcsnIBvzRSm5RZOZjdCnvVs"/>
+</div>
+<div class="flex-grow">
+<h4 class="font-body-lg text-body-lg text-on-surface">Noah Ark</h4>
+<p class="font-label-md text-label-md text-on-surface-variant">Animal Friend</p>
+</div>
+<div class="text-right">
+<div class="font-headline-md text-headline-md text-primary">710 XP</div>
+<div class="flex items-center justify-end gap-1 text-error text-[12px] font-bold">
+<span class="material-symbols-outlined text-sm">trending_down</span>
+<span>-1 POS</span>
+</div>
+</div>
+</div>
+<!-- Personal Rank Row (Floating Style) -->
+<div class="bg-primary-container/10 border-l-8 border-primary flex items-center gap-4 p-6 px-8">
+<div class="w-12 font-display-lg text-headline-md text-primary">#12</div>
+<div class="w-14 h-14 rounded-full border-2 border-primary overflow-hidden relative">
+<img class="w-full h-full object-cover" data-alt="Student Profile Avatar with XP and Points Display, showing a cheerful 3D rendered character portrait of a boy with a compass. High-end modern mobile game aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBRnsSWKrBWkp_ESJ4DFgk3jF-A_xxDarU6nDsPyQFIj5XTdEezvxRuuLGPwNg9L7NMQm9lZIEFiYqEyfASie0oXZczNpDpPFwK2HpfIHNit8Yo58Xv92HGVK-2NFJmgHBNdwqWsw60ap5WowmjEe1W9j7HJdiykkFex79-rN6TILAfDXcz5P4UJ5CUVle0DLwgZNWYWHtpsVrKuHkeSvRVUlMZaFe_VXfoH-mDh5-N9e1cI7Y9ki2O2SB5_qTIMeeABdS0nYS-yuE"/>
+</div>
+<div class="flex-grow">
+<h4 class="font-body-lg text-body-lg text-on-surface font-bold">You (Young Explorer)</h4>
+<p class="font-label-md text-label-md text-primary">Bible Scholar • Level 12</p>
+</div>
+<div class="text-right">
+<div class="font-headline-md text-headline-md text-primary">450 XP</div>
+<p class="font-label-md text-label-md text-on-surface-variant">Keep going!</p>
+</div>
+</div>
+</div>
+</div>
+<!-- Instructor Tip / Encouragement Bubble -->
+<div class="relative bg-white p-6 rounded-[2rem] joyful-shadow max-w-2xl mx-auto md:ml-0 flex gap-6 items-center border-b-4 border-primary">
+<div class="w-20 h-20 flex-shrink-0">
+<img class="w-full h-full object-cover rounded-2xl shadow-md" data-alt="A warm, professional 3D character of a teacher or instructor with a friendly smile, wearing a casual cardigan. The background is a cozy, brightly lit classroom. The style is encouraging and trustworthy." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAcEL1zaq6ddsIQsj-T-SCuuY4BMjLTIviZSFTA9wOxvYEBUjEg_DHY7zuggJd-1LJk7KzsC_4AFkbdUYdRRztAd_KUnf-9Fl7TXiMeRWDJ-91xotQPAGVvd_aIjPY7I2g8S308HQ_RBn66ZuQk8Tpanp0qxKIqeXjCzSw_kiKlRmCO6pMssR03cTA1jF42EOMBFMSFob-rJCGpgcMqKEP9K_uL1jzv6oYmWcUsjnrUNZ0qmAqxDByb-lHTVZvpENKxq_xnVmeQQn8"/>
+</div>
+<div>
+<p class="font-body-md text-body-md text-on-surface mb-2 italic">"Amazing work everyone! Sarah is leading this week, but there are still plenty of bonus XP tasks in the 'Tasks' tab to catch up. Every step forward is a victory!"</p>
+<p class="font-label-md text-label-md text-primary font-bold">— Teacher Sarah</p>
+</div>
+<!-- Speech bubble arrow -->
+<div class="absolute -bottom-4 left-10 w-0 h-0 border-l-[15px] border-l-transparent border-t-[20px] border-t-white border-r-[15px] border-r-transparent"></div>
+</div>
+</main>
+<!-- Bottom Nav for Mobile -->
+<nav class="md:hidden fixed bottom-0 left-0 w-full bg-surface-container-lowest h-20 flex items-center justify-around z-50 shadow-[0_-4px_12px_rgba(0,0,0,0.05)] rounded-t-[2rem]">
+<button class="flex flex-col items-center gap-1 text-on-surface-variant">
+<span class="material-symbols-outlined">dashboard</span>
+<span class="text-[10px] font-bold">Home</span>
+</button>
+<button class="flex flex-col items-center gap-1 text-on-surface-variant">
+<span class="material-symbols-outlined">auto_stories</span>
+<span class="text-[10px] font-bold">Lessons</span>
+</button>
+<button class="flex flex-col items-center gap-1 text-primary">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">leaderboard</span>
+<span class="text-[10px] font-bold">Ranks</span>
+</button>
+<button class="flex flex-col items-center gap-1 text-on-surface-variant">
+<span class="material-symbols-outlined">person</span>
+<span class="text-[10px] font-bold">Profile</span>
+</button>
+</nav>
+<script>
+        function switchTab(btn) {
+            // Reset all buttons in the same container
+            const buttons = btn.parentElement.querySelectorAll('button');
+            buttons.forEach(b => {
+                b.classList.remove('bg-white', 'text-primary', 'shadow-sm');
+                b.classList.add('text-on-surface-variant', 'hover:bg-surface-container');
+            });
+            
+            // Activate selected button
+            btn.classList.add('bg-white', 'text-primary', 'shadow-sm');
+            btn.classList.remove('text-on-surface-variant', 'hover:bg-surface-container');
+            
+            // Logic for switching data would go here
+            console.log("Switched to leaderboard tab:", btn.innerText);
+        }
+
+        // Simple enter animation for list items
+        document.addEventListener('DOMContentLoaded', () => {
+            const items = document.querySelectorAll('.divide-y > div');
+            items.forEach((item, index) => {
+                item.style.opacity = '0';
+                item.style.transform = 'translateY(20px)';
+                item.style.transition = `all 0.4s ease ${index * 0.1}s`;
+                setTimeout(() => {
+                    item.style.opacity = '1';
+                    item.style.transform = 'translateY(0)';
+                }, 100);
+            });
+        });
+    </script>
+</body></html>

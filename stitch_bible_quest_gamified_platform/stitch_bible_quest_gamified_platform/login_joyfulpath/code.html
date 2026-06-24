@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Login - JoyfulPath</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "on-tertiary-fixed-variant": "#005236",
+                    "surface-variant": "#e0e3e5",
+                    "on-secondary": "#ffffff",
+                    "secondary": "#855300",
+                    "surface-container-lowest": "#ffffff",
+                    "on-primary": "#ffffff",
+                    "outline": "#727785",
+                    "on-secondary-container": "#684000",
+                    "inverse-surface": "#2d3133",
+                    "tertiary": "#006947",
+                    "surface-container-highest": "#e0e3e5",
+                    "secondary-fixed": "#ffddb8",
+                    "surface-container-low": "#f2f4f6",
+                    "tertiary-container": "#00855b",
+                    "surface-dim": "#d8dadc",
+                    "on-tertiary-fixed": "#002113",
+                    "surface": "#f7f9fb",
+                    "on-primary-fixed": "#001a42",
+                    "primary-container": "#2170e4",
+                    "tertiary-fixed": "#6ffbbe",
+                    "error-container": "#ffdad6",
+                    "on-tertiary": "#ffffff",
+                    "surface-container-high": "#e6e8ea",
+                    "secondary-fixed-dim": "#ffb95f",
+                    "on-primary-container": "#fefcff",
+                    "on-secondary-fixed-variant": "#653e00",
+                    "primary-fixed-dim": "#adc6ff",
+                    "on-surface": "#191c1e",
+                    "inverse-on-surface": "#eff1f3",
+                    "background": "#f7f9fb",
+                    "primary": "#0058be",
+                    "error": "#ba1a1a",
+                    "on-error-container": "#93000a",
+                    "on-secondary-fixed": "#2a1700",
+                    "on-error": "#ffffff",
+                    "on-primary-fixed-variant": "#004395",
+                    "primary-fixed": "#d8e2ff",
+                    "surface-tint": "#005ac2",
+                    "tertiary-fixed-dim": "#4edea3",
+                    "secondary-container": "#fea619",
+                    "outline-variant": "#c2c6d6",
+                    "on-tertiary-container": "#f5fff6",
+                    "inverse-primary": "#adc6ff",
+                    "on-surface-variant": "#424754",
+                    "surface-container": "#eceef0",
+                    "on-background": "#191c1e",
+                    "surface-bright": "#f7f9fb"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "unit": "8px",
+                    "container-max": "1200px",
+                    "margin-mobile": "16px",
+                    "margin-desktop": "40px",
+                    "gutter": "24px"
+            },
+            "fontFamily": {
+                    "headline-lg-mobile": ["Inter"],
+                    "label-md": ["Inter"],
+                    "headline-md": ["Inter"],
+                    "body-lg": ["Inter"],
+                    "button-text": ["Inter"],
+                    "headline-lg": ["Inter"],
+                    "display-lg": ["Inter"],
+                    "body-md": ["Inter"]
+            },
+            "fontSize": {
+                    "headline-lg-mobile": ["24px", {"lineHeight": "32px", "fontWeight": "700"}],
+                    "label-md": ["14px", {"lineHeight": "20px", "letterSpacing": "0.05em", "fontWeight": "600"}],
+                    "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "700"}],
+                    "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "500"}],
+                    "button-text": ["18px", {"lineHeight": "24px", "fontWeight": "700"}],
+                    "headline-lg": ["32px", {"lineHeight": "40px", "fontWeight": "700"}],
+                    "display-lg": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "800"}],
+                    "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}]
+            }
+          }
+        }
+      }
+    </script>
+<style>
+        .tactile-button {
+            box-shadow: 0 4px 0 0 #004395;
+            transition: all 0.1s ease;
+        }
+        .tactile-button:active {
+            transform: translateY(2px);
+            box-shadow: 0 2px 0 0 #004395;
+        }
+        .floating-element {
+            animation: float 6s ease-in-out infinite;
+        }
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+        .bg-pattern {
+            background-color: #f7f9fb;
+            background-image: radial-gradient(#d8e2ff 1.5px, transparent 1.5px);
+            background-size: 32px 32px;
+        }
+    </style>
+</head>
+<body class="bg-pattern min-h-screen flex items-center justify-center p-margin-mobile md:p-margin-desktop overflow-x-hidden">
+<!-- Atmospheric Background Elements -->
+<div class="fixed inset-0 pointer-events-none overflow-hidden z-0">
+<div class="absolute top-[10%] left-[5%] w-32 h-32 opacity-20 floating-element" style="animation-delay: 0s;">
+<img class="w-full h-full object-contain" data-alt="A soft, colorful digital illustration of a friendly stylized sun with a smiling face, rendered in a bright pastel blue and yellow palette. The style is clean and rounded, specifically designed for a modern educational app for children, with a gentle glow effect." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAeC5BuApx5sfuTSZInVkFHItNGSg58TnJiuH2vAeXArSOuawpvHMZG0WsQmHaNZynh8P-jyJId6PU0N4aqRWXc0uH_6rJb4tOKUt4gwvyXn3OnKFmgafIeMxw0vbrKz39BHmAykjdxYjK9iZQ-Uk7ljdIuG5yPek0wW4gnJQd_K2mBjkpMbiGiFlcetBMLeikUmHBqNzIDL3F1ZnBKrkU7qKYCs3hU1aO1ezhd9wF3Ajty6hvCjc8mO3davTnV-ZzT7OGz3hs3q68"/>
+</div>
+<div class="absolute bottom-[15%] right-[8%] w-40 h-40 opacity-15 floating-element" style="animation-delay: 1.5s;">
+<img class="w-full h-full object-contain" data-alt="A charming, simplified illustration of a small, colorful church building with a soft-edged cross on top, styled like a wooden toy block. The color scheme uses warm oranges and soft primary blues, fitting the joyful and safe Sunday school brand identity." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBnVLpNFhytdxNi0p8FnO_Emx3igJAo2pdMifKTqpBHt43YG4uJV0gZR0Al3E55eVQH8IFKKzA4oBuiuST4KS_Lv2OhVef2SA_DEgtqGTOAyM92ZO2xqvLNQfkoAdMhAlyshM8lGHwF65_1Lh8DTF9kUwntmhly9EovjFJwsB7D2u8-1ZPrHN51E1EoP1bNqFjNeJHHWERdbj1TYNHbl1AySaShWHr_IdbxYFPswbhhqw_o-HGBdfv3QzcGJ0N50Esy2HZuiFCUeuE"/>
+</div>
+<div class="absolute top-[20%] right-[12%] w-24 h-24 opacity-20 floating-element" style="animation-delay: 3s;">
+<img class="w-full h-full object-contain" data-alt="A playful, low-poly 3D heart icon floating in space, colored with a soft primary blue gradient. The lighting is high-key and cheerful, creating a tactile and friendly aesthetic suitable for a gamified children's learning platform." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCtIgYP6VDLyW9iKChQYrIkxPXAaYycNdsEeEQU0Mm4rRv9v5z-XPU2BsDXJR-SBEK1uE-6CyPukdkSPb8FrV9ETDviyHY-p8AgeMjYcqwNOox-q1TITLlbUq7qzemRV-izB3KMehOExTc4X6Z7HOYuQPFBACaeyyN3uaPGhnLcBd4Kzafy7qYjB4eO-GkUCs6Rk18RUnbXR1H4XNQyRUrb2rFc27MXQEhSZOyDxI6SkYU2j1NUkM29QQhRTZp3IcCUsFisPOwbcBA"/>
+</div>
+<div class="absolute bottom-[10%] left-[10%] w-28 h-28 opacity-10 floating-element" style="animation-delay: 4.5s;">
+<img class="w-full h-full object-contain" data-alt="A set of colorful, rounded geometric shapes like stars and circles in a soft pastel palette, arranged to look like confetti or rewards. The art style is minimal and modern, emphasizing the gamified exploration theme of the JoyfulPath app." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCCx80NVmtkABkzJ146wFA45b7fEcdA4zC_GdqKiymukqgaedCmv3IMj4Yj8u4RNDmZjDdCl6iBCx9tWTBIOz9mrF8XfhRbOXvh3yUGCiJPUBm_yz9w84e3GxuvPhNIu-iHWmW1x8RuwMRBM0L9WT5PRvK2nA9jvllGQpfWyTVAxV1txKvL9TescqHeYvbgghemSOxuRVtFRppmQuObyV-vPNSltJR7wSCrOBmnD8BV4_q0m9qp9IVSQsZjKdMeLFFzjj5nBAaUQyE"/>
+</div>
+</div>
+<!-- Login Card Container -->
+<main class="relative z-10 w-full max-w-[480px]">
+<div class="bg-surface-container-lowest rounded-xl shadow-[0_4px_12px_rgba(0,88,190,0.12)] p-8 md:p-12 border border-outline-variant">
+<!-- Logo and Header -->
+<div class="text-center mb-10">
+<div class="inline-flex items-center justify-center w-20 h-20 bg-primary-container rounded-xl mb-6 shadow-sm">
+<span class="material-symbols-outlined text-on-primary-container !text-4xl" style="font-variation-settings: 'FILL' 1;">church</span>
+</div>
+<h1 class="font-headline-lg text-headline-lg text-primary mb-2">JoyfulPath</h1>
+<p class="font-body-md text-body-md text-on-surface-variant">Welcome back, Young Explorer!</p>
+</div>
+<!-- Login Form -->
+<form action="#" class="space-y-6" onsubmit="return false;">
+<!-- Email Field -->
+<div class="space-y-2">
+<label class="block font-label-md text-label-md text-on-surface" for="email">Email Address</label>
+<div class="relative">
+<span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-outline">mail</span>
+<input class="w-full h-14 pl-12 pr-4 bg-surface-container rounded-lg border-2 border-transparent focus:border-primary focus:ring-0 transition-colors font-body-md text-on-surface outline-none placeholder:text-outline-variant" id="email" name="email" placeholder="explorer@path.com" type="email"/>
+</div>
+</div>
+<!-- Password Field -->
+<div class="space-y-2">
+<div class="flex justify-between items-center">
+<label class="block font-label-md text-label-md text-on-surface" for="password">Password</label>
+<a class="font-label-md text-label-md text-primary hover:underline" href="#">Forgot?</a>
+</div>
+<div class="relative">
+<span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-outline">lock</span>
+<input class="w-full h-14 pl-12 pr-12 bg-surface-container rounded-lg border-2 border-transparent focus:border-primary focus:ring-0 transition-colors font-body-md text-on-surface outline-none placeholder:text-outline-variant" id="password" name="password" placeholder="••••••••" type="password"/>
+<button class="absolute right-4 top-1/2 -translate-y-1/2 text-outline hover:text-primary transition-colors" type="button">
+<span class="material-symbols-outlined">visibility</span>
+</button>
+</div>
+</div>
+<!-- Remember Me & Actions -->
+<div class="flex items-center justify-between">
+<label class="flex items-center group cursor-pointer">
+<div class="relative flex items-center">
+<input class="peer hidden" type="checkbox"/>
+<div class="w-6 h-6 rounded-md border-2 border-outline-variant bg-surface group-hover:border-primary peer-checked:bg-primary peer-checked:border-primary transition-all flex items-center justify-center">
+<span class="material-symbols-outlined text-white text-sm scale-0 peer-checked:scale-100 transition-transform">check</span>
+</div>
+<span class="ml-3 font-body-md text-body-md text-on-surface-variant group-hover:text-on-surface transition-colors">Remember Me</span>
+</div>
+</label>
+</div>
+<!-- Submit Button -->
+<div class="pt-4">
+<button class="tactile-button w-full h-14 bg-primary text-on-primary font-button-text text-button-text rounded-xl flex items-center justify-center gap-2 hover:bg-primary-container transition-colors" type="submit">
+<span>Login to Path</span>
+<span class="material-symbols-outlined">arrow_forward</span>
+</button>
+</div>
+</form>
+<!-- Secondary Actions -->
+<div class="mt-10 pt-8 border-t border-outline-variant text-center">
+<p class="font-body-md text-body-md text-on-surface-variant mb-4">New to JoyfulPath?</p>
+<a class="inline-flex items-center justify-center px-8 h-12 rounded-lg border-2 border-primary text-primary font-label-md text-label-md hover:bg-primary hover:text-on-primary transition-all" href="#">
+                    Create Student Account
+                </a>
+</div>
+</div>
+<!-- Footer Help -->
+<div class="mt-8 flex justify-center gap-6">
+<a class="font-label-md text-label-md text-on-surface-variant hover:text-primary transition-colors flex items-center gap-1" href="#">
+<span class="material-symbols-outlined !text-base">help</span>
+                Need help?
+            </a>
+<a class="font-label-md text-label-md text-on-surface-variant hover:text-primary transition-colors flex items-center gap-1" href="#">
+<span class="material-symbols-outlined !text-base">shield</span>
+                Privacy Policy
+            </a>
+</div>
+</main>
+<script>
+        // Simple interactivity for the login button and inputs
+        document.addEventListener('DOMContentLoaded', () => {
+            const inputs = document.querySelectorAll('input');
+            inputs.forEach(input => {
+                input.addEventListener('focus', () => {
+                    input.parentElement.parentElement.classList.add('scale-[1.01]');
+                    input.parentElement.parentElement.style.transition = 'transform 0.2s ease';
+                });
+                input.addEventListener('blur', () => {
+                    input.parentElement.parentElement.classList.remove('scale-[1.01]');
+                });
+            });
+
+            // Password visibility toggle
+            const togglePass = document.querySelector('button[type="button"]');
+            const passInput = document.getElementById('password');
+            if (togglePass && passInput) {
+                togglePass.addEventListener('click', () => {
+                    const isPass = passInput.type === 'password';
+                    passInput.type = isPass ? 'text' : 'password';
+                    togglePass.querySelector('span').textContent = isPass ? 'visibility_off' : 'visibility';
+                });
+            }
+        });
+    </script>
+</body></html>
