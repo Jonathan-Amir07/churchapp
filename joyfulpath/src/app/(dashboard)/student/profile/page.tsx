@@ -10,6 +10,8 @@ export default function StudentProfile() {
   const tNav = useTranslations('nav');
   const tCommon = useTranslations('common');
   const tAuth = useTranslations('auth');
+  const tProfile = useTranslations('profile');
+  const tGamification = useTranslations('gamification');
 
   const user = session?.user;
 
@@ -21,24 +23,24 @@ export default function StudentProfile() {
 
   const handleUpdateProfile = (e: React.FormEvent) => {
     e.preventDefault();
-    alert('Success! Profile updated successfully.');
+    alert(tProfile('profileUpdateSuccess'));
   };
 
   const handleChangePin = (e: React.FormEvent) => {
     e.preventDefault();
     if (!currentPin || !newPin || !confirmPin) {
-      alert('Error: Please fill all PIN fields!');
+      alert(tProfile('fillAllPin'));
       return;
     }
     if (newPin.length !== 4 || isNaN(Number(newPin))) {
-      alert('Error: PIN must be a 4-digit number!');
+      alert(tProfile('pinMustBeFour'));
       return;
     }
     if (newPin !== confirmPin) {
-      alert('Error: New PIN and confirm PIN do not match!');
+      alert(tProfile('pinNotMatch'));
       return;
     }
-    alert('Success! Your PIN has been changed successfully.');
+    alert(tProfile('pinChangeSuccess'));
     setCurrentPin('');
     setNewPin('');
     setConfirmPin('');
@@ -51,7 +53,7 @@ export default function StudentProfile() {
           {tNav('profile')}
         </h1>
         <p className="text-on-surface-variant text-sm md:text-base">
-          Manage your personal account details, change your PIN, and check your overall platform stats.
+          {tProfile('description')}
         </p>
       </div>
 
@@ -71,12 +73,12 @@ export default function StudentProfile() {
           
           <div className="w-full border-t border-outline-variant/60 mt-6 pt-4 flex justify-around text-center">
             <div className="space-y-0.5">
-              <p className="text-xs font-bold text-on-surface-variant">XP</p>
+              <p className="text-xs font-bold text-on-surface-variant">{tGamification('xp')}</p>
               <p className="text-sm font-black text-primary">{user?.totalXp || 380}</p>
             </div>
             <div className="w-[1px] h-6 bg-outline-variant/60" />
             <div className="space-y-0.5">
-              <p className="text-xs font-bold text-on-surface-variant">Points</p>
+              <p className="text-xs font-bold text-on-surface-variant">{tGamification('points')}</p>
               <p className="text-sm font-black text-secondary">{user?.totalPoints || 75}</p>
             </div>
           </div>
@@ -101,7 +103,7 @@ export default function StudentProfile() {
                     />
                   </div>
                   <div className="space-y-1.5">
-                    <label className="text-xs font-bold text-on-surface-variant">{tCommon('appName') === 'JoyfulPath' ? 'Display Name' : 'اسم العرض'}</label>
+                    <label className="text-xs font-bold text-on-surface-variant">{tProfile('displayName')}</label>
                     <Input
                       required
                       value={name}
@@ -122,13 +124,13 @@ export default function StudentProfile() {
           {/* Change PIN Form */}
           <Card className="border border-outline-variant bg-surface-container-lowest shadow-sm">
             <CardHeader>
-              <CardTitle className="text-lg font-black">Change Security PIN</CardTitle>
+              <CardTitle className="text-lg font-black">{tProfile('changePin')}</CardTitle>
             </CardHeader>
             <CardContent>
               <form onSubmit={handleChangePin} className="space-y-4">
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                   <div className="space-y-1.5">
-                    <label className="text-xs font-bold text-on-surface-variant">Current PIN</label>
+                    <label className="text-xs font-bold text-on-surface-variant">{tProfile('currentPin')}</label>
                     <Input
                       type="password"
                       maxLength={4}
@@ -138,7 +140,7 @@ export default function StudentProfile() {
                     />
                   </div>
                   <div className="space-y-1.5">
-                    <label className="text-xs font-bold text-on-surface-variant">New PIN</label>
+                    <label className="text-xs font-bold text-on-surface-variant">{tProfile('newPin')}</label>
                     <Input
                       type="password"
                       maxLength={4}
@@ -148,7 +150,7 @@ export default function StudentProfile() {
                     />
                   </div>
                   <div className="space-y-1.5">
-                    <label className="text-xs font-bold text-on-surface-variant">Confirm New PIN</label>
+                    <label className="text-xs font-bold text-on-surface-variant">{tProfile('confirmNewPin')}</label>
                     <Input
                       type="password"
                       maxLength={4}
@@ -161,7 +163,7 @@ export default function StudentProfile() {
                 
                 <div className="flex justify-end pt-2">
                   <Button variant="secondary" size="sm" type="submit">
-                    Change PIN
+                    {tProfile('changePinBtn')}
                   </Button>
                 </div>
               </form>

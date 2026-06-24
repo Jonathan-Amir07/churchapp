@@ -65,9 +65,9 @@ export default function AdminAnalytics() {
         <Card className="border border-outline-variant bg-surface-container-lowest shadow-sm p-6 flex flex-col justify-between">
           <div className="space-y-1">
             <p className="text-xs uppercase font-bold text-on-surface-variant/80 tracking-wider">
-              Total Points Redeemed
+              {tAnalytics('totalPointsRedeemed')}
             </p>
-            <h3 className="text-3xl font-extrabold text-on-surface">1,450 pts</h3>
+            <h3 className="text-3xl font-extrabold text-on-surface">1,450 {tCommon('appName') !== 'JoyfulPath' ? 'نقطة' : 'pts'}</h3>
           </div>
           <div className="mt-4">
             <ProgressBar value={62} className="h-2 bg-surface-container-high" />
@@ -110,14 +110,14 @@ export default function AdminAnalytics() {
         {/* Custom Class Performance Chart */}
         <Card className="border border-outline-variant bg-surface-container-lowest shadow-sm">
           <CardHeader>
-            <CardTitle className="text-lg font-black">Class Submission Progress</CardTitle>
+            <CardTitle className="text-lg font-black">{tAnalytics('submissionProgress')}</CardTitle>
           </CardHeader>
           <CardContent className="p-6 pt-0 space-y-4">
             {classPerformance.map((c) => (
               <div key={c.name} className="space-y-1.5">
                 <div className="flex justify-between text-xs font-bold text-on-surface">
                   <span>{c.name}</span>
-                  <span>{c.value}% completed</span>
+                  <span>{tAnalytics('percentCompleted', { value: c.value })}</span>
                 </div>
                 <ProgressBar value={c.value} className="h-3" />
               </div>

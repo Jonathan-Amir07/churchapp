@@ -87,6 +87,7 @@ export default function StudentLessons() {
   const tNav = useTranslations('nav');
   const tLessons = useTranslations('lessons');
   const tCommon = useTranslations('common');
+  const tGamification = useTranslations('gamification');
   const [lessons, setLessons] = useState<Lesson[]>(MOCK_LESSONS);
   const [filter, setFilter] = useState<'all' | 'completed' | 'in-progress' | 'not-started'>('all');
   const [searchQuery, setSearchQuery] = useState('');
@@ -115,7 +116,7 @@ export default function StudentLessons() {
       prev.map(l => (l.id === lesson.id ? { ...l, status: 'completed' } : l))
     );
     setSelectedLesson(null);
-    alert(`Success! You completed the lesson and earned +${lesson.xp} XP and +${lesson.points} Points!`);
+    alert(tLessons('completeSuccess', { xp: lesson.xp, points: lesson.points }));
   };
 
   return (
@@ -198,7 +199,7 @@ export default function StudentLessons() {
                 {lesson.status === 'locked' ? (
                   <div className="flex items-center gap-2 text-xs font-bold text-error">
                     <span className="material-symbols-outlined text-[16px]">lock</span>
-                    <span>Requires Level {lesson.levelRequired}</span>
+                    <span>{tLessons('requiresLevel', { level: lesson.levelRequired })}</span>
                   </div>
                 ) : (
                   <div className="flex items-center gap-4 text-xs font-bold">
@@ -208,7 +209,7 @@ export default function StudentLessons() {
                     </span>
                     <span className="text-secondary flex items-center gap-1">
                       <span className="material-symbols-outlined text-[16px]">stars</span>
-                      +{lesson.points} pts
+                      +{lesson.points} {tGamification('points')}
                     </span>
                   </div>
                 )}

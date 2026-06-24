@@ -62,7 +62,7 @@ export default function AdminRewards() {
   const handleCreate = (e: React.FormEvent) => {
     e.preventDefault();
     if (!nameEn || !nameAr) {
-      alert('Error: Please fill all fields!');
+      alert(tCommon('appName') !== 'JoyfulPath' ? 'خطأ: يرجى ملء جميع الحقول!' : 'Error: Please fill all fields!');
       return;
     }
 
@@ -78,7 +78,7 @@ export default function AdminRewards() {
 
     setPrizes((prev) => [...prev, newItem]);
     setIsOpen(false);
-    alert('Success! Reward item added successfully.');
+    alert(tRewards('addSuccess'));
 
     // Reset Form
     setNameEn('');
@@ -118,7 +118,7 @@ export default function AdminRewards() {
                     <span className="material-symbols-outlined text-[24px]">{p.icon}</span>
                   </div>
                   <span className="text-xs font-bold text-outline">
-                    {p.stock > 0 ? `Stock: ${p.stock}` : tRewards('outOfStock')}
+                    {p.stock > 0 ? tRewards('stockLabel', { stock: p.stock }) : tRewards('outOfStock')}
                   </span>
                 </div>
 
@@ -151,11 +151,11 @@ export default function AdminRewards() {
           <form onSubmit={handleCreate} className="space-y-4 pt-2">
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="space-y-1.5">
-                <label className="text-xs font-bold text-on-surface-variant">Item Name (English)</label>
+                <label className="text-xs font-bold text-on-surface-variant">{tRewards('itemNameEn')}</label>
                 <Input required value={nameEn} onChange={(e) => setNameEn(e.target.value)} placeholder="e.g. Coloring Book" />
               </div>
               <div className="space-y-1.5">
-                <label className="text-xs font-bold text-on-surface-variant">اسم المكافأة (عربي)</label>
+                <label className="text-xs font-bold text-on-surface-variant">{tRewards('itemNameAr')}</label>
                 <Input required value={nameAr} onChange={(e) => setNameAr(e.target.value)} placeholder="مثال: كتاب تلوين" />
               </div>
             </div>
@@ -170,7 +170,7 @@ export default function AdminRewards() {
                 <Input type="number" min={0} max={500} required value={stock} onChange={(e) => setStock(Number(e.target.value))} />
               </div>
               <div className="space-y-1.5">
-                <label className="text-xs font-bold text-on-surface-variant">Material Symbol Icon</label>
+                <label className="text-xs font-bold text-on-surface-variant">{tRewards('materialIcon')}</label>
                 <Input required value={icon} onChange={(e) => setIcon(e.target.value)} placeholder="e.g. key, book" />
               </div>
             </div>
@@ -180,7 +180,7 @@ export default function AdminRewards() {
                 {tCommon('cancel')}
               </Button>
               <Button variant="primary" size="sm" type="submit">
-                Create Item
+                {tRewards('createItemBtn')}
               </Button>
             </div>
           </form>

@@ -88,7 +88,20 @@
     "verses": "Memorization Verses",
     "publish": "Publish Lesson",
     "noLessons": "No active lessons yet.",
-    "addSuccess": "Lesson added successfully!"
+    "addSuccess": "Lesson added successfully!",
+    "requiresLevel": "Requires Level {level}",
+    "category": "Category",
+    "reqLevelLabel": "Req Level: {level}",
+    "completeSuccess": "Success! You completed the lesson and earned +{xp} XP and +{points} Points!",
+    "instructorDescription": "Publish, edit, and manage Bible study lessons for your assigned classroom.",
+    "titleEn": "Lesson Title (English)",
+    "titleAr": "Lesson Title (Arabic)",
+    "categoryEn": "Category (English)",
+    "categoryAr": "Category (Arabic)",
+    "verseEn": "Memorization Verse (English)",
+    "verseAr": "Memorization Verse (Arabic)",
+    "unlockLevelReq": "Unlock Level Required",
+    "fillAllFields": "Error: Please fill all fields!"
   },
   "leaderboard": {
     "championHall": "Champion Hall",
@@ -98,7 +111,9 @@
     "allTime": "All-Time",
     "explorersRank": "Explorers Rank",
     "activeStudents": "{count} Active Students",
-    "keepGoing": "Keep going!"
+    "keepGoing": "Keep going!",
+    "you": "You",
+    "lvl": "Lvl {level}"
   },
   "gamification": {
     "xp": "XP",
@@ -125,7 +140,17 @@
     "grade": "Grade Task",
     "reviewPending": "Pending Review Tasks",
     "noPending": "All caught up! No tasks need grading.",
-    "taskName": "Task Name"
+    "taskName": "Task Name",
+    "submitSuccess": "Success! Your task has been submitted and is pending review.",
+    "instructorDescription": "Review, provide feedback, and grade the assignments submitted by your class students.",
+    "submittedAt": "Submitted: {time}",
+    "approveSuccess": "Task approved successfully! Student rewarded with points.",
+    "rejectSuccess": "Task sent back for revision with feedback.",
+    "studentNameLabel": "Student: {name}",
+    "rewardLabel": "Reward: +{points} pts",
+    "studentSubmission": "Student Submission:",
+    "rejectBtn": "Reject & Revise",
+    "approveBtn": "Approve & Reward"
   },
   "quizzes": {
     "title": "Quizzes",
@@ -145,7 +170,17 @@
     "question": "Question",
     "nextQuestion": "Next Question",
     "submitQuiz": "Submit Quiz",
-    "noQuizzes": "No quizzes available at the moment."
+    "noQuizzes": "No quizzes available at the moment.",
+    "instructorDescription": "Configure quizzes, add question lists, and assign XP completion bounds.",
+    "createQuizBtn": "Create Quiz",
+    "passingPercent": "Passing: {score}%",
+    "titleEn": "Quiz Title (English)",
+    "titleAr": "Quiz Title (Arabic)",
+    "passingScoreLabel": "Passing Score (%)",
+    "xpReward": "XP Reward",
+    "pointsReward": "Points Reward",
+    "createAddQuestions": "Create & Add Questions",
+    "publishSuccess": "Success! Quiz published successfully."
   },
   "attendance": {
     "title": "Class Attendance",
@@ -160,14 +195,21 @@
     "streakInfo": "Streak: {streak} days"
   },
   "students": {
-    "title": "Students Directory",
+    "title": "Students Roster",
     "description": "View class roster and detailed performance indicators.",
     "totalStudents": "Total Students",
     "searchStudent": "Search student name...",
     "xpRange": "XP: {xp}",
     "badgesCount": "{count} Badges",
     "levelName": "Level {level}",
-    "lastActive": "Last active: {time}"
+    "lastActive": "Last active: {time}",
+    "awardRewardsBtn": "Award Rewards",
+    "awardTitle": "Award Rewards: {name}",
+    "xpToAward": "XP to Award",
+    "pointsToAward": "Points to Award",
+    "reason": "Reason / Accomplishment",
+    "awardNow": "Award Now",
+    "awardSuccess": "Success! Awarded +{xp} XP and +{points} Points to {name}."
   },
   "users": {
     "title": "User Directory",
@@ -183,7 +225,15 @@
     "importCsv": "Bulk Import via CSV",
     "dragDrop": "Drag and drop your CSV file here, or click to browse",
     "importSuccess": "Users imported successfully!",
-    "addSuccess": "User added successfully!"
+    "addSuccess": "User added successfully!",
+    "csvImport": "CSV Import",
+    "registerUser": "Register User",
+    "securityPin": "Security PIN (4 digits)",
+    "studentRole": "Student",
+    "instructorRole": "Instructor (Servant)",
+    "adminRole": "Administrator",
+    "delete": "Delete",
+    "mockImport": "Mock Import Upload"
   },
   "classes": {
     "title": "Classes Config",
@@ -193,7 +243,15 @@
     "instructor": "Instructor",
     "studentsCount": "Students: {count}",
     "gradeLevel": "Grade Level",
-    "saveSuccess": "Class saved successfully!"
+    "saveSuccess": "Class saved successfully!",
+    "grades1to3": "Grades 1-3",
+    "grades4to6": "Grades 4-6",
+    "seniors": "Seniors (Grades 7+)",
+    "classNameEn": "Class Name (English)",
+    "classNameAr": "Class Name (Arabic)",
+    "instructorLabel": "Instructor (Servant)",
+    "gradeLevelParam": "Grade Level Parameter",
+    "createClassBtn": "Create Class"
   },
   "rewards": {
     "title": "Rewards Store",
@@ -206,7 +264,13 @@
     "addItem": "Add Reward Item",
     "itemName": "Item Name",
     "itemCost": "Point Cost",
-    "itemStock": "Stock Quantity"
+    "itemStock": "Stock Quantity",
+    "itemNameEn": "Item Name (English)",
+    "itemNameAr": "Item Name (Arabic)",
+    "materialIcon": "Material Symbol Icon",
+    "createItemBtn": "Create Item",
+    "stockLabel": "Stock: {stock}",
+    "addSuccess": "Success! Reward item added successfully."
   },
   "analytics": {
     "title": "Analytics Dashboard",
@@ -214,7 +278,10 @@
     "activeUsers": "Weekly Active Users",
     "completionRate": "Task Completion Rate",
     "topCategories": "Top Categories",
-    "attendanceAverage": "Average Attendance"
+    "attendanceAverage": "Average Attendance",
+    "totalPointsRedeemed": "Total Points Redeemed",
+    "submissionProgress": "Class Submission Progress",
+    "percentCompleted": "{value}% completed"
   },
   "settings": {
     "title": "System Settings",
@@ -225,6 +292,30 @@
     "backupDb": "Backup Database",
     "backupSuccess": "Database backup completed successfully!",
     "saveSettings": "Save Settings",
-    "settingsSaved": "Settings saved successfully!"
+    "settingsSaved": "Settings saved successfully!",
+    "featurePreferences": "Feature Preferences",
+    "gamificationMultipliers": "Gamification Multipliers",
+    "maintenanceActions": "System Maintenance Actions",
+    "maintenanceSub": "Temporarily disable platform access for students.",
+    "allowRegistrationsSub": "Allow new students to sign up from the login page."
+  },
+  "badges": {
+    "description": "Track your achievements and milestones. Lock in special badges as you grow!",
+    "locked": "Locked",
+    "unlockedOn": "Unlocked on: {date}"
+  },
+  "profile": {
+    "description": "Manage your personal account details, change your PIN, and check your overall platform stats.",
+    "displayName": "Display Name",
+    "changePin": "Change Security PIN",
+    "currentPin": "Current PIN",
+    "newPin": "New PIN",
+    "confirmNewPin": "Confirm New PIN",
+    "changePinBtn": "Change PIN",
+    "fillAllPin": "Error: Please fill all PIN fields!",
+    "pinMustBeFour": "Error: PIN must be a 4-digit number!",
+    "pinNotMatch": "Error: New PIN and confirm PIN do not match!",
+    "pinChangeSuccess": "Success! Your PIN has been changed successfully.",
+    "profileUpdateSuccess": "Success! Profile updated successfully."
   }
 }

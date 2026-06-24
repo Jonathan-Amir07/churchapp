@@ -86,6 +86,7 @@ export default function StudentBadges() {
   const tNav = useTranslations('nav');
   const tGamification = useTranslations('gamification');
   const tCommon = useTranslations('common');
+  const tBadges = useTranslations('badges');
   const [selectedBadge, setSelectedBadge] = useState<Badge | null>(null);
 
   const unlockedCount = MOCK_BADGES.filter((b) => b.unlocked).length;
@@ -102,7 +103,7 @@ export default function StudentBadges() {
           </span>
         </div>
         <p className="text-on-surface-variant text-sm md:text-base max-w-2xl">
-          Track your achievements and milestones. Lock in special badges as you grow!
+          {tBadges('description')}
         </p>
       </div>
 
@@ -144,7 +145,7 @@ export default function StudentBadges() {
                   {name}
                 </CardTitle>
                 <p className="text-[10px] md:text-xs font-black uppercase text-outline">
-                  {badge.unlocked ? tGamification('badgeUnlocked') : 'Locked'}
+                  {badge.unlocked ? tGamification('badgeUnlocked') : tBadges('locked')}
                 </p>
               </div>
             </Card>
@@ -186,7 +187,7 @@ export default function StudentBadges() {
 
             {selectedBadge.unlocked && selectedBadge.unlockedAt && (
               <p className="text-xs text-outline font-bold">
-                Unlocked on: {new Date(selectedBadge.unlockedAt).toLocaleDateString()}
+                {tBadges('unlockedOn', { date: new Date(selectedBadge.unlockedAt).toLocaleDateString() })}
               </p>
             )}
 

@@ -56,6 +56,7 @@ export default function InstructorStudents() {
   const tNav = useTranslations('nav');
   const tStudents = useTranslations('students');
   const tCommon = useTranslations('common');
+  const tGamification = useTranslations('gamification');
 
   const [students, setStudents] = useState<Student[]>(INITIAL_STUDENTS);
   const [selectedStudent, setSelectedStudent] = useState<Student | null>(null);
@@ -81,7 +82,7 @@ export default function InstructorStudents() {
       )
     );
     setSelectedStudent(null);
-    alert(`Success! Awarded +${xpToAdd} XP and +${pointsToAdd} Points to ${selectedStudent.name}.`);
+    alert(tStudents('awardSuccess', { xp: xpToAdd, points: pointsToAdd, name: selectedStudent.name }));
     setReason('');
     setXpToAdd(50);
     setPointsToAdd(10);
@@ -119,15 +120,15 @@ export default function InstructorStudents() {
 
               <div className="grid grid-cols-3 gap-2 border-t border-b border-outline-variant/60 py-3 text-center text-xs font-black">
                 <div className="space-y-0.5">
-                  <p className="text-on-surface-variant/80 text-[10px] uppercase">XP</p>
+                  <p className="text-on-surface-variant/80 text-[10px] uppercase">{tGamification('xp')}</p>
                   <p className="text-primary">{student.totalXp}</p>
                 </div>
                 <div className="space-y-0.5">
-                  <p className="text-on-surface-variant/80 text-[10px] uppercase">Points</p>
+                  <p className="text-on-surface-variant/80 text-[10px] uppercase">{tGamification('points')}</p>
                   <p className="text-secondary">{student.totalPoints}</p>
                 </div>
                 <div className="space-y-0.5">
-                  <p className="text-on-surface-variant/80 text-[10px] uppercase">Badges</p>
+                  <p className="text-on-surface-variant/80 text-[10px] uppercase">{tNav('badges')}</p>
                   <p className="text-tertiary">{student.badgesCount}</p>
                 </div>
               </div>
@@ -135,7 +136,7 @@ export default function InstructorStudents() {
 
             <div className="p-6 pt-0">
               <Button variant="outline" fullWidth size="sm" onClick={() => setSelectedStudent(student)}>
-                Award Rewards
+                {tStudents('awardRewardsBtn')}
               </Button>
             </div>
           </Card>
@@ -144,21 +145,21 @@ export default function InstructorStudents() {
 
       {/* Award XP Modal */}
       {selectedStudent && (
-        <Modal isOpen={true} onClose={() => setSelectedStudent(null)} title={`Award Rewards: ${selectedStudent.name}`}>
+        <Modal isOpen={true} onClose={() => setSelectedStudent(null)} title={tStudents('awardTitle', { name: selectedStudent.name })}>
           <form onSubmit={handleAward} className="space-y-4 pt-2">
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="space-y-1.5">
-                <label className="text-xs font-bold text-on-surface-variant">XP to Award</label>
+                <label className="text-xs font-bold text-on-surface-variant">{tStudents('xpToAward')}</label>
                 <Input type="number" min={5} max={1000} required value={xpToAdd} onChange={(e) => setXpToAdd(Number(e.target.value))} />
               </div>
               <div className="space-y-1.5">
-                <label className="text-xs font-bold text-on-surface-variant">Points to Award</label>
+                <label className="text-xs font-bold text-on-surface-variant">{tStudents('pointsToAward')}</label>
                 <Input type="number" min={1} max={500} required value={pointsToAdd} onChange={(e) => setPointsToAdd(Number(e.target.value))} />
               </div>
             </div>
 
             <div className="space-y-1.5">
-              <label className="text-xs font-bold text-on-surface-variant">Reason / Accomplishment</label>
+              <label className="text-xs font-bold text-on-surface-variant">{tStudents('reason')}</label>
               <Input required value={reason} onChange={(e) => setReason(e.target.value)} placeholder="e.g. Excellent behavior or helper" />
             </div>
 
@@ -167,7 +168,7 @@ export default function InstructorStudents() {
                 {tCommon('cancel')}
               </Button>
               <Button variant="primary" size="sm" type="submit">
-                Award Now
+                {tStudents('awardNow')}
               </Button>
             </div>
           </form>

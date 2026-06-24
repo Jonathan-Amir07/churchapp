@@ -58,7 +58,7 @@ export default function InstructorLessons() {
   const handleCreate = (e: React.FormEvent) => {
     e.preventDefault();
     if (!titleEn || !titleAr || !verseEn || !verseAr) {
-      alert('Error: Please fill all fields!');
+      alert(tLessons('fillAllFields'));
       return;
     }
 
@@ -93,7 +93,7 @@ export default function InstructorLessons() {
             {tNav('lessons')}
           </h1>
           <p className="text-on-surface-variant text-sm">
-            Publish, edit, and manage Bible study lessons for your assigned classroom.
+            {tLessons('instructorDescription')}
           </p>
         </div>
         <Button variant="primary" size="sm" onClick={() => setIsOpen(true)} icon="add" iconPosition="start">
@@ -117,7 +117,7 @@ export default function InstructorLessons() {
                     {category}
                   </span>
                   <span className="text-xs font-bold text-outline">
-                    Req Level: {lesson.levelRequired}
+                    {tLessons('reqLevelLabel', { level: lesson.levelRequired })}
                   </span>
                 </div>
 
@@ -157,38 +157,38 @@ export default function InstructorLessons() {
           <form onSubmit={handleCreate} className="space-y-4 pt-2">
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="space-y-1.5">
-                <label className="text-xs font-bold text-on-surface-variant">Lesson Title (English)</label>
+                <label className="text-xs font-bold text-on-surface-variant">{tLessons('titleEn')}</label>
                 <Input required value={titleEn} onChange={(e) => setTitleEn(e.target.value)} placeholder="e.g. David & Goliath" />
               </div>
               <div className="space-y-1.5">
-                <label className="text-xs font-bold text-on-surface-variant">عنوان الدرس (عربي)</label>
+                <label className="text-xs font-bold text-on-surface-variant">{tLessons('titleAr')}</label>
                 <Input required value={titleAr} onChange={(e) => setTitleAr(e.target.value)} placeholder="مثال: داود وجليات" />
               </div>
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="space-y-1.5">
-                <label className="text-xs font-bold text-on-surface-variant">Category (English)</label>
+                <label className="text-xs font-bold text-on-surface-variant">{tLessons('categoryEn')}</label>
                 <Input required value={categoryEn} onChange={(e) => setCategoryEn(e.target.value)} />
               </div>
               <div className="space-y-1.5">
-                <label className="text-xs font-bold text-on-surface-variant">الفئة (عربي)</label>
+                <label className="text-xs font-bold text-on-surface-variant">{tLessons('categoryAr')}</label>
                 <Input required value={categoryAr} onChange={(e) => setCategoryAr(e.target.value)} />
               </div>
             </div>
 
             <div className="space-y-1.5">
-              <label className="text-xs font-bold text-on-surface-variant">Memorization Verse (English)</label>
+              <label className="text-xs font-bold text-on-surface-variant">{tLessons('verseEn')}</label>
               <Input required value={verseEn} onChange={(e) => setVerseEn(e.target.value)} placeholder='e.g. "I can do all things..." — Philippians 4:13' />
             </div>
 
             <div className="space-y-1.5">
-              <label className="text-xs font-bold text-on-surface-variant">آية الحفظ (عربي)</label>
+              <label className="text-xs font-bold text-on-surface-variant">{tLessons('verseAr')}</label>
               <Input required value={verseAr} onChange={(e) => setVerseAr(e.target.value)} placeholder='مثال: «أَسْتَطِيعُ كُلَّ شَيْءٍ...» — فيلبي ٤:١٣' />
             </div>
 
             <div className="space-y-1.5">
-              <label className="text-xs font-bold text-on-surface-variant">Unlock Level Required</label>
+              <label className="text-xs font-bold text-on-surface-variant">{tLessons('unlockLevelReq')}</label>
               <Input type="number" min={1} max={15} required value={levelReq} onChange={(e) => setLevelReq(Number(e.target.value))} />
             </div>
 

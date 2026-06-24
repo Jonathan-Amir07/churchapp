@@ -49,7 +49,7 @@ export default function AdminClasses() {
   const handleCreate = (e: React.FormEvent) => {
     e.preventDefault();
     if (!nameEn || !nameAr) {
-      alert('Error: Please fill all fields!');
+      alert(tCommon('appName') !== 'JoyfulPath' ? 'خطأ: يرجى ملء جميع الحقول!' : 'Error: Please fill all fields!');
       return;
     }
 
@@ -136,18 +136,18 @@ export default function AdminClasses() {
           <form onSubmit={handleCreate} className="space-y-4 pt-2">
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="space-y-1.5">
-                <label className="text-xs font-bold text-on-surface-variant">Class Name (English)</label>
+                <label className="text-xs font-bold text-on-surface-variant">{tClasses('classNameEn')}</label>
                 <Input required value={nameEn} onChange={(e) => setNameEn(e.target.value)} placeholder="e.g. Primary Class A" />
               </div>
               <div className="space-y-1.5">
-                <label className="text-xs font-bold text-on-surface-variant">اسم الفصل (عربي)</label>
+                <label className="text-xs font-bold text-on-surface-variant">{tClasses('classNameAr')}</label>
                 <Input required value={nameAr} onChange={(e) => setNameAr(e.target.value)} placeholder="مثال: الفئة الابتدائية أ" />
               </div>
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="space-y-1.5">
-                <label className="text-xs font-bold text-on-surface-variant">Instructor (Servant)</label>
+                <label className="text-xs font-bold text-on-surface-variant">{tClasses('instructorLabel')}</label>
                 <select
                   value={instructorName}
                   onChange={(e) => setInstructorName(e.target.value)}
@@ -160,7 +160,7 @@ export default function AdminClasses() {
               </div>
 
               <div className="space-y-1.5">
-                <label className="text-xs font-bold text-on-surface-variant">Grade Level Parameter</label>
+                <label className="text-xs font-bold text-on-surface-variant">{tClasses('gradeLevelParam')}</label>
                 <select
                   value={gradeLevel}
                   onChange={(e) => setGradeLevel(e.target.value)}
@@ -178,7 +178,7 @@ export default function AdminClasses() {
                 {tCommon('cancel')}
               </Button>
               <Button variant="primary" size="sm" type="submit">
-                Create Class
+                {tClasses('createClassBtn')}
               </Button>
             </div>
           </form>

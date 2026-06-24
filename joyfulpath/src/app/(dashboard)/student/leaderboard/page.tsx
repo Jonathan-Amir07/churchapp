@@ -158,7 +158,7 @@ export default function StudentLeaderboard() {
               >
                 <span className="text-xl">{user.rank}</span>
                 <span className="text-[10px] uppercase opacity-85">
-                  Lvl {user.level}
+                  {tLeaderboard('lvl', { level: user.level })}
                 </span>
               </div>
             </div>
@@ -198,14 +198,14 @@ export default function StudentLeaderboard() {
                           {user.name}
                           {user.isCurrentUser && (
                             <span className="text-[10px] bg-primary text-on-primary px-1.5 py-0.5 rounded-full">
-                              You
+                              {tLeaderboard('you')}
                             </span>
                           )}
                         </span>
                       </div>
                     </td>
                     <td className="px-6 py-4 font-bold text-on-surface-variant">
-                      Lvl {user.level}
+                      {tLeaderboard('lvl', { level: user.level })}
                     </td>
                     <td className="px-6 py-4 font-bold text-on-surface-variant">
                       {user.badgesCount}

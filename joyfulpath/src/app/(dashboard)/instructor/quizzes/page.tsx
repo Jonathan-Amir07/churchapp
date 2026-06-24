@@ -36,6 +36,8 @@ export default function InstructorQuizzes() {
   const tNav = useTranslations('nav');
   const tQuizzes = useTranslations('quizzes');
   const tCommon = useTranslations('common');
+  const tLessons = useTranslations('lessons');
+  const tGamification = useTranslations('gamification');
 
   const [quizzes, setQuizzes] = useState<Quiz[]>(INITIAL_QUIZZES);
   const [isOpen, setIsOpen] = useState(false);
@@ -50,7 +52,7 @@ export default function InstructorQuizzes() {
   const handleCreate = (e: React.FormEvent) => {
     e.preventDefault();
     if (!titleEn || !titleAr) {
-      alert('Error: Please fill all fields!');
+      alert(tLessons('fillAllFields'));
       return;
     }
 
@@ -65,7 +67,7 @@ export default function InstructorQuizzes() {
 
     setQuizzes((prev) => [newQuiz, ...prev]);
     setIsOpen(false);
-    alert('Success! Quiz published successfully.');
+    alert(tQuizzes('publishSuccess'));
 
     // Reset Form
     setTitleEn('');
@@ -83,11 +85,11 @@ export default function InstructorQuizzes() {
             {tNav('quizzes')}
           </h1>
           <p className="text-on-surface-variant text-sm">
-            Configure quizzes, add question lists, and assign XP completion bounds.
+            {tQuizzes('instructorDescription')}
           </p>
         </div>
         <Button variant="primary" size="sm" onClick={() => setIsOpen(true)} icon="add" iconPosition="start">
-          Create Quiz
+          {tQuizzes('createQuizBtn')}
         </Button>
       </div>
 
@@ -102,7 +104,7 @@ export default function InstructorQuizzes() {
               <CardContent className="p-6 space-y-4">
                 <div className="flex justify-between items-start gap-4">
                   <span className="text-xs font-bold text-outline">
-                    Passing: {quiz.passingScore}%
+                    {tQuizzes('passingPercent', { score: quiz.passingScore })}
                   </span>
                   <div className="flex gap-3">
                     <span className="text-primary text-xs font-bold flex items-center gap-1">
@@ -111,7 +113,7 @@ export default function InstructorQuizzes() {
                     </span>
                     <span className="text-secondary text-xs font-bold flex items-center gap-1">
                       <span className="material-symbols-outlined text-[16px]">stars</span>
-                      +{quiz.points} pts
+                      +{quiz.points} {tGamification('points')}
                     </span>
                   </div>
                 </div>
@@ -143,30 +145,30 @@ export default function InstructorQuizzes() {
 
       {/* Creation Modal */}
       {isOpen && (
-        <Modal isOpen={true} onClose={() => setIsOpen(false)} title="Create Quiz">
+        <Modal isOpen={true} onClose={() => setIsOpen(false)} title={tQuizzes('createQuizBtn')}>
           <form onSubmit={handleCreate} className="space-y-4 pt-2">
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="space-y-1.5">
-                <label className="text-xs font-bold text-on-surface-variant">Quiz Title (English)</label>
+                <label className="text-xs font-bold text-on-surface-variant">{tQuizzes('titleEn')}</label>
                 <Input required value={titleEn} onChange={(e) => setTitleEn(e.target.value)} placeholder="e.g. Genesis Quiz" />
               </div>
               <div className="space-y-1.5">
-                <label className="text-xs font-bold text-on-surface-variant">عنوان الاختبار (عربي)</label>
+                <label className="text-xs font-bold text-on-surface-variant">{tQuizzes('titleAr')}</label>
                 <Input required value={titleAr} onChange={(e) => setTitleAr(e.target.value)} placeholder="مثال: اختبار التكوين" />
               </div>
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
               <div className="space-y-1.5">
-                <label className="text-xs font-bold text-on-surface-variant">Passing Score (%)</label>
+                <label className="text-xs font-bold text-on-surface-variant">{tQuizzes('passingScoreLabel')}</label>
                 <Input type="number" min={50} max={100} required value={passingScore} onChange={(e) => setPassingScore(Number(e.target.value))} />
               </div>
               <div className="space-y-1.5">
-                <label className="text-xs font-bold text-on-surface-variant">XP Reward</label>
+                <label className="text-xs font-bold text-on-surface-variant">{tQuizzes('xpReward')}</label>
                 <Input type="number" min={10} max={500} required value={xp} onChange={(e) => setXp(Number(e.target.value))} />
               </div>
               <div className="space-y-1.5">
-                <label className="text-xs font-bold text-on-surface-variant">Points Reward</label>
+                <label className="text-xs font-bold text-on-surface-variant">{tQuizzes('pointsReward')}</label>
                 <Input type="number" min={5} max={100} required value={points} onChange={(e) => setPoints(Number(e.target.value))} />
               </div>
             </div>
@@ -176,7 +178,7 @@ export default function InstructorQuizzes() {
                 {tCommon('cancel')}
               </Button>
               <Button variant="primary" size="sm" type="submit">
-                Create & Add Questions
+                {tQuizzes('createAddQuestions')}
               </Button>
             </div>
           </form>

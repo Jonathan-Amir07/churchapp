@@ -42,13 +42,13 @@ export default function AdminSettings() {
         {/* Toggle Preferences Card */}
         <Card className="border border-outline-variant bg-surface-container-lowest shadow-sm">
           <CardHeader>
-            <CardTitle className="text-lg font-black">Feature Preferences</CardTitle>
+            <CardTitle className="text-lg font-black">{tSettings('featurePreferences')}</CardTitle>
           </CardHeader>
           <CardContent className="p-6 pt-0 space-y-4">
             <div className="flex items-center justify-between p-4 bg-surface-container rounded-xl border border-outline-variant/60">
               <div className="space-y-0.5">
                 <p className="text-sm font-extrabold text-on-surface">{tSettings('maintenanceMode')}</p>
-                <p className="text-xs text-on-surface-variant">Temporarily disable platform access for students.</p>
+                <p className="text-xs text-on-surface-variant">{tSettings('maintenanceSub')}</p>
               </div>
               <input
                 type="checkbox"
@@ -61,7 +61,7 @@ export default function AdminSettings() {
             <div className="flex items-center justify-between p-4 bg-surface-container rounded-xl border border-outline-variant/60">
               <div className="space-y-0.5">
                 <p className="text-sm font-extrabold text-on-surface">{tSettings('allowRegistrations')}</p>
-                <p className="text-xs text-on-surface-variant">Allow new students to sign up from the login page.</p>
+                <p className="text-xs text-on-surface-variant">{tSettings('allowRegistrationsSub')}</p>
               </div>
               <input
                 type="checkbox"
@@ -76,7 +76,7 @@ export default function AdminSettings() {
         {/* Global Multipliers Card */}
         <Card className="border border-outline-variant bg-surface-container-lowest shadow-sm">
           <CardHeader>
-            <CardTitle className="text-lg font-black">Gamification Multipliers</CardTitle>
+            <CardTitle className="text-lg font-black">{tSettings('gamificationMultipliers')}</CardTitle>
           </CardHeader>
           <CardContent className="p-6 pt-0">
             <div className="max-w-xs space-y-1.5">
@@ -96,7 +96,7 @@ export default function AdminSettings() {
         {/* Actions panel */}
         <Card className="border border-outline-variant bg-surface-container-lowest shadow-sm">
           <CardHeader>
-            <CardTitle className="text-lg font-black">System Maintenance Actions</CardTitle>
+            <CardTitle className="text-lg font-black">{tSettings('maintenanceActions')}</CardTitle>
           </CardHeader>
           <CardContent className="p-6 pt-0 flex gap-4 flex-wrap">
             <Button

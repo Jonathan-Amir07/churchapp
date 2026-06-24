@@ -88,7 +88,20 @@
     "verses": "آيات الحفظ",
     "publish": "نشر الدرس",
     "noLessons": "لا توجد دروس نشطة حالياً.",
-    "addSuccess": "تمت إضافة الدرس بنجاح!"
+    "addSuccess": "تمت إضافة الدرس بنجاح!",
+    "requiresLevel": "يتطلب مستوى {level}",
+    "category": "الفئة",
+    "reqLevelLabel": "المستوى المطلوب: {level}",
+    "completeSuccess": "تم بنجاح! لقد أكملت الدرس وحصلت على +{xp} نقطة خبرة و +{points} نقاط!",
+    "instructorDescription": "نشر وتعديل وإدارة دروس دراسة الكتاب المقدس للفصل الدراسي المخصص لك.",
+    "titleEn": "عنوان الدرس (بالإنجليزي)",
+    "titleAr": "عنوان الدرس (بالعربي)",
+    "categoryEn": "الفئة (بالإنجليزي)",
+    "categoryAr": "الفئة (بالعربي)",
+    "verseEn": "آية الحفظ (بالإنجليزي)",
+    "verseAr": "آية الحفظ (بالعربي)",
+    "unlockLevelReq": "المستوى المطلوب لفتح الدرس",
+    "fillAllFields": "خطأ: يرجى ملء جميع الحقول!"
   },
   "leaderboard": {
     "championHall": "قاعة الأبطال",
@@ -98,7 +111,9 @@
     "allTime": "كل الأوقات",
     "explorersRank": "ترتيب المستكشفين",
     "activeStudents": "{count} طالب نشط",
-    "keepGoing": "استمر!"
+    "keepGoing": "استمر!",
+    "you": "أنت",
+    "lvl": "مستوى {level}"
   },
   "gamification": {
     "xp": "خبرة",
@@ -125,7 +140,17 @@
     "grade": "تقييم المهمة",
     "reviewPending": "المهام المعلقة للمراجعة",
     "noPending": "رائع! لا توجد مهام تحتاج للتقييم حالياً.",
-    "taskName": "اسم المهمة"
+    "taskName": "اسم المهمة",
+    "submitSuccess": "تم بنجاح! تم تسليم المهمة وهي قيد المراجعة حالياً.",
+    "instructorDescription": "مراجعة وتقديم الملاحظات وتقييم الواجبات المقدمة من طلاب الفصل.",
+    "submittedAt": "تاريخ التسليم: {time}",
+    "approveSuccess": "تم قبول المهمة بنجاح! تم مكافأة الطالب بالنقاط.",
+    "rejectSuccess": "تم إرجاع المهمة للمراجعة مع إرسال الملاحظات.",
+    "studentNameLabel": "الطالب: {name}",
+    "rewardLabel": "المكافأة: +{points} نقاط",
+    "studentSubmission": "تسليم الطالب:",
+    "rejectBtn": "رفض وطلب تعديل",
+    "approveBtn": "قبول ومكافأة"
   },
   "quizzes": {
     "title": "الاختبارات",
@@ -145,7 +170,17 @@
     "question": "سؤال",
     "nextQuestion": "السؤال التالي",
     "submitQuiz": "تسليم الاختبار",
-    "noQuizzes": "لا توجد اختبارات متاحة حالياً."
+    "noQuizzes": "لا توجد اختبارات متاحة حالياً.",
+    "instructorDescription": "إعداد الاختبارات وإضافة الأسئلة وتحديد نقاط الخبرة (XP) والمكافآت.",
+    "createQuizBtn": "إنشاء اختبار",
+    "passingPercent": "درجة النجاح: {score}%",
+    "titleEn": "عنوان الاختبار (بالإنجليزي)",
+    "titleAr": "عنوان الاختبار (بالعربي)",
+    "passingScoreLabel": "نسبة النجاح (%)",
+    "xpReward": "مكافأة الخبرة (XP)",
+    "pointsReward": "مكافأة النقاط",
+    "createAddQuestions": "إنشاء وإضافة الأسئلة",
+    "publishSuccess": "تم بنجاح! تم نشر الاختبار بنجاح."
   },
   "attendance": {
     "title": "حضور الصف",
@@ -167,7 +202,14 @@
     "xpRange": "الخبرة: {xp}",
     "badgesCount": "{count} شارات",
     "levelName": "المستوى {level}",
-    "lastActive": "آخر نشاط: {time}"
+    "lastActive": "آخر نشاط: {time}",
+    "awardRewardsBtn": "منح مكافآت",
+    "awardTitle": "منح مكافآت لـ: {name}",
+    "xpToAward": "نقاط الخبرة الممنوحة",
+    "pointsToAward": "النقاط الممنوحة",
+    "reason": "السبب / الإنجاز",
+    "awardNow": "منح الآن",
+    "awardSuccess": "تم بنجاح! تم منح +{xp} خبرة و +{points} نقاط لـ {name}."
   },
   "users": {
     "title": "دليل المستخدمين",
@@ -183,7 +225,15 @@
     "importCsv": "استيراد جماعي عبر CSV",
     "dragDrop": "اسحب وأسقط ملف CSV هنا، أو انقر للتصفح",
     "importSuccess": "تم استيراد المستخدمين بنجاح!",
-    "addSuccess": "تمت إضافة المستخدم بنجاح!"
+    "addSuccess": "تمت إضافة المستخدم بنجاح!",
+    "csvImport": "استيراد CSV",
+    "registerUser": "تسجيل مستخدم",
+    "securityPin": "رمز PIN الحماية (4 أرقام)",
+    "studentRole": "طالب",
+    "instructorRole": "معلم (خادم)",
+    "adminRole": "مسؤول النظام",
+    "delete": "حذف",
+    "mockImport": "محاكاة رفع الملف"
   },
   "classes": {
     "title": "تكوين الفصول الدراسية",
@@ -193,7 +243,15 @@
     "instructor": "الخادم / المعلم",
     "studentsCount": "الطلاب: {count}",
     "gradeLevel": "الصف الدراسي",
-    "saveSuccess": "تم حفظ الفصل بنجاح!"
+    "saveSuccess": "تم حفظ الفصل بنجاح!",
+    "grades1to3": "الصفوف ١-٣",
+    "grades4to6": "الصفوف ٤-٦",
+    "seniors": "المرحلة الإعدادية فما فوق",
+    "classNameEn": "اسم الفصل (بالإنجليزي)",
+    "classNameAr": "اسم الفصل (بالعربي)",
+    "instructorLabel": "الخادم المعين",
+    "gradeLevelParam": "فئة الصف الدراسي",
+    "createClassBtn": "إنشاء الفصل"
   },
   "rewards": {
     "title": "متجر المكافآت",
@@ -206,7 +264,13 @@
     "addItem": "إضافة مكافأة جديدة",
     "itemName": "اسم المكافأة",
     "itemCost": "التكلفة بالنقاط",
-    "itemStock": "الكمية بالمخزن"
+    "itemStock": "الكمية بالمخزن",
+    "itemNameEn": "اسم المكافأة (بالإنجليزي)",
+    "itemNameAr": "اسم المكافأة (بالعربي)",
+    "materialIcon": "أيقونة الرمز",
+    "createItemBtn": "إضافة الجائزة",
+    "stockLabel": "المخزن: {stock}",
+    "addSuccess": "تم بنجاح! تمت إضافة المكافأة بنجاح."
   },
   "analytics": {
     "title": "لوحة التحليلات",
@@ -214,7 +278,10 @@
     "activeUsers": "المستخدمون النشطون أسبوعياً",
     "completionRate": "معدل إكمال المهام",
     "topCategories": "أعلى الفئات",
-    "attendanceAverage": "متوسط الحضور"
+    "attendanceAverage": "متوسط الحضور",
+    "totalPointsRedeemed": "إجمالي النقاط المستبدلة",
+    "submissionProgress": "تقدم تسليمات الصفوف",
+    "percentCompleted": "مكتمل بنسبة {value}%"
   },
   "settings": {
     "title": "إعدادات النظام",
@@ -225,6 +292,30 @@
     "backupDb": "نسخ احتياطي لقاعدة البيانات",
     "backupSuccess": "تم عمل نسخة احتياطية لقاعدة البيانات بنجاح!",
     "saveSettings": "حفظ الإعدادات",
-    "settingsSaved": "تم حفظ الإعدادات بنجاح!"
+    "settingsSaved": "تم حفظ الإعدادات بنجاح!",
+    "featurePreferences": "تفضيلات الميزات",
+    "gamificationMultipliers": "مضاعفات اللعبنة",
+    "maintenanceActions": "إجراءات صيانة النظام",
+    "maintenanceSub": "تعطيل دخول الطلاب للمنصة مؤقتاً.",
+    "allowRegistrationsSub": "السماح للطلاب الجدد بالتسجيل الذاتي."
+  },
+  "badges": {
+    "description": "تتبع إنجازاتك ومعالمك. افتح شارات خاصة أثناء تقدمك!",
+    "locked": "مغلق",
+    "unlockedOn": "تم الفتح في: {date}"
+  },
+  "profile": {
+    "description": "إدارة تفاصيل حسابك الشخصي، وتغيير رمز PIN، ومتابعة إحصائياتك العامة.",
+    "displayName": "اسم العرض",
+    "changePin": "تغيير رمز PIN الحماية",
+    "currentPin": "رمز PIN الحالي",
+    "newPin": "رمز PIN الجديد",
+    "confirmNewPin": "تأكيد رمز PIN الجديد",
+    "changePinBtn": "تغيير رمز PIN",
+    "fillAllPin": "خطأ: يرجى ملء جميع حقول رمز PIN!",
+    "pinMustBeFour": "خطأ: يجب أن يتكون رمز PIN من 4 أرقام!",
+    "pinNotMatch": "خطأ: رمز PIN الجديد وتأكيد رمز PIN غير متطابقين!",
+    "pinChangeSuccess": "تم بنجاح! تم تغيير رمز PIN الخاص بك بنجاح.",
+    "profileUpdateSuccess": "تم بنجاح! تم تحديث الملف الشخصي بنجاح."
   }
 }

@@ -87,7 +87,7 @@ export default function AdminUsers() {
         </div>
         <div className="flex gap-2.5">
           <Button variant="outline" size="sm" onClick={() => setIsOpenImport(true)} icon="upload" iconPosition="start">
-            CSV Import
+            {tUsers('csvImport')}
           </Button>
           <Button variant="primary" size="sm" onClick={() => setIsOpenAdd(true)} icon="person_add" iconPosition="start">
             {tUsers('addUser')}
@@ -138,7 +138,7 @@ export default function AdminUsers() {
                   <th className="px-6 py-4 text-start">{tCommon('appName') === 'JoyfulPath' ? 'Name' : 'الاسم'}</th>
                   <th className="px-6 py-4 text-start">{tCommon('appName') === 'JoyfulPath' ? 'Login Credential' : 'اسم الدخول'}</th>
                   <th className="px-6 py-4 text-start">{tCommon('appName') === 'JoyfulPath' ? 'Role' : 'الصلاحية'}</th>
-                  <th className="px-6 py-4 text-end">Action</th>
+                  <th className="px-6 py-4 text-end">{tCommon('appName') !== 'JoyfulPath' ? 'العملية' : 'Action'}</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-outline-variant/40">
@@ -162,7 +162,7 @@ export default function AdminUsers() {
                     </td>
                     <td className="px-6 py-4 text-end">
                       <Button variant="ghost" size="sm" className="h-9 px-3 text-xs text-error hover:bg-error/5 hover:text-error border-none">
-                        Delete
+                        {tUsers('delete')}
                       </Button>
                     </td>
                   </tr>
@@ -189,22 +189,22 @@ export default function AdminUsers() {
                 onChange={(e) => setRole(e.target.value as any)}
                 className="h-12 w-full px-3 rounded-xl border border-outline-variant bg-surface-container-low text-on-surface focus:outline-none focus:border-primary text-sm font-medium"
               >
-                <option value="student">Student</option>
-                <option value="instructor">Instructor (Servant)</option>
-                <option value="admin">Administrator</option>
+                <option value="student">{tUsers('studentRole')}</option>
+                <option value="instructor">{tUsers('instructorRole')}</option>
+                <option value="admin">{tUsers('adminRole')}</option>
               </select>
             </div>
 
             <div className="space-y-1.5">
               <label className="text-xs font-bold text-on-surface-variant">
-                {role === 'student' ? 'Username' : 'Email Address'}
+                {role === 'student' ? tUsers('username') : tUsers('email')}
               </label>
               <Input required value={usernameOrEmail} onChange={(e) => setUsernameOrEmail(e.target.value)} placeholder={role === 'student' ? 'david_king' : 'david@joyfulpath.org'} />
             </div>
 
             <div className="space-y-1.5">
               <label className="text-xs font-bold text-on-surface-variant">
-                {role === 'student' ? 'Security PIN (4 digits)' : 'Password'}
+                {role === 'student' ? tUsers('securityPin') : tUsers('password')}
               </label>
               <Input
                 required
@@ -220,7 +220,7 @@ export default function AdminUsers() {
                 {tCommon('cancel')}
               </Button>
               <Button variant="primary" size="sm" type="submit">
-                Register User
+                {tUsers('registerUser')}
               </Button>
             </div>
           </form>
@@ -241,7 +241,7 @@ export default function AdminUsers() {
                 {tCommon('cancel')}
               </Button>
               <Button variant="primary" size="sm" onClick={handleImportCsv}>
-                Mock Import Upload
+                {tUsers('mockImport')}
               </Button>
             </div>
           </div>

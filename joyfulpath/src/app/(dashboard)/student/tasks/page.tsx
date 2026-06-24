@@ -84,7 +84,7 @@ export default function StudentTasks() {
       )
     );
     setSelectedTask(null);
-    alert('Success! Your task has been submitted and is pending review.');
+    alert(tTasks('submitSuccess'));
   };
 
   return (

@@ -50,8 +50,8 @@ export default function InstructorTasks() {
     setFeedback('');
     alert(
       approved
-        ? `Task approved successfully! Student rewarded with points.`
-        : `Task sent back for revision with feedback.`
+        ? tTasks('approveSuccess')
+        : tTasks('rejectSuccess')
     );
   };
 
@@ -62,7 +62,7 @@ export default function InstructorTasks() {
           {tTasks('reviewPending')}
         </h1>
         <p className="text-on-surface-variant text-sm max-w-2xl">
-          Review, provide feedback, and grade the assignments submitted by your class students.
+          {tTasks('instructorDescription')}
         </p>
       </div>
 
@@ -80,7 +80,7 @@ export default function InstructorTasks() {
                       {sub.studentName}
                     </span>
                     <span className="text-xs font-bold text-outline">
-                      Submitted: {new Date(sub.submittedAt).toLocaleTimeString()}
+                      {tTasks('submittedAt', { time: new Date(sub.submittedAt).toLocaleTimeString() })}
                     </span>
                   </div>
 
@@ -118,8 +118,8 @@ export default function InstructorTasks() {
           <div className="space-y-6 pt-2">
             <div className="space-y-2">
               <div className="flex justify-between items-center text-xs font-bold text-outline">
-                <span>Student: {selectedSub.studentName}</span>
-                <span>Reward: +{selectedSub.points} pts</span>
+                <span>{tTasks('studentNameLabel', { name: selectedSub.studentName })}</span>
+                <span>{tTasks('rewardLabel', { points: selectedSub.points })}</span>
               </div>
               <h4 className="text-sm font-black text-on-surface">
                 {tCommon('appName') !== 'JoyfulPath' ? selectedSub.taskTitleAr : selectedSub.taskTitleEn}
@@ -127,7 +127,7 @@ export default function InstructorTasks() {
             </div>
 
             <div className="p-4 bg-surface-container rounded-xl border border-outline-variant/60">
-              <p className="text-xs font-bold text-on-surface-variant mb-1">Student Submission:</p>
+              <p className="text-xs font-bold text-on-surface-variant mb-1">{tTasks('studentSubmission')}</p>
               <p className="text-sm text-on-surface leading-relaxed whitespace-pre-line">
                 {selectedSub.submissionText}
               </p>
@@ -151,10 +151,10 @@ export default function InstructorTasks() {
                 {tCommon('cancel')}
               </Button>
               <Button variant="danger" size="sm" onClick={() => handleReview(selectedSub.id, false)}>
-                Reject & Revise
+                {tTasks('rejectBtn')}
               </Button>
               <Button variant="success" size="sm" onClick={() => handleReview(selectedSub.id, true)}>
-                Approve & Reward
+                {tTasks('approveBtn')}
               </Button>
             </div>
           </div>
