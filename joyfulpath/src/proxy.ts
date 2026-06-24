@@ -7,18 +7,15 @@ import { NextResponse } from 'next/server';
 const intlMiddleware = createMiddleware({
   locales,
   defaultLocale,
-  localePrefix: 'as-needed',
+  localePrefix: 'never',
 });
 
 const { auth } = NextAuth(authConfig);
 
 export default auth((req: any) => {
   const pathname = req.nextUrl.pathname;
-  const segments = pathname.split('/');
-  const possibleLocale = segments[1];
-  const hasLocale = ['en', 'ar'].includes(possibleLocale);
-  const basePath = hasLocale ? '/' + segments.slice(2).join('/') : pathname;
-  const locale = hasLocale ? possibleLocale : 'en';
+  const locale = req.cookies.get('NEXT_LOCALE')?.value || defaultLocale;
+  const basePath = pathname;
 
   const isAuth = !!req.auth;
   const userRole = req.auth?.user?.role;
@@ -32,8 +29,7 @@ export default auth((req: any) => {
         ? `/instructor/dashboard`
         : `/student/dashboard`;
 
-    const finalPath = locale === 'en' ? redirectPath : `/${locale}${redirectPath}`;
-    return NextResponse.redirect(new URL(finalPath, req.url));
+    return NextResponse.redirect(new URL(redirectPath, req.url));
   }
 
   // 2. Protect routes
@@ -43,26 +39,22 @@ export default auth((req: any) => {
 
   if (isAdminRoute || isInstructorRoute || isStudentRoute) {
     if (!isAuth) {
-      const loginPath = locale === 'en' ? '/login' : `/${locale}/login`;
-      return NextResponse.redirect(new URL(loginPath, req.url));
+      return NextResponse.redirect(new URL('/login', req.url));
     }
 
     // Check role authorization
     if (isAdminRoute && userRole !== 'admin') {
       const dashboardPath = userRole === 'instructor' ? '/instructor/dashboard' : '/student/dashboard';
-      const finalPath = locale === 'en' ? dashboardPath : `/${locale}${dashboardPath}`;
-      return NextResponse.redirect(new URL(finalPath, req.url));
+      return NextResponse.redirect(new URL(dashboardPath, req.url));
     }
 
     if (isInstructorRoute && userRole !== 'instructor' && userRole !== 'admin') {
       const dashboardPath = userRole === 'admin' ? '/admin/dashboard' : '/student/dashboard';
-      const finalPath = locale === 'en' ? dashboardPath : `/${locale}${dashboardPath}`;
-      return NextResponse.redirect(new URL(finalPath, req.url));
+      return NextResponse.redirect(new URL(dashboardPath, req.url));
     }
 
     if (isStudentRoute && userRole !== 'student' && userRole !== 'instructor' && userRole !== 'admin') {
-      const loginPath = locale === 'en' ? '/login' : `/${locale}/login`;
-      return NextResponse.redirect(new URL(loginPath, req.url));
+      return NextResponse.redirect(new URL('/login', req.url));
     }
   }
 

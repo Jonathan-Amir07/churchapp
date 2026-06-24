@@ -26,16 +26,8 @@ export default function LoginPage() {
   // Switch locale helper
   const handleLocaleSwitch = () => {
     const nextLocale = currentLocale === 'en' ? 'ar' : 'en';
-    const currentPath = window.location.pathname;
-    const segments = currentPath.split('/');
-    if (['en', 'ar'].includes(segments[1])) {
-      segments[1] = nextLocale;
-    } else {
-      if (nextLocale !== 'en') {
-        segments.splice(1, 0, nextLocale);
-      }
-    }
-    window.location.href = segments.join('/');
+    document.cookie = `NEXT_LOCALE=${nextLocale};max-age=31536000;path=/`;
+    window.location.reload();
   };
 
   // Submit handler
