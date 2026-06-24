@@ -1,4 +1,5 @@
 import { PrismaClient } from '@prisma/client';
+import bcrypt from 'bcryptjs';
 
 const prisma = new PrismaClient();
 
@@ -151,6 +152,69 @@ async function main() {
     }
   }
   console.log(`Upserted ${badges.length} badges.`);
+
+  // 3. Seed Bootstrap Users
+  console.log('Seeding bootstrap users...');
+  const adminPasswordHash = await bcrypt.hash('admin123', 10);
+  const servantPasswordHash = await bcrypt.hash('servant123', 10);
+  const studentPinHash = await bcrypt.hash('1234', 10);
+
+  // Admin
+  const adminUser = await prisma.user.findFirst({
+    where: { email: 'admin@joyfulpath.org' },
+  });
+  if (!adminUser) {
+    await prisma.user.create({
+      data: {
+        email: 'admin@joyfulpath.org',
+        passwordHash: adminPasswordHash,
+        firstName: 'System',
+        lastName: 'Admin',
+        displayName: 'System Admin',
+        role: 'admin',
+        locale: 'en',
+      },
+    });
+  }
+
+  // Instructor
+  const servantUser = await prisma.user.findFirst({
+    where: { email: 'servant@joyfulpath.org' },
+  });
+  if (!servantUser) {
+    await prisma.user.create({
+      data: {
+        email: 'servant@joyfulpath.org',
+        passwordHash: servantPasswordHash,
+        firstName: 'Class',
+        lastName: 'Servant',
+        displayName: 'Class Servant',
+        role: 'instructor',
+        locale: 'en',
+      },
+    });
+  }
+
+  // Student
+  const studentUser = await prisma.user.findFirst({
+    where: { username: 'explorer' },
+  });
+  if (!studentUser) {
+    await prisma.user.create({
+      data: {
+        username: 'explorer',
+        passwordHash: '', // Unused for student
+        pinHash: studentPinHash,
+        firstName: 'Young',
+        lastName: 'Explorer',
+        displayName: 'Young Explorer',
+        role: 'student',
+        locale: 'en',
+        totalXp: 0,
+        totalPoints: 0,
+      },
+    });
+  }
   console.log('Seeding completed successfully!');
 }
 
