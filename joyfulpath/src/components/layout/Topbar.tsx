@@ -4,6 +4,7 @@ import { useSession, signOut } from 'next-auth/react';
 import { useTranslations, useLocale } from 'next-intl';
 import { Button, Avatar, BadgeTag } from '@/components/ui';
 import { formatXP, formatPoints } from '@/lib/utils';
+import { useAppStore } from '@/stores/app.store';
 
 export function Topbar() {
   const { data: session } = useSession();
@@ -11,6 +12,7 @@ export function Topbar() {
   const tAuth = useTranslations('auth');
   const tGamification = useTranslations('gamification');
   const currentLocale = useLocale();
+  const { xp, points } = useAppStore();
 
   const handleLocaleSwitch = () => {
     const nextLocale = currentLocale === 'en' ? 'ar' : 'en';
@@ -24,6 +26,9 @@ export function Topbar() {
 
   const user = session?.user;
   const isStudent = user?.role === 'student';
+  
+  const dynamicXP = isStudent ? xp : (user?.totalXp || 0);
+  const dynamicPoints = isStudent ? points : (user?.totalPoints || 0);
 
   return (
     <header className="h-16 bg-surface-container-lowest border-b border-outline-variant flex items-center justify-between px-4 md:px-8 sticky top-0 z-20 shadow-sm">
@@ -48,7 +53,7 @@ export function Topbar() {
               <span className="material-symbols-outlined text-[18px] text-primary" style={{ fontVariationSettings: "'FILL' 1" }}>
                 insights
               </span>
-              <span>{formatXP(user.totalXp)} {tCommon('appName') !== 'JoyfulPath' ? 'XP' : 'XP'}</span>
+              <span>{formatXP(dynamicXP)} {tCommon('appName') !== 'JoyfulPath' ? 'XP' : 'XP'}</span>
             </div>
             
             <div className="w-[1px] h-4 bg-outline-variant/60" />
@@ -58,7 +63,7 @@ export function Topbar() {
               <span className="material-symbols-outlined text-[18px] text-secondary" style={{ fontVariationSettings: "'FILL' 1" }}>
                 stars
               </span>
-              <span>{user.totalPoints.toLocaleString()} {tGamification('points')}</span>
+              <span>{dynamicPoints.toLocaleString()} {tGamification('points')}</span>
             </div>
           </div>
         )}

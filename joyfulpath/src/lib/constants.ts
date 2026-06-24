@@ -23,6 +23,10 @@ export const NAV_ITEMS = {
     { key: 'lessons', icon: 'menu_book', href: '/student/lessons' },
     { key: 'tasks', icon: 'task_alt', href: '/student/tasks' },
     { key: 'quizzes', icon: 'quiz', href: '/student/quizzes' },
+    { key: 'games', icon: 'sports_esports', href: '/student/games' },
+    { key: 'challenges', icon: 'explore', href: '/student/challenges' },
+    { key: 'store', icon: 'shopping_bag', href: '/student/store' },
+    { key: 'prayers', icon: 'volunteer_activism', href: '/student/prayers' },
     { key: 'leaderboard', icon: 'leaderboard', href: '/student/leaderboard' },
     { key: 'badges', icon: 'military_tech', href: '/student/badges' },
     { key: 'profile', icon: 'person', href: '/student/profile' },
@@ -33,6 +37,7 @@ export const NAV_ITEMS = {
     { key: 'tasks', icon: 'task_alt', href: '/instructor/tasks' },
     { key: 'quizzes', icon: 'quiz', href: '/instructor/quizzes' },
     { key: 'attendance', icon: 'event_available', href: '/instructor/attendance' },
+    { key: 'prayers', icon: 'volunteer_activism', href: '/instructor/prayers' },
     { key: 'students', icon: 'groups', href: '/instructor/students' },
   ],
   admin: [
