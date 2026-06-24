@@ -9,6 +9,7 @@ export function Topbar() {
   const { data: session } = useSession();
   const tCommon = useTranslations('common');
   const tAuth = useTranslations('auth');
+  const tGamification = useTranslations('gamification');
   const currentLocale = useLocale();
 
   const handleLocaleSwitch = () => {
@@ -57,7 +58,7 @@ export function Topbar() {
               <span className="material-symbols-outlined text-[18px] text-secondary" style={{ fontVariationSettings: "'FILL' 1" }}>
                 stars
               </span>
-              <span>{formatPoints(user.totalPoints)}</span>
+              <span>{user.totalPoints.toLocaleString()} {tGamification('points')}</span>
             </div>
           </div>
         )}
