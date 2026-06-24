@@ -153,68 +153,75 @@ async function main() {
   }
   console.log(`Upserted ${badges.length} badges.`);
 
-  // 3. Seed Bootstrap Users
-  console.log('Seeding bootstrap users...');
+  // 3. Seed Users (10 Admins, 3 Instructors, 3 Students)
+  console.log('Seeding testing users...');
   const adminPasswordHash = await bcrypt.hash('admin123', 10);
   const servantPasswordHash = await bcrypt.hash('servant123', 10);
   const studentPinHash = await bcrypt.hash('1234', 10);
 
-  // Admin
-  const adminUser = await prisma.user.findFirst({
-    where: { email: 'admin@joyfulpath.org' },
-  });
-  if (!adminUser) {
-    await prisma.user.create({
-      data: {
-        email: 'admin@joyfulpath.org',
-        passwordHash: adminPasswordHash,
-        firstName: 'System',
-        lastName: 'Admin',
-        displayName: 'System Admin',
-        role: 'admin',
-        locale: 'en',
-      },
-    });
+  // 10 Admins
+  const numberNames = ['One', 'Two', 'Three', 'Four', 'Five', 'Six', 'Seven', 'Eight', 'Nine', 'Ten'];
+  for (let i = 1; i <= 10; i++) {
+    const email = `admin${i}@joyfulpath.org`;
+    const existing = await prisma.user.findFirst({ where: { email } });
+    if (!existing) {
+      await prisma.user.create({
+        data: {
+          email,
+          passwordHash: adminPasswordHash,
+          firstName: 'Admin',
+          lastName: numberNames[i - 1],
+          displayName: `Admin ${numberNames[i - 1]}`,
+          role: 'admin',
+          locale: 'en',
+        },
+      });
+    }
   }
+  console.log('Upserted 10 Admin users.');
 
-  // Instructor
-  const servantUser = await prisma.user.findFirst({
-    where: { email: 'servant@joyfulpath.org' },
-  });
-  if (!servantUser) {
-    await prisma.user.create({
-      data: {
-        email: 'servant@joyfulpath.org',
-        passwordHash: servantPasswordHash,
-        firstName: 'Class',
-        lastName: 'Servant',
-        displayName: 'Class Servant',
-        role: 'instructor',
-        locale: 'en',
-      },
-    });
+  // 3 Instructors
+  for (let i = 1; i <= 3; i++) {
+    const email = `instructor${i}@joyfulpath.org`;
+    const existing = await prisma.user.findFirst({ where: { email } });
+    if (!existing) {
+      await prisma.user.create({
+        data: {
+          email,
+          passwordHash: servantPasswordHash,
+          firstName: 'Instructor',
+          lastName: numberNames[i - 1],
+          displayName: `Instructor ${numberNames[i - 1]}`,
+          role: 'instructor',
+          locale: 'en',
+        },
+      });
+    }
   }
+  console.log('Upserted 3 Instructor users.');
 
-  // Student
-  const studentUser = await prisma.user.findFirst({
-    where: { username: 'explorer' },
-  });
-  if (!studentUser) {
-    await prisma.user.create({
-      data: {
-        username: 'explorer',
-        passwordHash: '', // Unused for student
-        pinHash: studentPinHash,
-        firstName: 'Young',
-        lastName: 'Explorer',
-        displayName: 'Young Explorer',
-        role: 'student',
-        locale: 'en',
-        totalXp: 0,
-        totalPoints: 0,
-      },
-    });
+  // 3 Students
+  for (let i = 1; i <= 3; i++) {
+    const username = `student${i}`;
+    const existing = await prisma.user.findFirst({ where: { username } });
+    if (!existing) {
+      await prisma.user.create({
+        data: {
+          username,
+          passwordHash: '', // Unused for student
+          pinHash: studentPinHash,
+          firstName: 'Student',
+          lastName: numberNames[i - 1],
+          displayName: `Student ${numberNames[i - 1]}`,
+          role: 'student',
+          locale: 'en',
+          totalXp: 0,
+          totalPoints: 0,
+        },
+      });
+    }
   }
+  console.log('Upserted 3 Student users.');
   console.log('Seeding completed successfully!');
 }
 
