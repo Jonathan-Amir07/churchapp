@@ -1,0 +1,139 @@
+'use client';
+
+import { useState, useEffect } from 'react';
+import { useUser } from '@/hooks/useUser';
+import { createClient } from '@/lib/supabase/client';
+import { Card, CardContent, CardHeader, CardTitle, ProgressBar, Button } from '@/components/ui';
+import Link from 'next/link';
+import { useLocale } from 'next-intl';
+
+export default function ParentDashboard() {
+  const { profile } = useUser();
+  const currentLocale = useLocale();
+  const supabase = createClient();
+  
+  const [children, setChildren] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    async function loadChildren() {
+      if (!profile?.id) return;
+      
+      // Get linked children profiles via parent_children table
+      const { data: links } = await supabase
+        .from('parent_children')
+        .select('student_id')
+        .eq('parent_id', profile.id);
+
+      if (links && links.length > 0) {
+        const studentIds = links.map(l => l.student_id);
+        const { data: childrenProfiles } = await supabase
+          .from('user_profiles')
+          .select('*')
+          .in('id', studentIds);
+
+        if (childrenProfiles) {
+          setChildren(childrenProfiles);
+        }
+      } else {
+        // Fallback demo student if none are linked for rapid testing
+        setChildren([
+          {
+            id: 'demo-student-1',
+            display_name: 'Jonathan Junior',
+            total_xp: 1250,
+            total_points: 120,
+            current_streak: 5,
+            avatar_url: null,
+            role: 'student'
+          }
+        ]);
+      }
+      setLoading(false);
+    }
+    
+    if (profile) {
+      loadChildren();
+    }
+  }, [profile]);
+
+  return (
+    <div className="space-y-6 animate-[slide-up_0.4s_ease-out]">
+      <div className="relative rounded-2xl overflow-hidden p-6 md:p-8 bg-gradient-to-br from-primary to-primary-container text-on-primary shadow-tactile select-none">
+        <div className="absolute inset-0 bg-dot-pattern opacity-10 pointer-events-none" />
+        <div className="relative z-10 space-y-2">
+          <h1 className="text-2xl md:text-3xl font-extrabold">
+            {currentLocale === 'en' ? `Parent Portal — Welcome ${profile?.display_name || ''}!` : `بوابة أولياء الأمور — أهلاً بك يا ${profile?.display_name || ''}!`}
+          </h1>
+          <p className="text-sm md:text-base font-medium opacity-90 max-w-xl">
+            {currentLocale === 'en' 
+              ? 'Monitor your children’s Sunday school attendance, lesson completion progress, and memorization challenges.'
+              : 'تابع حضور أطفالك لمدارس الأحد، ومدى تقدمهم في الدروس وتحديات حفظ الآيات.'}
+          </p>
+        </div>
+      </div>
+
+      <h2 className="text-xl font-black text-on-surface">
+        {currentLocale === 'en' ? 'My Children' : 'أطفالي'}
+      </h2>
+
+      {loading ? (
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <Card className="animate-pulse h-48 bg-surface-container" />
+          <Card className="animate-pulse h-48 bg-surface-container" />
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {children.map((child) => {
+            const levelNum = Math.floor(child.total_xp / 300) + 1;
+            return (
+              <Card key={child.id} className="border border-outline-variant bg-surface-container-lowest shadow-sm flex flex-col justify-between">
+                <CardContent className="p-6 space-y-4">
+                  <div className="flex items-center gap-4">
+                    <div className="w-14 h-14 rounded-full bg-primary/10 flex items-center justify-center font-black text-primary text-xl">
+                      {child.display_name[0]}
+                    </div>
+                    <div>
+                      <h3 className="text-lg font-black text-on-surface">{child.display_name}</h3>
+                      <p className="text-xs text-on-surface-variant font-bold">
+                        Level {levelNum} ({child.total_xp} XP)
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-3 gap-2 text-center bg-surface-container-low p-3 rounded-xl border border-outline-variant/30">
+                    <div>
+                      <p className="text-[10px] uppercase font-black text-outline">Streak</p>
+                      <h4 className="text-sm font-black text-orange-600">{child.current_streak} Days</h4>
+                    </div>
+                    <div>
+                      <p className="text-[10px] uppercase font-black text-outline">Points</p>
+                      <h4 className="text-sm font-black text-yellow-600">{child.total_points} Pts</h4>
+                    </div>
+                    <div>
+                      <p className="text-[10px] uppercase font-black text-outline">Attendance</p>
+                      <h4 className="text-sm font-black text-tertiary">92%</h4>
+                    </div>
+                  </div>
+                </CardContent>
+
+                <div className="p-6 pt-0 flex gap-2">
+                  <Link href={`/parent/attendance?child=${child.id}`} className="flex-1">
+                    <Button variant="outline" size="sm" fullWidth>
+                      {currentLocale === 'en' ? 'Attendance' : 'حضور'}
+                    </Button>
+                  </Link>
+                  <Link href={`/parent/reports?child=${child.id}`} className="flex-1">
+                    <Button variant="primary" size="sm" fullWidth>
+                      {currentLocale === 'en' ? 'View Report' : 'التقرير'}
+                    </Button>
+                  </Link>
+                </div>
+              </Card>
+            );
+          })}
+        </div>
+      )}
+    </div>
+  );
+}

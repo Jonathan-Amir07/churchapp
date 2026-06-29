@@ -31,6 +31,10 @@ export const NAV_ITEMS = {
     { key: 'badges', icon: 'military_tech', href: '/student/badges' },
     { key: 'profile', icon: 'person', href: '/student/profile' },
   ],
+  parent: [
+    { key: 'dashboard', icon: 'dashboard', href: '/parent/dashboard' },
+    { key: 'profile', icon: 'person', href: '/parent/profile' },
+  ],
   instructor: [
     { key: 'dashboard', icon: 'dashboard', href: '/instructor/dashboard' },
     { key: 'lessons', icon: 'menu_book', href: '/instructor/lessons' },
