@@ -1,8 +1,14 @@
 import { createServerClient } from '@supabase/ssr';
 import { cookies } from 'next/headers';
+import { isMockMode, createMockSupabase } from './mockClient';
 
 export async function createClient() {
   const cookieStore = await cookies();
+
+  if (isMockMode()) {
+    const mockRole = cookieStore.get('MOCK_USER_ROLE')?.value;
+    return createMockSupabase(mockRole);
+  }
 
   return createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -27,3 +33,4 @@ export async function createClient() {
     }
   );
 }
+

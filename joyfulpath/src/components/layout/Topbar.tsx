@@ -1,13 +1,17 @@
 'use client';
 
-import { useSession, signOut } from 'next-auth/react';
 import { useTranslations, useLocale } from 'next-intl';
-import { Button, Avatar, BadgeTag } from '@/components/ui';
+import { Button, Avatar } from '@/components/ui';
 import { formatXP, formatPoints } from '@/lib/utils';
 import { useAppStore } from '@/stores/app.store';
+import { useUser } from '@/hooks/useUser';
+import { createClient } from '@/lib/supabase/client';
+import { useRouter } from 'next/navigation';
 
 export function Topbar() {
-  const { data: session } = useSession();
+  const { profile, loading } = useUser();
+  const supabase = createClient();
+  const router = useRouter();
   const tCommon = useTranslations('common');
   const tAuth = useTranslations('auth');
   const tGamification = useTranslations('gamification');
@@ -21,14 +25,17 @@ export function Topbar() {
   };
 
   const handleLogout = async () => {
-    await signOut({ callbackUrl: '/login' });
+    await supabase.auth.signOut();
+    router.push('/login');
+    router.refresh();
   };
 
-  const user = session?.user;
+  const user = profile;
   const isStudent = user?.role === 'student';
   
-  const dynamicXP = isStudent ? xp : (user?.totalXp || 0);
-  const dynamicPoints = isStudent ? points : (user?.totalPoints || 0);
+  const dynamicXP = isStudent ? xp : (user?.total_xp || 0);
+  const dynamicPoints = isStudent ? points : (user?.total_points || 0);
+
 
   return (
     <header className="h-16 bg-surface-container-lowest border-b border-outline-variant flex items-center justify-between px-4 md:px-8 sticky top-0 z-20 shadow-sm">
@@ -87,15 +94,15 @@ export function Topbar() {
         {user && (
           <div className="flex items-center gap-3">
             <div className="hidden sm:flex flex-col items-end text-end leading-tight">
-              <span className="text-sm font-extrabold text-on-surface">{user.name}</span>
+              <span className="text-sm font-extrabold text-on-surface">{user.display_name}</span>
               <span className="text-[10px] uppercase font-bold tracking-wider text-on-surface-variant/80">
                 {user.role}
               </span>
             </div>
             
             <Avatar
-              name={user.name || ''}
-              src={user.avatarUrl || undefined}
+              name={user.display_name || ''}
+              src={user.avatar_url || undefined}
               size="md"
               className="border border-outline-variant"
             />

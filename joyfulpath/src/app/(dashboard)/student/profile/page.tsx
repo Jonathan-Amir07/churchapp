@@ -1,25 +1,32 @@
 'use client';
 
-import { useState } from 'react';
-import { useSession } from 'next-auth/react';
+import { useState, useEffect } from 'react';
 import { useTranslations } from 'next-intl';
 import { Card, CardContent, CardHeader, CardTitle, Button, Input } from '@/components/ui';
+import { useUser } from '@/hooks/useUser';
 
 export default function StudentProfile() {
-  const { data: session } = useSession();
+  const { profile } = useUser();
   const tNav = useTranslations('nav');
   const tCommon = useTranslations('common');
   const tAuth = useTranslations('auth');
   const tProfile = useTranslations('profile');
   const tGamification = useTranslations('gamification');
 
-  const user = session?.user;
+  const user = profile;
 
-  const [name, setName] = useState(user?.name || 'Mary Faith');
-  const [username, setUsername] = useState(user?.username || 'mary_faith');
+  const [name, setName] = useState('Mary Faith');
+  const [username, setUsername] = useState('mary_faith');
   const [currentPin, setCurrentPin] = useState('');
   const [newPin, setNewPin] = useState('');
   const [confirmPin, setConfirmPin] = useState('');
+
+  useEffect(() => {
+    if (profile) {
+      setName(profile.display_name);
+      setUsername(profile.username);
+    }
+  }, [profile]);
 
   const handleUpdateProfile = (e: React.FormEvent) => {
     e.preventDefault();
@@ -46,6 +53,8 @@ export default function StudentProfile() {
     setConfirmPin('');
   };
 
+  const levelNum = Math.floor((user?.total_xp || 0) / 300) + 1;
+
   return (
     <div className="space-y-6 animate-[slide-up_0.4s_ease-out] max-w-4xl">
       <div className="flex flex-col gap-2">
@@ -67,22 +76,23 @@ export default function StudentProfile() {
             <h3 className="text-lg font-black text-on-surface truncate">{name}</h3>
             <p className="text-xs font-bold text-outline">@{username}</p>
             <p className="text-xs font-black uppercase text-secondary mt-1">
-              Level {user?.currentLevel?.number || 2} ({user?.currentLevel?.title || 'Seedling'})
+              Level {levelNum}
             </p>
           </div>
           
           <div className="w-full border-t border-outline-variant/60 mt-6 pt-4 flex justify-around text-center">
             <div className="space-y-0.5">
               <p className="text-xs font-bold text-on-surface-variant">{tGamification('xp')}</p>
-              <p className="text-sm font-black text-primary">{user?.totalXp || 380}</p>
+              <p className="text-sm font-black text-primary">{user?.total_xp ?? 0}</p>
             </div>
             <div className="w-[1px] h-6 bg-outline-variant/60" />
             <div className="space-y-0.5">
               <p className="text-xs font-bold text-on-surface-variant">{tGamification('points')}</p>
-              <p className="text-sm font-black text-secondary">{user?.totalPoints || 75}</p>
+              <p className="text-sm font-black text-secondary">{user?.total_points ?? 0}</p>
             </div>
           </div>
         </Card>
+
 
         {/* Profile Settings Center */}
         <div className="md:col-span-2 space-y-6">

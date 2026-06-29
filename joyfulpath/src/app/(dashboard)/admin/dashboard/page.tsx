@@ -1,15 +1,16 @@
 'use client';
 
-import { useSession } from 'next-auth/react';
 import { useTranslations } from 'next-intl';
 import Link from 'next/link';
 import { Card, CardContent, CardHeader, CardTitle, Button } from '@/components/ui';
+import { useUser } from '@/hooks/useUser';
 
 export default function AdminDashboard() {
-  const { data: session } = useSession();
+  const { profile } = useUser();
   const tCommon = useTranslations('common');
 
-  const user = session?.user;
+  const user = profile;
+
 
   return (
     <div className="space-y-6 animate-[slide-up_0.4s_ease-out]">
@@ -18,7 +19,7 @@ export default function AdminDashboard() {
         <div className="absolute inset-0 bg-dot-pattern opacity-10 pointer-events-none" />
         <div className="relative z-10 space-y-2">
           <h1 className="text-2xl md:text-3xl font-extrabold">
-            Platform Administration — Welcome {user?.name}!
+            Platform Administration — Welcome {user?.display_name || 'Admin'}!
           </h1>
           <p className="text-sm md:text-base font-medium opacity-90 max-w-xl">
             As a system administrator, you have full control over classes, user creation, CSV bulk imports, rewards configuration, and site-wide settings.

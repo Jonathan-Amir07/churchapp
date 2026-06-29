@@ -2,19 +2,20 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { useSession } from 'next-auth/react';
+import { useUser } from '@/hooks/useUser';
 import { useTranslations } from 'next-intl';
 import { NAV_ITEMS } from '@/lib/constants';
 import { cn } from '@/lib/utils';
 
 export function MobileNav() {
   const pathname = usePathname();
-  const { data: session } = useSession();
+  const { profile } = useUser();
   const tNav = useTranslations('nav');
 
-  const role = session?.user?.role as 'student' | 'instructor' | 'admin' | undefined;
+  const role = profile?.role as 'student' | 'instructor' | 'admin' | 'parent' | undefined;
   
   if (!role || !NAV_ITEMS[role]) return null;
+
 
   const items = NAV_ITEMS[role];
 

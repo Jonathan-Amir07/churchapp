@@ -7,3 +7,4 @@ export { BadgeTag, type BadgeTagProps } from './BadgeTag';
 export { Skeleton, LessonCardSkeleton, LeaderboardRowSkeleton, type SkeletonProps } from './Skeleton';
 export { Modal, type ModalProps } from './Modal';
 export { ToastContainer } from './Toast';
+export { QRScanner, type ScanResult } from './QRScanner';

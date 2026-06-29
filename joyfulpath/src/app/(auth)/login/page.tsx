@@ -96,6 +96,8 @@ export default function LoginPage() {
             ? `/admin/dashboard`
             : userRole === 'instructor'
             ? `/instructor/dashboard`
+            : userRole === 'parent'
+            ? `/parent/dashboard`
             : `/student/dashboard`;
 
         router.refresh();

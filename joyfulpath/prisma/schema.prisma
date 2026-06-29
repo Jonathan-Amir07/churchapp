@@ -569,3 +569,262 @@ model ActivityLog {
   @@index([userId, createdAt(sort: Desc)])
   @@map("activity_log")
 }
+
+// ============================================
+// Phase 2 & 3 Additions
+// ============================================
+
+enum PrayerRequestType {
+  prayer
+  thanksgiving
+}
+
+enum RewardType {
+  digital
+  physical
+}
+
+enum RedemptionStatus {
+  pending
+  approved
+  rejected
+  fulfilled
+}
+
+enum ChallengeScope {
+  daily
+  weekly
+  seasonal
+}
+
+enum NotificationChannel {
+  inapp
+  push
+  email
+}
+
+enum GameType {
+  quiz
+  verse_builder
+  memory_match
+  treasure_hunt
+  bible_adventure
+}
+
+enum GameSessionStatus {
+  active
+  paused
+  completed
+  abandoned
+}
+
+model PrayerRequest {
+  id            String             @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  studentId     String             @map("student_id") @db.Uuid
+  classId       String?            @map("class_id") @db.Uuid
+  type          PrayerRequestType
+  title         String?            @db.VarChar(200)
+  body          String             @db.Text
+  isPrivate     Boolean            @default(false) @map("is_private")
+  isAddressed   Boolean            @default(false) @map("is_addressed")
+  addressedBy   String?            @map("addressed_by") @db.Uuid
+  addressedAt   DateTime?          @map("addressed_at") @db.Timestamptz()
+  createdAt     DateTime           @default(now()) @map("created_at") @db.Timestamptz()
+  updatedAt     DateTime           @default(now()) @updatedAt @map("updated_at") @db.Timestamptz()
+
+  // Relations
+  student       User               @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  class         Class?             @relation(fields: [classId], references: [id], onDelete: Cascade)
+  addressedByUser User?            @relation(fields: [addressedBy], references: [id])
+  responses     PrayerResponse[]
+
+  @@index([studentId])
+  @@index([classId])
+  @@map("prayer_requests")
+}
+
+model PrayerResponse {
+  id              String      @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  prayerRequestId String      @map("prayer_request_id") @db.Uuid
+  responderId     String      @map("responder_id") @db.Uuid
+  message         String      @db.Text
+  createdAt       DateTime    @default(now()) @map("created_at") @db.Timestamptz()
+
+  prayerRequest   PrayerRequest @relation(fields: [prayerRequestId], references: [id], onDelete: Cascade)
+  responder       User          @relation(fields: [responderId], references: [id])
+
+  @@map("prayer_responses")
+}
+
+model Reward {
+  id             String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  title          String    @db.VarChar(200)
+  description    String?   @db.Text
+  type           RewardType
+  metadata       Json      @default("{}") @db.JsonB
+  costXp         Int       @default(0) @map("cost_xp")
+  inventoryCount Int?      @map("inventory_count")
+  isActive       Boolean   @default(true) @map("is_active")
+  createdAt      DateTime  @default(now()) @map("created_at") @db.Timestamptz()
+
+  redemptions    RewardRedemption[]
+
+  @@map("rewards")
+}
+
+model RewardRedemption {
+  id          String           @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId      String           @map("user_id") @db.Uuid
+  rewardId    String           @map("reward_id") @db.Uuid
+  status      RedemptionStatus @default(pending)
+  requestedAt DateTime         @default(now()) @map("requested_at") @db.Timestamptz()
+  reviewedBy  String?          @map("reviewed_by") @db.Uuid
+  reviewedAt  DateTime?        @map("reviewed_at") @db.Timestamptz()
+  shippingInfo Json?           @map("shipping_info") @db.JsonB
+  notes       String?          @db.Text
+
+  user    User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  reward  Reward @relation(fields: [rewardId], references: [id], onDelete: Cascade)
+  reviewer User? @relation(fields: [reviewedBy], references: [id])
+
+  @@index([userId])
+  @@index([rewardId])
+  @@map("reward_redemptions")
+}
+
+model Achievement {
+  id           String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  key          String    @unique
+  title        String    @db.VarChar(150)
+  description  String    @db.Text
+  category     BadgeCategory
+  criteria     Json      @default("{}") @db.JsonB
+  xpReward     Int       @default(0) @map("xp_reward")
+  pointsReward Int       @default(0) @map("points_reward")
+  createdAt    DateTime  @default(now()) @map("created_at") @db.Timestamptz()
+
+  studentAchievements StudentAchievement[]
+
+  @@map("achievements")
+}
+
+model StudentAchievement {
+  id            String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId        String    @map("user_id") @db.Uuid
+  achievementId String    @map("achievement_id") @db.Uuid
+  earnedAt      DateTime  @default(now()) @map("earned_at") @db.Timestamptz()
+  progress      Json      @default("{}") @db.JsonB
+  awardedBy     String?   @map("awarded_by") @db.Uuid
+
+  user        User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  achievement Achievement @relation(fields: [achievementId], references: [id], onDelete: Cascade)
+  awarder     User?       @relation(fields: [awardedBy], references: [id])
+
+  @@unique([userId, achievementId])
+  @@map("student_achievements")
+}
+
+model Challenge {
+  id        String         @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  title     String         @db.VarChar(200)
+  scope     ChallengeScope
+  startAt   DateTime?      @map("start_at") @db.Timestamptz()
+  endAt     DateTime?      @map("end_at") @db.Timestamptz()
+  rules     Json           @default("{}") @db.JsonB
+  rewards   Json           @default("{}") @db.JsonB
+  isActive  Boolean        @default(true) @map("is_active")
+  createdAt DateTime       @default(now()) @map("created_at") @db.Timestamptz()
+
+  progresses ChallengeProgress[]
+
+  @@map("challenges")
+}
+
+model ChallengeProgress {
+  id          String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  challengeId String   @map("challenge_id") @db.Uuid
+  userId      String   @map("user_id") @db.Uuid
+  progress    Json     @default("{}") @db.JsonB
+  completed   Boolean  @default(false)
+  completedAt DateTime? @map("completed_at") @db.Timestamptz()
+
+  challenge Challenge @relation(fields: [challengeId], references: [id], onDelete: Cascade)
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([challengeId, userId])
+  @@map("challenge_progress")
+}
+
+model XpEntry {
+  id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId    String   @map("user_id") @db.Uuid
+  source    String?  @map("source") @db.VarChar(100)
+  sourceId  String?  @map("source_id") @db.Uuid
+  xpAmount  Int      @map("xp_amount")
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz()
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("xp_entries")
+}
+
+model Notification {
+  id        String              @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId    String              @map("user_id") @db.Uuid
+  channel   NotificationChannel
+  type      String              @db.VarChar(100)
+  payload   Json                @default("{}") @db.JsonB
+  readAt    DateTime?
+  createdAt DateTime            @default(now()) @map("created_at") @db.Timestamptz()
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, createdAt])
+  @@map("notifications")
+}
+
+model GameSession {
+  id         String            @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  gameType   GameType
+  status     GameSessionStatus @default(active)
+  hostUserId String?           @map("host_user_id") @db.Uuid
+  state      Json              @default("{}") @db.JsonB
+  score      Int?              @default(0)
+  startedAt  DateTime?         @map("started_at") @db.Timestamptz()
+  endedAt    DateTime?         @map("ended_at") @db.Timestamptz()
+
+  hostUser User? @relation(fields: [hostUserId], references: [id])
+
+  @@map("game_sessions")
+}
+
+model GameProgress {
+  id          String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  sessionId   String   @map("session_id") @db.Uuid
+  userId      String   @map("user_id") @db.Uuid
+  checkpoint  Json     @default("{}") @db.JsonB
+  score       Int      @default(0)
+  updatedAt   DateTime @default(now()) @updatedAt @map("updated_at") @db.Timestamptz()
+
+  session GameSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  user    User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([sessionId])
+  @@index([userId])
+  @@map("game_progress")
+}
+
+model ReadingPlanProgress {
+  id           String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId       String   @map("user_id") @db.Uuid
+  planId       String   @map("plan_id") @db.Uuid
+  progress     Json     @default("{}") @db.JsonB
+  streak       Int      @default(0)
+  updatedAt    DateTime @default(now()) @updatedAt @map("updated_at") @db.Timestamptz()
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, planId])
+  @@map("reading_plan_progress")
+}

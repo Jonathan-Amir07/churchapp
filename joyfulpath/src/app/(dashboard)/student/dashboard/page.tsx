@@ -1,16 +1,15 @@
 'use client';
 
-import { useSession } from 'next-auth/react';
 import { useTranslations } from 'next-intl';
 import Link from 'next/link';
 import { Card, CardContent, CardHeader, CardTitle, ProgressBar, Button } from '@/components/ui';
 import { useAppStore } from '@/stores/app.store';
 
 export default function StudentDashboard() {
-  const { data: session } = useSession();
   const t = useTranslations('dashboard');
   const tCommon = useTranslations('common');
   const tGamification = useTranslations('gamification');
+
 
   const { xp, points, level, streak, challenges, activities } = useAppStore();
 
