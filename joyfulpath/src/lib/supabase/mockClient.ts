@@ -177,6 +177,84 @@ const MOCK_CLASSES = [
   { id: 'class-2', name: 'St. Mary Class (Grade 6)' },
 ];
 
+export const MOCK_EVENTS = [
+  {
+    id: 'event-1',
+    title: 'Summer Bible Camp 2026',
+    description: 'A week-long summer camp filled with biblical stories, worship, crafts, and team-building activities for all Sunday School students.',
+    type: 'camp',
+    date: '2026-07-15',
+    time: '08:00',
+    end_time: '17:00',
+    location: 'Main Cairo Cathedral Hall',
+    branch_id: 'branch-1',
+    max_capacity: 80,
+    current_rsvp: 54,
+    is_public: true,
+    image_url: null,
+    created_by: 'mock-admin-id',
+    created_at: '2026-06-01T10:00:00Z',
+  },
+  {
+    id: 'event-2',
+    title: "Father's Day Celebration Service",
+    description: 'A special Sunday service honoring fathers in our community. Students will perform a choir piece and share crafted gifts.',
+    type: 'service',
+    date: '2026-07-06',
+    time: '10:00',
+    end_time: '12:30',
+    location: 'Main Cathedral Sanctuary',
+    branch_id: 'branch-1',
+    max_capacity: 200,
+    current_rsvp: 143,
+    is_public: true,
+    image_url: null,
+    created_by: 'mock-admin-id',
+    created_at: '2026-06-10T10:00:00Z',
+  },
+  {
+    id: 'event-3',
+    title: 'Servant Training Day',
+    description: 'A focused day of spiritual and practical training for all Sunday School servants and instructors.',
+    type: 'training',
+    date: '2026-07-20',
+    time: '09:00',
+    end_time: '16:00',
+    location: 'Heliopolis Branch Meeting Room',
+    branch_id: 'branch-2',
+    max_capacity: 40,
+    current_rsvp: 27,
+    is_public: false,
+    image_url: null,
+    created_by: 'mock-admin-id',
+    created_at: '2026-06-12T10:00:00Z',
+  },
+  {
+    id: 'event-4',
+    title: 'End-of-Year Awards Ceremony',
+    description: 'Celebrating the achievements of all students with certificates, medals, and special performances.',
+    type: 'ceremony',
+    date: '2026-08-30',
+    time: '17:00',
+    end_time: '20:00',
+    location: 'Main Cairo Cathedral Hall',
+    branch_id: 'branch-1',
+    max_capacity: 300,
+    current_rsvp: 12,
+    is_public: true,
+    image_url: null,
+    created_by: 'mock-admin-id',
+    created_at: '2026-06-15T10:00:00Z',
+  },
+];
+
+// Student and parent RSVPs
+export const MOCK_EVENT_REGISTRATIONS = [
+  { id: 'reg-1', event_id: 'event-1', user_id: 'mock-student-id', registered_at: '2026-06-20T10:00:00Z' },
+  { id: 'reg-2', event_id: 'event-2', user_id: 'mock-student-id', registered_at: '2026-06-21T10:00:00Z' },
+  { id: 'reg-3', event_id: 'event-1', user_id: 'mock-parent-id',  registered_at: '2026-06-22T10:00:00Z' },
+];
+
 // ─── Chainable query builder ─────────────────────────────────────────────────
 
 function buildQuery(initialData: any[]) {
@@ -232,6 +310,10 @@ export const createMockSupabase = (currentRole?: string) => {
         return MOCK_BRANCHES;
       case 'classes':
         return MOCK_CLASSES;
+      case 'events':
+        return MOCK_EVENTS;
+      case 'event_registrations':
+        return MOCK_EVENT_REGISTRATIONS;
       default:
         return [];
     }

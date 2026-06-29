@@ -179,12 +179,32 @@ Run in this exact order against your Supabase project:
 ---
 
 ## 📦 Phase 6: Events Management
-> *(To be filled in when Phase 6 is implemented)*
 
-### Planned Mock Items
-- **Events List**: Mock `events` table data will be added to `mockClient.ts`. Real DB: Replace with `.from('events').select(*)`.
-- **RSVP Endpoint** (`src/app/api/events/rsvp/route.ts`): Mock will simulate RSVP toggle. Real DB: Insert/delete from `event_registrations` table.
-- **Admin Event CRUD**: Mock will use local state to simulate create/edit/delete. Real DB: Replace with `.from('events').insert/update/delete(...)`.
+> **Status**: ✅ Implemented with mock data
+
+### What was built
+- **Events List page** (`/student/events`, `/instructor/events`, `/parent/events`) — filterable by event type, searchable, shows RSVP status, capacity bar, and Register/Cancel button
+- **Admin Events page** (`/admin/events`) — full CRUD with create/edit modal, delete confirmation, stats summary, and capacity table
+- **RSVP API** (`/api/events/rsvp`) — POST to toggle registration, GET to fetch registrations per user or event
+- **Events added to all role sidebars** (student, parent, instructor, admin)
+
+### Mock items used
+
+| Mock Item | Location | Real DB Replacement |
+|---|---|---|
+| `MOCK_EVENTS` array | `mockClient.ts` | `supabase.from('events').select('*').order('date')` |
+| `MOCK_EVENT_REGISTRATIONS` array | `mockClient.ts` | `supabase.from('event_registrations').select('*').eq('user_id', userId)` |
+| `mockRsvps` in-memory Map | `/api/events/rsvp/route.ts` | `supabase.from('event_registrations').insert/delete(...)` |
+| Local state for CRUD | `admin/events/page.tsx` | `supabase.from('events').insert/update/delete(...)` with server actions or API routes |
+| `current_rsvp` counter | Static number in mock | Use SQL `COUNT(*)` from `event_registrations` grouped by `event_id` |
+
+### When connecting to real database
+1. Delete `MOCK_EVENTS` and `MOCK_EVENT_REGISTRATIONS` from `mockClient.ts` (and their `case` entries in `getTableData`)
+2. In `student/events/page.tsx`: replace `MOCK_EVENTS` import with a server-side Supabase fetch via `useEffect`
+3. In `admin/events/page.tsx`: replace `useState(MOCK_EVENTS)` with a real Supabase query and replace `handleSave/handleDelete` to call Supabase directly
+4. Replace the `mockRsvps` Map in `rsvp/route.ts` with real Supabase insert/delete calls
+5. Replace the `GET /api/events/rsvp?userId=...` with a Supabase query on `event_registrations`
+
 
 ---
 
