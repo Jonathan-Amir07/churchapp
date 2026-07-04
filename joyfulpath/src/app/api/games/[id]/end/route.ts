@@ -1,9 +1,9 @@
 import { NextResponse } from 'next/server';
 import { endSession, persistSessionToDb, getSessionState } from '@/lib/gameSessionStore';
 
-export async function POST(req: Request, { params }: { params: { id: string } }) {
+export async function POST(req: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
-    const { id } = params;
+    const { id } = await params;
     const state = await getSessionState(id);
     await persistSessionToDb(id);
     await endSession(id);

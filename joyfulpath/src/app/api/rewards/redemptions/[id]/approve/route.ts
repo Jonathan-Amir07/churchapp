@@ -3,9 +3,9 @@ import prisma from '@/lib/db';
 import { routeNotification } from '@/lib/notificationRouter';
 
 
-export async function POST(req: Request, { params }: { params: { id: string } }) {
+export async function POST(req: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
-    const { id } = params;
+    const { id } = await params;
     const body = await req.json();
     const { reviewerId, shippingInfo } = body;
 

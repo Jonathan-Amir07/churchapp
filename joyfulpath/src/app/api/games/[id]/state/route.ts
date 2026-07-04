@@ -1,9 +1,9 @@
 import { NextResponse } from 'next/server';
 import { getSessionState } from '@/lib/gameSessionStore';
 
-export async function GET(req: Request, { params }: { params: { id: string } }) {
+export async function GET(req: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
-    const { id } = params;
+    const { id } = await params;
     const state = await getSessionState(id);
     if (!state) return NextResponse.json({ error: 'Session not found' }, { status: 404 });
     return NextResponse.json(state);

@@ -22,7 +22,7 @@ export async function GET() {
       orderBy: { requestedAt: 'desc' },
     });
 
-    const rows = redemptions.map((r) => ({
+    const rows = redemptions.map((r: any) => ({
       id: r.id,
       userEmail: r.user?.email ?? '',
       userId: r.userId,

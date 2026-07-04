@@ -26,7 +26,7 @@ export default function ParentDashboard() {
         .eq('parent_id', profile.id);
 
       if (links && links.length > 0) {
-        const studentIds = links.map(l => l.student_id);
+        const studentIds = links.map((l: { student_id: string }) => l.student_id);
         const { data: childrenProfiles } = await supabase
           .from('user_profiles')
           .select('*')

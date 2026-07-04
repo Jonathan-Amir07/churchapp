@@ -47,7 +47,7 @@ export function useUser() {
     getSession();
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      async (event, session) => {
+      async (event: string, session: any) => {
         setUser(session?.user ?? null);
         if (session?.user) {
           const { data: profileData } = await supabase

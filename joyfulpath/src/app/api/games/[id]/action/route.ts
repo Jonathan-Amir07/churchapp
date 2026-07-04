@@ -2,9 +2,9 @@ import { NextResponse } from 'next/server';
 import { updateSessionState, getSessionState } from '@/lib/gameSessionStore';
 import { publishEvent } from '@/lib/eventBus';
 
-export async function POST(req: Request, { params }: { params: { id: string } }) {
+export async function POST(req: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
-    const { id } = params;
+    const { id } = await params;
     const body = await req.json();
     const { action } = body;
 
