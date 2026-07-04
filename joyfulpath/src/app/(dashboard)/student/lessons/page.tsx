@@ -2,7 +2,13 @@
 
 import { useState } from 'react';
 import { useTranslations } from 'next-intl';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription, Button, Modal, BadgeTag } from '@/components/ui';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription, Button, Modal, BadgeTag, ProgressBar } from '@/components/ui';
+
+interface LessonAttachment {
+  name: string;
+  type: 'pdf' | 'image' | 'audio' | 'video';
+  size: string;
+}
 
 interface Lesson {
   id: string;
@@ -18,6 +24,10 @@ interface Lesson {
   contentEn: string;
   contentAr: string;
   levelRequired: number;
+  duration: string;
+  objectives: string[];
+  objectivesAr: string[];
+  attachments: LessonAttachment[];
 }
 
 const MOCK_LESSONS: Lesson[] = [
@@ -31,10 +41,17 @@ const MOCK_LESSONS: Lesson[] = [
     xp: 50,
     points: 10,
     verseEn: '"In the beginning, God created the heavens and the earth." — Genesis 1:1',
-    verseAr: '«فِي الْبَدْءِ خَلَقَ اللهُ السَّمَاوَاتِ وَالأَرْضَ.» — تكوين ١:١',
+    verseAr: '«فِي الْبَدْءِ خَلَقَ اللهُ السَّمَاوَاتِ وَالأَرْضَ.» — تكوين ١:١',
     contentEn: 'God created the light, sky, land, plants, sun, moon, stars, sea creatures, birds, land animals, and finally human beings in His own image over six days, and rested on the seventh.',
     contentAr: 'خلق الله النور، الجلد، الأرض، النباتات، الشمس والقمر والنجوم، حيوانات البحر والطيور، وحيوانات البرية، وأخيراً خلق الإنسان على صورته ومثاله في ستة أيام، واستراح في اليوم السابع.',
     levelRequired: 1,
+    duration: '25 min',
+    objectives: ['Understand the 7 days of creation', 'Memorize Genesis 1:1', 'Identify God as Creator of all things'],
+    objectivesAr: ['فهم أيام الخلق السبعة', 'حفظ آية تكوين ١:١', 'التعرف على الله كخالق لكل شيء'],
+    attachments: [
+      { name: 'Creation_Days_Worksheet.pdf', type: 'pdf', size: '1.2 MB' },
+      { name: 'Creation_Illustration.png', type: 'image', size: '820 KB' },
+    ],
   },
   {
     id: '2',
@@ -46,10 +63,17 @@ const MOCK_LESSONS: Lesson[] = [
     xp: 50,
     points: 10,
     verseEn: '"I have set my rainbow in the clouds, and it will be the sign of the covenant..." — Genesis 9:13',
-    verseAr: '«وَضَعْتُ قَوْسِي فِي السَّحَابِ فَتَكُونُ عَلاَمَةَ مِيثَاقٍ...» — تكوين ٩:١٣',
+    verseAr: '«وَضَعْتُ قَوْسِي فِي السَّحَابِ فَتَكُونُ عَلاَمَةَ مِيثَاقٍ...» — تكوين ٩:١٣',
     contentEn: 'Noah was a righteous man. God told him to build an ark to save his family and pairs of every animal from a great flood. Afterward, God placed a rainbow in the sky as a promise to never flood the earth again.',
     contentAr: 'كان نوح رجلاً باراً. أمره الله ببناء فلك لخلاص عائلته وزوجين من كل نوع من الحيوانات من الطوفان العظيم. بعد ذلك، وضع الله قوس قزح في السماء كعلامة عهد بأنه لن يغرق الأرض بطوفان مرة أخرى.',
     levelRequired: 1,
+    duration: '30 min',
+    objectives: ['Learn about Noah\'s obedience to God', 'Understand the covenant of the rainbow', 'Know that God keeps His promises'],
+    objectivesAr: ['التعرف على طاعة نوح لله', 'فهم عهد قوس قزح', 'معرفة أن الله يحفظ وعوده'],
+    attachments: [
+      { name: 'Noahs_Ark_Coloring.pdf', type: 'pdf', size: '950 KB' },
+      { name: 'Rainbow_Promise_Audio.mp3', type: 'audio', size: '2.1 MB' },
+    ],
   },
   {
     id: '3',
@@ -61,10 +85,16 @@ const MOCK_LESSONS: Lesson[] = [
     xp: 50,
     points: 10,
     verseEn: '"The Lord does not save with sword and spear; for the battle is the Lord\'s..." — 1 Samuel 17:47',
-    verseAr: '«لأَنَّ الْحَرْبَ لِلَّهِ وَهُوَ يَدْفَعُكُمْ لِيَدِنَا.» — صموئيل الأول ١٧:٤٧',
+    verseAr: '«لأَنَّ الْحَرْبَ لِلَّهِ وَهُوَ يَدْفَعُكُمْ لِيَدِنَا.» — صموئيل الأول ١٧:٤٧',
     contentEn: 'A young shepherd boy named David defeats the giant Philistine warrior Goliath with only a sling, five smooth stones, and faith in God, proving that God is stronger than any army.',
     contentAr: 'فتى راعٍ صغير يدعى داود يهزم العملاق الفلسطيني جليات بمقلاع وخمسة حجارة ملساء وإيمان عظيم بالله، ليثبت أن الله أقوى من أي جيش.',
     levelRequired: 2,
+    duration: '35 min',
+    objectives: ['Learn about faith and courage', 'Understand that God fights for His people', 'Memorize 1 Samuel 17:47'],
+    objectivesAr: ['التعلم عن الإيمان والشجاعة', 'فهم أن الله يحارب عن شعبه', 'حفظ آية صموئيل الأول ١٧:٤٧'],
+    attachments: [
+      { name: 'David_Goliath_Story_Map.pdf', type: 'pdf', size: '1.5 MB' },
+    ],
   },
   {
     id: '4',
@@ -76,12 +106,26 @@ const MOCK_LESSONS: Lesson[] = [
     xp: 50,
     points: 10,
     verseEn: '"For to us a child is born, to us a son is given..." — Isaiah 9:6',
-    verseAr: '«لأَنَّهُ يُولَدُ لَنَا وَلَدٌ وَنُعْطَى ابْنًا...» — إشعياء ٩:٦',
+    verseAr: '«لأَنَّهُ يُولَدُ لَنَا وَلَدٌ وَنُعْطَى ابْنًا...» — إشعياء ٩:٦',
     contentEn: 'Jesus was born in Bethlehem to Mary. Angels announced His birth to shepherds in the fields, and a bright star guided wise men to bring gifts to the savior of the world.',
     contentAr: 'ولد يسوع في بيت لحم من مريم العذراء. أعلنت الملائكة ميلاده للرعاة في الحقول، وأرشد نجم ساطع المجوس ليقدموا له الهدايا مخلصاً للعالم.',
     levelRequired: 3,
+    duration: '40 min',
+    objectives: ['Learn about the prophecy of Jesus\' birth', 'Understand the significance of Bethlehem', 'Know about the wise men and shepherds'],
+    objectivesAr: ['التعرف على نبوة ميلاد يسوع', 'فهم أهمية بيت لحم', 'معرفة قصة المجوس والرعاة'],
+    attachments: [
+      { name: 'Nativity_Scene_Activity.pdf', type: 'pdf', size: '2.3 MB' },
+      { name: 'Christmas_Hymn.mp3', type: 'audio', size: '3.5 MB' },
+    ],
   },
 ];
+
+const FILE_ICONS: Record<string, { icon: string; color: string }> = {
+  pdf: { icon: 'picture_as_pdf', color: 'text-red-500 bg-red-50' },
+  image: { icon: 'image', color: 'text-blue-500 bg-blue-50' },
+  audio: { icon: 'headphones', color: 'text-purple-500 bg-purple-50' },
+  video: { icon: 'videocam', color: 'text-teal-500 bg-teal-50' },
+};
 
 export default function StudentLessons() {
   const tNav = useTranslations('nav');
@@ -92,6 +136,9 @@ export default function StudentLessons() {
   const [filter, setFilter] = useState<'all' | 'completed' | 'in-progress' | 'not-started'>('all');
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedLesson, setSelectedLesson] = useState<Lesson | null>(null);
+  const [downloadingFile, setDownloadingFile] = useState<string | null>(null);
+
+  const isAr = tCommon('appName') !== 'JoyfulPath';
 
   const filteredLessons = lessons.filter((lesson) => {
     const title = (lesson.titleEn + ' ' + lesson.titleAr).toLowerCase();
@@ -117,6 +164,14 @@ export default function StudentLessons() {
     );
     setSelectedLesson(null);
     alert(tLessons('completeSuccess', { xp: lesson.xp, points: lesson.points }));
+  };
+
+  const handleDownload = (fileName: string) => {
+    setDownloadingFile(fileName);
+    setTimeout(() => {
+      setDownloadingFile(null);
+      alert(isAr ? `تم تنزيل الملف: ${fileName}` : `Downloaded: ${fileName}`);
+    }, 1200);
   };
 
   return (
@@ -166,7 +221,6 @@ export default function StudentLessons() {
       {/* Grid of Lessons */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {filteredLessons.map((lesson) => {
-          const isAr = tCommon('appName') !== 'JoyfulPath'; // Quick check if Arabic is currently active
           const title = isAr ? lesson.titleAr : lesson.titleEn;
           const category = isAr ? lesson.categoryAr : lesson.categoryEn;
 
@@ -194,6 +248,20 @@ export default function StudentLessons() {
                   <CardDescription className="line-clamp-2 text-xs md:text-sm">
                     {isAr ? lesson.contentAr : lesson.contentEn}
                   </CardDescription>
+                </div>
+
+                {/* Duration & Attachments info */}
+                <div className="flex items-center gap-4 text-[11px] font-bold text-on-surface-variant/80">
+                  <span className="flex items-center gap-1">
+                    <span className="material-symbols-outlined text-[14px]">schedule</span>
+                    {lesson.duration}
+                  </span>
+                  {lesson.attachments.length > 0 && (
+                    <span className="flex items-center gap-1">
+                      <span className="material-symbols-outlined text-[14px]">attach_file</span>
+                      {lesson.attachments.length} {isAr ? 'مرفقات' : 'files'}
+                    </span>
+                  )}
                 </div>
 
                 {lesson.status === 'locked' ? (
@@ -231,26 +299,99 @@ export default function StudentLessons() {
         <Modal
           isOpen={true}
           onClose={() => setSelectedLesson(null)}
-          title={tCommon('appName') !== 'JoyfulPath' ? selectedLesson.titleAr : selectedLesson.titleEn}
+          title={isAr ? selectedLesson.titleAr : selectedLesson.titleEn}
         >
           <div className="space-y-6 pt-2">
+            {/* Memorization Verse */}
             <div className="bg-primary/5 p-4 rounded-xl border border-primary/10">
               <h4 className="text-xs font-bold uppercase tracking-wider text-primary mb-1">
                 {tLessons('verses')}
               </h4>
               <p className="text-sm font-black text-on-surface italic leading-relaxed">
-                {tCommon('appName') !== 'JoyfulPath' ? selectedLesson.verseAr : selectedLesson.verseEn}
+                {isAr ? selectedLesson.verseAr : selectedLesson.verseEn}
               </p>
             </div>
 
+            {/* Duration & Level */}
+            <div className="flex items-center gap-4 text-xs font-bold">
+              <span className="flex items-center gap-1.5 text-on-surface-variant bg-surface-container px-3 py-1.5 rounded-full">
+                <span className="material-symbols-outlined text-[14px]">schedule</span>
+                {selectedLesson.duration}
+              </span>
+              <span className="flex items-center gap-1.5 text-on-surface-variant bg-surface-container px-3 py-1.5 rounded-full">
+                <span className="material-symbols-outlined text-[14px]">signal_cellular_alt</span>
+                {tLessons('reqLevelLabel', { level: selectedLesson.levelRequired })}
+              </span>
+            </div>
+
+            {/* Lesson Objectives */}
+            <div className="space-y-2">
+              <h4 className="text-xs font-bold uppercase tracking-wider text-on-surface-variant">
+                {isAr ? 'أهداف الدرس' : 'Lesson Objectives'}
+              </h4>
+              <ul className="space-y-1.5">
+                {(isAr ? selectedLesson.objectivesAr : selectedLesson.objectives).map((obj, idx) => (
+                  <li key={idx} className="flex items-start gap-2 text-sm text-on-surface">
+                    <span className="material-symbols-outlined text-[16px] text-tertiary mt-0.5" style={{ fontVariationSettings: "'FILL' 1" }}>
+                      check_circle
+                    </span>
+                    <span className="leading-relaxed">{obj}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+
+            {/* Content */}
             <div className="space-y-2">
               <h4 className="text-xs font-bold uppercase tracking-wider text-on-surface-variant">
                 {tLessons('lessonContent')}
               </h4>
               <p className="text-sm text-on-surface leading-relaxed whitespace-pre-line">
-                {tCommon('appName') !== 'JoyfulPath' ? selectedLesson.contentAr : selectedLesson.contentEn}
+                {isAr ? selectedLesson.contentAr : selectedLesson.contentEn}
               </p>
             </div>
+
+            {/* Attachments */}
+            {selectedLesson.attachments.length > 0 && (
+              <div className="space-y-3">
+                <h4 className="text-xs font-bold uppercase tracking-wider text-on-surface-variant flex items-center gap-1.5">
+                  <span className="material-symbols-outlined text-[14px]">attach_file</span>
+                  {isAr ? 'المرفقات' : 'Attachments'}
+                </h4>
+                <div className="space-y-2">
+                  {selectedLesson.attachments.map((file, idx) => {
+                    const fileStyle = FILE_ICONS[file.type] || FILE_ICONS.pdf;
+                    const isDownloading = downloadingFile === file.name;
+                    return (
+                      <div
+                        key={idx}
+                        className="flex items-center justify-between p-3 bg-surface-container rounded-xl border border-outline-variant/60 hover:bg-surface-container-high transition-colors duration-150"
+                      >
+                        <div className="flex items-center gap-3">
+                          <div className={`w-9 h-9 rounded-lg flex items-center justify-center ${fileStyle.color}`}>
+                            <span className="material-symbols-outlined text-[18px]">{fileStyle.icon}</span>
+                          </div>
+                          <div>
+                            <p className="text-xs font-bold text-on-surface">{file.name}</p>
+                            <p className="text-[10px] text-on-surface-variant">{file.size}</p>
+                          </div>
+                        </div>
+                        <button
+                          onClick={(e) => { e.stopPropagation(); handleDownload(file.name); }}
+                          disabled={isDownloading}
+                          className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-primary/10 text-primary text-xs font-bold hover:bg-primary/20 transition-colors duration-150 disabled:opacity-50"
+                        >
+                          <span className={`material-symbols-outlined text-[16px] ${isDownloading ? 'animate-spin' : ''}`}>
+                            {isDownloading ? 'progress_activity' : 'download'}
+                          </span>
+                          {isDownloading ? (isAr ? 'جاري...' : 'Loading...') : (isAr ? 'تنزيل' : 'Download')}
+                        </button>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
 
             <div className="flex gap-3 justify-end pt-4 border-t border-outline-variant">
               <Button variant="outline" size="sm" onClick={() => setSelectedLesson(null)}>

@@ -1,8 +1,14 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { useTranslations } from 'next-intl';
-import { Card, CardContent, CardTitle, Button, Modal, BadgeTag } from '@/components/ui';
+import { Card, CardContent, CardTitle, Button, Modal, BadgeTag, ProgressBar } from '@/components/ui';
+
+interface UploadedFile {
+  name: string;
+  size: string;
+  type: string;
+}
 
 interface Task {
   id: string;
@@ -14,6 +20,7 @@ interface Task {
   instructionsAr: string;
   feedbackEn?: string;
   feedbackAr?: string;
+  submittedFile?: UploadedFile;
 }
 
 const MOCK_TASKS: Task[] = [
@@ -27,6 +34,7 @@ const MOCK_TASKS: Task[] = [
     instructionsAr: 'قم بتسجيل مقطع صوتي لتسميع آية تكوين ١:١ كلمة بكلمة وارفعه هنا.',
     feedbackEn: 'Excellent pronunciation and perfect memorization! Keep it up!',
     feedbackAr: 'نطق ممتاز وحفظ متقن جداً! استمر في هذا الأداء الرائع!',
+    submittedFile: { name: 'genesis_1_1_recitation.mp3', size: '1.4 MB', type: 'audio/mpeg' },
   },
   {
     id: '2',
@@ -36,6 +44,7 @@ const MOCK_TASKS: Task[] = [
     status: 'pending',
     instructionsEn: 'Draw a picture illustrating your favorite day of Creation and upload a photo.',
     instructionsAr: 'ارسم لوحة توضح يومك المفضل من أيام الخليقة وارفع صورتها.',
+    submittedFile: { name: 'creation_day3_drawing.jpg', size: '2.8 MB', type: 'image/jpeg' },
   },
   {
     id: '3',
@@ -59,6 +68,13 @@ const MOCK_TASKS: Task[] = [
   },
 ];
 
+const FILE_TYPE_ICONS: Record<string, { icon: string; color: string }> = {
+  'image': { icon: 'image', color: 'text-blue-500 bg-blue-50' },
+  'audio': { icon: 'headphones', color: 'text-purple-500 bg-purple-50' },
+  'video': { icon: 'videocam', color: 'text-teal-500 bg-teal-50' },
+  'application': { icon: 'description', color: 'text-orange-500 bg-orange-50' },
+};
+
 export default function StudentTasks() {
   const tNav = useTranslations('nav');
   const tTasks = useTranslations('tasks');
@@ -66,25 +82,80 @@ export default function StudentTasks() {
   
   const [tasks, setTasks] = useState<Task[]>(MOCK_TASKS);
   const [selectedTask, setSelectedTask] = useState<Task | null>(null);
-  const [isSubmitting, setIsSubmitting] = useState(false);
   const [submissionText, setSubmissionText] = useState('');
+  const [uploadedFile, setUploadedFile] = useState<UploadedFile | null>(null);
+  const [uploadProgress, setUploadProgress] = useState(0);
+  const [isUploading, setIsUploading] = useState(false);
+  const [isDragOver, setIsDragOver] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const isAr = tCommon('appName') !== 'JoyfulPath';
 
   const handleOpenSubmit = (task: Task) => {
     setSelectedTask(task);
     setSubmissionText('');
+    setUploadedFile(null);
+    setUploadProgress(0);
+  };
+
+  const simulateUpload = (fileName: string, fileSize: string, fileType: string) => {
+    setIsUploading(true);
+    setUploadProgress(0);
+    
+    const interval = setInterval(() => {
+      setUploadProgress(prev => {
+        if (prev >= 100) {
+          clearInterval(interval);
+          setIsUploading(false);
+          setUploadedFile({ name: fileName, size: fileSize, type: fileType });
+          return 100;
+        }
+        return prev + Math.random() * 25 + 5;
+      });
+    }, 200);
+  };
+
+  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const size = file.size > 1024 * 1024
+        ? `${(file.size / (1024 * 1024)).toFixed(1)} MB`
+        : `${(file.size / 1024).toFixed(0)} KB`;
+      simulateUpload(file.name, size, file.type);
+    }
+  };
+
+  const handleDrop = (e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragOver(false);
+    const file = e.dataTransfer.files[0];
+    if (file) {
+      const size = file.size > 1024 * 1024
+        ? `${(file.size / (1024 * 1024)).toFixed(1)} MB`
+        : `${(file.size / 1024).toFixed(0)} KB`;
+      simulateUpload(file.name, size, file.type);
+    }
   };
 
   const handleSubmitTask = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!submissionText.trim()) return;
+    if (!submissionText.trim() && !uploadedFile) return;
 
     setTasks(prev =>
       prev.map(t =>
-        t.id === selectedTask?.id ? { ...t, status: 'pending' } : t
+        t.id === selectedTask?.id
+          ? { ...t, status: 'pending' as const, submittedFile: uploadedFile || undefined }
+          : t
       )
     );
     setSelectedTask(null);
+    setUploadedFile(null);
     alert(tTasks('submitSuccess'));
+  };
+
+  const getFileIcon = (type: string) => {
+    const category = type.split('/')[0];
+    return FILE_TYPE_ICONS[category] || FILE_TYPE_ICONS['application'];
   };
 
   return (
@@ -100,7 +171,6 @@ export default function StudentTasks() {
 
       <div className="grid grid-cols-1 gap-4">
         {tasks.map((task) => {
-          const isAr = tCommon('appName') !== 'JoyfulPath';
           const title = isAr ? task.titleAr : task.titleEn;
           const instructions = isAr ? task.instructionsAr : task.instructionsEn;
           const feedback = isAr ? task.feedbackAr : task.feedbackEn;
@@ -155,6 +225,22 @@ export default function StudentTasks() {
                       </p>
                     </div>
                   )}
+
+                  {/* Show submitted file if exists */}
+                  {task.submittedFile && (
+                    <div className="flex items-center gap-3 p-2.5 bg-tertiary/5 rounded-lg border border-tertiary/20">
+                      <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${getFileIcon(task.submittedFile.type).color}`}>
+                        <span className="material-symbols-outlined text-[16px]">{getFileIcon(task.submittedFile.type).icon}</span>
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-xs font-bold text-on-surface truncate">{task.submittedFile.name}</p>
+                        <p className="text-[10px] text-on-surface-variant">{task.submittedFile.size}</p>
+                      </div>
+                      <span className="material-symbols-outlined text-[16px] text-tertiary" style={{ fontVariationSettings: "'FILL' 1" }}>
+                        check_circle
+                      </span>
+                    </div>
+                  )}
                 </div>
 
                 <div className="flex items-center">
@@ -180,10 +266,9 @@ export default function StudentTasks() {
           <form onSubmit={handleSubmitTask} className="space-y-4 pt-2">
             <div className="space-y-2">
               <label className="text-xs font-bold text-on-surface-variant">
-                {tCommon('appName') !== 'JoyfulPath' ? selectedTask.titleAr : selectedTask.titleEn}
+                {isAr ? selectedTask.titleAr : selectedTask.titleEn}
               </label>
               <textarea
-                required
                 rows={4}
                 value={submissionText}
                 onChange={(e) => setSubmissionText(e.target.value)}
@@ -192,18 +277,84 @@ export default function StudentTasks() {
               />
             </div>
 
-            <div className="border border-dashed border-outline-variant rounded-xl p-6 text-center hover:bg-surface-container transition duration-150 cursor-pointer">
-              <span className="material-symbols-outlined text-[32px] text-outline">upload_file</span>
-              <p className="text-xs text-on-surface-variant font-bold mt-1">
-                {tTasks('uploadFile')}
-              </p>
-            </div>
+            {/* Enhanced File Upload Zone */}
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept="image/*,audio/*,video/*,.pdf"
+              onChange={handleFileSelect}
+              className="hidden"
+            />
+
+            {!uploadedFile && !isUploading && (
+              <div
+                onClick={() => fileInputRef.current?.click()}
+                onDragOver={(e) => { e.preventDefault(); setIsDragOver(true); }}
+                onDragLeave={() => setIsDragOver(false)}
+                onDrop={handleDrop}
+                className={`border-2 border-dashed rounded-xl p-8 text-center transition-all duration-200 cursor-pointer ${
+                  isDragOver
+                    ? 'border-primary bg-primary/5 scale-[1.02]'
+                    : 'border-outline-variant hover:border-primary/50 hover:bg-surface-container'
+                }`}
+              >
+                <span className={`material-symbols-outlined text-[40px] transition-colors duration-200 ${isDragOver ? 'text-primary' : 'text-outline'}`}>
+                  cloud_upload
+                </span>
+                <p className="text-sm font-bold text-on-surface mt-2">
+                  {isAr ? 'اسحب الملف هنا أو اضغط لاختيار ملف' : 'Drag & drop your file here, or click to browse'}
+                </p>
+                <p className="text-[11px] text-on-surface-variant mt-1">
+                  {tTasks('uploadFile')}
+                </p>
+              </div>
+            )}
+
+            {/* Upload Progress */}
+            {isUploading && (
+              <div className="p-4 bg-surface-container rounded-xl border border-outline-variant/60 space-y-3">
+                <div className="flex items-center gap-3">
+                  <span className="material-symbols-outlined text-[20px] text-primary animate-spin">progress_activity</span>
+                  <span className="text-xs font-bold text-on-surface">{isAr ? 'جاري رفع الملف...' : 'Uploading file...'}</span>
+                </div>
+                <ProgressBar value={Math.min(uploadProgress, 100)} className="h-2.5" />
+                <p className="text-[10px] text-on-surface-variant text-end font-bold">{Math.min(Math.round(uploadProgress), 100)}%</p>
+              </div>
+            )}
+
+            {/* Uploaded File Preview */}
+            {uploadedFile && !isUploading && (
+              <div className="p-4 bg-tertiary/5 rounded-xl border border-tertiary/20 space-y-2">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${getFileIcon(uploadedFile.type).color}`}>
+                      <span className="material-symbols-outlined text-[20px]">{getFileIcon(uploadedFile.type).icon}</span>
+                    </div>
+                    <div>
+                      <p className="text-sm font-bold text-on-surface">{uploadedFile.name}</p>
+                      <p className="text-[11px] text-on-surface-variant">{uploadedFile.size}</p>
+                    </div>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => setUploadedFile(null)}
+                    className="p-1.5 hover:bg-error/10 rounded-lg transition-colors duration-150"
+                  >
+                    <span className="material-symbols-outlined text-[18px] text-error">close</span>
+                  </button>
+                </div>
+                <div className="flex items-center gap-1.5 text-xs font-bold text-tertiary">
+                  <span className="material-symbols-outlined text-[14px]" style={{ fontVariationSettings: "'FILL' 1" }}>check_circle</span>
+                  {isAr ? 'تم رفع الملف بنجاح' : 'File uploaded successfully'}
+                </div>
+              </div>
+            )}
 
             <div className="flex gap-3 justify-end pt-4 border-t border-outline-variant">
               <Button variant="outline" size="sm" type="button" onClick={() => setSelectedTask(null)}>
                 {tCommon('cancel')}
               </Button>
-              <Button variant="primary" size="sm" type="submit">
+              <Button variant="primary" size="sm" type="submit" disabled={!submissionText.trim() && !uploadedFile}>
                 {tCommon('submit')}
               </Button>
             </div>

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useTranslations } from 'next-intl';
 import { Card, CardContent, CardTitle, CardHeader, Button, Input } from '@/components/ui';
 
@@ -9,10 +9,38 @@ export default function AdminSettings() {
   const tSettings = useTranslations('settings');
   const tCommon = useTranslations('common');
 
+  const isAr = tCommon('appName') !== 'JoyfulPath';
   const [maintenance, setMaintenance] = useState(false);
   const [allowRegister, setAllowRegister] = useState(true);
   const [xpMultiplier, setXpMultiplier] = useState(1);
   const [backupLoading, setBackupLoading] = useState(false);
+  const [themePref, setThemePref] = useState<'light' | 'dark' | 'system'>('light');
+
+  useEffect(() => {
+    const saved = localStorage.getItem('joyfulpath-theme');
+    if (saved === 'dark') setThemePref('dark');
+    else if (saved === 'light') setThemePref('light');
+    else setThemePref('system');
+  }, []);
+
+  const handleThemeChange = (value: 'light' | 'dark' | 'system') => {
+    setThemePref(value);
+    if (value === 'dark') {
+      localStorage.setItem('joyfulpath-theme', 'dark');
+      document.documentElement.classList.add('dark');
+    } else if (value === 'light') {
+      localStorage.setItem('joyfulpath-theme', 'light');
+      document.documentElement.classList.remove('dark');
+    } else {
+      localStorage.removeItem('joyfulpath-theme');
+      const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+      if (prefersDark) {
+        document.documentElement.classList.add('dark');
+      } else {
+        document.documentElement.classList.remove('dark');
+      }
+    }
+  };
 
   const handleSave = (e: React.FormEvent) => {
     e.preventDefault();
@@ -39,6 +67,51 @@ export default function AdminSettings() {
       </div>
 
       <form onSubmit={handleSave} className="space-y-6">
+        {/* Theme Preference Card */}
+        <Card className="border border-outline-variant bg-surface-container-lowest shadow-sm">
+          <CardHeader>
+            <CardTitle className="text-lg font-black flex items-center gap-2">
+              <span className="material-symbols-outlined text-[20px]" style={{ fontVariationSettings: "'FILL' 1" }}>palette</span>
+              {isAr ? 'المظهر والسمة' : 'Theme & Appearance'}
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="p-6 pt-0">
+            <div className="grid grid-cols-3 gap-3">
+              {[
+                { value: 'light' as const, icon: 'light_mode', label: isAr ? 'فاتح' : 'Light', color: 'text-yellow-500' },
+                { value: 'dark' as const, icon: 'dark_mode', label: isAr ? 'داكن' : 'Dark', color: 'text-indigo-400' },
+                { value: 'system' as const, icon: 'desktop_windows', label: isAr ? 'النظام' : 'System', color: 'text-on-surface-variant' },
+              ].map((opt) => (
+                <button
+                  key={opt.value}
+                  type="button"
+                  onClick={() => handleThemeChange(opt.value)}
+                  className={`flex flex-col items-center gap-2 p-4 rounded-xl border-2 transition-all duration-200 ${
+                    themePref === opt.value
+                      ? 'border-primary bg-primary/5 shadow-sm'
+                      : 'border-outline-variant/60 bg-surface-container hover:bg-surface-container-high'
+                  }`}
+                >
+                  <span
+                    className={`material-symbols-outlined text-[28px] ${themePref === opt.value ? 'text-primary' : opt.color}`}
+                    style={{ fontVariationSettings: "'FILL' 1" }}
+                  >
+                    {opt.icon}
+                  </span>
+                  <span className={`text-xs font-bold ${themePref === opt.value ? 'text-primary' : 'text-on-surface-variant'}`}>
+                    {opt.label}
+                  </span>
+                  {themePref === opt.value && (
+                    <span className="material-symbols-outlined text-[16px] text-primary" style={{ fontVariationSettings: "'FILL' 1" }}>
+                      check_circle
+                    </span>
+                  )}
+                </button>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+
         {/* Toggle Preferences Card */}
         <Card className="border border-outline-variant bg-surface-container-lowest shadow-sm">
           <CardHeader>

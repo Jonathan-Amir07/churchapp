@@ -8,3 +8,4 @@ export { Skeleton, LessonCardSkeleton, LeaderboardRowSkeleton, type SkeletonProp
 export { Modal, type ModalProps } from './Modal';
 export { ToastContainer } from './Toast';
 export { QRScanner, type ScanResult } from './QRScanner';
+export { ThemeToggle } from './ThemeToggle';
