@@ -146,7 +146,7 @@ export function Topbar() {
 
           {/* Notification Dropdown */}
           {showNotifications && (
-            <div className="absolute top-full mt-2 end-0 w-[360px] max-h-[480px] bg-surface-container-lowest border border-outline-variant rounded-2xl shadow-elevated overflow-hidden z-50 animate-[scale-in_0.2s_ease-out]">
+            <div className="absolute top-full mt-2 end-0 w-[calc(100vw-32px)] sm:w-[360px] max-h-[480px] bg-surface-container-lowest border border-outline-variant rounded-2xl shadow-elevated overflow-hidden z-50 animate-[scale-in_0.2s_ease-out]">
               {/* Header */}
               <div className="flex items-center justify-between px-4 py-3 border-b border-outline-variant/60">
                 <h3 className="text-sm font-black text-on-surface">
@@ -220,16 +220,17 @@ export function Topbar() {
           variant="outline"
           size="sm"
           onClick={handleLocaleSwitch}
-          className="h-9 px-3 rounded-full text-xs font-bold bg-surface-container-low/50 hover:bg-surface-container border border-outline-variant/50"
+          className="h-9 px-2 sm:px-3 rounded-full text-xs font-bold bg-surface-container-low/50 hover:bg-surface-container border border-outline-variant/50"
           icon="language"
           iconPosition="start"
         >
-          {currentLocale === 'en' ? 'العربية' : 'English'}
+          <span className="hidden sm:inline">{currentLocale === 'en' ? 'العربية' : 'English'}</span>
+          <span className="sm:hidden uppercase">{currentLocale === 'en' ? 'ar' : 'en'}</span>
         </Button>
 
         {/* User profile dropdown and signout */}
         {user && (
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2 sm:gap-3">
             <div className="hidden sm:flex flex-col items-end text-end leading-tight">
               <span className="text-sm font-extrabold text-on-surface">{user.display_name}</span>
               <span className="text-[10px] uppercase font-bold tracking-wider text-on-surface-variant/80">
@@ -246,7 +247,7 @@ export function Topbar() {
 
             <button
               onClick={handleLogout}
-              className="p-2 hover:bg-surface-container rounded-full text-outline hover:text-error transition-all duration-150"
+              className="hidden sm:inline-flex p-2 hover:bg-surface-container rounded-full text-outline hover:text-error transition-all duration-150"
               title={tAuth('logout')}
               aria-label="Logout"
             >

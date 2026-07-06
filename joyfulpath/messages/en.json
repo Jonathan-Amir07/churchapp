@@ -63,7 +63,8 @@
     "classes": "Classes",
     "rewards": "Rewards",
     "analytics": "Analytics",
-    "settings": "Settings"
+    "settings": "Settings",
+    "more": "More"
   },
   "dashboard": {
     "welcomeMessage": "You're only {xpNeeded} XP away from Level {nextLevel}! Keep going!",

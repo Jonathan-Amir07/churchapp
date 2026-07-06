@@ -63,7 +63,8 @@
     "classes": "الفصول",
     "rewards": "المكافآت",
     "analytics": "التحليلات",
-    "settings": "الإعدادات"
+    "settings": "الإعدادات",
+    "more": "المزيد"
   },
   "dashboard": {
     "welcomeMessage": "أنت على بعد {xpNeeded} نقطة خبرة من المستوى {nextLevel}! استمر!",
