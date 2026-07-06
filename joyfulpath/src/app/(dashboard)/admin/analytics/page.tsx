@@ -85,10 +85,10 @@ export default function AdminAnalytics() {
       {/* ── Top Stats Cards ── */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         {[
-          { label: tAnalytics('attendanceAverage'), value: '88.5%', trend: '+4.2%', icon: 'event_available', iconBg: 'bg-blue-50 text-blue-500' },
-          { label: tAnalytics('completionRate'), value: '74.2%', trend: '+8.1%', icon: 'task_alt', iconBg: 'bg-green-50 text-green-500' },
-          { label: isAr ? 'إجمالي الطلاب' : 'Total Students', value: '62', trend: '+5', icon: 'groups', iconBg: 'bg-purple-50 text-purple-500' },
-          { label: tAnalytics('totalPointsRedeemed'), value: '1,450', trend: '+320', icon: 'redeem', iconBg: 'bg-orange-50 text-orange-500' },
+          { label: tAnalytics('attendanceAverage'), value: '88.5%', trend: '+4.2%', icon: 'event_available', iconBg: 'bg-blue-50 dark:bg-blue-950/30 text-blue-500 dark:text-blue-400' },
+          { label: tAnalytics('completionRate'), value: '74.2%', trend: '+8.1%', icon: 'task_alt', iconBg: 'bg-green-50 dark:bg-green-950/30 text-green-500 dark:text-green-400' },
+          { label: isAr ? 'إجمالي الطلاب' : 'Total Students', value: '62', trend: '+5', icon: 'groups', iconBg: 'bg-purple-50 dark:bg-purple-950/30 text-purple-500 dark:text-purple-400' },
+          { label: tAnalytics('totalPointsRedeemed'), value: '1,450', trend: '+320', icon: 'redeem', iconBg: 'bg-orange-50 dark:bg-orange-950/30 text-orange-500 dark:text-orange-400' },
         ].map((stat, i) => (
           <Card key={i} className="border border-outline-variant bg-surface-container-lowest shadow-sm">
             <CardContent className="p-5 flex items-center justify-between">
@@ -335,7 +335,7 @@ export default function AdminAnalytics() {
                   <span>{c.name}</span>
                   <span>{tAnalytics('percentCompleted', { value: c.value })}</span>
                 </div>
-                <ProgressBar value={c.value} className="h-3" />
+                <ProgressBar value={c.value} size="md" />
               </div>
             ))}
           </CardContent>

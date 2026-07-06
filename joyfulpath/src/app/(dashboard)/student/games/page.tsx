@@ -361,7 +361,7 @@ export default function StudentGames() {
                       </p>
                     </div>
                     {plan.completed && (
-                      <span className="bg-emerald-50 text-emerald-600 border border-emerald-200 px-3 py-1 rounded-full text-[10px] font-extrabold flex items-center gap-1 uppercase select-none">
+                      <span className="bg-emerald-50 dark:bg-emerald-950/20 text-emerald-600 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-900/50 px-3 py-1 rounded-full text-[10px] font-extrabold flex items-center gap-1 uppercase select-none">
                         <span className="material-symbols-outlined text-[14px]">check_circle</span>
                         Plan Finished
                       </span>
@@ -373,7 +373,7 @@ export default function StudentGames() {
                       <span>Chapters Read</span>
                       <span>{completedCount} / {plan.chapters.length}</span>
                     </div>
-                    <ProgressBar value={progressPct} className="h-3 bg-surface-container-high" />
+                    <ProgressBar value={progressPct} size="md" />
                   </div>
 
                   <div className="space-y-2 pt-2 border-t border-outline-variant/40">
@@ -418,7 +418,7 @@ export default function StudentGames() {
                     </h3>
                   </div>
                   {verse.isMastered && (
-                    <span className="bg-yellow-50 text-yellow-600 border border-yellow-200 px-3 py-1 rounded-full text-[10px] font-extrabold flex items-center gap-1 uppercase select-none">
+                    <span className="bg-yellow-50 dark:bg-yellow-950/20 text-yellow-600 dark:text-yellow-400 border border-yellow-200 dark:border-yellow-900/50 px-3 py-1 rounded-full text-[10px] font-extrabold flex items-center gap-1 uppercase select-none">
                       <span className="material-symbols-outlined text-[14px]">star</span>
                       Mastered
                     </span>

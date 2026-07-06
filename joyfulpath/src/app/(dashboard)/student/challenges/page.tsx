@@ -55,7 +55,7 @@ export default function StudentChallenges() {
                         <span>Progress</span>
                         <span>{c.current} / {c.target}</span>
                       </div>
-                      <ProgressBar value={progressPct} className="h-3 bg-surface-container-high" />
+                      <ProgressBar value={progressPct} size="md" />
                     </div>
 
                     <div className="flex justify-between items-center pt-3 border-t border-outline-variant/40">
@@ -118,7 +118,7 @@ export default function StudentChallenges() {
                         <span>Progress</span>
                         <span>{c.current} / {c.target}</span>
                       </div>
-                      <ProgressBar value={progressPct} className="h-3 bg-surface-container-high" />
+                      <ProgressBar value={progressPct} size="md" />
                     </div>
 
                     <div className="flex justify-between items-center pt-3 border-t border-outline-variant/40">
@@ -181,7 +181,7 @@ export default function StudentChallenges() {
                         <span>Progress</span>
                         <span>{c.current} / {c.target}</span>
                       </div>
-                      <ProgressBar value={progressPct} className="h-3 bg-surface-container-high" />
+                      <ProgressBar value={progressPct} size="md" />
                     </div>
 
                     <div className="flex justify-between items-center pt-3 border-t border-outline-variant/40">

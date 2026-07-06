@@ -103,7 +103,7 @@ export default function ParentReports() {
                     <span>{p.lessons?.title || 'Bible Study'}</span>
                     <span>{p.progress_pct}%</span>
                   </div>
-                  <ProgressBar value={p.progress_pct} className="h-3 bg-surface-container-low" />
+                  <ProgressBar value={p.progress_pct} size="md" />
                 </div>
               ))}
             </CardContent>

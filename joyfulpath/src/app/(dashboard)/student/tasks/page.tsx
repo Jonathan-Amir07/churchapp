@@ -69,10 +69,10 @@ const MOCK_TASKS: Task[] = [
 ];
 
 const FILE_TYPE_ICONS: Record<string, { icon: string; color: string }> = {
-  'image': { icon: 'image', color: 'text-blue-500 bg-blue-50' },
-  'audio': { icon: 'headphones', color: 'text-purple-500 bg-purple-50' },
-  'video': { icon: 'videocam', color: 'text-teal-500 bg-teal-50' },
-  'application': { icon: 'description', color: 'text-orange-500 bg-orange-50' },
+  'image': { icon: 'image', color: 'text-blue-500 dark:text-blue-400 bg-blue-50 dark:bg-blue-950/20' },
+  'audio': { icon: 'headphones', color: 'text-purple-500 dark:text-purple-400 bg-purple-50 dark:bg-purple-950/20' },
+  'video': { icon: 'videocam', color: 'text-teal-500 dark:text-teal-400 bg-teal-50 dark:bg-teal-950/20' },
+  'application': { icon: 'description', color: 'text-orange-500 dark:text-orange-400 bg-orange-50 dark:bg-orange-950/20' },
 };
 
 export default function StudentTasks() {
@@ -317,7 +317,7 @@ export default function StudentTasks() {
                   <span className="material-symbols-outlined text-[20px] text-primary animate-spin">progress_activity</span>
                   <span className="text-xs font-bold text-on-surface">{isAr ? 'جاري رفع الملف...' : 'Uploading file...'}</span>
                 </div>
-                <ProgressBar value={Math.min(uploadProgress, 100)} className="h-2.5" />
+                <ProgressBar value={Math.min(uploadProgress, 100)} size="sm" />
                 <p className="text-[10px] text-on-surface-variant text-end font-bold">{Math.min(Math.round(uploadProgress), 100)}%</p>
               </div>
             )}

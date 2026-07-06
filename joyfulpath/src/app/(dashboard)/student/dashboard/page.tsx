@@ -85,8 +85,8 @@ export default function StudentDashboard() {
                 {streak} {t('days')}
               </h3>
             </div>
-            <div className="w-12 h-12 rounded-full bg-orange-100 flex items-center justify-center">
-              <span className="material-symbols-outlined text-[28px] text-orange-500" style={{ fontVariationSettings: "'FILL' 1" }}>
+            <div className="w-12 h-12 rounded-full bg-orange-100 dark:bg-orange-950/30 flex items-center justify-center animate-[pulse-soft_2s_infinite]">
+              <span className="material-symbols-outlined text-[28px] text-orange-500 dark:text-orange-400" style={{ fontVariationSettings: "'FILL' 1" }}>
                 local_fire_department
               </span>
             </div>
@@ -104,8 +104,8 @@ export default function StudentDashboard() {
                 {points} {tGamification('points')}
               </h3>
             </div>
-            <div className="w-12 h-12 rounded-full bg-yellow-100 flex items-center justify-center">
-              <span className="material-symbols-outlined text-[28px] text-yellow-600" style={{ fontVariationSettings: "'FILL' 1" }}>
+            <div className="w-12 h-12 rounded-full bg-yellow-100 dark:bg-yellow-950/30 flex items-center justify-center">
+              <span className="material-symbols-outlined text-[28px] text-yellow-600 dark:text-yellow-400" style={{ fontVariationSettings: "'FILL' 1" }}>
                 stars
               </span>
             </div>
@@ -123,8 +123,8 @@ export default function StudentDashboard() {
                 {currentLevelTitle}
               </h3>
             </div>
-            <div className="w-12 h-12 rounded-full bg-blue-100 flex items-center justify-center">
-              <span className="material-symbols-outlined text-[28px] text-blue-500" style={{ fontVariationSettings: "'FILL' 1" }}>
+            <div className="w-12 h-12 rounded-full bg-blue-100 dark:bg-blue-950/30 flex items-center justify-center">
+              <span className="material-symbols-outlined text-[28px] text-blue-500 dark:text-blue-400" style={{ fontVariationSettings: "'FILL' 1" }}>
                 award_star
               </span>
             </div>
@@ -145,7 +145,7 @@ export default function StudentDashboard() {
           </div>
         </CardHeader>
         <CardContent className="p-6 pt-0 space-y-3">
-          <ProgressBar value={progressPct} className="h-4 bg-surface-container-high" />
+          <ProgressBar value={progressPct} size="lg" />
           <div className="flex justify-between text-xs font-bold text-on-surface-variant/80">
             <span>Level {currentLevelNum}</span>
             <span>Level {currentLevelNum + 1}</span>
@@ -202,7 +202,7 @@ export default function StudentDashboard() {
         {/* Learning Hub & Games */}
         <Card variant="interactive" className="border border-outline-variant bg-surface-container-lowest shadow-sm flex flex-col justify-between">
           <CardContent className="p-5 space-y-4">
-            <div className="w-10 h-10 rounded-xl bg-teal-100 flex items-center justify-center text-teal-600">
+            <div className="w-10 h-10 rounded-xl bg-teal-100 dark:bg-teal-950/30 flex items-center justify-center text-teal-600 dark:text-teal-400">
               <span className="material-symbols-outlined text-[24px]">sports_esports</span>
             </div>
             <div className="space-y-1">
@@ -214,7 +214,7 @@ export default function StudentDashboard() {
           </CardContent>
           <div className="p-5 pt-0">
             <Link href="/student/games">
-              <Button variant="outline" fullWidth size="sm" className="border-teal-200 text-teal-700 hover:bg-teal-50">
+              <Button variant="outline" fullWidth size="sm" className="border-teal-200 dark:border-teal-900/50 text-teal-700 dark:text-teal-400 hover:bg-teal-50 dark:hover:bg-teal-950/20">
                 Go to Games
               </Button>
             </Link>
@@ -245,7 +245,7 @@ export default function StudentDashboard() {
                     <span>Progress</span>
                     <span>{activeDaily.current} / {activeDaily.target}</span>
                   </div>
-                  <ProgressBar value={(activeDaily.current / activeDaily.target) * 100} className="h-2.5 bg-surface-container-high" />
+                  <ProgressBar value={(activeDaily.current / activeDaily.target) * 100} size="sm" />
                 </div>
                 
                 <Link href="/student/challenges" className="block pt-2">
@@ -293,10 +293,10 @@ export default function StudentDashboard() {
                     iconColor = 'text-success bg-success/10';
                   } else if (activity.action === 'badge_unlocked') {
                     icon = 'military_tech';
-                    iconColor = 'text-yellow-600 bg-yellow-50';
+                    iconColor = 'text-yellow-600 dark:text-yellow-400 bg-yellow-50 dark:bg-yellow-950/20';
                   } else if (activity.action === 'level_gained') {
                     icon = 'award_star';
-                    iconColor = 'text-purple-600 bg-purple-50';
+                    iconColor = 'text-purple-600 dark:text-purple-400 bg-purple-50 dark:bg-purple-950/20';
                   }
 
                   return (
