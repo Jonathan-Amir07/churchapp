@@ -462,3 +462,62 @@ html.dark .btn-tactile-secondary {
 html.dark .btn-tactile-success {
   box-shadow: 0 4px 0 0 #003822;
 }
+
+/* ============================================
+   Custom Dark Mode Rules & Typography Overrides
+   ============================================ */
+
+/* Force page background and text color globally in dark mode */
+html.dark,
+html.dark body,
+html.dark .bg-background {
+  background-color: #111416 !important;
+  color: #e1e3e5 !important;
+}
+
+/* Force card background and border colors */
+html.dark .card {
+  background-color: #0c0e10 !important;
+  border-color: #282a2d !important;
+}
+
+/* Typography readability in dark mode */
+html.dark .card h1,
+html.dark .card h2,
+html.dark .card h3,
+html.dark .card h4,
+html.dark .card h5,
+html.dark .card h6 {
+  color: #e1e3e5 !important;
+}
+
+html.dark .card p,
+html.dark .card span {
+  color: #e1e3e5;
+}
+
+html.dark .card .text-on-surface {
+  color: #e1e3e5 !important;
+}
+
+html.dark .card .text-on-surface-variant {
+  color: #c2c6d6 !important;
+}
+
+/* Force progress bar track background in dark mode */
+html.dark .bg-surface-container-high,
+html.dark .progress-bar-track {
+  background-color: #282a2d !important;
+}
+
+/* Force progress bar track rounding & clipping */
+.progress-bar-track {
+  border-radius: 9999px !important;
+  overflow: hidden !important;
+  isolation: isolate !important;
+}
+
+/* Ensure rounded-full utility class behaves correctly */
+.rounded-full {
+  border-radius: 9999px !important;
+}

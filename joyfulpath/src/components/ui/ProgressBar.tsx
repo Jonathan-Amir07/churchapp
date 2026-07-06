@@ -51,7 +51,7 @@ export function ProgressBar({
       )}
       <div
         className={cn(
-          'w-full rounded-full overflow-hidden bg-surface-container-high',
+          'w-full rounded-full overflow-hidden bg-surface-container-high progress-bar-track',
           sizeStyles[size]
         )}
         role="progressbar"
