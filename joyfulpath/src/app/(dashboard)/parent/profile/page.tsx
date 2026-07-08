@@ -4,15 +4,26 @@ import { useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { Card, CardContent, CardHeader, CardTitle, Button, Input, Avatar } from '@/components/ui';
 import { useUser } from '@/hooks/useUser';
+import { useRouter } from 'next/navigation';
+import { createClient } from '@/lib/supabase/client';
 
 export default function ParentProfile() {
   const { profile } = useUser();
+  const router = useRouter();
+  const supabase = createClient();
   const tNav = useTranslations('nav');
   const tCommon = useTranslations('common');
+  const tAuth = useTranslations('auth');
   const tProfile = useTranslations('profile');
 
   const isAr = tCommon('appName') !== 'JoyfulPath';
   const user = profile;
+
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
+    router.push('/login');
+    router.refresh();
+  };
 
   const [name, setName] = useState(user?.display_name || 'Samuel Amir');
   const [email, setEmail] = useState(user?.email || 'samuel.amir@example.com');
@@ -53,13 +64,24 @@ export default function ParentProfile() {
 
   return (
     <div className="space-y-6 animate-[slide-up_0.4s_ease-out] max-w-4xl">
-      <div className="flex flex-col gap-2">
-        <h1 className="text-3xl font-extrabold tracking-tight text-on-surface">
-          {tNav('profile')}
-        </h1>
-        <p className="text-on-surface-variant text-sm">
-          {tProfile('description')}
-        </p>
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <div className="flex flex-col gap-2">
+          <h1 className="text-3xl font-extrabold tracking-tight text-on-surface">
+            {tNav('profile')}
+          </h1>
+          <p className="text-on-surface-variant text-sm">
+            {tProfile('description')}
+          </p>
+        </div>
+        <Button
+          variant="outline"
+          onClick={handleLogout}
+          className="border-error text-error hover:bg-error/10 self-start shrink-0"
+          icon="logout"
+          iconPosition="start"
+        >
+          {tAuth('logout')}
+        </Button>
       </div>
 
       {/* Profile Card */}
