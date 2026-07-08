@@ -213,7 +213,9 @@ export function Topbar() {
         </div>
 
         {/* Theme Toggle */}
-        <ThemeToggle />
+        <div className="hidden sm:block">
+          <ThemeToggle />
+        </div>
 
         {/* Language Toggler */}
         <Button
@@ -225,7 +227,6 @@ export function Topbar() {
           iconPosition="start"
         >
           <span className="hidden sm:inline">{currentLocale === 'en' ? 'العربية' : 'English'}</span>
-          <span className="sm:hidden uppercase">{currentLocale === 'en' ? 'ar' : 'en'}</span>
         </Button>
 
         {/* User profile dropdown and signout */}
