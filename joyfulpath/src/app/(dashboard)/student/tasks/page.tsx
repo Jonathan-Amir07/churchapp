@@ -1,6 +1,7 @@
 'use client';
 
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
+import { createClient } from '@/lib/supabase/client';
 import { useTranslations } from 'next-intl';
 import { Card, CardContent, CardTitle, Button, Modal, BadgeTag, ProgressBar } from '@/components/ui';
 
@@ -8,6 +9,7 @@ interface UploadedFile {
   name: string;
   size: string;
   type: string;
+  url?: string;
 }
 
 interface Task {
@@ -23,64 +25,16 @@ interface Task {
   submittedFile?: UploadedFile;
 }
 
-const MOCK_TASKS: Task[] = [
-  {
-    id: '1',
-    titleEn: 'Memorize Genesis 1:1 Verse',
-    titleAr: 'تسميع آية تكوين ١:١',
-    points: 30,
-    status: 'approved',
-    instructionsEn: 'Record an audio reciting the Genesis 1:1 verse word-for-word and upload it.',
-    instructionsAr: 'قم بتسجيل مقطع صوتي لتسميع آية تكوين ١:١ كلمة بكلمة وارفعه هنا.',
-    feedbackEn: 'Excellent pronunciation and perfect memorization! Keep it up!',
-    feedbackAr: 'نطق ممتاز وحفظ متقن جداً! استمر في هذا الأداء الرائع!',
-    submittedFile: { name: 'genesis_1_1_recitation.mp3', size: '1.4 MB', type: 'audio/mpeg' },
-  },
-  {
-    id: '2',
-    titleEn: 'Draw the Creation Days Activity',
-    titleAr: 'نشاط رسم أيام الخليقة',
-    points: 30,
-    status: 'pending',
-    instructionsEn: 'Draw a picture illustrating your favorite day of Creation and upload a photo.',
-    instructionsAr: 'ارسم لوحة توضح يومك المفضل من أيام الخليقة وارفع صورتها.',
-    submittedFile: { name: 'creation_day3_drawing.jpg', size: '2.8 MB', type: 'image/jpeg' },
-  },
-  {
-    id: '3',
-    titleEn: 'Memorize Genesis 9:13 Verse',
-    titleAr: 'تسميع آية تكوين ٩:١٣',
-    points: 30,
-    status: 'revise',
-    instructionsEn: 'Recite Genesis 9:13. Ensure the reference is mentioned clearly at the start.',
-    instructionsAr: 'قم بتسجيل مقطع صوتي لتسميع آية تكوين ٩:١٣ وتأكد من ذكر الشاهد بوضوح في البداية.',
-    feedbackEn: 'You missed the last part of the verse. Please re-record and submit again!',
-    feedbackAr: 'لقد نسيت الجزء الأخير من الآية. يرجى إعادة التسجيل والتسليم مرة أخرى!',
-  },
-  {
-    id: '4',
-    titleEn: "Color Noah's Ark Illustration",
-    titleAr: 'تلوين رسمة فلك نوح',
-    points: 30,
-    status: 'not-started',
-    instructionsEn: 'Download the worksheet, color Noah\'s Ark and the rainbow, then take a photo and upload.',
-    instructionsAr: 'قم بتنزيل ورقة العمل وتلوين فلك نوح وقوس قزح، ثم التقط صورة وقم برفعها.',
-  },
-];
 
-const FILE_TYPE_ICONS: Record<string, { icon: string; color: string }> = {
-  'image': { icon: 'image', color: 'text-blue-500 dark:text-blue-400 bg-blue-50 dark:bg-blue-950/20' },
-  'audio': { icon: 'headphones', color: 'text-purple-500 dark:text-purple-400 bg-purple-50 dark:bg-purple-950/20' },
-  'video': { icon: 'videocam', color: 'text-teal-500 dark:text-teal-400 bg-teal-50 dark:bg-teal-950/20' },
-  'application': { icon: 'description', color: 'text-orange-500 dark:text-orange-400 bg-orange-50 dark:bg-orange-950/20' },
-};
 
 export default function StudentTasks() {
   const tNav = useTranslations('nav');
   const tTasks = useTranslations('tasks');
   const tCommon = useTranslations('common');
   
-  const [tasks, setTasks] = useState<Task[]>(MOCK_TASKS);
+  const supabase = createClient();
+  const [tasks, setTasks] = useState<Task[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
   const [selectedTask, setSelectedTask] = useState<Task | null>(null);
   const [submissionText, setSubmissionText] = useState('');
   const [uploadedFile, setUploadedFile] = useState<UploadedFile | null>(null);
@@ -90,6 +44,37 @@ export default function StudentTasks() {
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const isAr = tCommon('appName') !== 'JoyfulPath';
+  
+  const FILE_TYPE_ICONS: Record<string, { icon: string; color: string }> = {
+    'image': { icon: 'image', color: 'text-blue-500 dark:text-blue-400 bg-blue-50 dark:bg-blue-950/20' },
+    'audio': { icon: 'headphones', color: 'text-purple-500 dark:text-purple-400 bg-purple-50 dark:bg-purple-950/20' },
+    'video': { icon: 'videocam', color: 'text-teal-500 dark:text-teal-400 bg-teal-50 dark:bg-teal-950/20' },
+    'application': { icon: 'description', color: 'text-orange-500 dark:text-orange-400 bg-orange-50 dark:bg-orange-950/20' },
+  };
+
+  useEffect(() => {
+    async function fetchTasks() {
+      // Mock fetch: use supabase.from('tasks') in a real scenario
+      const { data, error } = await supabase.from('tasks').select('*');
+      if (!error && data) {
+        // Map data to Task interface
+        setTasks(data.map((t: any) => ({
+          id: t.id,
+          titleEn: t.title,
+          titleAr: t.title, // DB currently doesn't have title_ar for tasks
+          points: t.points_reward || 30,
+          status: t.status === 'draft' ? 'not-started' : t.status,
+          instructionsEn: t.description,
+          instructionsAr: t.description,
+        })));
+      } else {
+        // Fallback to empty if table is empty or error
+        setTasks([]);
+      }
+      setIsLoading(false);
+    }
+    fetchTasks();
+  }, [supabase]);
 
   const handleOpenSubmit = (task: Task) => {
     setSelectedTask(task);
@@ -98,59 +83,84 @@ export default function StudentTasks() {
     setUploadProgress(0);
   };
 
-  const simulateUpload = (fileName: string, fileSize: string, fileType: string) => {
+  const handleFileUpload = async (file: File) => {
     setIsUploading(true);
-    setUploadProgress(0);
-    
-    const interval = setInterval(() => {
-      setUploadProgress(prev => {
-        if (prev >= 100) {
-          clearInterval(interval);
-          setIsUploading(false);
-          setUploadedFile({ name: fileName, size: fileSize, type: fileType });
-          return 100;
-        }
-        return prev + Math.random() * 25 + 5;
+    setUploadProgress(10);
+    const size = file.size > 1024 * 1024
+      ? `${(file.size / (1024 * 1024)).toFixed(1)} MB`
+      : `${(file.size / 1024).toFixed(0)} KB`;
+
+    try {
+      if (!selectedTask) throw new Error('No task selected');
+      
+      const { data, error } = await supabase.storage
+        .from('homework')
+        .upload(`student-submissions/${selectedTask.id}/${file.name}`, file, {
+           upsert: true 
+        });
+
+      if (error) throw error;
+      setUploadProgress(100);
+      
+      const { data: urlData } = supabase.storage.from('homework').getPublicUrl(data.path);
+
+      setUploadedFile({ 
+        name: file.name, 
+        size, 
+        type: file.type,
+        url: urlData.publicUrl 
       });
-    }, 200);
+    } catch (err) {
+      console.error('Upload failed:', err);
+      alert('File upload failed. Please try again.');
+    } finally {
+      setIsUploading(false);
+    }
   };
 
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    if (file) {
-      const size = file.size > 1024 * 1024
-        ? `${(file.size / (1024 * 1024)).toFixed(1)} MB`
-        : `${(file.size / 1024).toFixed(0)} KB`;
-      simulateUpload(file.name, size, file.type);
-    }
+    if (file) handleFileUpload(file);
   };
 
   const handleDrop = (e: React.DragEvent) => {
     e.preventDefault();
     setIsDragOver(false);
     const file = e.dataTransfer.files[0];
-    if (file) {
-      const size = file.size > 1024 * 1024
-        ? `${(file.size / (1024 * 1024)).toFixed(1)} MB`
-        : `${(file.size / 1024).toFixed(0)} KB`;
-      simulateUpload(file.name, size, file.type);
-    }
+    if (file) handleFileUpload(file);
   };
 
-  const handleSubmitTask = (e: React.FormEvent) => {
+  const handleSubmitTask = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!submissionText.trim() && !uploadedFile) return;
+    if (!selectedTask) return;
 
-    setTasks(prev =>
-      prev.map(t =>
-        t.id === selectedTask?.id
-          ? { ...t, status: 'pending' as const, submittedFile: uploadedFile || undefined }
-          : t
-      )
-    );
-    setSelectedTask(null);
-    setUploadedFile(null);
-    alert(tTasks('submitSuccess'));
+    try {
+      const userRes = await supabase.auth.getUser();
+      const userId = userRes.data.user?.id || 'mock-student-id';
+      
+      await supabase.from('task_submissions').insert({
+        task_id: selectedTask.id,
+        student_id: userId,
+        content: submissionText,
+        attachment_url: uploadedFile?.url || null,
+        status: 'pending'
+      });
+
+      setTasks(prev =>
+        prev.map(t =>
+          t.id === selectedTask.id
+            ? { ...t, status: 'pending' as const, submittedFile: uploadedFile || undefined }
+            : t
+        )
+      );
+      setSelectedTask(null);
+      setUploadedFile(null);
+      alert(tTasks('submitSuccess'));
+    } catch (err) {
+      console.error(err);
+      alert('Failed to submit task');
+    }
   };
 
   const getFileIcon = (type: string) => {
@@ -215,6 +225,7 @@ export default function StudentTasks() {
                     </p>
                   </div>
 
+
                   {feedback && (
                     <div className="p-3.5 bg-surface-container rounded-xl border border-outline-variant/60">
                       <p className="text-xs font-bold text-primary mb-0.5">
@@ -254,6 +265,19 @@ export default function StudentTasks() {
             </Card>
           );
         })}
+        
+        {tasks.length === 0 && !isLoading && (
+          <div className="text-center py-16 bg-surface-container-lowest border border-outline-variant/60 rounded-2xl">
+            <span className="material-symbols-outlined text-[48px] text-outline">assignment</span>
+            <p className="text-on-surface-variant text-sm font-bold mt-2">{tTasks('noTasks')}</p>
+          </div>
+        )}
+
+        {isLoading && (
+          <div className="flex justify-center py-16">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+          </div>
+        )}
       </div>
 
       {/* Submission Modal */}

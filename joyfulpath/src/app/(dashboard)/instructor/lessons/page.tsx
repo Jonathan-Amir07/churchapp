@@ -1,6 +1,7 @@
 'use client';
 
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
+import { createClient } from '@/lib/supabase/client';
 import { useTranslations } from 'next-intl';
 import { Card, CardContent, CardTitle, CardDescription, Button, Modal, Input } from '@/components/ui';
 
@@ -8,6 +9,15 @@ interface LessonAttachment {
   name: string;
   type: string;
   size: string;
+  url?: string;
+}
+
+interface FormAttachment {
+  name: string;
+  type: string;
+  size: string;
+  rawSize: number;
+  file: File;
 }
 
 interface Lesson {
@@ -29,35 +39,7 @@ const FILE_ICONS: Record<string, { icon: string; color: string }> = {
   video: { icon: 'videocam', color: 'text-teal-500 bg-teal-50' },
 };
 
-const INITIAL_LESSONS: Lesson[] = [
-  {
-    id: '1',
-    titleEn: 'The Story of Creation',
-    titleAr: 'قصة الخلق',
-    categoryEn: 'Genesis',
-    categoryAr: 'التكوين',
-    verseEn: '"In the beginning, God created the heavens and the earth." — Genesis 1:1',
-    verseAr: '«فِي الْبَدْءِ خَلَقَ اللهُ السَّمَاوَاتِ وَالأَرْضَ.» — تكوين ١:١',
-    levelRequired: 1,
-    attachments: [
-      { name: 'Creation_Days_Worksheet.pdf', type: 'pdf', size: '1.2 MB' },
-      { name: 'Creation_Illustration.png', type: 'image', size: '820 KB' },
-    ],
-  },
-  {
-    id: '2',
-    titleEn: "Noah's Ark & The Rainbow Promise",
-    titleAr: 'فلك نوح وعهد قوس قزح',
-    categoryEn: 'Genesis',
-    categoryAr: 'التكوين',
-    verseEn: '"I have set my rainbow in the clouds..." — Genesis 9:13',
-    verseAr: '«وَضَعْتُ قَوْسِي فِي السَّحَابِ...» — تكوين ٩:١٣',
-    levelRequired: 1,
-    attachments: [
-      { name: 'Noahs_Ark_Coloring.pdf', type: 'pdf', size: '950 KB' },
-    ],
-  },
-];
+
 
 export default function InstructorLessons() {
   const tNav = useTranslations('nav');
@@ -65,7 +47,10 @@ export default function InstructorLessons() {
   const tCommon = useTranslations('common');
 
   const isAr = tCommon('appName') !== 'JoyfulPath';
-  const [lessons, setLessons] = useState<Lesson[]>(INITIAL_LESSONS);
+  const supabase = createClient();
+  const [lessons, setLessons] = useState<Lesson[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isUploading, setIsUploading] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -77,7 +62,42 @@ export default function InstructorLessons() {
   const [verseEn, setVerseEn] = useState('');
   const [verseAr, setVerseAr] = useState('');
   const [levelReq, setLevelReq] = useState(1);
-  const [formAttachments, setFormAttachments] = useState<LessonAttachment[]>([]);
+  const [formAttachments, setFormAttachments] = useState<FormAttachment[]>([]);
+
+  useEffect(() => {
+    async function fetchLessons() {
+      const { data: lessonsData, error: lessonsError } = await supabase.from('lessons').select('*');
+      if (lessonsError || !lessonsData) {
+        setIsLoading(false);
+        return;
+      }
+      
+      const { data: attData } = await supabase.from('lesson_attachments').select('*');
+
+      const mappedLessons: Lesson[] = lessonsData.map((l: any) => {
+        const lessonAtts = (attData || []).filter((a: any) => a.lesson_id === l.id).map((a: any) => ({
+          name: a.file_name,
+          type: a.file_type,
+          size: `${Math.round(a.file_size / 1024)} KB`,
+          url: a.file_url,
+        }));
+        return {
+          id: l.id,
+          titleEn: l.title,
+          titleAr: l.title_ar || l.title,
+          categoryEn: l.category || 'General',
+          categoryAr: l.category_ar || 'عام',
+          verseEn: l.verse || '',
+          verseAr: l.verse_ar || '',
+          levelRequired: l.level_required || 1,
+          attachments: lessonAtts,
+        };
+      });
+      setLessons(mappedLessons);
+      setIsLoading(false);
+    }
+    fetchLessons();
+  }, [supabase]);
 
   const handleAddFile = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -91,7 +111,7 @@ export default function InstructorLessons() {
     else if (['mp3', 'wav', 'ogg'].includes(ext)) type = 'audio';
     else if (['mp4', 'webm', 'mov'].includes(ext)) type = 'video';
 
-    setFormAttachments(prev => [...prev, { name: file.name, type, size }]);
+    setFormAttachments(prev => [...prev, { name: file.name, type, size, rawSize: file.size, file }]);
     if (fileInputRef.current) fileInputRef.current.value = '';
   };
 
@@ -99,36 +119,81 @@ export default function InstructorLessons() {
     setFormAttachments(prev => prev.filter((_, i) => i !== idx));
   };
 
-  const handleCreate = (e: React.FormEvent) => {
+  const handleCreate = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!titleEn || !titleAr || !verseEn || !verseAr) {
       alert(tLessons('fillAllFields'));
       return;
     }
 
-    const newLesson: Lesson = {
-      id: String(Date.now()),
-      titleEn,
-      titleAr,
-      categoryEn,
-      categoryAr,
-      verseEn,
-      verseAr,
-      levelRequired: Number(levelReq),
-      attachments: formAttachments,
-    };
+    setIsUploading(true);
+    try {
+      // 1. Insert lesson
+      const { data: newLessonData, error: lessonErr } = await supabase.from('lessons').insert({
+        title: titleEn,
+        title_ar: titleAr,
+        category: categoryEn,
+        category_ar: categoryAr,
+        verse: verseEn,
+        verse_ar: verseAr,
+        level_required: Number(levelReq),
+        content: 'New Lesson Content', // placeholder
+        class_id: 'class-1' // mock class_id 
+      }).select();
 
-    setLessons((prev) => [newLesson, ...prev]);
-    setIsOpen(false);
-    alert(tLessons('addSuccess'));
+      if (lessonErr || !newLessonData || newLessonData.length === 0) throw new Error('Failed to create lesson');
+      const lessonId = newLessonData[0].id;
 
-    // Reset Form
-    setTitleEn('');
-    setTitleAr('');
-    setVerseEn('');
-    setVerseAr('');
-    setLevelReq(1);
-    setFormAttachments([]);
+      // 2. Upload attachments
+      const uploadedAtts: LessonAttachment[] = [];
+      for (const fileObj of formAttachments) {
+         const { data: uploadData, error: uploadErr } = await supabase.storage.from('lesson-materials').upload(`lessons/${lessonId}/${fileObj.name}`, fileObj.file);
+         let url = '';
+         if (uploadData) {
+            const { data } = supabase.storage.from('lesson-materials').getPublicUrl(uploadData.path);
+            url = data.publicUrl;
+         }
+         
+         const att = {
+            lesson_id: lessonId,
+            file_name: fileObj.name,
+            file_url: url,
+            file_type: fileObj.type,
+            file_size: fileObj.rawSize
+         };
+         await supabase.from('lesson_attachments').insert(att);
+         uploadedAtts.push({ name: att.file_name, type: att.file_type, size: fileObj.size, url: att.file_url });
+      }
+
+      const newLesson: Lesson = {
+        id: lessonId,
+        titleEn,
+        titleAr,
+        categoryEn,
+        categoryAr,
+        verseEn,
+        verseAr,
+        levelRequired: Number(levelReq),
+        attachments: uploadedAtts,
+      };
+
+      setLessons((prev) => [newLesson, ...prev]);
+      setIsOpen(false);
+      alert(tLessons('addSuccess'));
+
+      // Reset Form
+      setTitleEn('');
+      setTitleAr('');
+      setVerseEn('');
+      setVerseAr('');
+      setLevelReq(1);
+      setFormAttachments([]);
+    } catch (err) {
+      console.error(err);
+      alert('Error creating lesson. Please try again.');
+    } finally {
+      setIsUploading(false);
+    }
   };
 
   const getFileIcon = (type: string) => FILE_ICONS[type] || FILE_ICONS.pdf;
@@ -208,10 +273,16 @@ export default function InstructorLessons() {
           );
         })}
 
-        {lessons.length === 0 && (
+        {lessons.length === 0 && !isLoading && (
           <div className="col-span-full text-center py-16 bg-surface-container-lowest border border-outline-variant/60 rounded-2xl">
             <span className="material-symbols-outlined text-[48px] text-outline">menu_book</span>
             <p className="text-on-surface-variant text-sm font-bold mt-2">{tLessons('noLessons')}</p>
+          </div>
+        )}
+        
+        {isLoading && (
+          <div className="col-span-full flex justify-center py-16">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
           </div>
         )}
       </div>
@@ -312,8 +383,8 @@ export default function InstructorLessons() {
               <Button variant="outline" size="sm" type="button" onClick={() => setIsOpen(false)}>
                 {tCommon('cancel')}
               </Button>
-              <Button variant="primary" size="sm" type="submit">
-                {tLessons('publish')}
+              <Button variant="primary" size="sm" type="submit" disabled={isUploading}>
+                {isUploading ? 'Uploading...' : tLessons('publish')}
               </Button>
             </div>
           </form>

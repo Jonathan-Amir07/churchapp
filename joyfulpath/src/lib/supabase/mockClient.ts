@@ -288,7 +288,36 @@ function buildQuery(initialData: any[]) {
   return q;
 }
 
-// ─── createMockSupabase ──────────────────────────────────────────────────────
+export const MOCK_LESSONS = [
+  {
+    id: '1',
+    title: 'The Story of Creation',
+    title_ar: 'قصة الخلق',
+    category: 'Genesis',
+    category_ar: 'التكوين',
+    verse: '"In the beginning, God created the heavens and the earth." — Genesis 1:1',
+    verse_ar: '«فِي الْبَدْءِ خَلَقَ اللهُ السَّمَاوَاتِ وَالأَرْضَ.» — تكوين ١:١',
+    level_required: 1,
+    content: 'Creation lesson content',
+  },
+  {
+    id: '2',
+    title: "Noah's Ark & The Rainbow Promise",
+    title_ar: 'فلك نوح وعهد قوس قزح',
+    category: 'Genesis',
+    category_ar: 'التكوين',
+    verse: '"I have set my rainbow in the clouds..." — Genesis 9:13',
+    verse_ar: '«وَضَعْتُ قَوْسِي فِي السَّحَابِ...» — تكوين ٩:١٣',
+    level_required: 1,
+    content: 'Noah lesson content',
+  }
+];
+
+export const MOCK_LESSON_ATTACHMENTS = [
+  { id: 'att-1', lesson_id: '1', file_name: 'Creation_Days_Worksheet.pdf', file_type: 'pdf', file_size: 1200000, file_url: 'mock-url' },
+  { id: 'att-2', lesson_id: '1', file_name: 'Creation_Illustration.png', file_type: 'image', file_size: 820000, file_url: 'mock-url' },
+  { id: 'att-3', lesson_id: '2', file_name: 'Noahs_Ark_Coloring.pdf', file_type: 'pdf', file_size: 950000, file_url: 'mock-url' }
+];
 
 export const createMockSupabase = (currentRole?: string) => {
   const getActiveRole = () => currentRole || getCookie('MOCK_USER_ROLE') || 'student';
@@ -304,6 +333,10 @@ export const createMockSupabase = (currentRole?: string) => {
         return MOCK_ATTENDANCE;
       case 'lesson_progress':
         return MOCK_LESSON_PROGRESS;
+      case 'lessons':
+        return MOCK_LESSONS;
+      case 'lesson_attachments':
+        return MOCK_LESSON_ATTACHMENTS;
       case 'quiz_attempts':
         return MOCK_QUIZ_ATTEMPTS;
       case 'branches':
@@ -353,8 +386,18 @@ export const createMockSupabase = (currentRole?: string) => {
       }),
     },
 
+    storage: {
+      from: (bucket: string) => ({
+        upload: async (path: string, file: any) => ({ data: { path }, error: null }),
+        getPublicUrl: (path: string) => ({ data: { publicUrl: `mock-url-for-${path}` } })
+      })
+    },
+
     from: (table: string) => ({
       select: (_fields?: string) => buildQuery(getTableData(table)),
+      insert: (data: any) => ({
+        select: () => buildQuery(Array.isArray(data) ? data : [data])
+      })
     }),
   } as any;
 };

@@ -7,7 +7,9 @@ const PREFIX = 'game:session:';
 export async function createSession(gameType: string, hostUserId?: string, initialState: any = {}) {
   const id = uuidv4();
   const client = getRedisClient();
-  await client.set(PREFIX + id, JSON.stringify({ gameType, state: initialState, hostUserId, createdAt: new Date().toISOString() }));
+  if (client) {
+    await client.set(PREFIX + id, JSON.stringify({ gameType, state: initialState, hostUserId, createdAt: new Date().toISOString() }));
+  }
   // persist session record in DB
   await prisma.gameSession.create({ data: { id, gameType: gameType as any, hostUserId: hostUserId || null, state: initialState, startedAt: new Date() } });
   return id;
@@ -15,8 +17,10 @@ export async function createSession(gameType: string, hostUserId?: string, initi
 
 export async function getSessionState(id: string) {
   const client = getRedisClient();
-  const v = await client.get(PREFIX + id);
-  if (v) return JSON.parse(v);
+  if (client) {
+    const v = await client.get(PREFIX + id);
+    if (v) return JSON.parse(v);
+  }
   // fallback to DB
   const db = await prisma.gameSession.findUnique({ where: { id } });
   return db ? { gameType: db.gameType, state: db.state, hostUserId: db.hostUserId, createdAt: db.startedAt } : null;
@@ -24,10 +28,15 @@ export async function getSessionState(id: string) {
 
 export async function updateSessionState(id: string, patch: any) {
   const client = getRedisClient();
-  const v = await client.get(PREFIX + id);
-  let current = v ? JSON.parse(v) : { state: {} };
+  let current = { state: {} } as any;
+  if (client) {
+    const v = await client.get(PREFIX + id);
+    current = v ? JSON.parse(v) : { state: {} };
+  }
   current.state = { ...(current.state || {}), ...(patch || {}) };
-  await client.set(PREFIX + id, JSON.stringify(current));
+  if (client) {
+    await client.set(PREFIX + id, JSON.stringify(current));
+  }
   return current;
 }
 
@@ -43,7 +52,9 @@ export async function endSession(id: string) {
   await prisma.gameSession.update({ where: { id }, data: { status: 'completed', state: state?.state ?? {}, endedAt: new Date() } as any });
   // optionally remove Redis key
   const client = getRedisClient();
-  await client.del(PREFIX + id);
+  if (client) {
+    await client.del(PREFIX + id);
+  }
 }
 
 export default { createSession, getSessionState, updateSessionState, persistSessionToDb, endSession };

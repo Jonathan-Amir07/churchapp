@@ -1,6 +1,7 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { createClient } from '@/lib/supabase/client';
 import { useTranslations } from 'next-intl';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, Button, Modal, BadgeTag, ProgressBar } from '@/components/ui';
 
@@ -132,13 +133,57 @@ export default function StudentLessons() {
   const tLessons = useTranslations('lessons');
   const tCommon = useTranslations('common');
   const tGamification = useTranslations('gamification');
-  const [lessons, setLessons] = useState<Lesson[]>(MOCK_LESSONS);
+  const supabase = createClient();
+  const [lessons, setLessons] = useState<Lesson[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
   const [filter, setFilter] = useState<'all' | 'completed' | 'in-progress' | 'not-started'>('all');
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedLesson, setSelectedLesson] = useState<Lesson | null>(null);
   const [downloadingFile, setDownloadingFile] = useState<string | null>(null);
 
   const isAr = tCommon('appName') !== 'JoyfulPath';
+
+  useEffect(() => {
+    async function fetchLessons() {
+      const { data: lessonsData, error: lessonsError } = await supabase.from('lessons').select('*');
+      if (lessonsError || !lessonsData) {
+        setIsLoading(false);
+        return;
+      }
+      
+      const { data: attData } = await supabase.from('lesson_attachments').select('*');
+
+      const mappedLessons: Lesson[] = lessonsData.map((l: any) => {
+        const lessonAtts = (attData || []).filter((a: any) => a.lesson_id === l.id).map((a: any) => ({
+          name: a.file_name,
+          type: a.file_type as any,
+          size: `${Math.round(a.file_size / 1024)} KB`,
+        }));
+        return {
+          id: l.id,
+          titleEn: l.title,
+          titleAr: l.title_ar || l.title,
+          categoryEn: l.category || 'General',
+          categoryAr: l.category_ar || 'عام',
+          status: 'not-started', // mock status
+          xp: l.xp_reward || 50,
+          points: l.points_reward || 10,
+          verseEn: l.verse || '',
+          verseAr: l.verse_ar || '',
+          contentEn: l.content || '',
+          contentAr: l.content || '',
+          levelRequired: l.level_required || 1,
+          duration: '30 min',
+          objectives: ['Learn the lesson', 'Complete the worksheet'],
+          objectivesAr: ['تعلم الدرس', 'أكمل ورقة العمل'],
+          attachments: lessonAtts,
+        };
+      });
+      setLessons(mappedLessons);
+      setIsLoading(false);
+    }
+    fetchLessons();
+  }, [supabase]);
 
   const filteredLessons = lessons.filter((lesson) => {
     const title = (lesson.titleEn + ' ' + lesson.titleAr).toLowerCase();
@@ -286,10 +331,16 @@ export default function StudentLessons() {
           );
         })}
 
-        {filteredLessons.length === 0 && (
+        {filteredLessons.length === 0 && !isLoading && (
           <div className="col-span-full text-center py-16 bg-surface-container-lowest border border-outline-variant/60 rounded-2xl">
             <span className="material-symbols-outlined text-[48px] text-outline">menu_book</span>
             <p className="text-on-surface-variant text-sm font-bold mt-2">{tLessons('noLessons')}</p>
+          </div>
+        )}
+        
+        {isLoading && (
+          <div className="col-span-full flex justify-center py-16">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
           </div>
         )}
       </div>

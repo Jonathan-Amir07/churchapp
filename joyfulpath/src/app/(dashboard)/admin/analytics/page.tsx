@@ -1,6 +1,8 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { createClient } from '@/lib/supabase/client';
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, ResponsiveContainer, BarChart, Bar, Cell, PieChart, Pie } from 'recharts';
 import { useTranslations } from 'next-intl';
 import { Card, CardContent, CardTitle, CardHeader, ProgressBar, BadgeTag } from '@/components/ui';
 
@@ -63,13 +65,27 @@ export default function AdminAnalytics() {
 
   const isAr = tCommon('appName') !== 'JoyfulPath';
 
-  const totalPointsAwarded = 4250;
-  const totalPointsRedeemed = 1450;
-  const redeemPct = Math.round((totalPointsRedeemed / totalPointsAwarded) * 100);
+  const supabase = createClient();
+  const [stats, setStats] = useState({
+    totalStudents: 62,
+    totalPointsRedeemed: 1450,
+    totalPointsAwarded: 4250,
+  });
+
+  useEffect(() => {
+    async function fetchStats() {
+      // Mock fetching some basic stats from supabase
+      const { count: studentCount } = await supabase.from('user_profiles').select('*', { count: 'exact', head: true }).eq('role', 'student');
+      if (studentCount) {
+        setStats(prev => ({ ...prev, totalStudents: studentCount }));
+      }
+    }
+    fetchStats();
+  }, [supabase]);
+
+  const redeemPct = Math.round((stats.totalPointsRedeemed / stats.totalPointsAwarded) * 100);
 
   const maxXpCount = Math.max(...XP_DISTRIBUTION.map(d => d.count));
-  const maxAttendance = Math.max(...ATTENDANCE_TREND.map(d => d.value));
-  const maxWeekly = Math.max(...WEEKLY_ACTIVE.map(d => d.value));
 
   return (
     <div className="space-y-6 animate-[slide-up_0.4s_ease-out]">
@@ -87,8 +103,8 @@ export default function AdminAnalytics() {
         {[
           { label: tAnalytics('attendanceAverage'), value: '88.5%', trend: '+4.2%', icon: 'event_available', iconBg: 'bg-blue-50 dark:bg-blue-950/30 text-blue-500 dark:text-blue-400' },
           { label: tAnalytics('completionRate'), value: '74.2%', trend: '+8.1%', icon: 'task_alt', iconBg: 'bg-green-50 dark:bg-green-950/30 text-green-500 dark:text-green-400' },
-          { label: isAr ? 'إجمالي الطلاب' : 'Total Students', value: '62', trend: '+5', icon: 'groups', iconBg: 'bg-purple-50 dark:bg-purple-950/30 text-purple-500 dark:text-purple-400' },
-          { label: tAnalytics('totalPointsRedeemed'), value: '1,450', trend: '+320', icon: 'redeem', iconBg: 'bg-orange-50 dark:bg-orange-950/30 text-orange-500 dark:text-orange-400' },
+          { label: isAr ? 'إجمالي الطلاب' : 'Total Students', value: String(stats.totalStudents), trend: '+5', icon: 'groups', iconBg: 'bg-purple-50 dark:bg-purple-950/30 text-purple-500 dark:text-purple-400' },
+          { label: tAnalytics('totalPointsRedeemed'), value: stats.totalPointsRedeemed.toLocaleString(), trend: '+320', icon: 'redeem', iconBg: 'bg-orange-50 dark:bg-orange-950/30 text-orange-500 dark:text-orange-400' },
         ].map((stat, i) => (
           <Card key={i} className="border border-outline-variant bg-surface-container-lowest shadow-sm">
             <CardContent className="p-5 flex items-center justify-between">
@@ -114,22 +130,19 @@ export default function AdminAnalytics() {
           <CardHeader>
             <CardTitle className="text-lg font-black">{isAr ? 'اتجاه الحضور (8 أسابيع)' : 'Attendance Trend (8 Weeks)'}</CardTitle>
           </CardHeader>
-          <CardContent className="p-6 pt-0">
-            <div className="h-48 flex items-end justify-between gap-1.5 pt-6 border-b border-outline-variant/60">
-              {ATTENDANCE_TREND.map((d, i) => {
-                const pct = (d.value / maxAttendance) * 100;
-                return (
-                  <div key={i} className="flex-1 flex flex-col items-center gap-1.5 group cursor-pointer">
-                    <span className="text-[10px] font-black text-primary opacity-0 group-hover:opacity-100 transition-opacity">{d.value}%</span>
-                    <div
-                      style={{ height: `${pct}%` }}
-                      className="w-full bg-gradient-to-t from-primary to-primary-container rounded-t-lg transition-all duration-300 group-hover:from-primary group-hover:to-primary"
-                    />
-                    <span className="text-[10px] font-bold text-on-surface-variant mt-1">{d.week}</span>
-                  </div>
-                );
-              })}
-            </div>
+          <CardContent className="p-6 pt-0 h-56">
+            <ResponsiveContainer width="100%" height="100%">
+              <LineChart data={ATTENDANCE_TREND} margin={{ top: 20, right: 10, left: -20, bottom: 0 }}>
+                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="currentColor" className="text-outline-variant/50" />
+                <XAxis dataKey="week" axisLine={false} tickLine={false} tick={{ fontSize: 10, fill: 'var(--on-surface-variant)' }} />
+                <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 10, fill: 'var(--on-surface-variant)' }} />
+                <RechartsTooltip 
+                  contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }}
+                  formatter={(value: any) => [`${value}%`, 'Attendance']}
+                />
+                <Line type="monotone" dataKey="value" stroke="var(--primary)" strokeWidth={3} dot={{ r: 4, strokeWidth: 2 }} activeDot={{ r: 6 }} />
+              </LineChart>
+            </ResponsiveContainer>
           </CardContent>
         </Card>
 
@@ -138,26 +151,19 @@ export default function AdminAnalytics() {
           <CardHeader>
             <CardTitle className="text-lg font-black">{tAnalytics('activeUsers')}</CardTitle>
           </CardHeader>
-          <CardContent className="p-6 pt-0">
-            <div className="h-48 flex items-end justify-between gap-2 pt-6 border-b border-outline-variant/60">
-              {WEEKLY_ACTIVE.map((day) => {
-                const heightPct = (day.value / maxWeekly) * 100;
-                return (
-                  <div key={day.label} className="flex-1 flex flex-col items-center gap-2 group cursor-pointer">
-                    <span className="text-[10px] font-black text-primary opacity-0 group-hover:opacity-100 transition-opacity duration-150">
-                      {day.value}
-                    </span>
-                    <div
-                      style={{ height: `${heightPct}%` }}
-                      className="w-full bg-primary/20 group-hover:bg-primary rounded-t-lg transition-all duration-200"
-                    />
-                    <span className="text-[10px] font-bold text-on-surface-variant select-none mt-1">
-                      {day.label}
-                    </span>
-                  </div>
-                );
-              })}
-            </div>
+          <CardContent className="p-6 pt-0 h-56">
+            <ResponsiveContainer width="100%" height="100%">
+              <BarChart data={WEEKLY_ACTIVE} margin={{ top: 20, right: 10, left: -20, bottom: 0 }}>
+                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="currentColor" className="text-outline-variant/50" />
+                <XAxis dataKey="label" axisLine={false} tickLine={false} tick={{ fontSize: 10, fill: 'var(--on-surface-variant)' }} />
+                <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 10, fill: 'var(--on-surface-variant)' }} />
+                <RechartsTooltip 
+                  contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }}
+                  cursor={{ fill: 'var(--primary)', opacity: 0.1 }}
+                />
+                <Bar dataKey="value" fill="var(--primary)" radius={[4, 4, 0, 0]} />
+              </BarChart>
+            </ResponsiveContainer>
           </CardContent>
         </Card>
       </div>
@@ -192,30 +198,41 @@ export default function AdminAnalytics() {
             <CardTitle className="text-lg font-black">{isAr ? 'اقتصاد النقاط' : 'Points Economy'}</CardTitle>
           </CardHeader>
           <CardContent className="p-6 pt-0 flex flex-col items-center gap-6">
-            {/* CSS Donut */}
-            <div className="relative w-40 h-40">
-              <svg viewBox="0 0 120 120" className="w-full h-full -rotate-90">
-                <circle cx="60" cy="60" r="50" fill="none" stroke="currentColor" strokeWidth="14" className="text-surface-container-high" />
-                <circle
-                  cx="60" cy="60" r="50" fill="none" stroke="currentColor" strokeWidth="14"
-                  className="text-primary"
-                  strokeDasharray={`${redeemPct * 3.14} ${314 - redeemPct * 3.14}`}
-                  strokeLinecap="round"
-                />
-              </svg>
-              <div className="absolute inset-0 flex flex-col items-center justify-center">
+            <div className="relative h-40 w-full mb-4">
+              <ResponsiveContainer width="100%" height="100%">
+                <PieChart>
+                  <Pie
+                    data={[
+                      { name: 'Redeemed', value: stats.totalPointsRedeemed },
+                      { name: 'Available', value: stats.totalPointsAwarded - stats.totalPointsRedeemed }
+                    ]}
+                    cx="50%"
+                    cy="50%"
+                    innerRadius={45}
+                    outerRadius={65}
+                    paddingAngle={5}
+                    dataKey="value"
+                    startAngle={90}
+                    endAngle={-270}
+                  >
+                    <Cell fill="var(--primary)" />
+                    <Cell fill="var(--surface-container-high)" />
+                  </Pie>
+                  <RechartsTooltip />
+                </PieChart>
+              </ResponsiveContainer>
+              <div className="absolute inset-0 flex flex-col items-center justify-center -translate-y-8">
                 <span className="text-2xl font-extrabold text-on-surface">{redeemPct}%</span>
-                <span className="text-[10px] font-bold text-on-surface-variant">{isAr ? 'مستبدلة' : 'Redeemed'}</span>
               </div>
             </div>
-            <div className="flex gap-8 text-center">
+            <div className="flex gap-8 text-center mt-2">
               <div>
-                <p className="text-xl font-extrabold text-on-surface">{totalPointsAwarded.toLocaleString()}</p>
+                <p className="text-xl font-extrabold text-on-surface">{stats.totalPointsAwarded.toLocaleString()}</p>
                 <p className="text-[10px] font-bold text-on-surface-variant uppercase tracking-wider">{isAr ? 'ممنوحة' : 'Awarded'}</p>
               </div>
               <div className="w-px bg-outline-variant" />
               <div>
-                <p className="text-xl font-extrabold text-primary">{totalPointsRedeemed.toLocaleString()}</p>
+                <p className="text-xl font-extrabold text-primary">{stats.totalPointsRedeemed.toLocaleString()}</p>
                 <p className="text-[10px] font-bold text-on-surface-variant uppercase tracking-wider">{isAr ? 'مستبدلة' : 'Redeemed'}</p>
               </div>
             </div>
