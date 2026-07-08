@@ -74,9 +74,9 @@ export default function ParentProfile() {
           </p>
         </div>
         <Button
-          variant="outline"
+          variant="danger"
           onClick={handleLogout}
-          className="border-error text-error hover:bg-error/10 self-start shrink-0"
+          className="self-start shrink-0"
           icon="logout"
           iconPosition="start"
         >
