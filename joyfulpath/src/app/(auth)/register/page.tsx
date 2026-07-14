@@ -6,6 +6,7 @@ import { useTranslations, useLocale } from 'next-intl';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as zod from 'zod';
+import { motion, AnimatePresence } from 'framer-motion';
 import { createClient } from '@/lib/supabase/client';
 import { Button, Input, Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui';
 import { useNotificationStore } from '@/stores/notifications.store';
@@ -30,7 +31,6 @@ const registerSchema = zod.object({
 type RegisterFormValues = zod.infer<typeof registerSchema>;
 
 export default function RegisterPage() {
-  const tCommon = useTranslations('common');
   const currentLocale = useLocale();
   const router = useRouter();
   const addToast = useNotificationStore((state) => state.addToast);
@@ -40,12 +40,15 @@ export default function RegisterPage() {
   const [loading, setLoading] = useState(false);
   const [passwordStrength, setPasswordStrength] = useState(0);
   
+  // Multi-step state
+  const [step, setStep] = useState(1);
+  const totalSteps = 3;
+
   // Database options
   const [branches, setBranches] = useState<any[]>([]);
   const [classes, setClasses] = useState<any[]>([]);
 
   useEffect(() => {
-    // Load branches & classes for signup selections
     async function loadData() {
       const { data: bData } = await supabase.from('branches').select('id, name');
       if (bData) setBranches(bData);
@@ -60,14 +63,15 @@ export default function RegisterPage() {
     register,
     handleSubmit,
     watch,
+    trigger,
     formState: { errors },
   } = useForm<RegisterFormValues>({
     resolver: zodResolver(registerSchema),
+    mode: 'onTouched'
   });
 
   const watchedPassword = watch('password', '');
 
-  // Calculate password strength
   useEffect(() => {
     let score = 0;
     if (!watchedPassword) {
@@ -88,6 +92,19 @@ export default function RegisterPage() {
     window.location.reload();
   };
 
+  const nextStep = async () => {
+    let fieldsToValidate: any[] = [];
+    if (step === 1) fieldsToValidate = ['fullName', 'phoneNumber', 'birthDate', 'gender'];
+    if (step === 2) fieldsToValidate = ['branchId', 'classId'];
+    
+    const isStepValid = await trigger(fieldsToValidate as any);
+    if (isStepValid) setStep((prev) => Math.min(prev + 1, totalSteps));
+  };
+
+  const prevStep = () => {
+    setStep((prev) => Math.max(prev - 1, 1));
+  };
+
   const onSubmit = async (values: RegisterFormValues) => {
     setLoading(true);
     try {
@@ -95,7 +112,6 @@ export default function RegisterPage() {
       const firstName = nameParts[0] || 'User';
       const lastName = nameParts.slice(1).join(' ') || '';
 
-      // Register with Supabase Auth
       const { data, error } = await supabase.auth.signUp({
         email: values.email,
         password: values.password,
@@ -119,7 +135,7 @@ export default function RegisterPage() {
       if (error) {
         addToast(error.message, 'error');
       } else {
-        addToast('Registration successful! Please check your email to verify your account.', 'success');
+        addToast('Registration successful! Please check your email.', 'success');
         router.push('/login');
       }
     } catch (err: any) {
@@ -139,16 +155,8 @@ export default function RegisterPage() {
 
   return (
     <div className="w-full max-w-lg mx-auto relative py-12">
-      {/* Floating Language Switcher */}
       <div className="absolute -top-4 end-0 z-20">
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={handleLocaleSwitch}
-          className="flex items-center gap-1 bg-surface-container-lowest/80 backdrop-blur-md border border-outline-variant hover:bg-surface-container-low transition-all shadow-sm rounded-full py-1.5 px-3.5 text-sm"
-          icon="language"
-          iconPosition="start"
-        >
+        <Button variant="outline" size="sm" onClick={handleLocaleSwitch} className="flex items-center gap-1 bg-surface-container-lowest/80 backdrop-blur-md border border-outline-variant hover:bg-surface-container-low transition-all shadow-sm rounded-full py-1.5 px-3.5 text-sm" icon="language" iconPosition="start">
           {currentLocale === 'en' ? 'العربية' : 'English'}
         </Button>
       </div>
@@ -160,171 +168,119 @@ export default function RegisterPage() {
           <CardTitle className="text-3xl font-extrabold tracking-tight text-on-surface">
             {currentLocale === 'en' ? 'Create Account' : 'إنشاء حساب'}
           </CardTitle>
-          <CardDescription className="text-sm font-medium text-on-surface-variant/80 mt-1.5">
-            {currentLocale === 'en' ? 'Join Sunday School Gamified learning journey' : 'انضم لرحلة التعلم المشوقة لمدارس الأحد'}
-          </CardDescription>
+          <div className="flex justify-center mt-4">
+            <div className="flex gap-2 w-full max-w-xs">
+              {[1, 2, 3].map((s) => (
+                <div key={s} className={`h-2 flex-1 rounded-full transition-colors ${step >= s ? 'bg-primary' : 'bg-surface-container-high'}`} />
+              ))}
+            </div>
+          </div>
         </CardHeader>
 
-        {/* Tab Controls */}
-        <div className="px-6 pb-2">
-          <div className="flex bg-surface-container rounded-xl p-1 border border-outline-variant/30">
-            {(['student', 'parent', 'instructor'] as const).map((tab) => (
-              <button
-                key={tab}
-                type="button"
-                onClick={() => setActiveTab(tab)}
-                className={`flex-1 py-3 text-center text-xs font-bold rounded-lg transition-all flex items-center justify-center gap-2 capitalize ${
-                  activeTab === tab
-                    ? 'bg-surface-container-lowest text-primary shadow-sm border border-outline-variant/20'
-                    : 'text-on-surface-variant hover:text-on-surface'
-                }`}
-              >
-                <span className="material-symbols-outlined text-[18px]">
-                  {tab === 'student' ? 'sentiment_satisfied' : tab === 'parent' ? 'family_restroom' : 'school'}
-                </span>
-                {tab}
-              </button>
-            ))}
+        {/* Tab Controls (Only in step 1) */}
+        {step === 1 && (
+          <div className="px-6 pb-2">
+            <div className="flex bg-surface-container rounded-xl p-1 border border-outline-variant/30">
+              {(['student', 'parent', 'instructor'] as const).map((tab) => (
+                <button
+                  key={tab}
+                  type="button"
+                  onClick={() => setActiveTab(tab)}
+                  className={`flex-1 py-3 text-center text-xs font-bold rounded-lg transition-all flex items-center justify-center gap-2 capitalize ${
+                    activeTab === tab
+                      ? 'bg-surface-container-lowest text-primary shadow-sm border border-outline-variant/20'
+                      : 'text-on-surface-variant hover:text-on-surface'
+                  }`}
+                >
+                  <span className="material-symbols-outlined text-[18px]">
+                    {tab === 'student' ? 'sentiment_satisfied' : tab === 'parent' ? 'family_restroom' : 'school'}
+                  </span>
+                  {currentLocale === 'en' ? (tab === 'student' ? 'Child' : tab === 'instructor' ? 'Servant' : tab) : (tab === 'student' ? 'مخدوم' : tab === 'instructor' ? 'خادم' : 'ولي أمر')}
+                </button>
+              ))}
+            </div>
           </div>
-        </div>
+        )}
 
         <CardContent className="p-6 pt-4">
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-            <Input
-              label={currentLocale === 'en' ? 'Full Name' : 'الاسم بالكامل'}
-              placeholder="e.g. John Doe"
-              icon="person"
-              disabled={loading}
-              error={errors.fullName?.message}
-              {...register('fullName')}
-            />
+            
+            <AnimatePresence mode="wait">
+              {step === 1 && (
+                <motion.div key="step1" initial={{ x: 20, opacity: 0 }} animate={{ x: 0, opacity: 1 }} exit={{ x: -20, opacity: 0 }} className="space-y-4">
+                  <Input label={currentLocale === 'en' ? 'Full Name' : 'الاسم بالكامل'} placeholder="e.g. John Doe" icon="person" error={errors.fullName?.message} {...register('fullName')} />
+                  <Input label={currentLocale === 'en' ? 'Phone Number' : 'رقم الهاتف'} type="tel" placeholder="+20..." icon="call" error={errors.phoneNumber?.message} {...register('phoneNumber')} />
+                  <div className="grid grid-cols-2 gap-4">
+                    <Input label={currentLocale === 'en' ? 'Birth Date' : 'تاريخ الميلاد'} type="date" {...register('birthDate')} />
+                    <div className="space-y-2">
+                      <label className="block text-sm font-semibold tracking-wide text-on-surface uppercase">{currentLocale === 'en' ? 'Gender' : 'النوع'}</label>
+                      <select className="w-full h-14 bg-surface-container rounded-lg border-2 border-transparent px-4 font-medium text-base text-on-surface outline-none focus:border-primary transition-colors" {...register('gender')}>
+                        <option value="">Select...</option>
+                        <option value="male">{currentLocale === 'en' ? 'Male' : 'ذكر'}</option>
+                        <option value="female">{currentLocale === 'en' ? 'Female' : 'أنثى'}</option>
+                      </select>
+                    </div>
+                  </div>
+                </motion.div>
+              )}
 
-            <Input
-              label={currentLocale === 'en' ? 'Email Address' : 'عنوان البريد الإلكتروني'}
-              type="email"
-              placeholder="explorer@path.com"
-              icon="mail"
-              disabled={loading}
-              error={errors.email?.message}
-              {...register('email')}
-            />
+              {step === 2 && (
+                <motion.div key="step2" initial={{ x: 20, opacity: 0 }} animate={{ x: 0, opacity: 1 }} exit={{ x: -20, opacity: 0 }} className="space-y-4">
+                  <div className="space-y-2">
+                    <label className="block text-sm font-semibold tracking-wide text-on-surface uppercase">{currentLocale === 'en' ? 'Branch' : 'الفرع/الكنيسة'}</label>
+                    <select className="w-full h-14 bg-surface-container rounded-lg border-2 border-transparent px-4 font-medium text-base text-on-surface outline-none focus:border-primary transition-colors" {...register('branchId')}>
+                      <option value="">Select Branch...</option>
+                      {branches.map((b) => (<option key={b.id} value={b.id}>{b.name}</option>))}
+                    </select>
+                  </div>
+                  {activeTab === 'student' && (
+                    <div className="space-y-2">
+                      <label className="block text-sm font-semibold tracking-wide text-on-surface uppercase">{currentLocale === 'en' ? 'Class/Grade' : 'الفصل الدراسي'}</label>
+                      <select className="w-full h-14 bg-surface-container rounded-lg border-2 border-transparent px-4 font-medium text-base text-on-surface outline-none focus:border-primary transition-colors" {...register('classId')}>
+                        <option value="">Select Class...</option>
+                        {classes.map((c) => (<option key={c.id} value={c.id}>{c.name}</option>))}
+                      </select>
+                    </div>
+                  )}
+                </motion.div>
+              )}
 
-            <Input
-              label={currentLocale === 'en' ? 'Phone Number' : 'رقم الهاتف'}
-              type="tel"
-              placeholder="+20..."
-              icon="call"
-              disabled={loading}
-              error={errors.phoneNumber?.message}
-              {...register('phoneNumber')}
-            />
+              {step === 3 && (
+                <motion.div key="step3" initial={{ x: 20, opacity: 0 }} animate={{ x: 0, opacity: 1 }} exit={{ x: -20, opacity: 0 }} className="space-y-4">
+                  <Input label={currentLocale === 'en' ? 'Email Address' : 'عنوان البريد الإلكتروني'} type="email" placeholder="explorer@path.com" icon="mail" error={errors.email?.message} {...register('email')} />
+                  <Input label={currentLocale === 'en' ? 'Password' : 'كلمة المرور'} type="password" placeholder="••••••••" icon="lock" showPasswordToggle error={errors.password?.message} {...register('password')} />
+                  {watchedPassword && (
+                    <div className="space-y-1.5">
+                      <div className="flex justify-between text-xs font-bold text-on-surface-variant">
+                        <span>{currentLocale === 'en' ? 'Password Strength:' : 'قوة كلمة المرور:'}</span>
+                        <span className="capitalize">{strength.label}</span>
+                      </div>
+                      <div className="h-1.5 w-full bg-surface-container rounded-full overflow-hidden">
+                        <div className={`h-full transition-all duration-300 ${strength.color}`} style={{ width: `${(passwordStrength / 5) * 100}%` }} />
+                      </div>
+                    </div>
+                  )}
+                  <Input label={currentLocale === 'en' ? 'Confirm Password' : 'تأكيد كلمة المرور'} type="password" placeholder="••••••••" icon="lock" showPasswordToggle error={errors.confirmPassword?.message} {...register('confirmPassword')} />
+                </motion.div>
+              )}
+            </AnimatePresence>
 
-            <div className="grid grid-cols-2 gap-4">
-              <Input
-                label={currentLocale === 'en' ? 'Birth Date' : 'تاريخ الميلاد'}
-                type="date"
-                disabled={loading}
-                {...register('birthDate')}
-              />
-              <div className="space-y-2">
-                <label className="block text-sm font-semibold tracking-wide text-on-surface uppercase">
-                  {currentLocale === 'en' ? 'Gender' : 'النوع'}
-                </label>
-                <select
-                  disabled={loading}
-                  className="w-full h-14 bg-surface-container rounded-lg border-2 border-transparent px-4 font-medium text-base text-on-surface placeholder:text-outline-variant outline-none focus:border-primary transition-colors"
-                  {...register('gender')}
-                >
-                  <option value="">Select...</option>
-                  <option value="male">{currentLocale === 'en' ? 'Male' : 'ذكر'}</option>
-                  <option value="female">{currentLocale === 'en' ? 'Female' : 'أنثى'}</option>
-                </select>
-              </div>
-            </div>
-
-            <div className="grid grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <label className="block text-sm font-semibold tracking-wide text-on-surface uppercase">
-                  {currentLocale === 'en' ? 'Branch' : 'الفرع/الكنيسة'}
-                </label>
-                <select
-                  disabled={loading}
-                  className="w-full h-14 bg-surface-container rounded-lg border-2 border-transparent px-4 font-medium text-base text-on-surface placeholder:text-outline-variant outline-none focus:border-primary transition-colors"
-                  {...register('branchId')}
-                >
-                  <option value="">Select Branch...</option>
-                  {branches.map((b) => (
-                    <option key={b.id} value={b.id}>{b.name}</option>
-                  ))}
-                </select>
-              </div>
-
-              {activeTab === 'student' && (
-                <div className="space-y-2">
-                  <label className="block text-sm font-semibold tracking-wide text-on-surface uppercase">
-                    {currentLocale === 'en' ? 'Class/Grade' : 'الفصل الدراسي'}
-                  </label>
-                  <select
-                    disabled={loading}
-                    className="w-full h-14 bg-surface-container rounded-lg border-2 border-transparent px-4 font-medium text-base text-on-surface placeholder:text-outline-variant outline-none focus:border-primary transition-colors"
-                    {...register('classId')}
-                  >
-                    <option value="">Select Class...</option>
-                    {classes.map((c) => (
-                      <option key={c.id} value={c.id}>{c.name}</option>
-                    ))}
-                  </select>
-                </div>
+            <div className="flex gap-4 mt-6 pt-4 border-t border-outline-variant/30">
+              {step > 1 && (
+                <Button type="button" variant="outline" size="lg" onClick={prevStep} className="flex-1">
+                  {currentLocale === 'en' ? 'Back' : 'رجوع'}
+                </Button>
+              )}
+              {step < totalSteps ? (
+                <Button type="button" variant="primary" size="lg" onClick={nextStep} className="flex-1">
+                  {currentLocale === 'en' ? 'Next' : 'التالي'}
+                </Button>
+              ) : (
+                <Button type="submit" variant="primary" size="lg" loading={loading} className="flex-1">
+                  {currentLocale === 'en' ? 'Create Account' : 'إنشاء الحساب'}
+                </Button>
               )}
             </div>
-
-            <Input
-              label={currentLocale === 'en' ? 'Password' : 'كلمة المرور'}
-              type="password"
-              placeholder="••••••••"
-              icon="lock"
-              disabled={loading}
-              showPasswordToggle
-              error={errors.password?.message}
-              {...register('password')}
-            />
-
-            {watchedPassword && (
-              <div className="space-y-1.5">
-                <div className="flex justify-between text-xs font-bold text-on-surface-variant">
-                  <span>{currentLocale === 'en' ? 'Password Strength:' : 'قوة كلمة المرور:'}</span>
-                  <span className="capitalize">{strength.label}</span>
-                </div>
-                <div className="h-1.5 w-full bg-surface-container rounded-full overflow-hidden">
-                  <div
-                    className={`h-full transition-all duration-300 ${strength.color}`}
-                    style={{ width: `${(passwordStrength / 5) * 100}%` }}
-                  />
-                </div>
-              </div>
-            )}
-
-            <Input
-              label={currentLocale === 'en' ? 'Confirm Password' : 'تأكيد كلمة المرور'}
-              type="password"
-              placeholder="••••••••"
-              icon="lock"
-              disabled={loading}
-              showPasswordToggle
-              error={errors.confirmPassword?.message}
-              {...register('confirmPassword')}
-            />
-
-            <Button
-              type="submit"
-              variant="primary"
-              fullWidth
-              size="lg"
-              loading={loading}
-              className="mt-6"
-            >
-              {currentLocale === 'en' ? 'Create Account' : 'إنشاء الحساب'}
-            </Button>
 
             <p className="text-center text-xs font-semibold text-on-surface-variant/80 mt-4">
               {currentLocale === 'en' ? 'Already have an account?' : 'هل لديك حساب بالفعل؟'}{' '}

@@ -1,21 +1,21 @@
 import type { Metadata } from 'next';
-import { Inter, Noto_Sans_Arabic } from 'next/font/google';
+import { Poppins, Cairo } from 'next/font/google';
 import { NextIntlClientProvider } from 'next-intl';
 import { getLocale, getMessages } from 'next-intl/server';
 import { getDirection } from '@/lib/utils';
 import { ToastContainer } from '@/components/ui';
 import './globals.css';
 
-const inter = Inter({
+const poppins = Poppins({
   subsets: ['latin'],
-  variable: '--font-inter',
+  variable: '--font-sans-en',
   display: 'swap',
   weight: ['400', '500', '600', '700', '800'],
 });
 
-const notoSansArabic = Noto_Sans_Arabic({
+const cairo = Cairo({
   subsets: ['arabic'],
-  variable: '--font-noto-arabic',
+  variable: '--font-sans-ar',
   display: 'swap',
   weight: ['400', '500', '600', '700', '800'],
 });
@@ -49,7 +49,7 @@ export default async function RootLayout({
     <html
       lang={locale}
       dir={dir}
-      className={`${inter.variable} ${notoSansArabic.variable} h-full`}
+      className={`${poppins.variable} ${cairo.variable} h-full`}
     >
       <head>
         <link

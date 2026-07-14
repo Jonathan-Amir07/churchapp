@@ -7,36 +7,36 @@
    ============================================ */
 
 @theme inline {
-  /* --- Primary (Blue) — Navigation, core actions, trust --- */
-  --color-primary: #0058be;
-  --color-primary-container: #2170e4;
-  --color-primary-fixed: #d8e2ff;
-  --color-primary-fixed-dim: #adc6ff;
+  /* --- Primary (Royal Blue) — Navigation, core actions, trust --- */
+  --color-primary: #0057B7;
+  --color-primary-container: #1a6fd0;
+  --color-primary-fixed: #d0e1f9;
+  --color-primary-fixed-dim: #a1c3f2;
   --color-on-primary: #ffffff;
-  --color-on-primary-container: #fefcff;
-  --color-on-primary-fixed: #001a42;
-  --color-on-primary-fixed-variant: #004395;
-  --color-inverse-primary: #adc6ff;
+  --color-on-primary-container: #ffffff;
+  --color-on-primary-fixed: #00224d;
+  --color-on-primary-fixed-variant: #003b86;
+  --color-inverse-primary: #a1c3f2;
 
   /* --- Secondary (Gold) — Achievements, XP, rewards --- */
-  --color-secondary: #855300;
-  --color-secondary-container: #fea619;
-  --color-secondary-fixed: #ffddb8;
-  --color-secondary-fixed-dim: #ffb95f;
+  --color-secondary: #CFB53B;
+  --color-secondary-container: #e3ce68;
+  --color-secondary-fixed: #fdf5d3;
+  --color-secondary-fixed-dim: #faeab0;
   --color-on-secondary: #ffffff;
-  --color-on-secondary-container: #684000;
-  --color-on-secondary-fixed: #2a1700;
-  --color-on-secondary-fixed-variant: #653e00;
+  --color-on-secondary-container: #3d3305;
+  --color-on-secondary-fixed: #211c00;
+  --color-on-secondary-fixed-variant: #4f4100;
 
-  /* --- Tertiary (Green) — Correct answers, completion, go --- */
-  --color-tertiary: #006947;
-  --color-tertiary-container: #00855b;
-  --color-tertiary-fixed: #6ffbbe;
-  --color-tertiary-fixed-dim: #4edea3;
+  /* --- Tertiary (Deep Red) — Special/Accent --- */
+  --color-tertiary: #8B0000;
+  --color-tertiary-container: #b31b1b;
+  --color-tertiary-fixed: #fcd8d8;
+  --color-tertiary-fixed-dim: #f9b1b1;
   --color-on-tertiary: #ffffff;
-  --color-on-tertiary-container: #f5fff6;
-  --color-on-tertiary-fixed: #002113;
-  --color-on-tertiary-fixed-variant: #005236;
+  --color-on-tertiary-container: #ffffff;
+  --color-on-tertiary-fixed: #3b0000;
+  --color-on-tertiary-fixed-variant: #5f0000;
 
   /* --- Error --- */
   --color-error: #ba1a1a;
@@ -69,7 +69,7 @@
   --color-on-background: #191c1e;
 
   /* --- Typography --- */
-  --font-sans: "Inter", "Noto Sans Arabic", system-ui, sans-serif;
+  --font-sans: var(--font-sans-en), var(--font-sans-ar), system-ui, sans-serif;
 
   /* --- Border Radius (Extreme Roundedness) --- */
   --radius-sm: 0.25rem;

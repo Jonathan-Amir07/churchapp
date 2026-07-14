@@ -277,6 +277,9 @@ function buildQuery(initialData: any[]) {
       // no-op — data already ordered in mock arrays
       return q;
     },
+    limit(_count: number) {
+      return q;
+    },
     single() {
       return Promise.resolve({ data: data[0] ?? null, error: null });
     },
@@ -393,10 +396,27 @@ export const createMockSupabase = (currentRole?: string) => {
       })
     },
 
+    channel: (name: string) => ({
+      on: () => ({
+        subscribe: () => ({
+          unsubscribe: () => {}
+        })
+      }),
+      subscribe: () => ({
+        unsubscribe: () => {}
+      })
+    }),
+
     from: (table: string) => ({
       select: (_fields?: string) => buildQuery(getTableData(table)),
       insert: (data: any) => ({
         select: () => buildQuery(Array.isArray(data) ? data : [data])
+      }),
+      update: (data: any) => ({
+        eq: (col: string, val: any) => buildQuery([])
+      }),
+      delete: () => ({
+        eq: (col: string, val: any) => buildQuery([])
       })
     }),
   } as any;

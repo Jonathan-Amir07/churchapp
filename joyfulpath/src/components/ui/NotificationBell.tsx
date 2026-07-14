@@ -52,37 +52,39 @@ export function NotificationBell() {
     fetchNotifications();
 
     // 3. Setup Supabase realtime subscription
-    const { data: { user } } = supabase.auth.getUser().then(r => r);
-    if (user) {
-      const subscription = supabase
-        .channel(`notifications:user_id=eq.${user.id}`)
-        .on('postgres_changes', {
-          event: '*',
-          schema: 'public',
-          table: 'notifications',
-          filter: `user_id=eq.${user.id}`,
-        }, (payload) => {
-          console.log('Notification change:', payload);
-          if (payload.eventType === 'INSERT') {
-            setNotifications(prev => [payload.new as Notification, ...prev]);
-            setUnreadCount(prev => prev + 1);
-          } else if (payload.eventType === 'UPDATE') {
-            setNotifications(prev => prev.map(n => 
-              n.id === payload.new.id ? payload.new as Notification : n
-            ));
-            if (!payload.new.is_read && payload.old?.is_read) {
-              setUnreadCount(prev => Math.max(0, prev - 1));
+    let subscription: any;
+    supabase.auth.getUser().then(({ data: { user } }) => {
+      if (user) {
+        subscription = supabase
+          .channel(`notifications:user_id=eq.${user.id}`)
+          .on('postgres_changes', {
+            event: '*',
+            schema: 'public',
+            table: 'notifications',
+            filter: `user_id=eq.${user.id}`,
+          }, (payload) => {
+            console.log('Notification change:', payload);
+            if (payload.eventType === 'INSERT') {
+              setNotifications(prev => [payload.new as Notification, ...prev]);
+              setUnreadCount(prev => prev + 1);
+            } else if (payload.eventType === 'UPDATE') {
+              setNotifications(prev => prev.map(n => 
+                n.id === payload.new.id ? payload.new as Notification : n
+              ));
+              if (!payload.new.is_read && payload.old?.is_read) {
+                setUnreadCount(prev => Math.max(0, prev - 1));
+              }
+            } else if (payload.eventType === 'DELETE') {
+              setNotifications(prev => prev.filter(n => n.id !== payload.old.id));
             }
-          } else if (payload.eventType === 'DELETE') {
-            setNotifications(prev => prev.filter(n => n.id !== payload.old.id));
-          }
-        })
-        .subscribe();
+          })
+          .subscribe();
+      }
+    });
 
-      return () => {
-        subscription.unsubscribe();
-      };
-    }
+    return () => {
+      if (subscription) subscription.unsubscribe();
+    };
   }, [supabase, fetchNotifications]);
 
   // 4. Listen for FCM foreground messages

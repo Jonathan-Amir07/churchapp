@@ -26,22 +26,22 @@ export default function LandingPage() {
   };
 
   const features = [
-    { icon: 'event_available', title: 'Attendance Tracking', titleAr: 'متابعة الحضور والغياب', desc: 'Realtime session roster management for instructors.', descAr: 'إدارة كشوف حضور الفصول الدراسية للخادم بشكل فوري.' },
-    { icon: 'qr_code_scanner', title: 'QR Attendance Check-In', titleAr: 'تسجيل الحضور بالباركود', desc: 'Secure, fast student check-in scanning on mobile devices.', descAr: 'تسجيل حضور سريع وآمن للطلبة عن طريق مسح رمز الاستجابة السريع.' },
-    { icon: 'library_books', title: 'Interactive Lessons', titleAr: 'مناهج دروس تفاعلية', desc: 'Rich content with audio bible verses, videos, and PDFs.', descAr: 'محتوى غني بالآيات المسموعة، الفيديوهات التعليمية وملفات القراءة.' },
-    { icon: 'sports_esports', title: 'Gamified Quizzes & Tasks', titleAr: 'مسابقات ومهام تفاعلية', desc: 'Earn points and level up by answering fun scripture quizzes.', descAr: 'اجمع النقاط وارتقِ في المستويات عند إجابة مسابقات تفاعلية شيقة.' },
+    { icon: 'event_available', title: 'Attendance Tracking', titleAr: 'متابعة الحضور والغياب', desc: 'Realtime session roster management for servants.', descAr: 'إدارة كشوف حضور الفصول الدراسية للخادم بشكل فوري.' },
+    { icon: 'qr_code_scanner', title: 'QR Attendance Check-In', titleAr: 'تسجيل الحضور بالباركود', desc: 'Secure, fast child check-in scanning on mobile devices.', descAr: 'تسجيل حضور سريع وآمن للطلبة عن طريق مسح رمز الاستجابة السريع.' },
+    { icon: 'library_books', title: 'Interactive Sunday School Lessons', titleAr: 'مناهج دروس تفاعلية', desc: 'Rich content with audio bible verses, videos, and PDFs.', descAr: 'محتوى غني بالآيات المسموعة، الفيديوهات التعليمية وملفات القراءة.' },
+    { icon: 'sports_esports', title: 'Spiritual Challenges & Tasks', titleAr: 'مسابقات ومهام تفاعلية', desc: 'Earn points and level up by answering fun scripture quizzes.', descAr: 'اجمع النقاط وارتقِ في المستويات عند إجابة مسابقات تفاعلية شيقة.' },
     { icon: 'family_restroom', title: 'Parent Portal', titleAr: 'بوابة أولياء الأمور', desc: 'Keep track of children progress, attendance, and achievements.', descAr: 'متابعة مباشرة لأولياء الأمور لنسب حضور أطفالهم وإنجازاتهم.' },
-    { icon: 'military_tech', title: 'Badges & Rewards Store', titleAr: 'متجر جوائز وأوسمة فخرية', desc: 'Redeem points for digital titles, avatar frames, and books.', descAr: 'استبدل النقاط بألقاب فخرية للحساب، إطارات للصور الرمزية وهدايا عينية.' }
+    { icon: 'military_tech', title: 'Badges & Blessings Store', titleAr: 'متجر بركات وأوسمة فخرية', desc: 'Redeem points for digital titles, avatar frames, and books.', descAr: 'استبدل النقاط بألقاب فخرية للحساب، إطارات للصور الرمزية وبركات عينية.' }
   ];
 
   const upcomingEvents = [
     { title: 'Summer Camp 2026: Youth Walk', titleAr: 'معسكر الشباب الصيفي: مسار القوة', date: 'July 15 - July 18', type: 'Camp', location: 'Saint Mary Center' },
-    { title: 'Scripture Memorization Challenge', titleAr: 'مسابقة حفظ آيات الإنجيل الكبرى', date: 'August 1 - August 5', type: 'Spiritual', location: 'Church Hall' },
+    { title: 'Scripture Memorization Challenge', titleAr: 'تحدي حفظ آيات الإنجيل الكبرى', date: 'August 1 - August 5', type: 'Spiritual', location: 'Church Hall' },
     { title: 'Historical Saints Trip', titleAr: 'رحلة استكشاف مسار القديسين التاريخي', date: 'September 12', type: 'Trip', location: 'Desert Monasteries' }
   ];
 
   const testimonials = [
-    { quote: "JoyfulPath turned Sunday school into an exciting adventure. I love earning badges!", author: "Jonathan, Student (11 yo)", authorAr: "جون، طالب (11 سنة)" },
+    { quote: "JoyfulPath turned Sunday school into an exciting adventure. I love earning badges!", author: "Jonathan, Child (11 yo)", authorAr: "جون، مخدوم (11 سنة)" },
     { quote: "Being able to see my child's attendance and quiz progress in real-time is amazing.", author: "Mary Faith, Parent", authorAr: "ماري فايث، ولي أمر" }
   ];
 
@@ -82,8 +82,8 @@ export default function LandingPage() {
             </h1>
             <p className="text-on-surface-variant text-base md:text-lg leading-relaxed max-w-lg">
               {currentLocale === 'en'
-                ? 'Join a premium gamified learning platform that connects students, parents, and church servants for an engaging spiritual growth path.'
-                : 'انضم لمنصة تعليمية مشوقة ومبتكرة تربط بين الطلبة، أولياء الأمور وخدام الكنيسة لمسار نمو روحي فريد.'}
+                ? 'Join a premium gamified learning platform that connects children, parents, and servants for an engaging spiritual growth path.'
+                : 'انضم لمنصة تعليمية مشوقة ومبتكرة تربط بين المخدومين، أولياء الأمور وخدام الكنيسة لمسار نمو روحي فريد.'}
             </p>
             <div className="flex flex-wrap gap-4 pt-2">
               <Link href="/register">

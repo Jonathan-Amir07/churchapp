@@ -193,6 +193,17 @@ export function MobileNav() {
           </div>
         </div>
       )}
+
+      {/* Floating Action Button for QR (Only for Servant and Child) */}
+      {(role === 'student' || role === 'instructor') && (
+        <Link href={role === 'student' ? '/student/qr' : '/instructor/qr'} className="fixed bottom-20 end-4 z-40 md:hidden">
+          <button className="w-14 h-14 bg-primary text-on-primary rounded-full shadow-elevated flex items-center justify-center hover:bg-primary-container hover:scale-105 active:scale-95 transition-all">
+            <span className="material-symbols-outlined text-[28px]">
+              {role === 'student' ? 'qr_code_2' : 'qr_code_scanner'}
+            </span>
+          </button>
+        </Link>
+      )}
     </>
   );
 }
