@@ -37,7 +37,7 @@ export function NotificationBell() {
       
       if (data) {
         setNotifications(data);
-        setUnreadCount(data.filter((n: any) => !n.is_read).length);
+        setUnreadCount(data.filter((n: Notification) => !n.is_read).length);
       }
     } catch (error) {
       console.error('Failed to fetch notifications:', error);
@@ -53,7 +53,7 @@ export function NotificationBell() {
 
     // 3. Setup Supabase realtime subscription
     let subscription: any;
-    supabase.auth.getUser().then(({ data: { user } }) => {
+    supabase.auth.getUser().then(({ data: { user } }: { data: { user: any } }) => {
       if (user) {
         subscription = supabase
           .channel(`notifications:user_id=eq.${user.id}`)
@@ -62,7 +62,7 @@ export function NotificationBell() {
             schema: 'public',
             table: 'notifications',
             filter: `user_id=eq.${user.id}`,
-          }, (payload) => {
+          }, (payload: any) => {
             console.log('Notification change:', payload);
             if (payload.eventType === 'INSERT') {
               setNotifications(prev => [payload.new as Notification, ...prev]);

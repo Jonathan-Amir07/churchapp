@@ -51,7 +51,7 @@ export async function POST(request: NextRequest, { params }: { params: Params })
 
     // Upload to Supabase
     const uploadResult = await uploadFile({
-      bucket: 'lessons',
+      bucket: 'LESSONS',
       path: `${id}/${Date.now()}-${file.name}`,
       file,
     });
@@ -131,7 +131,7 @@ export async function DELETE(request: NextRequest, { params }: { params: Params 
     }
 
     // Delete from storage
-    await deleteFile('lessons', attachment.fileName.startsWith('http') ? new URL(attachment.fileUrl).pathname.slice(1) : `${id}/${attachment.fileName}`);
+    await deleteFile('LESSONS', attachment.fileName.startsWith('http') ? new URL(attachment.fileUrl).pathname.slice(1) : `${id}/${attachment.fileName}`);
 
     // Delete from database
     await prisma.lessonAttachment.delete({ where: { id: attachmentId } });

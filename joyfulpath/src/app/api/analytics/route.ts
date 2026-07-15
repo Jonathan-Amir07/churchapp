@@ -54,15 +54,15 @@ export async function GET(request: NextRequest) {
       },
     });
 
-    const lessonCompletion = lessonStats.map(lesson => ({
+    const lessonCompletion = lessonStats.map((lesson: any) => ({
       lessonId: lesson.id,
       title: lesson.title,
       total: lesson.progress.length,
-      completed: lesson.progress.filter(p => p.status === 'completed').length,
-      inProgress: lesson.progress.filter(p => p.status === 'in_progress').length,
-      notStarted: lesson.progress.filter(p => p.status === 'not_started').length,
+      completed: lesson.progress.filter((p: any) => p.status === 'completed').length,
+      inProgress: lesson.progress.filter((p: any) => p.status === 'in_progress').length,
+      notStarted: lesson.progress.filter((p: any) => p.status === 'not_started').length,
       completionRate: lesson.progress.length > 0
-        ? Math.round((lesson.progress.filter(p => p.status === 'completed').length / lesson.progress.length) * 100)
+        ? Math.round((lesson.progress.filter((p: any) => p.status === 'completed').length / lesson.progress.length) * 100)
         : 0,
     }));
 
@@ -80,10 +80,10 @@ export async function GET(request: NextRequest) {
       },
     });
 
-    const quizPerformance = quizStats.map(quiz => {
+    const quizPerformance = quizStats.map((quiz: any) => {
       const attempts = quiz.attempts;
       const avgScore = attempts.length > 0
-        ? Math.round(attempts.reduce((sum, a) => sum + (a.score || 0), 0) / attempts.length)
+        ? Math.round(attempts.reduce((sum: any, a: any) => sum + (a.score || 0), 0) / attempts.length)
         : 0;
       return {
         quizId: quiz.id,
@@ -91,7 +91,7 @@ export async function GET(request: NextRequest) {
         attempts: attempts.length,
         averageScore: avgScore,
         passRate: attempts.length > 0
-          ? Math.round((attempts.filter(a => a.score! >= quiz.passingScore).length / attempts.length) * 100)
+          ? Math.round((attempts.filter((a: any) => a.score! >= quiz.passingScore).length / attempts.length) * 100)
           : 0,
       };
     });
@@ -169,28 +169,28 @@ export async function GET(request: NextRequest) {
       },
     });
 
-    const taskSubmissions = taskStats.map(task => ({
+    const taskSubmissions = taskStats.map((task: any) => ({
       taskId: task.id,
       title: task.title,
       total: task.submissions.length,
-      pending: task.submissions.filter(s => s.status === 'pending').length,
-      approved: task.submissions.filter(s => s.status === 'approved').length,
-      rejected: task.submissions.filter(s => s.status === 'rejected').length,
+      pending: task.submissions.filter((s: any) => s.status === 'pending').length,
+      approved: task.submissions.filter((s: any) => s.status === 'approved').length,
+      rejected: task.submissions.filter((s: any) => s.status === 'rejected').length,
     }));
 
     return NextResponse.json({
       period: { startDate, endDate },
       engagementMetrics: {
         averageXp: engagementMetrics.length > 0
-          ? Math.round(engagementMetrics.reduce((sum, m) => sum + (m._sum.xpAwarded || 0), 0) / engagementMetrics.length)
+          ? Math.round(engagementMetrics.reduce((sum: any, m: any) => sum + (m._sum.xpAwarded || 0), 0) / engagementMetrics.length)
           : 0,
-        totalXp: engagementMetrics.reduce((sum, m) => sum + (m._sum.xpAwarded || 0), 0),
+        totalXp: engagementMetrics.reduce((sum: any, m: any) => sum + (m._sum.xpAwarded || 0), 0),
         activeStudents: engagementMetrics.length,
       },
       lessonCompletion,
       quizPerformance,
       attendanceData,
-      topStudents: topStudents.map(s => ({
+      topStudents: topStudents.map((s: any) => ({
         id: s.id,
         name: s.displayName,
         xp: s.totalXp,

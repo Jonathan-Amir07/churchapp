@@ -1,6 +1,6 @@
 // Event RSVP API - Register/Unregister for events
 import { NextRequest, NextResponse } from 'next/server';
-import { createClient } from '@/lib/supabase/admin';
+import { createAdminClient as createClient } from '@/lib/supabase/admin';
 
 export async function POST(request: NextRequest) {
   try {
@@ -124,7 +124,7 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({
         success: true,
         userId,
-        registeredEvents: registrations?.map(r => r.event_id) || []
+        registeredEvents: registrations?.map((r: any) => r.event_id) || []
       });
     }
 

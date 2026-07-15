@@ -100,11 +100,11 @@ export async function POST(request: NextRequest) {
         where: { role: 'student', isActive: true },
         select: { id: true },
       });
-      targetUserIds = users.map(u => u.id);
+      targetUserIds = users.map((u: any) => u.id);
     }
 
     // Create notifications
-    const notifications = targetUserIds.map(uid => ({
+    const notifications = targetUserIds.map((uid: any) => ({
       user_id: uid,
       title_en,
       title_ar,

@@ -114,7 +114,7 @@ export async function POST(request: NextRequest) {
 
     if (file && file.size > 0) {
       const uploadResult = await uploadFile({
-        bucket: 'homework',
+        bucket: 'HOMEWORK',
         path: `${taskId}/${session.user.id}/${Date.now()}-${file.name}`,
         file,
       });

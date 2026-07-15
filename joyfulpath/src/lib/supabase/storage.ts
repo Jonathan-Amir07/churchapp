@@ -7,18 +7,19 @@ export const STORAGE_BUCKETS = {
   ATTACHMENTS: 'attachments',
 } as const;
 
-export const ALLOWED_FILE_TYPES = {
-  lessons: ['application/pdf', 'video/mp4', 'video/webm', 'image/png', 'image/jpeg'],
-  homework: ['application/pdf', 'image/png', 'image/jpeg', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'],
-  attachments: ['application/pdf', 'image/*', 'video/*', 'audio/*'],
-} as const;
+export const ALLOWED_FILE_TYPES: Record<keyof typeof STORAGE_BUCKETS, readonly string[]> = {
+  LESSONS: ['application/pdf', 'video/mp4', 'video/webm', 'image/png', 'image/jpeg'],
+  HOMEWORK: ['application/pdf', 'image/png', 'image/jpeg', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'],
+  ATTACHMENTS: ['application/pdf', 'image/*', 'video/*', 'audio/*'],
+  PROFILES: ['image/png', 'image/jpeg'],
+};
 
-export const MAX_FILE_SIZES = {
-  lessons: 100 * 1024 * 1024, // 100MB
-  homework: 10 * 1024 * 1024, // 10MB
-  profiles: 5 * 1024 * 1024, // 5MB
-  attachments: 50 * 1024 * 1024, // 50MB
-} as const;
+export const MAX_FILE_SIZES: Record<keyof typeof STORAGE_BUCKETS, number> = {
+  LESSONS: 100 * 1024 * 1024, // 100MB
+  HOMEWORK: 10 * 1024 * 1024, // 10MB
+  PROFILES: 5 * 1024 * 1024, // 5MB
+  ATTACHMENTS: 50 * 1024 * 1024, // 50MB
+};
 
 interface UploadOptions {
   bucket: keyof typeof STORAGE_BUCKETS;

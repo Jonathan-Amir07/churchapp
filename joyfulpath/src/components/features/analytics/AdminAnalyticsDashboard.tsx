@@ -65,10 +65,6 @@ export function AdminAnalyticsDashboard({ classId }: { classId?: string }) {
   const [loading, setLoading] = useState(true);
   const [dateRange, setDateRange] = useState({ start: '', end: '' });
 
-  useEffect(() => {
-    fetchAnalytics();
-  }, [classId, dateRange]);
-
   const fetchAnalytics = async () => {
     try {
       setLoading(true);
@@ -87,6 +83,10 @@ export function AdminAnalyticsDashboard({ classId }: { classId?: string }) {
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    fetchAnalytics();
+  }, [classId, dateRange]);
 
   if (loading) {
     return (

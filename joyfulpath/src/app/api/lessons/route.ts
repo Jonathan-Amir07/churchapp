@@ -64,7 +64,7 @@ export async function GET(request: NextRequest) {
     });
 
     return NextResponse.json({
-      lessons: lessons.map(lesson => ({
+      lessons: lessons.map((lesson: any) => ({
         ...lesson,
         progress: lesson.progress?.[0] || null,
       })),
@@ -138,7 +138,7 @@ export async function POST(request: NextRequest) {
       },
     });
 
-    return NextResponse.json(lesson, { status: 201 });
+    return NextResponse.json((lesson as any), { status: 201 });
   } catch (error) {
     console.error('POST /api/lessons error:', error);
     return NextResponse.json(

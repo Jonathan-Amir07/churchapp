@@ -39,10 +39,6 @@ export default function InstructorLessons() {
   const [filterStatus, setFilterStatus] = useState<'all' | 'draft' | 'published'>('all');
   const [searchQuery, setSearchQuery] = useState('');
 
-  useEffect(() => {
-    fetchLessons();
-  }, [classId, filterStatus]);
-
   const fetchLessons = async () => {
     if (!classId) return;
     try {
@@ -62,6 +58,10 @@ export default function InstructorLessons() {
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    fetchLessons();
+  }, [classId, filterStatus]);
 
   const handleLessonCreated = () => {
     setShowForm(false);
@@ -162,7 +162,7 @@ export default function InstructorLessons() {
           {filteredLessons.map(lesson => (
             <LessonCard
               key={lesson.id}
-              lesson={lesson}
+              lesson={lesson as any}
               onUpdate={fetchLessons}
             />
           ))}

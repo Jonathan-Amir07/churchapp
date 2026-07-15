@@ -73,7 +73,7 @@ export async function getActiveTokensForUser(userId: string) {
       .eq('is_active', true);
 
     if (error) throw error;
-    return data?.map(t => t.token) || [];
+    return data?.map((t: any) => t.token) || [];
   } catch (error) {
     console.error('Failed to get active tokens:', error);
     return [];

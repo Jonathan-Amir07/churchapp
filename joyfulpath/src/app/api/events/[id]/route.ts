@@ -1,14 +1,14 @@
 // Event Details - Get, Update, Delete single event
 import { NextRequest, NextResponse } from 'next/server';
-import { createClient } from '@/lib/supabase/admin';
+import { createAdminClient as createClient } from '@/lib/supabase/admin';
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const supabase = createClient();
-    const eventId = params.id;
+    const eventId = (await params).id;
 
     const { data: event, error } = await supabase
       .from('events')
@@ -49,11 +49,11 @@ export async function GET(
 
 export async function PATCH(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const supabase = createClient();
-    const eventId = params.id;
+    const eventId = (await params).id;
     const body = await request.json();
 
     const { data: event, error } = await supabase
@@ -91,11 +91,11 @@ export async function PATCH(
 
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const supabase = createClient();
-    const eventId = params.id;
+    const eventId = (await params).id;
 
     // Delete associated event attendees first (cascade)
     await supabase
