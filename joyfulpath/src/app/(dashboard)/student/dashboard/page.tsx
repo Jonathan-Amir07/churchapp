@@ -55,13 +55,15 @@ export default function StudentDashboard() {
   return (
     <div className="space-y-6 animate-[slide-up_0.4s_ease-out]">
       {/* Welcome Banner */}
-      <div className="relative rounded-2xl overflow-hidden p-6 md:p-8 bg-gradient-to-br from-primary to-primary-container text-on-primary shadow-tactile select-none">
-        <div className="absolute inset-0 bg-dot-pattern opacity-10 pointer-events-none" />
+      <div className="relative rounded-3xl overflow-hidden p-8 md:p-10 bg-gradient-to-br from-primary via-primary-container to-secondary text-on-primary shadow-2xl select-none border border-secondary/30">
+        <div className="absolute inset-0 bg-coptic-pattern opacity-10 mix-blend-overlay pointer-events-none" />
         <div className="relative z-10 space-y-4">
-          <div className="flex items-center gap-3">
-            <span className="material-symbols-outlined text-[36px] text-yellow-300 animate-[bounce-in_0.5s_cubic-bezier(0.68,-0.55,0.265,1.55)]" style={{ fontVariationSettings: "'FILL' 1" }}>
-              workspace_premium
-            </span>
+          <div className="flex items-center gap-4">
+            <div className="w-12 h-12 rounded-xl bg-white/20 backdrop-blur-sm border border-white/30 flex items-center justify-center animate-[bounce-in_0.5s_cubic-bezier(0.68,-0.55,0.265,1.55)]">
+              <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-6 h-6 text-secondary">
+                <path d="M12 2V22M7 7H17" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
+              </svg>
+            </div>
             <h1 className="text-2xl md:text-3xl font-extrabold">
               {t('welcomeMessage', { xpNeeded, nextLevel: currentLevelNum + 1 })}
             </h1>
@@ -75,17 +77,17 @@ export default function StudentDashboard() {
       {/* Stats Summary Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
         {/* Streak Stat */}
-        <Card variant="default" className="border border-outline-variant shadow-sm relative overflow-hidden bg-surface-container-lowest">
+        <Card variant="default" className="border-2 border-secondary/20 shadow-sm relative overflow-hidden bg-surface-container-lowest hover:border-secondary/50 hover:shadow-md transition-all">
           <CardContent className="p-6 flex items-center justify-between">
             <div className="space-y-1">
-              <p className="text-xs uppercase font-bold text-on-surface-variant/80 tracking-wider">
+              <p className="text-xs uppercase font-black text-on-surface-variant/80 tracking-wider">
                 {t('streak')}
               </p>
               <h3 className="text-3xl font-extrabold text-on-surface">
                 {streak} {t('days')}
               </h3>
             </div>
-            <div className="w-12 h-12 rounded-full bg-orange-100 dark:bg-orange-950/30 flex items-center justify-center animate-[pulse-soft_2s_infinite]">
+            <div className="w-12 h-12 rounded-2xl bg-orange-100 dark:bg-orange-950/30 border border-orange-200/50 flex items-center justify-center animate-[pulse-soft_2s_infinite]">
               <span className="material-symbols-outlined text-[28px] text-orange-500 dark:text-orange-400" style={{ fontVariationSettings: "'FILL' 1" }}>
                 local_fire_department
               </span>
@@ -94,18 +96,18 @@ export default function StudentDashboard() {
         </Card>
 
         {/* Points Stat */}
-        <Card variant="default" className="border border-outline-variant shadow-sm relative overflow-hidden bg-surface-container-lowest">
+        <Card variant="default" className="border-2 border-secondary/20 shadow-sm relative overflow-hidden bg-surface-container-lowest hover:border-secondary/50 hover:shadow-md transition-all">
           <CardContent className="p-6 flex items-center justify-between">
             <div className="space-y-1">
-              <p className="text-xs uppercase font-bold text-on-surface-variant/80 tracking-wider">
+              <p className="text-xs uppercase font-black text-on-surface-variant/80 tracking-wider">
                 {t('totalPoints')}
               </p>
-              <h3 className="text-3xl font-extrabold text-on-surface">
+              <h3 className="text-3xl font-extrabold text-on-surface text-secondary">
                 {points} {tGamification('points')}
               </h3>
             </div>
-            <div className="w-12 h-12 rounded-full bg-yellow-100 dark:bg-yellow-950/30 flex items-center justify-center">
-              <span className="material-symbols-outlined text-[28px] text-yellow-600 dark:text-yellow-400" style={{ fontVariationSettings: "'FILL' 1" }}>
+            <div className="w-12 h-12 rounded-2xl bg-secondary/10 border border-secondary/30 flex items-center justify-center">
+              <span className="material-symbols-outlined text-[28px] text-secondary" style={{ fontVariationSettings: "'FILL' 1" }}>
                 stars
               </span>
             </div>
@@ -113,18 +115,18 @@ export default function StudentDashboard() {
         </Card>
 
         {/* Level Info */}
-        <Card variant="default" className="border border-outline-variant shadow-sm relative overflow-hidden bg-surface-container-lowest">
+        <Card variant="default" className="border-2 border-secondary/20 shadow-sm relative overflow-hidden bg-surface-container-lowest hover:border-secondary/50 hover:shadow-md transition-all">
           <CardContent className="p-6 flex items-center justify-between">
             <div className="space-y-1">
-              <p className="text-xs uppercase font-bold text-on-surface-variant/80 tracking-wider">
+              <p className="text-xs uppercase font-black text-on-surface-variant/80 tracking-wider">
                 {t('level')}
               </p>
               <h3 className="text-2xl font-extrabold text-on-surface truncate max-w-[160px]">
                 {currentLevelTitle}
               </h3>
             </div>
-            <div className="w-12 h-12 rounded-full bg-blue-100 dark:bg-blue-950/30 flex items-center justify-center">
-              <span className="material-symbols-outlined text-[28px] text-blue-500 dark:text-blue-400" style={{ fontVariationSettings: "'FILL' 1" }}>
+            <div className="w-12 h-12 rounded-2xl bg-primary/10 border border-primary/20 flex items-center justify-center">
+              <span className="material-symbols-outlined text-[28px] text-primary" style={{ fontVariationSettings: "'FILL' 1" }}>
                 award_star
               </span>
             </div>
@@ -133,7 +135,8 @@ export default function StudentDashboard() {
       </div>
 
       {/* Gamification Level Progress Meter */}
-      <Card variant="default" className="border border-outline-variant bg-surface-container-lowest shadow-sm">
+      <Card variant="default" className="border border-outline-variant bg-surface-container-lowest shadow-sm overflow-hidden relative">
+        <div className="absolute inset-0 bg-coptic-pattern opacity-[0.02] pointer-events-none" />
         <CardHeader className="pb-2">
           <div className="flex items-center justify-between">
             <CardTitle className="text-lg font-bold text-on-surface">
@@ -156,7 +159,7 @@ export default function StudentDashboard() {
       {/* Quick Action Navigation Panels */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         {/* Lesson panel */}
-        <Card variant="interactive" className="border border-outline-variant bg-surface-container-lowest shadow-sm flex flex-col justify-between">
+        <Card variant="interactive" className="border-2 border-secondary/20 bg-surface-container-lowest shadow-sm hover:shadow-md hover:-translate-y-1 transition-all flex flex-col justify-between">
           <CardContent className="p-5 space-y-4">
             <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center">
               <span className="material-symbols-outlined text-[24px] text-primary">menu_book</span>
@@ -178,7 +181,7 @@ export default function StudentDashboard() {
         </Card>
 
         {/* Timed Quizzes Panel */}
-        <Card variant="interactive" className="border border-outline-variant bg-surface-container-lowest shadow-sm flex flex-col justify-between">
+        <Card variant="interactive" className="border-2 border-secondary/20 bg-surface-container-lowest shadow-sm hover:shadow-md hover:-translate-y-1 transition-all flex flex-col justify-between">
           <CardContent className="p-5 space-y-4">
             <div className="w-10 h-10 rounded-xl bg-tertiary/10 flex items-center justify-center">
               <span className="material-symbols-outlined text-[24px] text-tertiary">quiz</span>
@@ -200,7 +203,7 @@ export default function StudentDashboard() {
         </Card>
 
         {/* Learning Hub & Games */}
-        <Card variant="interactive" className="border border-outline-variant bg-surface-container-lowest shadow-sm flex flex-col justify-between">
+        <Card variant="interactive" className="border-2 border-secondary/20 bg-surface-container-lowest shadow-sm hover:shadow-md hover:-translate-y-1 transition-all flex flex-col justify-between">
           <CardContent className="p-5 space-y-4">
             <div className="w-10 h-10 rounded-xl bg-teal-100 dark:bg-teal-950/30 flex items-center justify-center text-teal-600 dark:text-teal-400">
               <span className="material-symbols-outlined text-[24px]">sports_esports</span>

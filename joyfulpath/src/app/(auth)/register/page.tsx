@@ -8,7 +8,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import * as zod from 'zod';
 import { motion, AnimatePresence } from 'framer-motion';
 import { createClient } from '@/lib/supabase/client';
-import { Button, Input, Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui';
+import { Button, Input, Card, CardContent } from '@/components/ui';
 import { useNotificationStore } from '@/stores/notifications.store';
 import Link from 'next/link';
 
@@ -139,7 +139,7 @@ export default function RegisterPage() {
       if (error) {
         addToast(error.message, 'error');
       } else {
-        addToast('Registration successful! Please check your email.', 'success');
+        addToast(currentLocale === 'en' ? 'Registration successful! Please check your email.' : 'تم التسجيل بنجاح! يرجى التحقق من بريدك الإلكتروني.', 'success');
         router.push('/login');
       }
     } catch (err: any) {
@@ -150,47 +150,103 @@ export default function RegisterPage() {
   };
 
   const getStrengthLabel = () => {
-    if (passwordStrength <= 2) return { label: 'Weak', color: 'bg-error' };
-    if (passwordStrength <= 4) return { label: 'Medium', color: 'bg-secondary' };
-    return { label: 'Strong', color: 'bg-tertiary' };
+    if (passwordStrength <= 2) return { label: currentLocale === 'en' ? 'Weak' : 'ضعيف', color: 'bg-error' };
+    if (passwordStrength <= 4) return { label: currentLocale === 'en' ? 'Medium' : 'متوسط', color: 'bg-secondary' };
+    return { label: currentLocale === 'en' ? 'Strong' : 'قوي', color: 'bg-tertiary' };
   };
 
   const strength = getStrengthLabel();
 
   return (
-    <div className="w-full max-w-lg mx-auto relative py-12">
-      <div className="absolute -top-4 end-0 z-20">
-        <Button variant="outline" size="sm" onClick={handleLocaleSwitch} className="flex items-center gap-1 bg-surface-container-lowest/80 backdrop-blur-md border border-outline-variant hover:bg-surface-container-low transition-all shadow-sm rounded-full py-1.5 px-3.5 text-sm" icon="language" iconPosition="start">
+    <div className="w-full relative py-6 md:py-12 max-w-5xl mx-auto flex">
+      {/* Floating Language Switcher */}
+      <div className="absolute top-0 end-0 z-30">
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={handleLocaleSwitch}
+          className="flex items-center gap-1 bg-surface-container-lowest/80 backdrop-blur-md border border-secondary/30 hover:bg-surface-container-low transition-all shadow-sm rounded-full py-1.5 px-3.5 text-sm font-bold text-secondary"
+          icon="language"
+          iconPosition="start"
+        >
           {currentLocale === 'en' ? 'العربية' : 'English'}
         </Button>
       </div>
 
-      <Card variant="elevated" className="overflow-hidden border border-outline-variant bg-surface-container-lowest/90 backdrop-blur-md shadow-elevated">
-        <div className="h-2 bg-gradient-to-r from-primary via-primary-container to-secondary-container" />
+      <Card variant="elevated" className="w-full overflow-hidden border border-outline-variant bg-surface-container-lowest/90 backdrop-blur-md shadow-2xl rounded-3xl grid grid-cols-1 md:grid-cols-2">
         
-        <CardHeader className="text-center pt-8 pb-4">
-          <CardTitle className="text-3xl font-extrabold tracking-tight text-on-surface">
-            {currentLocale === 'en' ? 'Create Account' : 'إنشاء حساب'}
-          </CardTitle>
-          <div className="flex justify-center mt-4">
-            <div className="flex gap-2 w-full max-w-xs">
+        {/* Left Side: Coptic Imagery */}
+        <div className="hidden md:flex flex-col justify-between bg-gradient-to-br from-secondary via-primary-container to-primary p-12 relative overflow-hidden text-on-primary">
+          <div className="absolute inset-0 bg-coptic-pattern opacity-10 mix-blend-overlay pointer-events-none" />
+          
+          <div className="relative z-10 flex items-center gap-3">
+            <div className="w-10 h-10 rounded-xl bg-white/20 backdrop-blur-sm flex items-center justify-center border border-white/30">
+              <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-6 h-6 text-white">
+                <path d="M12 2V22M7 7H17" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
+              </svg>
+            </div>
+            <span className="text-2xl font-black tracking-tight">{currentLocale === 'en' ? 'JoyfulPath' : 'مسار الفرح'}</span>
+          </div>
+
+          <div className="relative z-10 space-y-6 max-w-sm mt-12">
+            <h2 className="text-4xl font-extrabold leading-tight">
+              {currentLocale === 'en' ? 'Start Your Spiritual Journey' : 'ابدأ مسارك الروحي'}
+            </h2>
+            <p className="text-primary-container-on font-medium text-lg opacity-90 leading-relaxed">
+              {currentLocale === 'en' 
+                ? 'Create your account to track attendance, interact with lessons, and earn rewards.'
+                : 'أنشئ حسابك لتسجيل الحضور، والتفاعل مع الدروس، والحصول على البركات.'}
+            </p>
+          </div>
+
+          <div className="relative z-10 mt-auto pt-16">
+            <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl p-6">
+              <div className="flex gap-4">
+                <span className="material-symbols-outlined text-[36px] text-white">account_balance</span>
+                <div>
+                  <h4 className="font-extrabold text-sm">{currentLocale === 'en' ? 'Church Management' : 'إدارة كنسية'}</h4>
+                  <p className="text-xs opacity-80 mt-1 font-medium">{currentLocale === 'en' ? 'Connecting servants, parents and students.' : 'ربط الخدام وأولياء الأمور والمخدومين.'}</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Right Side: Form */}
+        <div className="p-8 md:p-12 lg:p-16 flex flex-col justify-center relative">
+          
+          <div className="text-center mb-8 md:hidden">
+            <div className="flex justify-center mb-4">
+              <div className="w-16 h-16 rounded-2xl bg-primary/10 flex items-center justify-center border border-secondary/30 shadow-md">
+                <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-8 h-8 text-secondary">
+                  <path d="M12 2V22M7 7H17" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
+                </svg>
+              </div>
+            </div>
+            <h1 className="text-3xl font-extrabold text-on-surface mb-2">{currentLocale === 'en' ? 'Create Account' : 'إنشاء حساب'}</h1>
+          </div>
+
+          <div className="hidden md:block mb-8">
+            <h2 className="text-3xl font-extrabold text-on-surface">{currentLocale === 'en' ? 'Create Account' : 'إنشاء حساب'}</h2>
+          </div>
+
+          <div className="flex justify-center mb-8">
+            <div className="flex gap-2 w-full">
               {[1, 2, 3].map((s) => (
                 <div key={s} className={`h-2 flex-1 rounded-full transition-colors ${step >= s ? 'bg-primary' : 'bg-surface-container-high'}`} />
               ))}
             </div>
           </div>
-        </CardHeader>
 
-        {/* Tab Controls (Only in step 1) */}
-        {step === 1 && (
-          <div className="px-6 pb-2">
-            <div className="flex bg-surface-container rounded-xl p-1 border border-outline-variant/30">
+          {/* Tab Controls (Only in step 1) */}
+          {step === 1 && (
+            <div className="flex bg-surface-container rounded-xl p-1.5 border border-outline-variant/30 mb-8">
               {(['student', 'parent', 'instructor'] as const).map((tab) => (
                 <button
                   key={tab}
                   type="button"
                   onClick={() => setActiveTab(tab)}
-                  className={`flex-1 py-3 text-center text-xs font-bold rounded-lg transition-all flex items-center justify-center gap-2 capitalize ${
+                  className={`flex-1 py-3 text-center text-xs font-black rounded-lg transition-all flex items-center justify-center gap-1.5 capitalize ${
                     activeTab === tab
                       ? 'bg-surface-container-lowest text-primary shadow-sm border border-outline-variant/20'
                       : 'text-on-surface-variant hover:text-on-surface'
@@ -199,14 +255,14 @@ export default function RegisterPage() {
                   <span className="material-symbols-outlined text-[18px]">
                     {tab === 'student' ? 'sentiment_satisfied' : tab === 'parent' ? 'family_restroom' : 'school'}
                   </span>
-                  {currentLocale === 'en' ? (tab === 'student' ? 'Child' : tab === 'instructor' ? 'Servant' : tab) : (tab === 'student' ? 'مخدوم' : tab === 'instructor' ? 'خادم' : 'ولي أمر')}
+                  <span className="truncate">
+                    {currentLocale === 'en' ? (tab === 'student' ? 'Child' : tab === 'instructor' ? 'Servant' : tab) : (tab === 'student' ? 'مخدوم' : tab === 'instructor' ? 'خادم' : 'ولي أمر')}
+                  </span>
                 </button>
               ))}
             </div>
-          </div>
-        )}
+          )}
 
-        <CardContent className="p-6 pt-4">
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
             
             <AnimatePresence mode="wait">
@@ -217,9 +273,9 @@ export default function RegisterPage() {
                   <div className="grid grid-cols-2 gap-4">
                     <Input label={currentLocale === 'en' ? 'Birth Date' : 'تاريخ الميلاد'} type="date" {...register('birthDate')} />
                     <div className="space-y-2">
-                      <label className="block text-sm font-semibold tracking-wide text-on-surface uppercase">{currentLocale === 'en' ? 'Gender' : 'النوع'}</label>
-                      <select className="w-full h-14 bg-surface-container rounded-lg border-2 border-transparent px-4 font-medium text-base text-on-surface outline-none focus:border-primary transition-colors" {...register('gender')}>
-                        <option value="">Select...</option>
+                      <label className="block text-xs font-bold tracking-wide text-on-surface uppercase">{currentLocale === 'en' ? 'Gender' : 'النوع'}</label>
+                      <select className="w-full h-11 bg-surface-container rounded-lg border border-outline-variant px-4 font-semibold text-sm text-on-surface outline-none focus:border-primary transition-colors" {...register('gender')}>
+                        <option value="">{currentLocale === 'en' ? 'Select...' : 'اختر...'}</option>
                         <option value="male">{currentLocale === 'en' ? 'Male' : 'ذكر'}</option>
                         <option value="female">{currentLocale === 'en' ? 'Female' : 'أنثى'}</option>
                       </select>
@@ -231,17 +287,17 @@ export default function RegisterPage() {
               {step === 2 && (
                 <motion.div key="step2" initial={{ x: 20, opacity: 0 }} animate={{ x: 0, opacity: 1 }} exit={{ x: -20, opacity: 0 }} className="space-y-4">
                   <div className="space-y-2">
-                    <label className="block text-sm font-semibold tracking-wide text-on-surface uppercase">{currentLocale === 'en' ? 'Branch' : 'الفرع/الكنيسة'}</label>
-                    <select className="w-full h-14 bg-surface-container rounded-lg border-2 border-transparent px-4 font-medium text-base text-on-surface outline-none focus:border-primary transition-colors" {...register('branchId')}>
-                      <option value="">Select Branch...</option>
+                    <label className="block text-xs font-bold tracking-wide text-on-surface uppercase">{currentLocale === 'en' ? 'Branch / Church' : 'الفرع / الكنيسة'}</label>
+                    <select className="w-full h-12 bg-surface-container-low rounded-xl border border-outline-variant px-4 font-semibold text-sm text-on-surface outline-none focus:border-primary transition-colors" {...register('branchId')}>
+                      <option value="">{currentLocale === 'en' ? 'Select Branch...' : 'اختر الكنيسة...'}</option>
                       {branches.map((b) => (<option key={b.id} value={b.id}>{b.name}</option>))}
                     </select>
                   </div>
                   {activeTab === 'student' && (
                     <div className="space-y-2">
-                      <label className="block text-sm font-semibold tracking-wide text-on-surface uppercase">{currentLocale === 'en' ? 'Class/Grade' : 'الفصل الدراسي'}</label>
-                      <select className="w-full h-14 bg-surface-container rounded-lg border-2 border-transparent px-4 font-medium text-base text-on-surface outline-none focus:border-primary transition-colors" {...register('classId')}>
-                        <option value="">Select Class...</option>
+                      <label className="block text-xs font-bold tracking-wide text-on-surface uppercase">{currentLocale === 'en' ? 'Class/Grade' : 'الفصل الدراسي'}</label>
+                      <select className="w-full h-12 bg-surface-container-low rounded-xl border border-outline-variant px-4 font-semibold text-sm text-on-surface outline-none focus:border-primary transition-colors" {...register('classId')}>
+                        <option value="">{currentLocale === 'en' ? 'Select Class...' : 'اختر الفصل...'}</option>
                         {classes.map((c) => (<option key={c.id} value={c.id}>{c.name}</option>))}
                       </select>
                     </div>
@@ -269,31 +325,32 @@ export default function RegisterPage() {
               )}
             </AnimatePresence>
 
-            <div className="flex gap-4 mt-6 pt-4 border-t border-outline-variant/30">
+            <div className="flex gap-4 mt-8 pt-4 border-t border-outline-variant/30">
               {step > 1 && (
-                <Button type="button" variant="outline" size="lg" onClick={prevStep} className="flex-1">
+                <Button type="button" variant="outline" size="lg" onClick={prevStep} className="flex-1 rounded-xl">
                   {currentLocale === 'en' ? 'Back' : 'رجوع'}
                 </Button>
               )}
               {step < totalSteps ? (
-                <Button type="button" variant="primary" size="lg" onClick={nextStep} className="flex-1">
+                <Button type="button" variant="primary" size="lg" onClick={nextStep} className="flex-1 rounded-xl">
                   {currentLocale === 'en' ? 'Next' : 'التالي'}
                 </Button>
               ) : (
-                <Button type="submit" variant="primary" size="lg" loading={loading} className="flex-1">
-                  {currentLocale === 'en' ? 'Create Account' : 'إنشاء الحساب'}
+                <Button type="submit" variant="primary" size="lg" loading={loading} className="flex-1 rounded-xl">
+                  {currentLocale === 'en' ? 'Finish Registration' : 'إنهاء التسجيل'}
                 </Button>
               )}
             </div>
 
-            <p className="text-center text-xs font-semibold text-on-surface-variant/80 mt-4">
+            <p className="text-center text-xs font-bold text-on-surface-variant/80 mt-6">
               {currentLocale === 'en' ? 'Already have an account?' : 'هل لديك حساب بالفعل؟'}{' '}
-              <Link href="/login" className="text-primary hover:underline">
+              <Link href="/login" className="text-primary hover:underline font-black">
                 {currentLocale === 'en' ? 'Sign In' : 'تسجيل الدخول'}
               </Link>
             </p>
           </form>
-        </CardContent>
+
+        </div>
       </Card>
     </div>
   );

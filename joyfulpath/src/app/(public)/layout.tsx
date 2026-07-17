@@ -40,11 +40,13 @@ export default function PublicLayout({
       >
         <div className="max-w-7xl mx-auto px-4 md:px-8 flex items-center justify-between">
           <Link href="/" className="flex items-center gap-2">
-            <span className="material-symbols-outlined text-[32px] text-primary" style={{ fontVariationSettings: "'FILL' 1" }}>
-              auto_stories
-            </span>
+            <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center border border-secondary/50 shadow-sm">
+              <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-5 h-5 text-secondary">
+                <path d="M12 2V22M7 7H17" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
+              </svg>
+            </div>
             <span className="text-2xl font-black tracking-tight text-primary">
-              JoyfulPath
+              {currentLocale === 'en' ? 'JoyfulPath' : 'مسار الفرح'}
             </span>
           </Link>
 
@@ -172,13 +174,15 @@ export default function PublicLayout({
       <main className="flex-1 pt-24">{children}</main>
 
       {/* Footer */}
-      <footer className="bg-surface-container-lowest border-t border-outline-variant/60 py-12 text-center text-on-surface-variant">
-        <div className="max-w-7xl mx-auto px-4 md:px-8 space-y-6">
+      <footer className="bg-surface-container-lowest border-t border-outline-variant/60 py-12 text-center text-on-surface-variant relative overflow-hidden">
+        <div className="max-w-7xl mx-auto px-4 md:px-8 space-y-6 relative z-10">
           <div className="flex justify-center items-center gap-2">
-            <span className="material-symbols-outlined text-[28px] text-primary" style={{ fontVariationSettings: "'FILL' 1" }}>
-              auto_stories
-            </span>
-            <span className="text-xl font-black text-on-surface">JoyfulPath</span>
+            <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center border border-secondary/30">
+              <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-5 h-5 text-secondary">
+                <path d="M12 2V22M7 7H17" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
+              </svg>
+            </div>
+            <span className="text-xl font-black text-on-surface">{currentLocale === 'en' ? 'JoyfulPath' : 'مسار الفرح'}</span>
           </div>
           <p className="text-sm max-w-md mx-auto leading-relaxed">
             {currentLocale === 'en'
@@ -190,9 +194,10 @@ export default function PublicLayout({
             <Link href="/terms" className="hover:text-primary">{currentLocale === 'en' ? 'Terms of Service' : 'شروط الخدمة'}</Link>
           </div>
           <p className="text-xs opacity-60">
-            &copy; {new Date().getFullYear()} JoyfulPath Sunday School. All rights reserved.
+            &copy; {new Date().getFullYear()} {currentLocale === 'en' ? 'JoyfulPath Sunday School. All rights reserved.' : 'مدارس الأحد مسار الفرح. جميع الحقوق محفوظة.'}
           </p>
         </div>
+        <div className="absolute inset-0 bg-coptic-pattern opacity-[0.02] pointer-events-none" />
       </footer>
     </div>
   );

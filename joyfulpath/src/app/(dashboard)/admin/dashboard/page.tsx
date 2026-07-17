@@ -15,12 +15,19 @@ export default function AdminDashboard() {
   return (
     <div className="space-y-6 animate-[slide-up_0.4s_ease-out]">
       {/* Banner */}
-      <div className="relative rounded-2xl overflow-hidden p-6 md:p-8 bg-gradient-to-br from-primary to-primary-container text-on-primary shadow-tactile select-none">
-        <div className="absolute inset-0 bg-dot-pattern opacity-10 pointer-events-none" />
-        <div className="relative z-10 space-y-2">
-          <h1 className="text-2xl md:text-3xl font-extrabold">
-            Platform Administration — Welcome {user?.display_name || 'Admin'}!
-          </h1>
+      <div className="relative rounded-3xl overflow-hidden p-8 md:p-10 bg-gradient-to-br from-primary via-primary-container to-secondary text-on-primary shadow-2xl select-none border border-secondary/30">
+        <div className="absolute inset-0 bg-coptic-pattern opacity-10 mix-blend-overlay pointer-events-none" />
+        <div className="relative z-10 space-y-4">
+          <div className="flex items-center gap-4">
+            <div className="w-12 h-12 rounded-xl bg-white/20 backdrop-blur-sm border border-white/30 flex items-center justify-center animate-[bounce-in_0.5s_cubic-bezier(0.68,-0.55,0.265,1.55)]">
+              <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-6 h-6 text-secondary">
+                <path d="M12 2V22M7 7H17" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
+              </svg>
+            </div>
+            <h1 className="text-2xl md:text-3xl font-extrabold">
+              Platform Administration — Welcome {user?.display_name || 'Admin'}!
+            </h1>
+          </div>
           <p className="text-sm md:text-base font-medium opacity-90 max-w-xl">
             As a system administrator, you have full control over classes, user creation, CSV bulk imports, rewards configuration, and site-wide settings.
           </p>
@@ -29,44 +36,44 @@ export default function AdminDashboard() {
 
       {/* Stats Summary Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
-        <Card variant="default" className="border border-outline-variant shadow-sm bg-surface-container-lowest">
+        <Card variant="default" className="border-2 border-secondary/20 shadow-sm relative overflow-hidden bg-surface-container-lowest hover:border-secondary/50 hover:shadow-md transition-all">
           <CardContent className="p-6 flex items-center justify-between">
             <div className="space-y-1">
-              <p className="text-xs uppercase font-bold text-on-surface-variant/80 tracking-wider">
+              <p className="text-xs uppercase font-black text-on-surface-variant/80 tracking-wider">
                 Total Accounts
               </p>
               <h3 className="text-3xl font-extrabold text-on-surface">1</h3>
             </div>
-            <div className="w-12 h-12 rounded-full bg-blue-100 flex items-center justify-center">
-              <span className="material-symbols-outlined text-[28px] text-blue-500">manage_accounts</span>
+            <div className="w-12 h-12 rounded-2xl bg-primary/10 border border-primary/20 flex items-center justify-center">
+              <span className="material-symbols-outlined text-[28px] text-primary">manage_accounts</span>
             </div>
           </CardContent>
         </Card>
 
-        <Card variant="default" className="border border-outline-variant shadow-sm bg-surface-container-lowest">
+        <Card variant="default" className="border-2 border-secondary/20 shadow-sm relative overflow-hidden bg-surface-container-lowest hover:border-secondary/50 hover:shadow-md transition-all">
           <CardContent className="p-6 flex items-center justify-between">
             <div className="space-y-1">
-              <p className="text-xs uppercase font-bold text-on-surface-variant/80 tracking-wider">
+              <p className="text-xs uppercase font-black text-on-surface-variant/80 tracking-wider">
                 Active Classes
               </p>
               <h3 className="text-3xl font-extrabold text-on-surface">1</h3>
             </div>
-            <div className="w-12 h-12 rounded-full bg-green-100 flex items-center justify-center">
+            <div className="w-12 h-12 rounded-2xl bg-green-100 border border-green-200/50 flex items-center justify-center">
               <span className="material-symbols-outlined text-[28px] text-green-500">school</span>
             </div>
           </CardContent>
         </Card>
 
-        <Card variant="default" className="border border-outline-variant shadow-sm bg-surface-container-lowest">
+        <Card variant="default" className="border-2 border-secondary/20 shadow-sm relative overflow-hidden bg-surface-container-lowest hover:border-secondary/50 hover:shadow-md transition-all">
           <CardContent className="p-6 flex items-center justify-between">
             <div className="space-y-1">
-              <p className="text-xs uppercase font-bold text-on-surface-variant/80 tracking-wider">
+              <p className="text-xs uppercase font-black text-on-surface-variant/80 tracking-wider">
                 System Badges
               </p>
-              <h3 className="text-3xl font-extrabold text-on-surface">6</h3>
+              <h3 className="text-3xl font-extrabold text-secondary">6</h3>
             </div>
-            <div className="w-12 h-12 rounded-full bg-yellow-100 flex items-center justify-center">
-              <span className="material-symbols-outlined text-[28px] text-yellow-600">military_tech</span>
+            <div className="w-12 h-12 rounded-2xl bg-secondary/10 border border-secondary/30 flex items-center justify-center">
+              <span className="material-symbols-outlined text-[28px] text-secondary">military_tech</span>
             </div>
           </CardContent>
         </Card>
@@ -74,7 +81,7 @@ export default function AdminDashboard() {
 
       {/* Admin management actions */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <Card variant="interactive" className="border border-outline-variant bg-surface-container-lowest shadow-sm flex flex-col justify-between">
+        <Card variant="interactive" className="border-2 border-secondary/20 bg-surface-container-lowest shadow-sm hover:shadow-md hover:-translate-y-1 transition-all flex flex-col justify-between">
           <CardContent className="p-6 space-y-4">
             <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center">
               <span className="material-symbols-outlined text-[28px] text-primary">groups</span>
@@ -95,7 +102,7 @@ export default function AdminDashboard() {
           </div>
         </Card>
 
-        <Card variant="interactive" className="border border-outline-variant bg-surface-container-lowest shadow-sm flex flex-col justify-between">
+        <Card variant="interactive" className="border-2 border-secondary/20 bg-surface-container-lowest shadow-sm hover:shadow-md hover:-translate-y-1 transition-all flex flex-col justify-between">
           <CardContent className="p-6 space-y-4">
             <div className="w-12 h-12 rounded-xl bg-tertiary/10 flex items-center justify-center">
               <span className="material-symbols-outlined text-[28px] text-tertiary">domain</span>
@@ -116,7 +123,7 @@ export default function AdminDashboard() {
           </div>
         </Card>
 
-        <Card variant="interactive" className="border border-outline-variant bg-surface-container-lowest shadow-sm flex flex-col justify-between">
+        <Card variant="interactive" className="border-2 border-secondary/20 bg-surface-container-lowest shadow-sm hover:shadow-md hover:-translate-y-1 transition-all flex flex-col justify-between">
           <CardContent className="p-6 space-y-4">
             <div className="w-12 h-12 rounded-xl bg-orange-100 flex items-center justify-center">
               <span className="material-symbols-outlined text-[28px] text-orange-600">settings_applications</span>

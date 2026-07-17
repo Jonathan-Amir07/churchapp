@@ -51,19 +51,35 @@ export function Topbar() {
   const dynamicXP = isStudent ? xp : (user?.total_xp || 0);
   const dynamicPoints = isStudent ? points : (user?.total_points || 0);
 
+  // Role translation mapping
+  const roleTranslations: Record<string, string> = {
+    'student': 'مخدوم',
+    'instructor': 'خادم',
+    'admin': 'مسؤول الخدمة',
+    'parent': 'ولي أمر'
+  };
+  
+  const displayRole = user?.role ? (currentLocale === 'ar' ? roleTranslations[user.role] : user.role) : '';
+
   return (
-    <header className="h-16 bg-surface-container-lowest border-b border-outline-variant flex items-center justify-between px-4 md:px-8 sticky top-0 z-20 shadow-sm">
-      {/* Page Brand (Visible on mobile header) */}
-      <div className="flex items-center gap-2 md:hidden">
-        <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center">
-          <span className="material-symbols-outlined text-on-primary text-[18px] font-bold" style={{ fontVariationSettings: "'FILL' 1" }}>
-            auto_stories
-          </span>
-        </div>
-        <span className="text-md font-black tracking-tight text-primary">
-          {tCommon('appName')}
-        </span>
-      </div>
+    <div className="flex flex-col relative z-20">
+      <header className="h-16 bg-surface-container-lowest border-b border-outline-variant flex items-center justify-between px-4 md:px-8 sticky top-0 shadow-sm relative overflow-hidden">
+        {/* Subtle Coptic Background Pattern */}
+        <div className="absolute inset-0 bg-coptic-pattern opacity-[0.03] pointer-events-none" />
+        
+        {/* Header content needs relative z-index to sit above pattern */}
+        <div className="flex items-center justify-between w-full relative z-10">
+          {/* Page Brand (Visible on mobile header) */}
+          <div className="flex items-center gap-2 md:hidden">
+            <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center border border-secondary/30">
+              <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-5 h-5 text-secondary">
+                <path d="M12 2V22M7 7H17" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
+              </svg>
+            </div>
+            <span className="text-md font-black tracking-tight text-primary">
+              {tCommon('appName')}
+            </span>
+          </div>
 
       {/* Gamification summary (for students, LTR/RTL spacing is automatic) */}
       <div className="hidden md:flex items-center gap-4">
@@ -116,7 +132,7 @@ export function Topbar() {
             <div className="hidden sm:flex flex-col items-end text-end leading-tight">
               <span className="text-sm font-extrabold text-on-surface">{user.display_name}</span>
               <span className="text-[10px] uppercase font-bold tracking-wider text-on-surface-variant/80">
-                {user.role}
+                {displayRole}
               </span>
             </div>
             
@@ -137,8 +153,17 @@ export function Topbar() {
             </button>
           </div>
         )}
+        </div>
+      </header>
+      
+      {/* Mobile Verse Ticker (visible only on mobile) */}
+      <div className="md:hidden bg-secondary/10 border-b border-secondary/20 py-1.5 px-4 overflow-hidden whitespace-nowrap text-[10px] font-bold text-secondary-container">
+        <div className="inline-block animate-[shimmer_15s_linear_infinite] w-full text-center">
+          <span className="material-symbols-outlined text-[10px] align-middle mr-1">auto_awesome</span>
+          آية اليوم: "فَرَحًا أَفْرَحُ بِالرَّبِّ، تَبْتَهِجُ نَفْسِي بِإِلهِي..." (إشعياء 61: 10)
+        </div>
       </div>
-    </header>
+    </div>
   );
 }
 export default Topbar;

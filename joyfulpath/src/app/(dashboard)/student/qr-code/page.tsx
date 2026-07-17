@@ -49,7 +49,7 @@ export default function StudentQRCodePage() {
       </div>
 
       {/* QR Card */}
-      <Card className="border border-outline-variant bg-surface-container-lowest shadow-tactile w-full max-w-sm">
+      <Card className="border-2 border-secondary/20 bg-surface-container-lowest shadow-2xl w-full max-w-sm rounded-3xl overflow-hidden">
         <CardContent className="p-8 flex flex-col items-center gap-6">
           {/* Avatar + Name */}
           <div className="flex flex-col items-center gap-2">

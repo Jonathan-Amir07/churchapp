@@ -62,8 +62,14 @@
     "users": "Users",
     "classes": "Classes",
     "rewards": "Blessings",
+    "files": "File Manager",
     "analytics": "Analytics",
+    "permissions": "Permissions",
     "settings": "Settings",
+    "approvals": "Approvals",
+    "content": "Content",
+    "crm": "CRM Tools",
+    "gamification": "Rewards & Progress",
     "more": "More"
   },
   "dashboard": {

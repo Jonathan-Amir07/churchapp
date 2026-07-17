@@ -59,12 +59,19 @@ export default function ParentDashboard() {
 
   return (
     <div className="space-y-6 animate-[slide-up_0.4s_ease-out]">
-      <div className="relative rounded-2xl overflow-hidden p-6 md:p-8 bg-gradient-to-br from-primary to-primary-container text-on-primary shadow-tactile select-none">
-        <div className="absolute inset-0 bg-dot-pattern opacity-10 pointer-events-none" />
-        <div className="relative z-10 space-y-2">
-          <h1 className="text-2xl md:text-3xl font-extrabold">
-            {currentLocale === 'en' ? `Parent Portal — Welcome ${profile?.display_name || ''}!` : `بوابة أولياء الأمور — أهلاً بك يا ${profile?.display_name || ''}!`}
-          </h1>
+      <div className="relative rounded-3xl overflow-hidden p-8 md:p-10 bg-gradient-to-br from-primary via-primary-container to-secondary text-on-primary shadow-2xl select-none border border-secondary/30">
+        <div className="absolute inset-0 bg-coptic-pattern opacity-10 mix-blend-overlay pointer-events-none" />
+        <div className="relative z-10 space-y-4">
+          <div className="flex items-center gap-4">
+            <div className="w-12 h-12 rounded-xl bg-white/20 backdrop-blur-sm border border-white/30 flex items-center justify-center animate-[bounce-in_0.5s_cubic-bezier(0.68,-0.55,0.265,1.55)]">
+              <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-6 h-6 text-secondary">
+                <path d="M12 2V22M7 7H17" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
+              </svg>
+            </div>
+            <h1 className="text-2xl md:text-3xl font-extrabold">
+              {currentLocale === 'en' ? `Parent Portal — Welcome ${profile?.display_name || ''}!` : `بوابة أولياء الأمور — أهلاً بك يا ${profile?.display_name || ''}!`}
+            </h1>
+          </div>
           <p className="text-sm md:text-base font-medium opacity-90 max-w-xl">
             {currentLocale === 'en' 
               ? 'Monitor your children’s Sunday school attendance, lesson completion progress, and memorization challenges.'
@@ -87,7 +94,7 @@ export default function ParentDashboard() {
           {children.map((child) => {
             const levelNum = Math.floor(child.total_xp / 300) + 1;
             return (
-              <Card key={child.id} className="border border-outline-variant bg-surface-container-lowest shadow-sm flex flex-col justify-between">
+              <Card key={child.id} variant="interactive" className="border-2 border-secondary/20 bg-surface-container-lowest shadow-sm hover:shadow-md hover:-translate-y-1 transition-all flex flex-col justify-between">
                 <CardContent className="p-6 space-y-4">
                   <div className="flex items-center gap-4">
                     <div className="w-14 h-14 rounded-full bg-primary/10 flex items-center justify-center font-black text-primary text-xl">

@@ -86,20 +86,28 @@ export function MobileNav() {
               key={item.key}
               href={item.href}
               className={cn(
-                'flex flex-col items-center justify-center flex-1 h-full select-none gap-0.5 transition-all duration-150',
-                active ? 'text-primary font-black scale-105' : 'text-on-surface-variant hover:text-on-surface'
+                'flex flex-col items-center justify-center flex-1 h-full select-none gap-1 transition-all duration-200 min-h-[48px]',
+                active ? 'text-primary scale-105' : 'text-on-surface-variant hover:text-on-surface'
               )}
             >
-              <span
-                className={cn(
-                  'material-symbols-outlined text-[22px] transition-transform duration-150',
-                  active ? 'text-primary scale-110' : 'text-outline'
-                )}
-                style={{ fontVariationSettings: active ? "'FILL' 1" : undefined }}
-              >
-                {item.icon}
-              </span>
-              <span className="text-[10px] tracking-wide truncate max-w-[70px]">
+              <div className={cn(
+                'w-12 h-8 rounded-full flex items-center justify-center transition-all duration-200',
+                active ? 'bg-primary/10 border border-secondary/30' : 'bg-transparent'
+              )}>
+                <span
+                  className={cn(
+                    'material-symbols-outlined text-[24px] transition-transform duration-150',
+                    active ? 'text-primary scale-110' : 'text-outline'
+                  )}
+                  style={{ fontVariationSettings: active ? "'FILL' 1" : undefined }}
+                >
+                  {item.icon}
+                </span>
+              </div>
+              <span className={cn(
+                'text-[10px] tracking-wide truncate max-w-[70px]',
+                active ? 'font-black' : 'font-semibold'
+              )}>
                 {tNav(item.key)}
               </span>
             </Link>
@@ -111,20 +119,31 @@ export function MobileNav() {
           <button
             onClick={() => setIsMoreOpen(true)}
             className={cn(
-              'flex flex-col items-center justify-center flex-1 h-full select-none gap-0.5 transition-all duration-150',
-              isMoreOpen || isSheetActive ? 'text-primary font-black' : 'text-on-surface-variant hover:text-on-surface'
+              'flex flex-col items-center justify-center flex-1 h-full select-none gap-1 transition-all duration-200 relative min-h-[48px]',
+              isMoreOpen || isSheetActive ? 'text-primary scale-105' : 'text-on-surface-variant hover:text-on-surface'
             )}
           >
-            <span
-              className={cn(
-                'material-symbols-outlined text-[22px]',
-                isMoreOpen || isSheetActive ? 'text-primary' : 'text-outline'
-              )}
-              style={{ fontVariationSettings: isMoreOpen || isSheetActive ? "'FILL' 1" : undefined }}
-            >
-              grid_view
-            </span>
-            <span className="text-[10px] tracking-wide truncate">
+            <div className={cn(
+              'w-12 h-8 rounded-full flex items-center justify-center transition-all duration-200 relative',
+              isMoreOpen || isSheetActive ? 'bg-primary/10 border border-secondary/30' : 'bg-transparent'
+            )}>
+              {/* Notification dot placeholder */}
+              <div className="absolute top-1 right-2 w-2 h-2 rounded-full bg-error animate-pulse border border-surface-container-lowest" />
+              
+              <span
+                className={cn(
+                  'material-symbols-outlined text-[24px]',
+                  isMoreOpen || isSheetActive ? 'text-primary' : 'text-outline'
+                )}
+                style={{ fontVariationSettings: isMoreOpen || isSheetActive ? "'FILL' 1" : undefined }}
+              >
+                grid_view
+              </span>
+            </div>
+            <span className={cn(
+              'text-[10px] tracking-wide truncate max-w-[70px]',
+              isMoreOpen || isSheetActive ? 'font-black' : 'font-semibold'
+            )}>
               {tNav('more')}
             </span>
           </button>
@@ -196,9 +215,10 @@ export function MobileNav() {
 
       {/* Floating Action Button for QR (Only for Servant and Child) */}
       {(role === 'student' || role === 'instructor') && (
-        <Link href={role === 'student' ? '/student/qr' : '/instructor/qr'} className="fixed bottom-20 end-4 z-40 md:hidden">
-          <button className="w-14 h-14 bg-primary text-on-primary rounded-full shadow-elevated flex items-center justify-center hover:bg-primary-container hover:scale-105 active:scale-95 transition-all">
-            <span className="material-symbols-outlined text-[28px]">
+        <Link href={role === 'student' ? '/student/qr' : '/instructor/qr'} className="fixed bottom-24 end-4 z-40 md:hidden">
+          <button className="w-14 h-14 bg-primary text-on-primary rounded-full shadow-elevated flex items-center justify-center hover:bg-primary-container hover:scale-105 active:scale-95 transition-all border-2 border-secondary relative overflow-hidden">
+            <div className="absolute inset-0 bg-coptic-pattern opacity-20 pointer-events-none" />
+            <span className="material-symbols-outlined text-[28px] relative z-10 text-secondary">
               {role === 'student' ? 'qr_code_2' : 'qr_code_scanner'}
             </span>
           </button>

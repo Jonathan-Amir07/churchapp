@@ -8,35 +8,35 @@
 
 @theme inline {
   /* --- Primary (Royal Blue) — Navigation, core actions, trust --- */
-  --color-primary: #0057B7;
-  --color-primary-container: #1a6fd0;
-  --color-primary-fixed: #d0e1f9;
-  --color-primary-fixed-dim: #a1c3f2;
+  --color-primary: #1B3A6B;
+  --color-primary-container: #2A5298;
+  --color-primary-fixed: #D9E4FA;
+  --color-primary-fixed-dim: #A6C0F1;
   --color-on-primary: #ffffff;
   --color-on-primary-container: #ffffff;
-  --color-on-primary-fixed: #00224d;
-  --color-on-primary-fixed-variant: #003b86;
-  --color-inverse-primary: #a1c3f2;
+  --color-on-primary-fixed: #0C1E3C;
+  --color-on-primary-fixed-variant: #122B57;
+  --color-inverse-primary: #86A8E7;
 
   /* --- Secondary (Gold) — Achievements, XP, rewards --- */
-  --color-secondary: #CFB53B;
-  --color-secondary-container: #e3ce68;
-  --color-secondary-fixed: #fdf5d3;
-  --color-secondary-fixed-dim: #faeab0;
+  --color-secondary: #C9A84C;
+  --color-secondary-container: #DABF6B;
+  --color-secondary-fixed: #FAF5E8;
+  --color-secondary-fixed-dim: #F0E1B8;
   --color-on-secondary: #ffffff;
-  --color-on-secondary-container: #3d3305;
-  --color-on-secondary-fixed: #211c00;
-  --color-on-secondary-fixed-variant: #4f4100;
+  --color-on-secondary-container: #473913;
+  --color-on-secondary-fixed: #2C2209;
+  --color-on-secondary-fixed-variant: #5E4C19;
 
   /* --- Tertiary (Deep Red) — Special/Accent --- */
-  --color-tertiary: #8B0000;
-  --color-tertiary-container: #b31b1b;
-  --color-tertiary-fixed: #fcd8d8;
-  --color-tertiary-fixed-dim: #f9b1b1;
+  --color-tertiary: #8B1A1A;
+  --color-tertiary-container: #B22222;
+  --color-tertiary-fixed: #FAD6D6;
+  --color-tertiary-fixed-dim: #F29E9E;
   --color-on-tertiary: #ffffff;
   --color-on-tertiary-container: #ffffff;
-  --color-on-tertiary-fixed: #3b0000;
-  --color-on-tertiary-fixed-variant: #5f0000;
+  --color-on-tertiary-fixed: #410707;
+  --color-on-tertiary-fixed-variant: #640F0F;
 
   /* --- Error --- */
   --color-error: #ba1a1a;
@@ -95,6 +95,7 @@
   --animate-shimmer: shimmer 2s linear infinite;
   --animate-celebrate: celebrate 0.6s ease-out;
   --animate-bounce-in: bounce-in 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+  --animate-xp-burst: xp-burst 1s ease-out;
 }
 
 /* ============================================
@@ -144,6 +145,12 @@
   100% { transform: scale(1); }
 }
 
+@keyframes xp-burst {
+  0% { transform: scale(0.8); opacity: 0; filter: drop-shadow(0 0 0px var(--color-secondary)); }
+  50% { transform: scale(1.3); opacity: 1; filter: drop-shadow(0 0 20px var(--color-secondary)); }
+  100% { transform: scale(1); opacity: 1; filter: drop-shadow(0 0 5px var(--color-secondary)); }
+}
+
 @keyframes spin-slow {
   from { transform: rotate(0deg); }
   to { transform: rotate(360deg); }
@@ -171,7 +178,7 @@ body {
 
 /* RTL Support */
 html[dir="rtl"] {
-  font-family: "Noto Sans Arabic", "Inter", system-ui, sans-serif;
+  font-family: var(--font-sans-ar), "Cairo", "Inter", system-ui, sans-serif;
 }
 
 /* ============================================
@@ -330,12 +337,22 @@ html[dir="rtl"] .speech-bubble::after {
 }
 
 /* ============================================
-   Dot Pattern Background
+   Patterns and Ornaments
    ============================================ */
 
 .bg-dot-pattern {
   background-image: radial-gradient(var(--color-primary-fixed) 1.5px, transparent 1.5px);
   background-size: 32px 32px;
+}
+
+.bg-coptic-pattern {
+  background-image: url("data:image/svg+xml,%3Csvg width='40' height='40' viewBox='0 0 40 40' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M20 0v40m-20-20h40M15 15h10v10H15z' stroke='%23C9A84C' stroke-width='0.5' fill='none' opacity='0.2'/%3E%3C/svg%3E");
+}
+
+.coptic-divider {
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--color-secondary), transparent);
+  margin: 1rem 0;
 }
 
 /* ============================================
