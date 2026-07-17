@@ -17,6 +17,13 @@ enum UserRole {
   admin
   instructor
   student
+  parent
+}
+
+enum AccountStatus {
+  pending
+  active
+  suspended
 }
 
 enum LessonStatus {
@@ -147,8 +154,11 @@ model User {
   currentStreak  Int       @default(0) @map("current_streak")
   longestStreak  Int       @default(0) @map("longest_streak")
   lastActiveAt   DateTime? @map("last_active_at") @db.Timestamptz()
-  isActive       Boolean   @default(true) @map("is_active")
-  createdAt      DateTime  @default(now()) @map("created_at") @db.Timestamptz()
+  isActive       Boolean       @default(true) @map("is_active")
+  accountStatus  AccountStatus @default(pending) @map("account_status")
+  churchId       String?       @map("church_id") @db.Uuid
+  branchId       String?       @map("branch_id") @db.Uuid
+  createdAt      DateTime      @default(now()) @map("created_at") @db.Timestamptz()
   updatedAt      DateTime  @default(now()) @updatedAt @map("updated_at") @db.Timestamptz()
 
   // Relations
@@ -183,6 +193,25 @@ model User {
   gameSessions            GameSession[]
   gameProgresses          GameProgress[]
   readingPlanProgresses   ReadingPlanProgress[]
+  church                  Church?               @relation(fields: [churchId], references: [id])
+  branch                  Branch?               @relation(fields: [branchId], references: [id])
+  sentMessages            Message[]             @relation("MessageSender")
+  receivedMessages        Message[]             @relation("MessageReceiver")
+  studentNotes            StudentNote[]         @relation("NoteStudent")
+  writtenNotes            StudentNote[]         @relation("NoteAuthor")
+  followUpRecords         FollowUpRecord[]      @relation("FollowUpStudent")
+  recordedFollowUps       FollowUpRecord[]      @relation("FollowUpRecorder")
+  homeVisits              HomeVisit[]           @relation("VisitStudent")
+  recordedHomeVisits      HomeVisit[]           @relation("VisitRecorder")
+  phoneCalls              PhoneCall[]           @relation("CallStudent")
+  recordedPhoneCalls      PhoneCall[]           @relation("CallRecorder")
+  teamMemberships         TeamMember[]
+  pets                    Pet[]
+  avatarCustomizations    AvatarCustomization[]
+  loginHistories          LoginHistory[]
+  deviceSessions          DeviceSession[]
+  memoryVerses            MemoryVerse[]
+  verseRevisions          VerseRevision[]
 
   @@map("users")
 }
@@ -842,4 +871,322 @@ model ReadingPlanProgress {
 
   @@unique([userId, planId])
   @@map("reading_plan_progress")
+}
+// ============================================
+// Phase 4+ Additions (Massive Feature Expansion)
+// ============================================
+
+model Church {
+  id          String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name        String   @db.VarChar(200)
+  address     String?  @db.Text
+  contactInfo String?  @map("contact_info") @db.Text
+  isActive    Boolean  @default(true) @map("is_active")
+  createdAt   DateTime @default(now()) @map("created_at") @db.Timestamptz()
+
+  branches Branch[]
+  users    User[]
+
+  @@map("churches")
+}
+
+model Branch {
+  id          String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  churchId    String   @map("church_id") @db.Uuid
+  name        String   @db.VarChar(200)
+  location    String?  @db.Text
+  contactInfo String?  @map("contact_info") @db.Text
+  isActive    Boolean  @default(true) @map("is_active")
+  createdAt   DateTime @default(now()) @map("created_at") @db.Timestamptz()
+
+  church Church @relation(fields: [churchId], references: [id], onDelete: Cascade)
+  users  User[]
+
+  @@index([churchId])
+  @@map("branches")
+}
+
+model Saint {
+  id          String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name        String   @db.VarChar(200)
+  nameAr      String?  @map("name_ar") @db.VarChar(200)
+  title       String?  @db.VarChar(200)
+  bio         String   @db.Text
+  bioAr       String?  @map("bio_ar") @db.Text
+  iconUrl     String?  @map("icon_url") @db.Text
+  feastDay    DateTime? @map("feast_day") @db.Date
+  createdAt   DateTime @default(now()) @map("created_at") @db.Timestamptz()
+
+  @@map("saints")
+}
+
+model Feast {
+  id          String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name        String   @db.VarChar(200)
+  nameAr      String?  @map("name_ar") @db.VarChar(200)
+  date        DateTime @db.Date
+  description String?  @db.Text
+  isMajor     Boolean  @default(false) @map("is_major")
+  createdAt   DateTime @default(now()) @map("created_at") @db.Timestamptz()
+
+  @@map("feasts")
+}
+
+model Fast {
+  id          String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name        String   @db.VarChar(200)
+  nameAr      String?  @map("name_ar") @db.VarChar(200)
+  startDate   DateTime @map("start_date") @db.Date
+  endDate     DateTime @map("end_date") @db.Date
+  description String?  @db.Text
+  createdAt   DateTime @default(now()) @map("created_at") @db.Timestamptz()
+
+  @@map("fasts")
+}
+
+model Synaxarium {
+  id          String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  copticDate  String   @map("coptic_date") @db.VarChar(50)
+  title       String   @db.VarChar(200)
+  titleAr     String?  @map("title_ar") @db.VarChar(200)
+  content     String   @db.Text
+  contentAr   String?  @map("content_ar") @db.Text
+  createdAt   DateTime @default(now()) @map("created_at") @db.Timestamptz()
+
+  @@map("synaxarium")
+}
+
+model DailyReading {
+  id          String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  date        DateTime @db.Date
+  matins      String?  @db.Text
+  vespers     String?  @db.Text
+  liturgy     String?  @db.Text
+  gospel      String?  @db.Text
+  createdAt   DateTime @default(now()) @map("created_at") @db.Timestamptz()
+
+  @@map("daily_readings")
+}
+
+model ReadingPlan {
+  id          String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  title       String   @db.VarChar(200)
+  description String?  @db.Text
+  durationDays Int     @map("duration_days")
+  content     Json     @default("[]") @db.JsonB
+  createdAt   DateTime @default(now()) @map("created_at") @db.Timestamptz()
+
+  @@map("reading_plans")
+}
+
+model MemoryVerse {
+  id          String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId      String   @map("user_id") @db.Uuid
+  verseText   String   @map("verse_text") @db.Text
+  reference   String   @db.VarChar(100)
+  isMemorized Boolean  @default(false) @map("is_memorized")
+  createdAt   DateTime @default(now()) @map("created_at") @db.Timestamptz()
+
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("memory_verses")
+}
+
+model VerseRevision {
+  id          String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId      String   @map("user_id") @db.Uuid
+  verseId     String   @map("verse_id") @db.Uuid
+  score       Int      @default(0)
+  revisedAt   DateTime @default(now()) @map("revised_at") @db.Timestamptz()
+
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, verseId])
+  @@map("verse_revisions")
+}
+
+model MessageThread {
+  id          String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  subject     String?  @db.VarChar(300)
+  createdAt   DateTime @default(now()) @map("created_at") @db.Timestamptz()
+  updatedAt   DateTime @default(now()) @updatedAt @map("updated_at") @db.Timestamptz()
+
+  messages    Message[]
+
+  @@map("message_threads")
+}
+
+model Message {
+  id          String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  threadId    String   @map("thread_id") @db.Uuid
+  senderId    String   @map("sender_id") @db.Uuid
+  receiverId  String   @map("receiver_id") @db.Uuid
+  content     String   @db.Text
+  isRead      Boolean  @default(false) @map("is_read")
+  createdAt   DateTime @default(now()) @map("created_at") @db.Timestamptz()
+
+  thread      MessageThread @relation(fields: [threadId], references: [id], onDelete: Cascade)
+  sender      User          @relation("MessageSender", fields: [senderId], references: [id])
+  receiver    User          @relation("MessageReceiver", fields: [receiverId], references: [id])
+
+  @@index([threadId])
+  @@index([senderId])
+  @@index([receiverId])
+  @@map("messages")
+}
+
+model StudentNote {
+  id          String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  studentId   String   @map("student_id") @db.Uuid
+  authorId    String   @map("author_id") @db.Uuid
+  content     String   @db.Text
+  isPrivate   Boolean  @default(true) @map("is_private")
+  createdAt   DateTime @default(now()) @map("created_at") @db.Timestamptz()
+
+  student     User     @relation("NoteStudent", fields: [studentId], references: [id], onDelete: Cascade)
+  author      User     @relation("NoteAuthor", fields: [authorId], references: [id])
+
+  @@index([studentId])
+  @@map("student_notes")
+}
+
+model FollowUpRecord {
+  id          String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  studentId   String   @map("student_id") @db.Uuid
+  recordedBy  String   @map("recorded_by") @db.Uuid
+  method      String   @db.VarChar(50)
+  outcome     String   @db.Text
+  followedAt  DateTime @default(now()) @map("followed_at") @db.Timestamptz()
+
+  student     User     @relation("FollowUpStudent", fields: [studentId], references: [id], onDelete: Cascade)
+  recorder    User     @relation("FollowUpRecorder", fields: [recordedBy], references: [id])
+
+  @@index([studentId])
+  @@map("follow_up_records")
+}
+
+model HomeVisit {
+  id          String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  studentId   String   @map("student_id") @db.Uuid
+  recordedBy  String   @map("recorded_by") @db.Uuid
+  notes       String   @db.Text
+  visitedAt   DateTime @default(now()) @map("visited_at") @db.Timestamptz()
+
+  student     User     @relation("VisitStudent", fields: [studentId], references: [id], onDelete: Cascade)
+  recorder    User     @relation("VisitRecorder", fields: [recordedBy], references: [id])
+
+  @@index([studentId])
+  @@map("home_visits")
+}
+
+model PhoneCall {
+  id          String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  studentId   String   @map("student_id") @db.Uuid
+  recordedBy  String   @map("recorded_by") @db.Uuid
+  duration    Int?     @map("duration_seconds")
+  notes       String   @db.Text
+  calledAt    DateTime @default(now()) @map("called_at") @db.Timestamptz()
+
+  student     User     @relation("CallStudent", fields: [studentId], references: [id], onDelete: Cascade)
+  recorder    User     @relation("CallRecorder", fields: [recordedBy], references: [id])
+
+  @@index([studentId])
+  @@map("phone_calls")
+}
+
+model Team {
+  id          String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name        String   @db.VarChar(100)
+  description String?  @db.Text
+  score       Int      @default(0)
+  createdAt   DateTime @default(now()) @map("created_at") @db.Timestamptz()
+
+  members     TeamMember[]
+
+  @@map("teams")
+}
+
+model TeamMember {
+  id          String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  teamId      String   @map("team_id") @db.Uuid
+  userId      String   @map("user_id") @db.Uuid
+  joinedAt    DateTime @default(now()) @map("joined_at") @db.Timestamptz()
+
+  team        Team     @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([teamId, userId])
+  @@map("team_members")
+}
+
+model Pet {
+  id          String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId      String   @map("user_id") @db.Uuid
+  name        String   @db.VarChar(100)
+  type        String   @db.VarChar(50)
+  level       Int      @default(1)
+  xp          Int      @default(0)
+  createdAt   DateTime @default(now()) @map("created_at") @db.Timestamptz()
+
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("pets")
+}
+
+model AvatarCustomization {
+  id          String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId      String   @map("user_id") @db.Uuid
+  itemType    String   @map("item_type") @db.VarChar(50)
+  itemId      String   @map("item_id") @db.VarChar(100)
+  equipped    Boolean  @default(false)
+  acquiredAt  DateTime @default(now()) @map("acquired_at") @db.Timestamptz()
+
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("avatar_customizations")
+}
+
+model AuditLog {
+  id          String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  action      String   @db.VarChar(100)
+  actorId     String?  @map("actor_id") @db.Uuid
+  entity      String   @db.VarChar(100)
+  entityId    String?  @map("entity_id") @db.Uuid
+  details     Json     @default("{}") @db.JsonB
+  ipAddress   String?  @map("ip_address") @db.VarChar(50)
+  createdAt   DateTime @default(now()) @map("created_at") @db.Timestamptz()
+
+  @@index([actorId, createdAt])
+  @@map("audit_logs")
+}
+
+model LoginHistory {
+  id          String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId      String   @map("user_id") @db.Uuid
+  ipAddress   String?  @map("ip_address") @db.VarChar(50)
+  userAgent   String?  @map("user_agent") @db.Text
+  success     Boolean  @default(true)
+  loginAt     DateTime @default(now()) @map("login_at") @db.Timestamptz()
+
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("login_history")
+}
+
+model DeviceSession {
+  id          String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId      String   @map("user_id") @db.Uuid
+  deviceToken String   @unique @map("device_token") @db.VarChar(255)
+  deviceInfo  Json     @default("{}") @map("device_info") @db.JsonB
+  isActive    Boolean  @default(true) @map("is_active")
+  lastSeenAt  DateTime @default(now()) @map("last_seen_at") @db.Timestamptz()
+
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("device_sessions")
 }
