@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useTranslations, useLocale } from 'next-intl';
-import { useForm } from 'react-hook-form';
+import { useForm, useWatch } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as zod from 'zod';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -62,7 +62,7 @@ export default function RegisterPage() {
   const {
     register,
     handleSubmit,
-    watch,
+    control,
     trigger,
     formState: { errors },
   } = useForm<RegisterFormValues>({
@@ -70,7 +70,11 @@ export default function RegisterPage() {
     mode: 'onTouched'
   });
 
-  const watchedPassword = watch('password', '');
+  const watchedPassword = useWatch({
+    control,
+    name: 'password',
+    defaultValue: '',
+  });
 
   useEffect(() => {
     let score = 0;

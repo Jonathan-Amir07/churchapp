@@ -1,9 +1,14 @@
 import { createBrowserClient } from '@supabase/ssr';
 import { isMockMode, createMockSupabase } from './mockClient';
 
+let mockClientInstance: any = null;
+
 export const createClient = () => {
   if (isMockMode()) {
-    return createMockSupabase();
+    if (!mockClientInstance) {
+      mockClientInstance = createMockSupabase();
+    }
+    return mockClientInstance;
   }
 
   return createBrowserClient(
