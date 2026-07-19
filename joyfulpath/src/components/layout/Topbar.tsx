@@ -87,7 +87,8 @@ export function Topbar() {
   };
 
   return (
-    <header className="h-16 bg-surface-container-lowest border-b border-outline-variant flex items-center justify-between px-4 md:px-8 sticky top-0 z-20 shadow-sm">
+    <>
+      <header className="h-16 bg-surface-container-lowest border-b border-outline-variant flex items-center justify-between px-4 md:px-8 sticky top-0 z-20 shadow-sm">
       {/* Page Brand (Visible on mobile header) */}
       <div className="flex items-center gap-2 md:hidden">
         <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center">
@@ -256,8 +257,17 @@ export function Topbar() {
             </button>
           </div>
         )}
+        </div>
+      </header>
+      
+      {/* Mobile Verse Ticker (visible only on mobile) */}
+      <div className="md:hidden bg-secondary/10 border-b border-secondary/20 py-1.5 px-4 overflow-hidden whitespace-nowrap text-[10px] font-bold text-secondary-container">
+        <div className="inline-block animate-[shimmer_15s_linear_infinite] w-full text-center">
+          <span className="material-symbols-outlined text-[10px] align-middle mr-1">auto_awesome</span>
+          آية اليوم: "فَرَحًا أَفْرَحُ بِالرَّبِّ، تَبْتَهِجُ نَفْسِي بِإِلهِي..." (إشعياء 61: 10)
+        </div>
       </div>
-    </header>
+    </>
   );
 }
 export default Topbar;
