@@ -34,7 +34,15 @@ export default function StudentGames() {
   } = useAppStore();
 
   const [activeHubTab, setActiveHubTab] = useState<'games' | 'reading' | 'memorization'>('games');
-  const [activeGame, setActiveGame] = useState<'none' | 'verse_builder' | 'memory_match'>('none');
+  const [activeGame, setActiveGame] = useState<'none' | 'verse_builder' | 'memory_match' | 'guess_saint'>('none');
+
+  // Guess the Saint logic
+  const saintClues = [
+    { name: 'St. George', clues: ['I was a Roman soldier.', 'I defeated a dragon representing evil.', 'My feast day is celebrated with great joy.'], options: ['St. George', 'St. Mark', 'St. Anthony', 'St. Mina'] },
+    { name: 'St. Anthony', clues: ['I am the Father of Monasticism.', 'I went to the Egyptian desert.', 'I fought spiritual battles with prayer.'], options: ['St. Paul the Hermit', 'St. Anthony', 'St. Athanasius', 'St. Bishoy'] }
+  ];
+  const [saintStep, setSaintStep] = useState(0);
+  const [guessFeedback, setGuessFeedback] = useState<string | null>(null);
 
   // ============================================
   // 1. Verse Builder State & Logic
@@ -239,6 +247,26 @@ export default function StudentGames() {
                   </Button>
                 </div>
               </Card>
+
+              {/* Card Guess the Saint / Who Am I? */}
+              <Card variant="interactive" className="border border-outline-variant bg-surface-container-lowest shadow-sm flex flex-col justify-between">
+                <CardContent className="p-6 space-y-4">
+                  <div className="w-12 h-12 rounded-xl bg-purple-100 flex items-center justify-center text-purple-600">
+                    <span className="material-symbols-outlined text-[28px]">help_center</span>
+                  </div>
+                  <div className="space-y-1">
+                    <h3 className="text-lg font-bold text-on-surface">Guess the Saint (Who Am I?)</h3>
+                    <p className="text-sm text-on-surface-variant leading-relaxed">
+                      Read spiritual clues and identify the historical Coptic Saint or Patriarch.
+                    </p>
+                  </div>
+                </CardContent>
+                <div className="p-6 pt-0">
+                  <Button variant="outline" fullWidth size="md" className="border-purple-300 text-purple-700 hover:bg-purple-50" onClick={() => { setSaintStep(0); setGuessFeedback(null); setActiveGame('guess_saint'); }}>
+                    Play Guess the Saint (+25 XP)
+                  </Button>
+                </div>
+              </Card>
             </div>
           )}
 
@@ -335,6 +363,66 @@ export default function StudentGames() {
                     Reset Grid
                   </Button>
                 </div>
+              </CardContent>
+            </Card>
+          )}
+
+          {/* Render Guess the Saint Active Game */}
+          {activeGame === 'guess_saint' && (
+            <Card className="border border-outline-variant bg-surface-container-lowest shadow-md max-w-lg mx-auto">
+              <CardContent className="p-6 space-y-6">
+                <div className="flex justify-between items-center pb-3 border-b border-outline-variant/60">
+                  <h3 className="text-base font-extrabold text-on-surface">Who Am I? (Saint #{saintStep + 1})</h3>
+                  <Button variant="outline" size="sm" className="h-8 text-xs font-bold" onClick={() => setActiveGame('none')}>
+                    Exit Game
+                  </Button>
+                </div>
+
+                <div className="space-y-3 bg-purple-50 dark:bg-purple-950/20 p-4 rounded-xl border border-purple-200 dark:border-purple-900">
+                  <span className="text-xs font-black uppercase text-purple-700 dark:text-purple-300">Clues:</span>
+                  <ul className="list-disc list-inside text-sm text-on-surface space-y-1 font-medium">
+                    {saintClues[saintStep].clues.map((clue, idx) => (
+                      <li key={idx}>{clue}</li>
+                    ))}
+                  </ul>
+                </div>
+
+                {guessFeedback ? (
+                  <div className="text-center space-y-3">
+                    <p className="text-base font-black text-emerald-600">{guessFeedback}</p>
+                    {saintStep < saintClues.length - 1 ? (
+                      <Button variant="primary" size="sm" onClick={() => { setSaintStep(s => s + 1); setGuessFeedback(null); }}>
+                        Next Saint
+                      </Button>
+                    ) : (
+                      <Button variant="outline" size="sm" onClick={() => setActiveGame('none')}>
+                        Finish Game
+                      </Button>
+                    )}
+                  </div>
+                ) : (
+                  <div className="grid grid-cols-2 gap-3">
+                    {saintClues[saintStep].options.map((opt, idx) => (
+                      <Button
+                        key={idx}
+                        variant="outline"
+                        size="md"
+                        className="rounded-xl font-bold"
+                        onClick={() => {
+                          if (opt === saintClues[saintStep].name) {
+                            addXP(25);
+                            addPoints(5);
+                            setGuessFeedback(`Correct! It's ${opt}! (+25 XP)`);
+                          } else {
+                            alert('Not quite! Try another guess.');
+                          }
+                        }}
+                      >
+                        {opt}
+                      </Button>
+                    ))}
+                  </div>
+                )}
               </CardContent>
             </Card>
           )}

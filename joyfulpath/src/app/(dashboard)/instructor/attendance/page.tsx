@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useCallback } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useTranslations } from 'next-intl';
 import { Card, CardContent, Button, BadgeTag, QRScanner, type ScanResult } from '@/components/ui';
 
@@ -36,8 +36,12 @@ export default function InstructorAttendance() {
   const tCommon     = useTranslations('common');
 
   const [activeTab, setActiveTab] = useState<Tab>('roster');
-  const [date, setDate] = useState(new Date().toISOString().split('T')[0]);
+  const [date, setDate] = useState('');
   const [selectedClass, setSelectedClass] = useState('c1');
+
+  useEffect(() => {
+    setDate(new Date().toISOString().split('T')[0]);
+  }, []);
   const [attendance, setAttendance] = useState<Record<string, AttendanceStatus>>(
     MOCK_STUDENTS.reduce((acc, s) => ({ ...acc, [s.id]: 'present' }), {})
   );

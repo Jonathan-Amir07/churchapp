@@ -62,6 +62,20 @@ export default function LandingPage() {
     setOpenFaqIndex(openFaqIndex === index ? null : index);
   };
 
+  const statistics = [
+    { label: 'Students', labelAr: 'مخدوم', value: '500+', icon: 'school' },
+    { label: 'Servants', labelAr: 'خادم', value: '50+', icon: 'group' },
+    { label: 'Lessons', labelAr: 'درس', value: '120+', icon: 'menu_book' },
+    { label: 'Badges Earned', labelAr: 'شارة منجزة', value: '2k+', icon: 'workspace_premium' }
+  ];
+
+  const galleryImages = [
+    { src: 'https://images.unsplash.com/photo-1540479859555-17af45c78602?w=500&q=80', alt: 'Sunday School Children', altAr: 'أطفال مدارس الأحد' },
+    { src: 'https://images.unsplash.com/photo-1511632765486-a01980e01a18?w=500&q=80', alt: 'Church Event', altAr: 'حدث كنسي' },
+    { src: 'https://images.unsplash.com/photo-1601142634808-38923eb7c560?w=500&q=80', alt: 'Bible Study', altAr: 'دراسة الكتاب' },
+    { src: 'https://images.unsplash.com/photo-1529070538774-1843cb3265df?w=500&q=80', alt: 'Youth Group', altAr: 'اجتماع الشباب' }
+  ];
+
   const containerVariants = {
     hidden: { opacity: 0 },
     visible: { opacity: 1, transition: { staggerChildren: 0.15 } }
@@ -162,18 +176,49 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* About the Service */}
-      <section id="about" className="max-w-7xl mx-auto px-4 md:px-8 text-center space-y-12">
-        <div className="space-y-4">
-          <h2 className="text-3xl md:text-4xl font-extrabold tracking-tight text-on-surface">
-            {currentLocale === 'en' ? 'Vision & Mission' : 'رؤيتنا ورسالتنا'}
-          </h2>
-          <div className="w-24 h-1.5 bg-secondary mx-auto rounded-full" />
-          <p className="text-on-surface-variant text-base md:text-lg max-w-2xl mx-auto pt-4 leading-relaxed font-medium">
-            {currentLocale === 'en'
-              ? 'Our mission is to foster interactive learning of biblical history and Coptic Orthodox church tradition in a modern, engaging environment.'
-              : 'رسالتنا هي تعزيز التعلم التفاعلي لتاريخ الكتاب المقدس والتقاليد الكنسية القبطية الأرثوذكسية في بيئة عصرية ومشوقة.'}
-          </p>
+      {/* About the Service & Sunday School */}
+      <section id="about" className="max-w-7xl mx-auto px-4 md:px-8 space-y-16">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
+          <div className="space-y-6">
+            <h2 className="text-3xl md:text-4xl font-extrabold tracking-tight text-on-surface">
+              {currentLocale === 'en' ? 'Vision & Mission' : 'رؤيتنا ورسالتنا'}
+            </h2>
+            <div className="w-24 h-1.5 bg-secondary rounded-full" />
+            <p className="text-on-surface-variant text-base md:text-lg leading-relaxed font-medium">
+              {currentLocale === 'en'
+                ? 'Our mission is to foster interactive learning of biblical history and Coptic Orthodox church tradition in a modern, engaging environment.'
+                : 'رسالتنا هي تعزيز التعلم التفاعلي لتاريخ الكتاب المقدس والتقاليد الكنسية القبطية الأرثوذكسية في بيئة عصرية ومشوقة.'}
+            </p>
+          </div>
+          
+          <div className="bg-surface-container-low p-8 rounded-3xl border border-outline-variant shadow-sm relative overflow-hidden">
+            <div className="absolute inset-0 bg-coptic-pattern opacity-5 pointer-events-none" />
+            <h3 className="text-2xl font-extrabold text-on-surface mb-4 flex items-center gap-2 relative z-10">
+              <span className="material-symbols-outlined text-primary text-[28px]">import_contacts</span>
+              {currentLocale === 'en' ? 'About Sunday School' : 'عن مدارس الأحد'}
+            </h3>
+            <p className="text-on-surface-variant text-base leading-relaxed font-medium relative z-10">
+              {currentLocale === 'en'
+                ? 'Sunday School was founded by St. Archdeacon Habib Girgis to preserve the Coptic faith across generations. JoyfulPath honors this legacy by using modern technology to connect our youth with the timeless wisdom of the Church fathers.'
+                : 'تأسست مدارس الأحد على يد القديس الأرشيدياكون حبيب جرجس للحفاظ على الإيمان القبطي عبر الأجيال. تكرم مسار الفرح هذا التراث باستخدام التكنولوجيا الحديثة لربط شبابنا بحكمة آباء الكنيسة الخالدة.'}
+            </p>
+          </div>
+        </div>
+      </section>
+
+      {/* Statistics Section */}
+      <section className="bg-primary text-on-primary py-12 relative overflow-hidden">
+        <div className="absolute inset-0 bg-coptic-pattern opacity-10 mix-blend-overlay pointer-events-none" />
+        <div className="max-w-7xl mx-auto px-4 md:px-8 relative z-10">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
+            {statistics.map((stat, idx) => (
+              <div key={idx} className="flex flex-col items-center justify-center text-center space-y-2">
+                <span className="material-symbols-outlined text-[40px] text-secondary/80">{stat.icon}</span>
+                <span className="text-3xl md:text-5xl font-black">{stat.value}</span>
+                <span className="text-sm font-bold opacity-80 uppercase tracking-wider">{currentLocale === 'en' ? stat.label : stat.labelAr}</span>
+              </div>
+            ))}
+          </div>
         </div>
       </section>
 
@@ -307,6 +352,33 @@ export default function LandingPage() {
               </Card>
             ))}
           </div>
+        </div>
+      </section>
+
+      {/* Gallery Section */}
+      <section id="gallery" className="max-w-7xl mx-auto px-4 md:px-8 space-y-12 mb-16">
+        <div className="text-center space-y-4">
+          <h2 className="text-3xl md:text-4xl font-extrabold tracking-tight text-on-surface">
+            {currentLocale === 'en' ? 'JoyfulPath Gallery' : 'معرض الصور'}
+          </h2>
+          <div className="w-24 h-1.5 bg-secondary mx-auto rounded-full" />
+        </div>
+        
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
+          {galleryImages.map((img, idx) => (
+            <div key={idx} className="aspect-square rounded-2xl overflow-hidden bg-surface-container-high relative group">
+              <img 
+                src={img.src} 
+                alt={currentLocale === 'en' ? img.alt : img.altAr} 
+                className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end p-4">
+                <span className="text-white font-bold text-sm">
+                  {currentLocale === 'en' ? img.alt : img.altAr}
+                </span>
+              </div>
+            </div>
+          ))}
         </div>
       </section>
 

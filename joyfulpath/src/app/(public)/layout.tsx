@@ -13,8 +13,10 @@ export default function PublicLayout({
   const currentLocale = useLocale();
   const [scrolled, setScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [year, setYear] = useState<number | null>(null);
 
   useEffect(() => {
+    setYear(new Date().getFullYear());
     const handleScroll = () => {
       setScrolled(window.scrollY > 20);
     };
@@ -194,7 +196,7 @@ export default function PublicLayout({
             <Link href="/terms" className="hover:text-primary">{currentLocale === 'en' ? 'Terms of Service' : 'شروط الخدمة'}</Link>
           </div>
           <p className="text-xs opacity-60">
-            &copy; {new Date().getFullYear()} {currentLocale === 'en' ? 'JoyfulPath Sunday School. All rights reserved.' : 'مدارس الأحد مسار الفرح. جميع الحقوق محفوظة.'}
+            &copy; {year || ''} {currentLocale === 'en' ? 'JoyfulPath Sunday School. All rights reserved.' : 'مدارس الأحد مسار الفرح. جميع الحقوق محفوظة.'}
           </p>
         </div>
         <div className="absolute inset-0 bg-coptic-pattern opacity-[0.02] pointer-events-none" />

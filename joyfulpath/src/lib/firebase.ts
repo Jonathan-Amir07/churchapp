@@ -16,25 +16,46 @@ export const requestForToken = async () => {
   try {
     const supported = await isSupported();
     if (!supported) {
-      console.warn('Firebase Messaging not supported in this browser.');
+      console.warn('[Firebase] Messaging not supported in this browser.');
       return null;
     }
-    
+
+    if (!process.env.NEXT_PUBLIC_FIREBASE_VAPID_KEY) {
+      console.warn('[Firebase] Missing VAPID key in environment variables.');
+      return null;
+    }
+
+    const permission = await Notification.requestPermission();
+    if (permission !== 'granted') {
+      console.warn('[Firebase] Notification permission not granted.');
+      return null;
+    }
+
+    const registration = await navigator.serviceWorker.getRegistration('/firebase-messaging-sw.js') 
+      || await navigator.serviceWorker.register('/firebase-messaging-sw.js');
+      
+    if (!registration) {
+      console.warn('[Firebase] Service Worker registration failed.');
+      return null;
+    }
+
     const messaging = getMessaging(app);
     const currentToken = await getToken(messaging, { 
-      vapidKey: process.env.NEXT_PUBLIC_FIREBASE_VAPID_KEY 
+      vapidKey: process.env.NEXT_PUBLIC_FIREBASE_VAPID_KEY,
+      serviceWorkerRegistration: registration
     });
     
     if (currentToken) {
-      console.log('Firebase token:', currentToken);
+      console.log('Firebase token retrieved successfully.');
       return currentToken;
     } else {
-      console.warn('No registration token available. Request permission to generate one.');
+      console.warn('[Firebase] No registration token available.');
       return null;
     }
-  } catch (err) {
-    console.error('An error occurred while retrieving token. ', err);
-    return null;
+  } catch (err: any) {
+    console.error('[Firebase] Token retrieval failed:', err.message || err);
+    console.error('[Firebase] Full error details:', err);
+    return null; // Gracefully fail
   }
 };
 

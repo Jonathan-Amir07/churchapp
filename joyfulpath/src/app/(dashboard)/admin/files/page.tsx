@@ -75,7 +75,7 @@ export default function AdminFileManager() {
                   </div>
                   <div className="flex gap-2">
                     <Button variant="ghost" size="sm" icon="download">Download</Button>
-                    <Button variant="error" size="sm" icon="delete">Delete</Button>
+                    <Button variant="danger" size="sm" icon="delete">Delete</Button>
                   </div>
                 </div>
               ))

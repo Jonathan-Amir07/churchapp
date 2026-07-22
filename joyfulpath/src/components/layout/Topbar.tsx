@@ -154,6 +154,7 @@ export function Topbar() {
           </div>
         )}
         </div>
+        </div>
       </header>
       
       {/* Mobile Verse Ticker (visible only on mobile) */}

@@ -46,6 +46,11 @@ export default function EventsPage() {
   const [loadingRsvp, setLoadingRsvp] = useState<string | null>(null);
   const [filter, setFilter] = useState<'all' | EventType>('all');
   const [search, setSearch] = useState('');
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   // Load user's existing RSVPs from API
   useEffect(() => {
@@ -159,7 +164,7 @@ export default function EventsPage() {
             const capacityPct = Math.min(100, Math.round((event.current_rsvp / event.max_capacity) * 100));
             const isFull = event.current_rsvp >= event.max_capacity;
             const eventDate = new Date(`${event.date}T${event.time}`);
-            const isPast = eventDate < new Date();
+            const isPast = mounted ? eventDate < new Date() : false;
 
             return (
               <Card

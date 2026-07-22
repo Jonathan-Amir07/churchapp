@@ -70,7 +70,7 @@ export default function AdminApprovalsPage() {
             Review and approve or reject pending registrations.
           </p>
         </div>
-        <BadgeTag label={`${users.length} Pending`} color="warning" />
+        <BadgeTag variant="warning">{users.length} Pending</BadgeTag>
       </div>
 
       {loading ? (
@@ -98,7 +98,7 @@ export default function AdminApprovalsPage() {
                     <h3 className="font-bold text-on-surface">{user.displayName}</h3>
                     <p className="text-xs text-on-surface-variant">{user.email || 'No email'}</p>
                     <div className="flex items-center gap-2 mt-1">
-                      <BadgeTag label={user.role} color="info" />
+                      <BadgeTag variant="primary">{user.role}</BadgeTag>
                       <span className="text-[10px] text-on-surface-variant/60">
                         {new Date(user.createdAt).toLocaleDateString()}
                       </span>
@@ -117,7 +117,7 @@ export default function AdminApprovalsPage() {
                     Approve
                   </Button>
                   <Button
-                    variant="error"
+                    variant="danger"
                     size="sm"
                     onClick={() => handleAction(user.id, 'reject')}
                     loading={processingIds.has(user.id)}

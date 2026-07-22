@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import { useState, useEffect } from 'react';
 import { usePathname } from 'next/navigation';
 import { useUser } from '@/hooks/useUser';
 import { useTranslations } from 'next-intl';
@@ -12,6 +13,11 @@ export function Sidebar() {
   const { profile } = useUser();
   const tCommon = useTranslations('common');
   const tNav = useTranslations('nav');
+  const [year, setYear] = useState<number | null>(null);
+
+  useEffect(() => {
+    setYear(new Date().getFullYear());
+  }, []);
 
   const role = profile?.role as 'student' | 'instructor' | 'admin' | 'parent' | undefined;
   
@@ -92,7 +98,7 @@ export function Sidebar() {
 
       {/* Footer / version info */}
       <div className="p-3 border-t border-outline-variant/60 text-center text-xs text-on-surface-variant/50 font-bold bg-surface-container-lowest">
-        &copy; {new Date().getFullYear()} {tCommon('appName')}
+        &copy; {year || ''} {tCommon('appName')}
       </div>
     </aside>
   );

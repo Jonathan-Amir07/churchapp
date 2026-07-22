@@ -38,7 +38,7 @@ export default function ParentGamificationPage() {
                   </div>
                 </div>
                 {child.rewardsPending > 0 && (
-                  <BadgeTag label={`${child.rewardsPending} Reward Pending`} color="warning" />
+                  <BadgeTag variant="warning">{child.rewardsPending} Reward Pending</BadgeTag>
                 )}
               </div>
 

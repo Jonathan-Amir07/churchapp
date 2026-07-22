@@ -20,6 +20,7 @@ export const DEFAULT_LOCALE: Locale = 'en';
 export const NAV_ITEMS = {
   student: [
     { key: 'dashboard',   icon: 'dashboard',          href: '/student/dashboard' },
+    { key: 'journey',     icon: 'timeline',           href: '/student/journey' },
     { key: 'lessons',     icon: 'menu_book',           href: '/student/lessons' },
     { key: 'tasks',       icon: 'task_alt',            href: '/student/tasks' },
     { key: 'quizzes',     icon: 'quiz',                href: '/student/quizzes' },
