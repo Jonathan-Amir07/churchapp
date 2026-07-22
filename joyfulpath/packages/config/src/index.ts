@@ -1,0 +1,1 @@
+// @joyfulpath/config entry point

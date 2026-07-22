@@ -1,0 +1,127 @@
+
+> joyfulpath@0.1.0 build
+> next build
+
+⚠ Warning: Next.js inferred your workspace root, but it may not be correct.
+ We detected multiple lockfiles and selected the directory of D:\Github Projects\churchapp\joyfulpath\package-lock.json as the root directory.
+ To silence this warning, set `turbopack.root` in your Next.js config, or consider removing one of the lockfiles if it's not needed.
+   See https://nextjs.org/docs/app/api-reference/config/next-config-js/turbopack#root-directory for more information.
+ Detected additional lockfiles: 
+   * D:\Github Projects\churchapp\joyfulpath\apps\web\package-lock.json
+
+▲ Next.js 16.2.9 (Turbopack)
+- Environments: .env.local
+
+  Creating an optimized production build ...
+✓ Compiled successfully in 6.3s
+  Running TypeScript ...
+  Finished TypeScript in 5.5s ...
+  Collecting page data using 15 workers ...
+  Generating static pages using 15 workers (0/82) ...
+  Generating static pages using 15 workers (20/82) 
+  Generating static pages using 15 workers (40/82) 
+  Generating static pages using 15 workers (61/82) 
+✓ Generating static pages using 15 workers (82/82) in 498ms
+  Finalizing page optimization ...
+
+Route (app)
+┌ ƒ /
+├ ƒ /_not-found
+├ ƒ /about
+├ ƒ /admin/analytics
+├ ƒ /admin/approvals
+├ ƒ /admin/classes
+├ ƒ /admin/content
+├ ƒ /admin/dashboard
+├ ƒ /admin/events
+├ ƒ /admin/files
+├ ƒ /admin/permissions
+├ ƒ /admin/rewards
+├ ƒ /admin/settings
+├ ƒ /admin/users
+├ ƒ /api/admin/approvals
+├ ƒ /api/admin/reports/export
+├ ƒ /api/ai/lesson-summary
+├ ƒ /api/ai/quiz-generator
+├ ƒ /api/analytics
+├ ƒ /api/attendance/scan
+├ ƒ /api/coptic/saints
+├ ƒ /api/coptic/synaxarium
+├ ƒ /api/crm/announcements
+├ ƒ /api/crm/calls
+├ ƒ /api/events
+├ ƒ /api/events/[id]
+├ ƒ /api/events/rsvp
+├ ƒ /api/games/[id]/action
+├ ƒ /api/games/[id]/end
+├ ƒ /api/games/[id]/save
+├ ƒ /api/games/[id]/state
+├ ƒ /api/games/start
+├ ƒ /api/gamification/lucky-wheel
+├ ƒ /api/gamification/pets
+├ ƒ /api/gamification/teams
+├ ƒ /api/homework
+├ ƒ /api/homework/[id]
+├ ƒ /api/lessons
+├ ƒ /api/lessons/[id]
+├ ƒ /api/lessons/[id]/upload
+├ ƒ /api/messages
+├ ƒ /api/notifications
+├ ƒ /api/notifications/[id]
+├ ƒ /api/prayer
+├ ƒ /api/prayer/[id]/mark-prayed
+├ ƒ /api/prayer/[id]/respond
+├ ƒ /api/rewards
+├ ƒ /api/rewards/redemptions
+├ ƒ /api/rewards/redemptions/[id]/approve
+├ ƒ /api/rewards/redemptions/[id]/fulfill
+├ ƒ /api/rewards/redemptions/[id]/reject
+├ ƒ /api/rewards/redemptions/export
+├ ƒ /auth/callback
+├ ƒ /branches
+├ ƒ /faq
+├ ƒ /forgot-password
+├ ƒ /gallery
+├ ƒ /instructor/attendance
+├ ƒ /instructor/crm
+├ ƒ /instructor/dashboard
+├ ƒ /instructor/events
+├ ƒ /instructor/lessons
+├ ƒ /instructor/prayers
+├ ƒ /instructor/qr
+├ ƒ /instructor/quizzes
+├ ƒ /instructor/students
+├ ƒ /instructor/tasks
+├ ƒ /login
+├ ƒ /parent/attendance
+├ ƒ /parent/dashboard
+├ ƒ /parent/events
+├ ƒ /parent/gamification
+├ ƒ /parent/profile
+├ ƒ /parent/reports
+├ ƒ /pending
+├ ƒ /register
+├ ƒ /reset-password
+├ ƒ /saints
+├ ƒ /student/badges
+├ ƒ /student/challenges
+├ ƒ /student/dashboard
+├ ƒ /student/events
+├ ƒ /student/games
+├ ƒ /student/journey
+├ ƒ /student/leaderboard
+├ ƒ /student/lessons
+├ ƒ /student/prayers
+├ ƒ /student/profile
+├ ƒ /student/qr
+├ ƒ /student/qr-code
+├ ƒ /student/quizzes
+├ ƒ /student/store
+├ ƒ /student/tasks
+└ ƒ /verify-email
+
+
+ƒ Proxy (Middleware)
+
+ƒ  (Dynamic)  server-rendered on demand
+
