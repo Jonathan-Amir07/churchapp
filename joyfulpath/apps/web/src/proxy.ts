@@ -59,15 +59,15 @@ export async function proxy(request: NextRequest) {
 
   const pathname = request.nextUrl.pathname;
   const isAuth = !!user;
-  const userRole = user?.app_metadata?.role || user?.user_metadata?.role || 'student';
+  // Map legacy 'instructor' role to 'admin' for backwards compatibility
+  const rawRole = user?.app_metadata?.role || user?.user_metadata?.role || 'student';
+  const userRole = rawRole === 'instructor' ? 'admin' : rawRole;
 
   // 1. Redirect logged-in users away from /login or /
   if (isAuth && (pathname === '/login' || pathname === '/')) {
     const redirectPath =
       userRole === 'admin'
         ? `/admin/dashboard`
-        : userRole === 'instructor'
-        ? `/instructor/dashboard`
         : userRole === 'parent'
         ? `/parent/dashboard`
         : `/student/dashboard`;
@@ -75,13 +75,18 @@ export async function proxy(request: NextRequest) {
     return NextResponse.redirect(new URL(redirectPath, request.url));
   }
 
-  // 2. Protect routes
+  // 2. Redirect legacy /instructor/* routes to /admin/*
+  if (pathname.startsWith('/instructor')) {
+    const newPath = pathname.replace('/instructor', '/admin');
+    return NextResponse.redirect(new URL(newPath, request.url));
+  }
+
+  // 3. Protect routes
   const isAdminRoute = pathname.startsWith('/admin');
-  const isInstructorRoute = pathname.startsWith('/instructor');
   const isStudentRoute = pathname.startsWith('/student');
   const isParentRoute = pathname.startsWith('/parent');
 
-  if (isAdminRoute || isInstructorRoute || isStudentRoute || isParentRoute) {
+  if (isAdminRoute || isStudentRoute || isParentRoute) {
     if (!isAuth) {
       return NextResponse.redirect(new URL('/login', request.url));
     }
@@ -89,7 +94,6 @@ export async function proxy(request: NextRequest) {
     // Role-specific dashboard fallback helper
     const roleDashboard = () =>
       userRole === 'admin' ? '/admin/dashboard'
-      : userRole === 'instructor' ? '/instructor/dashboard'
       : userRole === 'parent' ? '/parent/dashboard'
       : '/student/dashboard';
 
@@ -98,24 +102,20 @@ export async function proxy(request: NextRequest) {
       return NextResponse.redirect(new URL(roleDashboard(), request.url));
     }
 
-    // Instructor route — instructors & admins allowed
-    if (isInstructorRoute && userRole !== 'instructor' && userRole !== 'admin') {
-      return NextResponse.redirect(new URL(roleDashboard(), request.url));
-    }
-
     // Parent route — only parents allowed
     if (isParentRoute && userRole !== 'parent') {
       return NextResponse.redirect(new URL(roleDashboard(), request.url));
     }
 
-    // Student route — students, instructors & admins allowed
-    if (isStudentRoute && userRole !== 'student' && userRole !== 'instructor' && userRole !== 'admin') {
+    // Student route — students & admins allowed
+    if (isStudentRoute && userRole !== 'student' && userRole !== 'admin') {
       return NextResponse.redirect(new URL(roleDashboard(), request.url));
     }
   }
 
   return response;
 }
+
 
 export const config = {
   matcher: ['/((?!api|_next|.*\\..*).*)'],

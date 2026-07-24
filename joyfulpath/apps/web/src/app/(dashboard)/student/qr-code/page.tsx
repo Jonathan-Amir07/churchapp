@@ -44,7 +44,7 @@ export default function StudentQRCodePage() {
           My Check-in QR Code
         </h1>
         <p className="text-sm text-on-surface-variant max-w-sm mx-auto leading-relaxed">
-          Show this QR code to your instructor at the start of class to mark your attendance.
+          Show this QR code to your servant at the start of class to mark your attendance.
         </p>
       </div>
 

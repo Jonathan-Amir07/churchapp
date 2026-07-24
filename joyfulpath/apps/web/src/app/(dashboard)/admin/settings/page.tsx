@@ -3,11 +3,13 @@
 import { useState, useEffect } from 'react';
 import { useTranslations } from 'next-intl';
 import { Card, CardContent, CardTitle, CardHeader, Button, Input } from '@/components/ui';
+import { useNotificationStore } from '@/stores/notifications.store';
 
 export default function AdminSettings() {
   const tNav = useTranslations('nav');
   const tSettings = useTranslations('settings');
   const tCommon = useTranslations('common');
+  const addToast = useNotificationStore(s => s.addToast);
 
   const isAr = tCommon('appName') !== 'JoyfulPath';
   const [maintenance, setMaintenance] = useState(false);
@@ -44,7 +46,7 @@ export default function AdminSettings() {
 
   const handleSave = (e: React.FormEvent) => {
     e.preventDefault();
-    alert(tSettings('settingsSaved'));
+    addToast(tSettings('settingsSaved'), 'success');
   };
 
   const handleBackup = async () => {
@@ -52,7 +54,7 @@ export default function AdminSettings() {
     // Simulate database backup operation
     await new Promise((resolve) => setTimeout(resolve, 1500));
     setBackupLoading(false);
-    alert(tSettings('backupSuccess'));
+    addToast(tSettings('backupSuccess'), 'success');
   };
 
   return (

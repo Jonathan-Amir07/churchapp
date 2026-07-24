@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { Card, CardContent, CardTitle, Button, Modal, BadgeTag } from '@/components/ui';
+import { useNotificationStore } from '@/stores/notifications.store';
 
 interface SubmissionFile {
   name: string;
@@ -72,6 +73,7 @@ export default function InstructorTasks() {
   const tNav = useTranslations('nav');
   const tTasks = useTranslations('tasks');
   const tCommon = useTranslations('common');
+  const addToast = useNotificationStore(s => s.addToast);
 
   const isAr = tCommon('appName') !== 'JoyfulPath';
   const [submissions, setSubmissions] = useState<Submission[]>(INITIAL_SUBMISSIONS);
@@ -83,10 +85,11 @@ export default function InstructorTasks() {
     setSubmissions((prev) => prev.filter((sub) => sub.id !== id));
     setSelectedSub(null);
     setFeedback('');
-    alert(
+    addToast(
       approved
         ? tTasks('approveSuccess')
-        : tTasks('rejectSuccess')
+        : tTasks('rejectSuccess'),
+      'success'
     );
   };
 
@@ -94,7 +97,7 @@ export default function InstructorTasks() {
     setDownloadingFile(fileName);
     setTimeout(() => {
       setDownloadingFile(null);
-      alert(isAr ? `تم تنزيل: ${fileName}` : `Downloaded: ${fileName}`);
+      addToast(isAr ? `تم تنزيل: ${fileName}` : `Downloaded: ${fileName}`, 'success');
     }, 1000);
   };
 

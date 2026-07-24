@@ -89,13 +89,12 @@ export default function LoginPage() {
         
         // Get user role from app metadata
         const user = data.user;
-        const userRole = user?.app_metadata?.role || user?.user_metadata?.role || 'student';
+        const rawRole = user?.app_metadata?.role || user?.user_metadata?.role || 'student';
+        const userRole = rawRole === 'instructor' ? 'admin' : rawRole;
         
         const redirectPath =
           userRole === 'admin'
             ? `/admin/dashboard`
-            : userRole === 'instructor'
-            ? `/instructor/dashboard`
             : userRole === 'parent'
             ? `/parent/dashboard`
             : `/student/dashboard`;

@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { createClient } from '@/lib/supabase/client';
 import { useTranslations } from 'next-intl';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, Button, Modal, BadgeTag, ProgressBar } from '@/components/ui';
+import { useNotificationStore } from '@/stores/notifications.store';
 
 interface LessonAttachment {
   name: string;
@@ -133,6 +134,7 @@ export default function StudentLessons() {
   const tLessons = useTranslations('lessons');
   const tCommon = useTranslations('common');
   const tGamification = useTranslations('gamification');
+  const addToast = useNotificationStore(s => s.addToast);
   const supabase = createClient();
   const [lessons, setLessons] = useState<Lesson[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -208,14 +210,14 @@ export default function StudentLessons() {
       prev.map(l => (l.id === lesson.id ? { ...l, status: 'completed' } : l))
     );
     setSelectedLesson(null);
-    alert(tLessons('completeSuccess', { xp: lesson.xp, points: lesson.points }));
+    addToast(tLessons('completeSuccess', { xp: lesson.xp, points: lesson.points }), 'success');
   };
 
   const handleDownload = (fileName: string) => {
     setDownloadingFile(fileName);
     setTimeout(() => {
       setDownloadingFile(null);
-      alert(isAr ? `تم تنزيل الملف: ${fileName}` : `Downloaded: ${fileName}`);
+      addToast(isAr ? `تم تنزيل الملف: ${fileName}` : `Downloaded: ${fileName}`, 'success');
     }, 1200);
   };
 

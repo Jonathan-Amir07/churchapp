@@ -20,7 +20,8 @@ export function MobileNav() {
   const tNav = useTranslations('nav');
   const [isMoreOpen, setIsMoreOpen] = useState(false);
 
-  const role = profile?.role as 'student' | 'instructor' | 'admin' | 'parent' | undefined;
+  const rawRole = profile?.role as string | undefined;
+  const role = rawRole === 'instructor' ? 'admin' : (rawRole as 'student' | 'admin' | 'parent' | undefined);
   
   // Close "more" menu when route changes
   useEffect(() => {
@@ -42,13 +43,6 @@ export function MobileNav() {
     );
     sheetItems = allItems.filter(item => 
       !['dashboard', 'lessons', 'tasks', 'games'].includes(item.key)
-    );
-  } else if (role === 'instructor') {
-    bottomBarItems = allItems.filter(item => 
-      ['dashboard', 'lessons', 'tasks', 'attendance'].includes(item.key)
-    );
-    sheetItems = allItems.filter(item => 
-      !['dashboard', 'lessons', 'tasks', 'attendance'].includes(item.key)
     );
   } else if (role === 'admin') {
     bottomBarItems = allItems.filter(item => 
@@ -214,8 +208,8 @@ export function MobileNav() {
       )}
 
       {/* Floating Action Button for QR (Only for Servant and Child) */}
-      {(role === 'student' || role === 'instructor') && (
-        <Link href={role === 'student' ? '/student/qr' : '/instructor/qr'} className="fixed bottom-24 end-4 z-40 md:hidden">
+      {(role === 'student' || role === 'admin') && (
+        <Link href={role === 'student' ? '/student/qr' : '/admin/qr'} className="fixed bottom-24 end-4 z-40 md:hidden">
           <button className="w-14 h-14 bg-primary text-on-primary rounded-full shadow-elevated flex items-center justify-center hover:bg-primary-container hover:scale-105 active:scale-95 transition-all border-2 border-secondary relative overflow-hidden">
             <div className="absolute inset-0 bg-coptic-pattern opacity-20 pointer-events-none" />
             <span className="material-symbols-outlined text-[28px] relative z-10 text-secondary">

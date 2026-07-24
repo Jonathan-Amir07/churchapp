@@ -6,7 +6,7 @@ import { Card, CardContent, CardTitle, Button } from '@/components/ui';
 
 export default function AdminPermissionsPage() {
   const tCommon = useTranslations('common');
-  const [activeRole, setActiveRole] = useState<'admin' | 'instructor' | 'parent' | 'student'>('instructor');
+  const [activeRole, setActiveRole] = useState<'admin' | 'parent' | 'student'>('admin');
 
   const permissions = [
     { module: 'User Management', canView: true, canEdit: false, canDelete: false },
@@ -33,14 +33,6 @@ export default function AdminPermissionsPage() {
           }`}
         >
           Administrator
-        </button>
-        <button
-          onClick={() => setActiveRole('instructor')}
-          className={`pb-3 px-6 text-sm font-bold border-b-2 transition-all ${
-            activeRole === 'instructor' ? 'border-primary text-primary' : 'border-transparent text-on-surface-variant hover:text-on-surface'
-          }`}
-        >
-          Instructor
         </button>
         <button
           onClick={() => setActiveRole('parent')}

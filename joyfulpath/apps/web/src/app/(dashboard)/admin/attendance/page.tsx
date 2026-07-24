@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useTranslations } from 'next-intl';
 import { Card, CardContent, Button, BadgeTag, QRScanner, type ScanResult } from '@/components/ui';
+import { useNotificationStore } from '@/stores/notifications.store';
 
 interface Student {
   id: string;
@@ -34,6 +35,7 @@ export default function InstructorAttendance() {
   const tNav        = useTranslations('nav');
   const tAttendance = useTranslations('attendance');
   const tCommon     = useTranslations('common');
+  const addToast    = useNotificationStore(s => s.addToast);
 
   const [activeTab, setActiveTab] = useState<Tab>('roster');
   const [date, setDate] = useState('');
@@ -55,7 +57,7 @@ export default function InstructorAttendance() {
   };
 
   const handleSave = () => {
-    alert(tAttendance('saveSuccess'));
+    addToast(tAttendance('saveSuccess'), 'success');
   };
 
   // Called by QRScanner on each decoded result

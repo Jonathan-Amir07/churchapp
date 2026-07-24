@@ -54,7 +54,6 @@ export function Topbar() {
   // Role translation mapping
   const roleTranslations: Record<string, string> = {
     'student': 'مخدوم',
-    'instructor': 'خادم',
     'admin': 'مسؤول الخدمة',
     'parent': 'ولي أمر'
   };

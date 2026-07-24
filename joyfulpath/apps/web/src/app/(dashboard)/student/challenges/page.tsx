@@ -3,15 +3,17 @@
 import { useTranslations } from 'next-intl';
 import { Card, CardContent, CardTitle, ProgressBar, Button } from '@/components/ui';
 import { useAppStore } from '@/stores/app.store';
+import { useNotificationStore } from '@/stores/notifications.store';
 
 export default function StudentChallenges() {
   const tNav = useTranslations('nav');
   const tCommon = useTranslations('common');
   const { challenges, claimChallengeReward } = useAppStore();
+  const addToast = useNotificationStore(s => s.addToast);
 
   const handleClaim = (id: string, title: string) => {
     claimChallengeReward(id);
-    alert(`Congratulations! You have claimed your rewards for completing the "${title}" challenge!`);
+    addToast(`Congratulations! You have claimed your rewards for completing the "${title}" challenge!`, 'success');
   };
 
   return (

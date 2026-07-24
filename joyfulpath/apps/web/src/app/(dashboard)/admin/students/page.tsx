@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { Card, CardContent, CardTitle, CardDescription, Button, Modal, Input } from '@/components/ui';
+import { useNotificationStore } from '@/stores/notifications.store';
 
 interface Student {
   id: string;
@@ -57,6 +58,7 @@ export default function InstructorStudents() {
   const tStudents = useTranslations('students');
   const tCommon = useTranslations('common');
   const tGamification = useTranslations('gamification');
+  const addToast = useNotificationStore(s => s.addToast);
 
   const [students, setStudents] = useState<Student[]>(INITIAL_STUDENTS);
   const [selectedStudent, setSelectedStudent] = useState<Student | null>(null);
@@ -82,7 +84,7 @@ export default function InstructorStudents() {
       )
     );
     setSelectedStudent(null);
-    alert(tStudents('awardSuccess', { xp: xpToAdd, points: pointsToAdd, name: selectedStudent.name }));
+    addToast(tStudents('awardSuccess', { xp: xpToAdd, points: pointsToAdd, name: selectedStudent.name }), 'success');
     setReason('');
     setXpToAdd(50);
     setPointsToAdd(10);

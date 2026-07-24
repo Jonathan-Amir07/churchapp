@@ -4,6 +4,7 @@ import { useState, useRef, useEffect } from 'react';
 import { createClient } from '@/lib/supabase/client';
 import { useTranslations } from 'next-intl';
 import { Card, CardContent, CardTitle, Button, Modal, BadgeTag, ProgressBar } from '@/components/ui';
+import { useNotificationStore } from '@/stores/notifications.store';
 
 interface UploadedFile {
   name: string;
@@ -31,6 +32,7 @@ export default function StudentTasks() {
   const tNav = useTranslations('nav');
   const tTasks = useTranslations('tasks');
   const tCommon = useTranslations('common');
+  const addToast = useNotificationStore(s => s.addToast);
   
   const supabase = createClient();
   const [tasks, setTasks] = useState<Task[]>([]);
@@ -112,7 +114,7 @@ export default function StudentTasks() {
       });
     } catch (err) {
       console.error('Upload failed:', err);
-      alert('File upload failed. Please try again.');
+      addToast('File upload failed. Please try again.', 'error');
     } finally {
       setIsUploading(false);
     }
@@ -156,10 +158,10 @@ export default function StudentTasks() {
       );
       setSelectedTask(null);
       setUploadedFile(null);
-      alert(tTasks('submitSuccess'));
+      addToast(tTasks('submitSuccess'), 'success');
     } catch (err) {
       console.error(err);
-      alert('Failed to submit task');
+      addToast('Failed to submit task', 'error');
     }
   };
 

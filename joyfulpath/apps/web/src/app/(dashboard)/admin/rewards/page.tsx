@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { Card, CardContent, CardTitle, Button, Modal, Input } from '@/components/ui';
 import { useAppStore } from '@/stores/app.store';
+import { useNotificationStore } from '@/stores/notifications.store';
 
 export default function AdminRewards() {
   const tNav = useTranslations('nav');
@@ -11,6 +12,7 @@ export default function AdminRewards() {
   const tCommon = useTranslations('common');
 
   const { rewards, redemptions, addRewardItem, processRedemption } = useAppStore();
+  const addToast = useNotificationStore(s => s.addToast);
   
   const [activeTab, setActiveTab] = useState<'catalog' | 'queue'>('catalog');
   const [isOpen, setIsOpen] = useState(false);
@@ -32,7 +34,7 @@ export default function AdminRewards() {
   const handleCreate = (e: React.FormEvent) => {
     e.preventDefault();
     if (!title || !titleAr || !description || !descriptionAr) {
-      alert('Error: Please fill all fields!');
+      addToast('Error: Please fill all fields!', 'error');
       return;
     }
 
@@ -48,7 +50,7 @@ export default function AdminRewards() {
     });
 
     setIsOpen(false);
-    alert(tRewards('addSuccess'));
+    addToast(tRewards('addSuccess'), 'success');
 
     // Reset Form
     setTitle('');
@@ -75,7 +77,7 @@ export default function AdminRewards() {
     processRedemption(selectedRedId, processStatus, feedback || undefined);
     setIsFeedbackOpen(false);
     setSelectedRedId(null);
-    alert(`Request ${processStatus} successfully!`);
+    addToast(`Request ${processStatus} successfully!`, 'success');
   };
 
   return (

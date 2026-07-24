@@ -101,7 +101,7 @@ const INITIAL_NOTIFICATIONS: AppNotification[] = [
     type: 'prayer',
     titleEn: 'Prayer Answered 🙏',
     titleAr: 'تم الرد على الصلاة 🙏',
-    messageEn: 'Your instructor responded to your prayer request with words of encouragement.',
+    messageEn: 'A servant responded to your prayer request with words of encouragement.',
     messageAr: 'قام معلمك بالرد على طلب صلاتك بكلمات تشجيع.',
     isRead: true,
     createdAt: new Date(Date.now() - 1000 * 60 * 60 * 72).toISOString(), // 3 days ago

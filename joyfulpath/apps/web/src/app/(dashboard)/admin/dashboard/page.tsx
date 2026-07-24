@@ -89,7 +89,7 @@ export default function AdminDashboard() {
             <div>
               <h3 className="text-lg font-bold text-on-surface">Manage Users</h3>
               <p className="text-sm text-on-surface-variant leading-relaxed mt-1">
-                Create new instructor profiles or register bulk student accounts via CSV imports.
+                Create new admin profiles or register bulk student accounts via CSV imports.
               </p>
             </div>
           </CardContent>
@@ -110,7 +110,7 @@ export default function AdminDashboard() {
             <div>
               <h3 className="text-lg font-bold text-on-surface">Configure Classes</h3>
               <p className="text-sm text-on-surface-variant leading-relaxed mt-1">
-                Establish new classes, assign instructors, and set grade level parameters.
+                Establish new classes, assign servants, and set grade level parameters.
               </p>
             </div>
           </CardContent>

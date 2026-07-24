@@ -3,20 +3,22 @@
 import { useTranslations } from 'next-intl';
 import { Card, CardContent, CardTitle, CardDescription, Button } from '@/components/ui';
 import { useAppStore } from '@/stores/app.store';
+import { useNotificationStore } from '@/stores/notifications.store';
 
 export default function StudentStore() {
   const tNav = useTranslations('nav');
   const tRewards = useTranslations('rewards');
   const tCommon = useTranslations('common');
+  const addToast = useNotificationStore(s => s.addToast);
   
   const { points, rewards, redemptions, redeemReward } = useAppStore();
 
   const handleRedeem = (itemId: string, itemTitle: string) => {
     const success = redeemReward(itemId, 'Jonathan'); // Jonathan is the mock student user
     if (success) {
-      alert(`Redemption request submitted successfully for ${itemTitle}!`);
+      addToast(`Redemption request submitted successfully for ${itemTitle}!`, 'success');
     } else {
-      alert('Failed to redeem item. Please check your points balance.');
+      addToast('Failed to redeem item. Please check your points balance.', 'error');
     }
   };
 

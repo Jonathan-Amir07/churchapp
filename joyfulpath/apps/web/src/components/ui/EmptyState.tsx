@@ -55,7 +55,7 @@ export function NoLessonsState() {
     <EmptyState
       icon="school"
       title="No Lessons Yet"
-      description="There are no lessons available for this class. Check back soon or contact your instructor."
+      description="There are no lessons available for this class. Check back soon or contact your servant."
     />
   );
 }

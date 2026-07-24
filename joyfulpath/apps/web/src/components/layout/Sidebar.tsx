@@ -19,7 +19,8 @@ export function Sidebar() {
     setYear(new Date().getFullYear());
   }, []);
 
-  const role = profile?.role as 'student' | 'instructor' | 'admin' | 'parent' | undefined;
+  const rawRole = profile?.role as string | undefined;
+  const role = rawRole === 'instructor' ? 'admin' : (rawRole as 'student' | 'admin' | 'parent' | undefined);
   
   if (!role || !NAV_ITEMS[role]) return null;
 

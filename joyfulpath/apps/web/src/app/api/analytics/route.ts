@@ -8,7 +8,7 @@ import prisma from '@/lib/db';
 export async function GET(request: NextRequest) {
   try {
     const session = await auth();
-    if (!session?.user?.id || !['admin', 'instructor'].includes(session.user.role as string)) {
+    if (!session?.user?.id || session.user.role !== 'admin') {
       return NextResponse.json(
         { error: 'Unauthorized' },
         { status: 403 }
@@ -20,8 +20,8 @@ export async function GET(request: NextRequest) {
     const startDate = searchParams.get('startDate') ? new Date(searchParams.get('startDate')!) : new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
     const endDate = searchParams.get('endDate') ? new Date(searchParams.get('endDate')!) : new Date();
 
-    // Build where clause for class if instructor
-    const classWhere = session.user.role === 'instructor' && classId ? { classId } : {};
+    // Admins can filter by class if classId is provided
+    const classWhere = classId ? { classId } : {};
 
     // 1. Student Engagement Metrics
     const engagementMetrics = await prisma.pointsTransaction.groupBy({

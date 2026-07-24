@@ -4,12 +4,14 @@ import { useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { Card, CardContent, CardHeader, CardTitle, Button, Input, Avatar } from '@/components/ui';
 import { useUser } from '@/hooks/useUser';
+import { useNotificationStore } from '@/stores/notifications.store';
 
 export default function ParentProfile() {
   const { profile } = useUser();
   const tNav = useTranslations('nav');
   const tCommon = useTranslations('common');
   const tProfile = useTranslations('profile');
+  const addToast = useNotificationStore(s => s.addToast);
 
   const isAr = tCommon('appName') !== 'JoyfulPath';
   const user = profile;
@@ -22,24 +24,24 @@ export default function ParentProfile() {
 
   const handleUpdateProfile = (e: React.FormEvent) => {
     e.preventDefault();
-    alert(tProfile('profileUpdateSuccess'));
+    addToast(tProfile('profileUpdateSuccess'), 'success');
   };
 
   const handleChangePin = (e: React.FormEvent) => {
     e.preventDefault();
     if (!currentPin || !newPin || !confirmPin) {
-      alert(tProfile('fillAllPin'));
+      addToast(tProfile('fillAllPin'), 'error');
       return;
     }
     if (newPin.length !== 4 || isNaN(Number(newPin))) {
-      alert(tProfile('pinMustBeFour'));
+      addToast(tProfile('pinMustBeFour'), 'error');
       return;
     }
     if (newPin !== confirmPin) {
-      alert(tProfile('pinNotMatch'));
+      addToast(tProfile('pinNotMatch'), 'error');
       return;
     }
-    alert(tProfile('pinChangeSuccess'));
+    addToast(tProfile('pinChangeSuccess'), 'success');
     setCurrentPin('');
     setNewPin('');
     setConfirmPin('');

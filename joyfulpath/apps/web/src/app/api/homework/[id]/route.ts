@@ -91,8 +91,8 @@ export async function PATCH(request: NextRequest, { params }: { params: Params }
       );
     }
 
-    // Only task creator/instructor/admin can review
-    if (session.user.id !== submission.task.createdBy && session.user.role !== 'admin' && session.user.role !== 'instructor') {
+    // Only admin can review
+    if (session.user.role !== 'admin') {
       return NextResponse.json(
         { error: 'Access denied' },
         { status: 403 }

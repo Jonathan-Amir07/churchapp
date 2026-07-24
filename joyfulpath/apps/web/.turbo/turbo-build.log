@@ -13,15 +13,15 @@
 - Environments: .env.local
 
   Creating an optimized production build ...
-✓ Compiled successfully in 5.9s
+✓ Compiled successfully in 6.3s
   Running TypeScript ...
-  Finished TypeScript in 5.9s ...
+  Finished TypeScript in 6.2s ...
   Collecting page data using 15 workers ...
-  Generating static pages using 15 workers (0/82) ...
-  Generating static pages using 15 workers (20/82) 
-  Generating static pages using 15 workers (40/82) 
-  Generating static pages using 15 workers (61/82) 
-✓ Generating static pages using 15 workers (82/82) in 454ms
+  Generating static pages using 15 workers (0/80) ...
+  Generating static pages using 15 workers (20/80) 
+  Generating static pages using 15 workers (40/80) 
+  Generating static pages using 15 workers (60/80) 
+✓ Generating static pages using 15 workers (80/80) in 573ms
   Finalizing page optimization ...
 
 Route (app)
@@ -30,14 +30,22 @@ Route (app)
 ├ ƒ /about
 ├ ƒ /admin/analytics
 ├ ƒ /admin/approvals
+├ ƒ /admin/attendance
 ├ ƒ /admin/classes
 ├ ƒ /admin/content
+├ ƒ /admin/crm
 ├ ƒ /admin/dashboard
 ├ ƒ /admin/events
 ├ ƒ /admin/files
+├ ƒ /admin/lessons
 ├ ƒ /admin/permissions
+├ ƒ /admin/prayers
+├ ƒ /admin/qr
+├ ƒ /admin/quizzes
 ├ ƒ /admin/rewards
 ├ ƒ /admin/settings
+├ ƒ /admin/students
+├ ƒ /admin/tasks
 ├ ƒ /admin/users
 ├ ƒ /api/admin/approvals
 ├ ƒ /api/admin/reports/export
@@ -82,16 +90,6 @@ Route (app)
 ├ ƒ /faq
 ├ ƒ /forgot-password
 ├ ƒ /gallery
-├ ƒ /instructor/attendance
-├ ƒ /instructor/crm
-├ ƒ /instructor/dashboard
-├ ƒ /instructor/events
-├ ƒ /instructor/lessons
-├ ƒ /instructor/prayers
-├ ƒ /instructor/qr
-├ ƒ /instructor/quizzes
-├ ƒ /instructor/students
-├ ƒ /instructor/tasks
 ├ ƒ /login
 ├ ƒ /parent/attendance
 ├ ƒ /parent/dashboard

@@ -115,7 +115,7 @@ export function LessonCard({ lesson, onUpdate }: LessonCardProps) {
 
       <div className="flex gap-2 mt-auto pt-4 border-t border-outline-variant dark:border-dark-outline-variant">
         <Button
-          onClick={() => router.push(`/instructor/lessons/${lesson.id}`)}
+          onClick={() => router.push(`/admin/lessons/${lesson.id}`)}
           variant="outline"
           size="sm"
           className="flex-1"

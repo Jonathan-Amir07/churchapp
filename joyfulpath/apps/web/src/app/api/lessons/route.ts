@@ -84,7 +84,7 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   try {
     const session = await auth();
-    if (!session?.user?.id || !['instructor', 'admin'].includes(session.user.role as string)) {
+    if (!session?.user?.id || session.user.role !== 'admin') {
       return NextResponse.json(
         { error: 'Unauthorized' },
         { status: 403 }
@@ -101,23 +101,6 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Verify instructor has access to class
-    const classAccess = await prisma.class.findFirst({
-      where: {
-        id: classId,
-        OR: [
-          { createdBy: session.user.id },
-          { members: { some: { userId: session.user.id, role: 'instructor' as UserRole } } },
-        ],
-      },
-    });
-
-    if (!classAccess) {
-      return NextResponse.json(
-        { error: 'Access denied' },
-        { status: 403 }
-      );
-    }
 
     const lesson = await prisma.lesson.create({
       data: {

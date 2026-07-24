@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { useTranslations } from 'next-intl';
 import { Card, CardContent, CardTitle, CardDescription, Button, ProgressBar } from '@/components/ui';
 import { useAppStore } from '@/stores/app.store';
+import { useNotificationStore } from '@/stores/notifications.store';
 
 // Saint characters for Memory Match Game
 const MATCH_CARDS = [
@@ -24,6 +25,7 @@ const MATCH_CARDS = [
 export default function StudentGames() {
   const tNav = useTranslations('nav');
   const tCommon = useTranslations('common');
+  const addToast = useNotificationStore(s => s.addToast);
   
   const { 
     xp, addXP, 
@@ -83,9 +85,9 @@ export default function StudentGames() {
         addPoints(5);
         // Daily challenge increment (counts as game completion)
         incrementChallenge('daily', 1);
-        alert('Verse Builder Complete! You earned +20 XP and +5 Points!');
+        addToast('Verse Builder Complete! You earned +20 XP and +5 Points!', 'success');
       } else {
-        alert('Oops, the order is incorrect. Let\'s try again!');
+        addToast('Oops, the order is incorrect. Let\'s try again!', 'error');
         initVerseBuilder();
       }
     }
@@ -136,7 +138,7 @@ export default function StudentGames() {
         addXP(30);
         addPoints(8);
         incrementChallenge('daily', 1);
-        alert(`Congratulations! You solved the Memory Match in ${movesCount} moves! Earned +30 XP and +8 Points!`);
+        addToast(`Congratulations! You solved the Memory Match in ${movesCount} moves! Earned +30 XP and +8 Points!`, 'success');
         setActiveGame('none');
       }, 500);
     }
@@ -414,7 +416,7 @@ export default function StudentGames() {
                             addPoints(5);
                             setGuessFeedback(`Correct! It's ${opt}! (+25 XP)`);
                           } else {
-                            alert('Not quite! Try another guess.');
+                            addToast('Not quite! Try another guess.', 'error');
                           }
                         }}
                       >
@@ -506,7 +508,7 @@ export default function StudentGames() {
                     </h3>
                   </div>
                   {verse.isMastered && (
-                    <span className="bg-yellow-50 dark:bg-yellow-950/20 text-yellow-600 dark:text-yellow-400 border border-yellow-200 dark:border-yellow-900/50 px-3 py-1 rounded-full text-[10px] font-extrabold flex items-center gap-1 uppercase select-none">
+                    <span className="bg-yellow-50 dark:bg-yellow-950/20 text-yellow-600 dark:yellow-400 border border-yellow-200 dark:border-yellow-900/50 px-3 py-1 rounded-full text-[10px] font-extrabold flex items-center gap-1 uppercase select-none">
                       <span className="material-symbols-outlined text-[14px]">star</span>
                       Mastered
                     </span>
@@ -542,7 +544,7 @@ export default function StudentGames() {
                         if (nextProg === 100 && !verse.isMastered) {
                           addXP(25);
                           addPoints(5);
-                          alert(`Awesome! You mastered "${verse.reference}"! Earned +25 XP and +5 Points!`);
+                          addToast(`Awesome! You mastered "${verse.reference}"! Earned +25 XP and +5 Points!`, 'success');
                         }
                       }}
                       className="flex-1 accent-primary h-2 bg-surface-container-high rounded-lg appearance-none cursor-pointer"

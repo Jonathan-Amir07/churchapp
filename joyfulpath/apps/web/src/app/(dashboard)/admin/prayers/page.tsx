@@ -4,11 +4,13 @@ import { useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { Card, CardContent, CardTitle, Button, Input } from '@/components/ui';
 import { useAppStore } from '@/stores/app.store';
+import { useNotificationStore } from '@/stores/notifications.store';
 
 export default function InstructorPrayers() {
   const tNav = useTranslations('nav');
   const tCommon = useTranslations('common');
   const { prayers, respondPrayer, markPrayedFor } = useAppStore();
+  const addToast = useNotificationStore(s => s.addToast);
 
   const [activeTab, setActiveTab] = useState<'all' | 'pending' | 'private'>('all');
   const [responseTexts, setResponseTexts] = useState<Record<string, string>>({});
@@ -34,7 +36,7 @@ export default function InstructorPrayers() {
       return next;
     });
 
-    alert('Response submitted successfully!');
+    addToast('Response submitted successfully!', 'success');
   };
 
   const handleTextChange = (id: string, value: string) => {
@@ -43,7 +45,7 @@ export default function InstructorPrayers() {
 
   const handleMarkPrayed = (id: string) => {
     markPrayedFor(id);
-    alert('Request marked as prayed for!');
+    addToast('Request marked as prayed for!', 'success');
   };
 
   return (

@@ -36,7 +36,7 @@ export default function RegisterPage() {
   const addToast = useNotificationStore((state) => state.addToast);
   const supabase = createClient();
 
-  const [activeTab, setActiveTab] = useState<'student' | 'parent' | 'instructor'>('student');
+  const [activeTab, setActiveTab] = useState<'student' | 'parent'>('student');
   const [loading, setLoading] = useState(false);
   const [passwordStrength, setPasswordStrength] = useState(0);
   
@@ -241,7 +241,7 @@ export default function RegisterPage() {
           {/* Tab Controls (Only in step 1) */}
           {step === 1 && (
             <div className="flex bg-surface-container rounded-xl p-1.5 border border-outline-variant/30 mb-8">
-              {(['student', 'parent', 'instructor'] as const).map((tab) => (
+              {(['student', 'parent'] as const).map((tab) => (
                 <button
                   key={tab}
                   type="button"
@@ -256,7 +256,7 @@ export default function RegisterPage() {
                     {tab === 'student' ? 'sentiment_satisfied' : tab === 'parent' ? 'family_restroom' : 'school'}
                   </span>
                   <span className="truncate">
-                    {currentLocale === 'en' ? (tab === 'student' ? 'Child' : tab === 'instructor' ? 'Servant' : tab) : (tab === 'student' ? 'مخدوم' : tab === 'instructor' ? 'خادم' : 'ولي أمر')}
+                    {currentLocale === 'en' ? (tab === 'student' ? 'Child' : 'Parent') : (tab === 'student' ? 'مخدوم' : 'ولي أمر')}
                   </span>
                 </button>
               ))}

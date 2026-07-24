@@ -42,31 +42,28 @@ export const NAV_ITEMS = {
     { key: 'events',      icon: 'event',               href: '/parent/events' },
     { key: 'profile',     icon: 'person',              href: '/parent/profile' },
   ],
-  instructor: [
-    { key: 'dashboard',   icon: 'dashboard',           href: '/instructor/dashboard' },
-    { key: 'lessons',     icon: 'menu_book',           href: '/instructor/lessons' },
-    { key: 'tasks',       icon: 'task_alt',            href: '/instructor/tasks' },
-    { key: 'quizzes',     icon: 'quiz',                href: '/instructor/quizzes' },
-    { key: 'attendance',  icon: 'event_available',     href: '/instructor/attendance' },
-    { key: 'events',      icon: 'event',               href: '/instructor/events' },
-    { key: 'prayers',     icon: 'volunteer_activism',  href: '/instructor/prayers' },
-    { key: 'students',    icon: 'groups',              href: '/instructor/students' },
-    { key: 'crm',         icon: 'contact_mail',        href: '/instructor/crm' },
-  ],
   admin: [
     { key: 'dashboard',   icon: 'dashboard',           href: '/admin/dashboard' },
     { key: 'approvals',   icon: 'verified_user',       href: '/admin/approvals' },
-    { key: 'content',     icon: 'menu_book',           href: '/admin/content' },
+    { key: 'lessons',     icon: 'menu_book',           href: '/admin/lessons' },
+    { key: 'tasks',       icon: 'task_alt',            href: '/admin/tasks' },
+    { key: 'quizzes',     icon: 'quiz',                href: '/admin/quizzes' },
+    { key: 'attendance',  icon: 'event_available',     href: '/admin/attendance' },
     { key: 'events',      icon: 'event_note',          href: '/admin/events' },
     { key: 'users',       icon: 'manage_accounts',     href: '/admin/users' },
     { key: 'classes',     icon: 'school',              href: '/admin/classes' },
+    { key: 'students',    icon: 'groups',              href: '/admin/students' },
     { key: 'rewards',     icon: 'emoji_events',        href: '/admin/rewards' },
+    { key: 'prayers',     icon: 'volunteer_activism',  href: '/admin/prayers' },
+    { key: 'qr',          icon: 'qr_code_scanner',     href: '/admin/qr' },
+    { key: 'crm',         icon: 'contact_mail',        href: '/admin/crm' },
     { key: 'files',       icon: 'folder',              href: '/admin/files' },
     { key: 'analytics',   icon: 'analytics',           href: '/admin/analytics' },
     { key: 'permissions', icon: 'security',            href: '/admin/permissions' },
     { key: 'settings',    icon: 'settings',            href: '/admin/settings' },
   ],
 } as const;
+
 
 /**
  * Points and XP configuration.

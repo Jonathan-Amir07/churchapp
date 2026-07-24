@@ -3,17 +3,18 @@
 import { useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { Card, CardContent, CardTitle, Button, Modal, Input, BadgeTag } from '@/components/ui';
+import { useNotificationStore } from '@/stores/notifications.store';
 
 interface UserAccount {
   id: string;
   name: string;
   usernameOrEmail: string;
-  role: 'student' | 'instructor' | 'admin';
+  role: 'student' | 'admin' | 'parent';
 }
 
 const INITIAL_USERS: UserAccount[] = [
   { id: '1', name: 'Jonathan Amir', usernameOrEmail: 'admin1@joyfulpath.org', role: 'admin' },
-  { id: '2', name: 'Servant Luke', usernameOrEmail: 'instructor1@joyfulpath.org', role: 'instructor' },
+  { id: '2', name: 'Servant Luke', usernameOrEmail: 'admin2@joyfulpath.org', role: 'admin' },
   { id: '3', name: 'Mark Faith', usernameOrEmail: 'student1', role: 'student' },
 ];
 
@@ -21,9 +22,10 @@ export default function AdminUsers() {
   const tNav = useTranslations('nav');
   const tUsers = useTranslations('users');
   const tCommon = useTranslations('common');
+  const addToast = useNotificationStore(s => s.addToast);
 
   const [users, setUsers] = useState<UserAccount[]>(INITIAL_USERS);
-  const [filter, setFilter] = useState<'all' | 'admin' | 'instructor' | 'student'>('all');
+  const [filter, setFilter] = useState<'all' | 'admin' | 'student' | 'parent'>('all');
   const [searchQuery, setSearchQuery] = useState('');
   
   // Modals state
@@ -34,7 +36,7 @@ export default function AdminUsers() {
   const [name, setName] = useState('');
   const [usernameOrEmail, setUsernameOrEmail] = useState('');
   const [passwordOrPin, setPasswordOrPin] = useState('');
-  const [role, setRole] = useState<'student' | 'instructor' | 'admin'>('student');
+  const [role, setRole] = useState<'student' | 'admin' | 'parent'>('student');
 
   const filteredUsers = users.filter((u) => {
     const matchesSearch = u.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -47,7 +49,7 @@ export default function AdminUsers() {
   const handleAddUser = (e: React.FormEvent) => {
     e.preventDefault();
     if (!name || !usernameOrEmail || !passwordOrPin) {
-      alert('Error: Please fill all fields!');
+      addToast('Error: Please fill all fields!', 'error');
       return;
     }
 
@@ -60,7 +62,7 @@ export default function AdminUsers() {
 
     setUsers((prev) => [newUser, ...prev]);
     setIsOpenAdd(false);
-    alert(tUsers('addSuccess'));
+    addToast(tUsers('addSuccess'), 'success');
 
     // Reset Form
     setName('');
@@ -71,7 +73,7 @@ export default function AdminUsers() {
 
   const handleImportCsv = () => {
     setIsOpenImport(false);
-    alert(tUsers('importSuccess'));
+    addToast(tUsers('importSuccess'), 'success');
   };
 
   return (
@@ -112,7 +114,7 @@ export default function AdminUsers() {
 
         {/* Role Filters */}
         <div className="flex gap-1 bg-surface-container-low p-1.5 rounded-xl w-full sm:w-auto overflow-x-auto">
-          {(['all', 'admin', 'instructor', 'student'] as const).map((tab) => (
+          {(['all', 'admin', 'student', 'parent'] as const).map((tab) => (
             <button
               key={tab}
               onClick={() => setFilter(tab)}
@@ -156,7 +158,7 @@ export default function AdminUsers() {
                       {u.usernameOrEmail}
                     </td>
                     <td className="px-6 py-4">
-                      <BadgeTag variant={u.role === 'admin' ? 'error' : u.role === 'instructor' ? 'warning' : 'primary'}>
+                      <BadgeTag variant={u.role === 'admin' ? 'error' : u.role === 'parent' ? 'warning' : 'primary'}>
                         {u.role}
                       </BadgeTag>
                     </td>
@@ -190,8 +192,8 @@ export default function AdminUsers() {
                 className="h-12 w-full px-3 rounded-xl border border-outline-variant bg-surface-container-low text-on-surface focus:outline-none focus:border-primary text-sm font-medium"
               >
                 <option value="student">{tUsers('studentRole')}</option>
-                <option value="instructor">{tUsers('instructorRole')}</option>
                 <option value="admin">{tUsers('adminRole')}</option>
+                <option value="parent">{tUsers('parentRole')}</option>
               </select>
             </div>
 

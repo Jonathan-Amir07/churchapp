@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { Card, CardContent, CardTitle, Button, Modal, Input } from '@/components/ui';
+import { useNotificationStore } from '@/stores/notifications.store';
 
 interface Classroom {
   id: string;
@@ -36,6 +37,7 @@ export default function AdminClasses() {
   const tNav = useTranslations('nav');
   const tClasses = useTranslations('classes');
   const tCommon = useTranslations('common');
+  const addToast = useNotificationStore(s => s.addToast);
 
   const [classes, setClasses] = useState<Classroom[]>(INITIAL_CLASSES);
   const [isOpen, setIsOpen] = useState(false);
@@ -49,7 +51,7 @@ export default function AdminClasses() {
   const handleCreate = (e: React.FormEvent) => {
     e.preventDefault();
     if (!nameEn || !nameAr) {
-      alert(tCommon('appName') !== 'JoyfulPath' ? 'خطأ: يرجى ملء جميع الحقول!' : 'Error: Please fill all fields!');
+      addToast(tCommon('appName') !== 'JoyfulPath' ? 'خطأ: يرجى ملء جميع الحقول!' : 'Error: Please fill all fields!', 'error');
       return;
     }
 
@@ -64,7 +66,7 @@ export default function AdminClasses() {
 
     setClasses((prev) => [...prev, newClass]);
     setIsOpen(false);
-    alert(tClasses('saveSuccess'));
+    addToast(tClasses('saveSuccess'), 'success');
 
     // Reset Form
     setNameEn('');

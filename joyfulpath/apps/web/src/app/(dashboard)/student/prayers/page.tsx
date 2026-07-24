@@ -114,7 +114,7 @@ export default function StudentPrayers() {
               <div className="flex items-center justify-between p-3 rounded-xl bg-surface-container-low border border-outline-variant/60">
                 <div className="flex flex-col">
                   <span className="text-xs font-bold text-on-surface">Private Request</span>
-                  <span className="text-[10px] text-on-surface-variant">Only visible to you and instructors</span>
+                  <span className="text-[10px] text-on-surface-variant">Only visible to you and servants</span>
                 </div>
                 <input
                   type="checkbox"
@@ -207,7 +207,7 @@ export default function StudentPrayers() {
                       {p.content}
                     </p>
 
-                    {/* Instructor Response */}
+                    {/* Servant Response */}
                     {p.response && (
                       <div className="p-4 rounded-xl bg-primary-container/20 border border-primary/20 space-y-2">
                         <div className="flex items-center gap-1 text-primary">

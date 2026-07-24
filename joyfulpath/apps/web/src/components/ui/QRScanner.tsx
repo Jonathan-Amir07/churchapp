@@ -58,7 +58,7 @@ export function QRScanner({ onResult }: QRScannerProps) {
             const res = await fetch('/api/attendance/scan', {
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ studentId: decodedText, scannedBy: 'instructor' }),
+              body: JSON.stringify({ studentId: decodedText, scannedBy: 'admin' }),
             });
             const data: ScanResult = await res.json();
             setLastResult(data);

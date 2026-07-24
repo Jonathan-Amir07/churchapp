@@ -252,9 +252,11 @@ export default function LandingPage() {
                       ? 'The 116th Pope of Alexandria, known for his life of continuous prayer, miracles, and building the Saint Mina Monastery.'
                       : 'البابا المائة والسادس عشر في سلسلة الآباء البطاركة، عُرف بحياة الصلاة المستمرة والمعجزات وتأسيس دير الشهيد مارمينا.'}
                   </p>
-                  <Button variant="outline" size="sm" className="mt-2 text-on-primary border-on-primary/50 hover:bg-on-primary/10">
-                    {currentLocale === 'en' ? 'Read Full Story' : 'اقرأ القصة الكاملة'}
-                  </Button>
+                  <Link href="/saints">
+                    <Button variant="outline" size="sm" className="mt-2 text-on-primary border-on-primary/50 hover:bg-on-primary/10">
+                      {currentLocale === 'en' ? 'Read Full Story' : 'اقرأ القصة الكاملة'}
+                    </Button>
+                  </Link>
                 </div>
               </CardContent>
             </Card>

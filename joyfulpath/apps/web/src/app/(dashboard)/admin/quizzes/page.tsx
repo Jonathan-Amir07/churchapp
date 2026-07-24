@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { Card, CardContent, CardTitle, CardDescription, Button, Modal, Input } from '@/components/ui';
+import { useNotificationStore } from '@/stores/notifications.store';
 
 interface Quiz {
   id: string;
@@ -38,6 +39,7 @@ export default function InstructorQuizzes() {
   const tCommon = useTranslations('common');
   const tLessons = useTranslations('lessons');
   const tGamification = useTranslations('gamification');
+  const addToast = useNotificationStore(s => s.addToast);
 
   const [quizzes, setQuizzes] = useState<Quiz[]>(INITIAL_QUIZZES);
   const [isOpen, setIsOpen] = useState(false);
@@ -52,7 +54,7 @@ export default function InstructorQuizzes() {
   const handleCreate = (e: React.FormEvent) => {
     e.preventDefault();
     if (!titleEn || !titleAr) {
-      alert(tLessons('fillAllFields'));
+      addToast(tLessons('fillAllFields'), 'error');
       return;
     }
 
@@ -67,7 +69,7 @@ export default function InstructorQuizzes() {
 
     setQuizzes((prev) => [newQuiz, ...prev]);
     setIsOpen(false);
-    alert(tQuizzes('publishSuccess'));
+    addToast(tQuizzes('publishSuccess'), 'success');
 
     // Reset Form
     setTitleEn('');
