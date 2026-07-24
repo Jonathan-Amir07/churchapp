@@ -1,8 +1,8 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 import { useTranslations } from 'next-intl';
-import { Card, CardContent, Button, BadgeTag, QRScanner, type ScanResult } from '@/components/ui';
+import { Card, CardContent, Button, BadgeTag, QRScanner, SearchBar, type ScanResult } from '@/components/ui';
 import { useNotificationStore } from '@/stores/notifications.store';
 
 interface Student {
@@ -40,10 +40,12 @@ export default function InstructorAttendance() {
   const [activeTab, setActiveTab] = useState<Tab>('roster');
   const [date, setDate] = useState('');
   const [selectedClass, setSelectedClass] = useState('c1');
+  const [searchQuery, setSearchQuery] = useState('');
 
   useEffect(() => {
     setDate(new Date().toISOString().split('T')[0]);
   }, []);
+
   const [attendance, setAttendance] = useState<Record<string, AttendanceStatus>>(
     MOCK_STUDENTS.reduce((acc, s) => ({ ...acc, [s.id]: 'present' }), {})
   );
@@ -52,13 +54,23 @@ export default function InstructorAttendance() {
   const [checkIns, setCheckIns] = useState<CheckInRecord[]>([]);
   const [lastScanError, setLastScanError] = useState<string | null>(null);
 
-  const handleStatusChange = (studentId: string, status: AttendanceStatus) => {
-    setAttendance((prev) => ({ ...prev, [studentId]: status }));
-  };
+  const handleSearch = useCallback((query: string) => {
+    setSearchQuery(query);
+  }, []);
 
-  const handleSave = () => {
+  const filteredStudents = useMemo(() => {
+    if (!searchQuery) return MOCK_STUDENTS;
+    const q = searchQuery.toLowerCase();
+    return MOCK_STUDENTS.filter((s) => s.name.toLowerCase().includes(q));
+  }, [searchQuery]);
+
+  const handleStatusChange = useCallback((studentId: string, status: AttendanceStatus) => {
+    setAttendance((prev) => ({ ...prev, [studentId]: status }));
+  }, []);
+
+  const handleSave = useCallback(() => {
     addToast(tAttendance('saveSuccess'), 'success');
-  };
+  }, [addToast, tAttendance]);
 
   // Called by QRScanner on each decoded result
   const handleScanResult = useCallback((result: ScanResult, rawCode: string) => {
@@ -82,10 +94,10 @@ export default function InstructorAttendance() {
     }
   }, []);
 
-  const tabs: { id: Tab; label: string; icon: string }[] = [
+  const tabs: { id: Tab; label: string; icon: string }[] = useMemo(() => [
     { id: 'roster',  label: 'Attendance Roster',  icon: 'list_alt' },
     { id: 'scanner', label: 'QR Check-in Scanner', icon: 'qr_code_scanner' },
-  ];
+  ], []);
 
   return (
     <div className="space-y-6 animate-[slide-up_0.4s_ease-out]">
@@ -120,9 +132,9 @@ export default function InstructorAttendance() {
       {/* ── TAB: ROSTER ─────────────────────────────────────────────────────── */}
       {activeTab === 'roster' && (
         <>
-          {/* Filters */}
+          {/* Filters & Search */}
           <div className="flex flex-col sm:flex-row gap-4 items-center justify-between bg-surface-container-lowest p-4 rounded-2xl border border-outline-variant/60 shadow-sm">
-            <div className="flex flex-col sm:flex-row gap-4 w-full sm:w-auto">
+            <div className="flex flex-col sm:flex-row gap-4 w-full sm:w-auto flex-1">
               <div className="flex flex-col gap-1 w-full sm:w-48">
                 <label className="text-xs font-bold text-on-surface-variant">
                   {tAttendance('selectClass')}
@@ -148,9 +160,21 @@ export default function InstructorAttendance() {
                   className="h-10 px-3 rounded-xl border border-outline-variant bg-surface-container-low text-on-surface focus:outline-none focus:border-primary text-sm font-medium"
                 />
               </div>
+
+              <div className="flex flex-col gap-1 flex-1">
+                <label className="text-xs font-bold text-on-surface-variant">
+                  {tCommon('search')}
+                </label>
+                <SearchBar
+                  onSearch={handleSearch}
+                  placeholder={tCommon('search')}
+                  resultCount={filteredStudents.length}
+                  totalCount={MOCK_STUDENTS.length}
+                />
+              </div>
             </div>
 
-            <Button variant="primary" size="sm" onClick={handleSave} className="w-full sm:w-auto mt-4 sm:mt-0">
+            <Button variant="primary" size="sm" onClick={handleSave} className="w-full sm:w-auto mt-4 sm:mt-0 self-end">
               {tCommon('save')}
             </Button>
           </div>
@@ -168,7 +192,7 @@ export default function InstructorAttendance() {
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-outline-variant/40">
-                    {MOCK_STUDENTS.map((student) => (
+                    {filteredStudents.map((student) => (
                       <tr key={student.id} className="hover:bg-surface-container-low/40 transition duration-150">
                         <td className="px-6 py-4">
                           <div className="flex items-center gap-3">

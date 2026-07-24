@@ -1,8 +1,8 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useMemo, useCallback } from 'react';
 import { useTranslations } from 'next-intl';
-import { Card, CardContent, CardTitle, Button, Modal, Input, BadgeTag } from '@/components/ui';
+import { Card, CardContent, CardTitle, Button, Modal, Input, BadgeTag, SearchBar } from '@/components/ui';
 import { useNotificationStore } from '@/stores/notifications.store';
 
 interface UserAccount {
@@ -38,15 +38,27 @@ export default function AdminUsers() {
   const [passwordOrPin, setPasswordOrPin] = useState('');
   const [role, setRole] = useState<'student' | 'admin' | 'parent'>('student');
 
-  const filteredUsers = users.filter((u) => {
-    const matchesSearch = u.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      u.usernameOrEmail.toLowerCase().includes(searchQuery.toLowerCase());
-    
-    if (filter === 'all') return matchesSearch;
-    return u.role === filter && matchesSearch;
-  });
+  const handleSearch = useCallback((query: string) => {
+    setSearchQuery(query);
+  }, []);
 
-  const handleAddUser = (e: React.FormEvent) => {
+  const filteredUsers = useMemo(() => {
+    return users.filter((user) => {
+      if (filter !== 'all' && user.role !== filter) return false;
+
+      if (searchQuery) {
+        const q = searchQuery.toLowerCase();
+        return (
+          user.name.toLowerCase().includes(q) ||
+          user.usernameOrEmail.toLowerCase().includes(q) ||
+          user.role.toLowerCase().includes(q)
+        );
+      }
+      return true;
+    });
+  }, [users, filter, searchQuery]);
+
+  const handleAddUser = useCallback((e: React.FormEvent) => {
     e.preventDefault();
     if (!name || !usernameOrEmail || !passwordOrPin) {
       addToast('Error: Please fill all fields!', 'error');
@@ -69,12 +81,17 @@ export default function AdminUsers() {
     setUsernameOrEmail('');
     setPasswordOrPin('');
     setRole('student');
-  };
+  }, [name, usernameOrEmail, passwordOrPin, role, users.length, addToast, tUsers]);
 
-  const handleImportCsv = () => {
+  const handleDeleteUser = useCallback((id: string) => {
+    setUsers((prev) => prev.filter((u) => u.id !== id));
+    addToast('User deleted successfully', 'success');
+  }, [addToast]);
+
+  const handleMockImport = useCallback(() => {
     setIsOpenImport(false);
     addToast(tUsers('importSuccess'), 'success');
-  };
+  }, [addToast, tUsers]);
 
   return (
     <div className="space-y-6 animate-[slide-up_0.4s_ease-out]">
@@ -87,84 +104,74 @@ export default function AdminUsers() {
             {tUsers('description')}
           </p>
         </div>
-        <div className="flex gap-2.5">
-          <Button variant="outline" size="sm" onClick={() => setIsOpenImport(true)} icon="upload" iconPosition="start">
-            {tUsers('csvImport')}
+        <div className="flex gap-3">
+          <Button variant="outline" size="sm" onClick={() => setIsOpenImport(true)} icon="upload_file">
+            {tUsers('importCsv')}
           </Button>
-          <Button variant="primary" size="sm" onClick={() => setIsOpenAdd(true)} icon="person_add" iconPosition="start">
+          <Button variant="primary" size="sm" onClick={() => setIsOpenAdd(true)} icon="person_add">
             {tUsers('addUser')}
           </Button>
         </div>
       </div>
 
-      {/* Filters & Search */}
-      <div className="flex flex-col sm:flex-row gap-4 items-center justify-between bg-surface-container-lowest p-4 rounded-2xl border border-outline-variant/60 shadow-sm">
-        <div className="relative w-full sm:max-w-xs">
-          <input
-            type="text"
-            placeholder={tCommon('search')}
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full h-10 ps-10 pe-4 rounded-xl border border-outline-variant bg-surface-container-low text-on-surface placeholder:text-on-surface-variant/60 focus:outline-none focus:border-primary text-sm font-medium"
-          />
-          <span className="material-symbols-outlined absolute left-3 top-2.5 text-on-surface-variant/60 text-[20px]">
-            search
-          </span>
-        </div>
-
-        {/* Role Filters */}
-        <div className="flex gap-1 bg-surface-container-low p-1.5 rounded-xl w-full sm:w-auto overflow-x-auto">
-          {(['all', 'admin', 'student', 'parent'] as const).map((tab) => (
+      {/* Filters & Search Bar */}
+      <div className="flex flex-col sm:flex-row gap-4 items-center justify-between">
+        <div className="flex gap-2 p-1 bg-surface-container-low rounded-2xl border border-outline-variant/50 w-fit">
+          {(['all', 'admin', 'student', 'parent'] as const).map((r) => (
             <button
-              key={tab}
-              onClick={() => setFilter(tab)}
-              className={`px-4 py-1.5 rounded-lg text-xs font-black transition-all duration-150 whitespace-nowrap ${
-                filter === tab
+              key={r}
+              onClick={() => setFilter(r)}
+              className={`px-4 py-2 rounded-xl text-sm font-bold capitalize transition-all duration-200 ${
+                filter === r
                   ? 'bg-primary text-on-primary shadow-sm'
                   : 'text-on-surface-variant hover:text-on-surface hover:bg-surface-container'
               }`}
             >
-              {tab.toUpperCase()}
+              {r === 'all' ? 'All Roles' : r}
             </button>
           ))}
         </div>
+
+        <SearchBar
+          onSearch={handleSearch}
+          placeholder="Search users by name, username or role..."
+          resultCount={filteredUsers.length}
+          totalCount={users.length}
+          className="w-full sm:w-80"
+        />
       </div>
 
-      {/* Directory Table */}
+      {/* Users Table */}
       <Card className="border border-outline-variant bg-surface-container-lowest shadow-sm">
         <CardContent className="p-0">
           <div className="overflow-x-auto">
             <table className="w-full text-start border-collapse text-sm">
               <thead>
                 <tr className="border-b border-outline-variant/60 text-outline text-xs uppercase font-black">
-                  <th className="px-6 py-4 text-start">{tCommon('appName') === 'JoyfulPath' ? 'Name' : 'الاسم'}</th>
-                  <th className="px-6 py-4 text-start">{tCommon('appName') === 'JoyfulPath' ? 'Login Credential' : 'اسم الدخول'}</th>
-                  <th className="px-6 py-4 text-start">{tCommon('appName') === 'JoyfulPath' ? 'Role' : 'الصلاحية'}</th>
-                  <th className="px-6 py-4 text-end">{tCommon('appName') !== 'JoyfulPath' ? 'العملية' : 'Action'}</th>
+                  <th className="px-6 py-4 text-start">{tUsers('fullName')}</th>
+                  <th className="px-6 py-4 text-start">{tUsers('username')} / Email</th>
+                  <th className="px-6 py-4 text-start">{tUsers('role')}</th>
+                  <th className="px-6 py-4 text-end">Actions</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-outline-variant/40">
-                {filteredUsers.map((u) => (
-                  <tr key={u.id} className="hover:bg-surface-container-low/40 transition duration-150">
+                {filteredUsers.map((user) => (
+                  <tr key={user.id} className="hover:bg-surface-container-low/40 transition duration-150">
+                    <td className="px-6 py-4 font-black text-on-surface">{user.name}</td>
+                    <td className="px-6 py-4 text-on-surface-variant">{user.usernameOrEmail}</td>
                     <td className="px-6 py-4">
-                      <div className="flex items-center gap-3">
-                        <div className="w-9 h-9 rounded-full bg-primary/10 flex items-center justify-center font-bold text-primary">
-                          {u.name[0]}
-                        </div>
-                        <span className="font-extrabold text-on-surface">{u.name}</span>
-                      </div>
-                    </td>
-                    <td className="px-6 py-4 font-bold text-on-surface-variant">
-                      {u.usernameOrEmail}
-                    </td>
-                    <td className="px-6 py-4">
-                      <BadgeTag variant={u.role === 'admin' ? 'error' : u.role === 'parent' ? 'warning' : 'primary'}>
-                        {u.role}
+                      <BadgeTag variant={user.role === 'admin' ? 'primary' : user.role === 'parent' ? 'secondary' : 'outline'}>
+                        {user.role}
                       </BadgeTag>
                     </td>
                     <td className="px-6 py-4 text-end">
-                      <Button variant="ghost" size="sm" className="h-9 px-3 text-xs text-error hover:bg-error/5 hover:text-error border-none">
-                        {tUsers('delete')}
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="text-error hover:bg-error/10"
+                        onClick={() => handleDeleteUser(user.id)}
+                      >
+                        {tCommon('delete')}
                       </Button>
                     </td>
                   </tr>
@@ -177,11 +184,21 @@ export default function AdminUsers() {
 
       {/* Add User Modal */}
       {isOpenAdd && (
-        <Modal isOpen={true} onClose={() => setIsOpenAdd(false)} title={tUsers('addUser')}>
+        <Modal isOpen={true} onClose={() => setIsOpenAdd(false)} title={tUsers('registerUser')}>
           <form onSubmit={handleAddUser} className="space-y-4 pt-2">
             <div className="space-y-1.5">
               <label className="text-xs font-bold text-on-surface-variant">{tUsers('fullName')}</label>
-              <Input required value={name} onChange={(e) => setName(e.target.value)} placeholder="David King" />
+              <Input required value={name} onChange={(e) => setName(e.target.value)} />
+            </div>
+
+            <div className="space-y-1.5">
+              <label className="text-xs font-bold text-on-surface-variant">Username / Email</label>
+              <Input required value={usernameOrEmail} onChange={(e) => setUsernameOrEmail(e.target.value)} />
+            </div>
+
+            <div className="space-y-1.5">
+              <label className="text-xs font-bold text-on-surface-variant">Password / PIN</label>
+              <Input type="password" required value={passwordOrPin} onChange={(e) => setPasswordOrPin(e.target.value)} />
             </div>
 
             <div className="space-y-1.5">
@@ -189,32 +206,12 @@ export default function AdminUsers() {
               <select
                 value={role}
                 onChange={(e) => setRole(e.target.value as any)}
-                className="h-12 w-full px-3 rounded-xl border border-outline-variant bg-surface-container-low text-on-surface focus:outline-none focus:border-primary text-sm font-medium"
+                className="w-full p-3 rounded-xl border border-outline-variant bg-surface-container-low text-on-surface text-sm font-medium"
               >
                 <option value="student">{tUsers('studentRole')}</option>
-                <option value="admin">{tUsers('adminRole')}</option>
                 <option value="parent">{tUsers('parentRole')}</option>
+                <option value="admin">{tUsers('adminRole')}</option>
               </select>
-            </div>
-
-            <div className="space-y-1.5">
-              <label className="text-xs font-bold text-on-surface-variant">
-                {role === 'student' ? tUsers('username') : tUsers('email')}
-              </label>
-              <Input required value={usernameOrEmail} onChange={(e) => setUsernameOrEmail(e.target.value)} placeholder={role === 'student' ? 'david_king' : 'david@joyfulpath.org'} />
-            </div>
-
-            <div className="space-y-1.5">
-              <label className="text-xs font-bold text-on-surface-variant">
-                {role === 'student' ? tUsers('securityPin') : tUsers('password')}
-              </label>
-              <Input
-                required
-                type="password"
-                value={passwordOrPin}
-                onChange={(e) => setPasswordOrPin(e.target.value)}
-                placeholder={role === 'student' ? '1234' : '••••••••'}
-              />
             </div>
 
             <div className="flex gap-3 justify-end pt-4 border-t border-outline-variant">
@@ -222,7 +219,7 @@ export default function AdminUsers() {
                 {tCommon('cancel')}
               </Button>
               <Button variant="primary" size="sm" type="submit">
-                {tUsers('registerUser')}
+                {tCommon('create')}
               </Button>
             </div>
           </form>
@@ -231,18 +228,17 @@ export default function AdminUsers() {
 
       {/* CSV Import Modal */}
       {isOpenImport && (
-        <Modal isOpen={true} onClose={() => setIsOpenImport(false)} title={tUsers('importCsv')}>
+        <Modal isOpen={true} onClose={() => setIsOpenImport(false)} title={tUsers('csvImport')}>
           <div className="space-y-4 pt-2 text-center">
-            <div className="border border-dashed border-outline-variant rounded-xl p-8 hover:bg-surface-container transition duration-150 cursor-pointer">
-              <span className="material-symbols-outlined text-[48px] text-outline">upload_file</span>
-              <p className="text-sm text-on-surface font-black mt-2">{tUsers('dragDrop')}</p>
+            <div className="p-8 border-2 border-dashed border-outline-variant rounded-2xl bg-surface-container-low flex flex-col items-center gap-2">
+              <span className="material-symbols-outlined text-[48px] text-primary">upload_file</span>
+              <p className="text-sm font-bold text-on-surface">{tUsers('dragDrop')}</p>
             </div>
-
             <div className="flex gap-3 justify-end pt-4 border-t border-outline-variant">
               <Button variant="outline" size="sm" onClick={() => setIsOpenImport(false)}>
                 {tCommon('cancel')}
               </Button>
-              <Button variant="primary" size="sm" onClick={handleImportCsv}>
+              <Button variant="primary" size="sm" onClick={handleMockImport}>
                 {tUsers('mockImport')}
               </Button>
             </div>

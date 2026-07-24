@@ -25,11 +25,13 @@ export default function AdminDashboard() {
               </svg>
             </div>
             <h1 className="text-2xl md:text-3xl font-extrabold">
-              Platform Administration — Welcome {user?.display_name || 'Admin'}!
+              {user?.role === 'instructor' ? 'Class Administration' : 'Platform Administration'} — Welcome {user?.display_name || 'User'}!
             </h1>
           </div>
           <p className="text-sm md:text-base font-medium opacity-90 max-w-xl">
-            As a system administrator, you have full control over classes, user creation, CSV bulk imports, rewards configuration, and site-wide settings.
+            {user?.role === 'instructor' 
+              ? 'As a class admin, you can manage your assigned classes, students, tasks, attendance, and rewards.'
+              : 'As a system administrator, you have full control over classes, user creation, CSV bulk imports, rewards configuration, and site-wide settings.'}
           </p>
         </div>
       </div>
@@ -81,26 +83,28 @@ export default function AdminDashboard() {
 
       {/* Admin management actions */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <Card variant="interactive" className="border-2 border-secondary/20 bg-surface-container-lowest shadow-sm hover:shadow-md hover:-translate-y-1 transition-all flex flex-col justify-between">
-          <CardContent className="p-6 space-y-4">
-            <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center">
-              <span className="material-symbols-outlined text-[28px] text-primary">groups</span>
+        {user?.role !== 'instructor' && (
+          <Card variant="interactive" className="border-2 border-secondary/20 bg-surface-container-lowest shadow-sm hover:shadow-md hover:-translate-y-1 transition-all flex flex-col justify-between">
+            <CardContent className="p-6 space-y-4">
+              <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center">
+                <span className="material-symbols-outlined text-[28px] text-primary">groups</span>
+              </div>
+              <div>
+                <h3 className="text-lg font-bold text-on-surface">Manage Users</h3>
+                <p className="text-sm text-on-surface-variant leading-relaxed mt-1">
+                  Create new admin profiles or register bulk student accounts via CSV imports.
+                </p>
+              </div>
+            </CardContent>
+            <div className="p-6 pt-0">
+              <Link href="/admin/users">
+                <Button variant="primary" fullWidth size="md">
+                  Users List
+                </Button>
+              </Link>
             </div>
-            <div>
-              <h3 className="text-lg font-bold text-on-surface">Manage Users</h3>
-              <p className="text-sm text-on-surface-variant leading-relaxed mt-1">
-                Create new admin profiles or register bulk student accounts via CSV imports.
-              </p>
-            </div>
-          </CardContent>
-          <div className="p-6 pt-0">
-            <Link href="/admin/users">
-              <Button variant="primary" fullWidth size="md">
-                Users List
-              </Button>
-            </Link>
-          </div>
-        </Card>
+          </Card>
+        )}
 
         <Card variant="interactive" className="border-2 border-secondary/20 bg-surface-container-lowest shadow-sm hover:shadow-md hover:-translate-y-1 transition-all flex flex-col justify-between">
           <CardContent className="p-6 space-y-4">
@@ -123,26 +127,28 @@ export default function AdminDashboard() {
           </div>
         </Card>
 
-        <Card variant="interactive" className="border-2 border-secondary/20 bg-surface-container-lowest shadow-sm hover:shadow-md hover:-translate-y-1 transition-all flex flex-col justify-between">
-          <CardContent className="p-6 space-y-4">
-            <div className="w-12 h-12 rounded-xl bg-orange-100 flex items-center justify-center">
-              <span className="material-symbols-outlined text-[28px] text-orange-600">settings_applications</span>
+        {user?.role !== 'instructor' && (
+          <Card variant="interactive" className="border-2 border-secondary/20 bg-surface-container-lowest shadow-sm hover:shadow-md hover:-translate-y-1 transition-all flex flex-col justify-between">
+            <CardContent className="p-6 space-y-4">
+              <div className="w-12 h-12 rounded-xl bg-orange-100 flex items-center justify-center">
+                <span className="material-symbols-outlined text-[28px] text-orange-600">settings_applications</span>
+              </div>
+              <div>
+                <h3 className="text-lg font-bold text-on-surface">System Settings</h3>
+                <p className="text-sm text-on-surface-variant leading-relaxed mt-1">
+                  Manage global configuration variables, points multipliers, and backup logs.
+                </p>
+              </div>
+            </CardContent>
+            <div className="p-6 pt-0">
+              <Link href="/admin/settings">
+                <Button variant="secondary" fullWidth size="md">
+                  Open Settings
+                </Button>
+              </Link>
             </div>
-            <div>
-              <h3 className="text-lg font-bold text-on-surface">System Settings</h3>
-              <p className="text-sm text-on-surface-variant leading-relaxed mt-1">
-                Manage global configuration variables, points multipliers, and backup logs.
-              </p>
-            </div>
-          </CardContent>
-          <div className="p-6 pt-0">
-            <Link href="/admin/settings">
-              <Button variant="secondary" fullWidth size="md">
-                Open Settings
-              </Button>
-            </Link>
-          </div>
-        </Card>
+          </Card>
+        )}
       </div>
     </div>
   );

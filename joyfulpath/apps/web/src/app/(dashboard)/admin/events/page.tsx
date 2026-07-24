@@ -1,14 +1,8 @@
 'use client';
 
-import { useState } from 'react';
-import { Card, CardContent, Button, BadgeTag } from '@/components/ui';
+import { useState, useMemo, useCallback } from 'react';
+import { Card, CardContent, Button, BadgeTag, SearchBar } from '@/components/ui';
 import { MOCK_EVENTS } from '@/lib/supabase/mockClient';
-
-// ── MOCK: events stored in local React state ───────────────────────────────
-// REAL DB: useEffect(() => supabase.from('events').select('*').order('date'))
-// INSERT:  supabase.from('events').insert({ ...formData })
-// UPDATE:  supabase.from('events').update({ ...formData }).eq('id', id)
-// DELETE:  supabase.from('events').delete().eq('id', id)
 
 type EventType = 'camp' | 'service' | 'training' | 'ceremony' | 'other';
 
@@ -53,19 +47,36 @@ export default function AdminEventsPage() {
   const [form, setForm] = useState<Omit<EventItem, 'id' | 'current_rsvp'>>(EMPTY_FORM);
   const [deleteConfirm, setDeleteConfirm] = useState<string | null>(null);
   const [toast, setToast] = useState<{ msg: string; type: 'success' | 'error' } | null>(null);
+  const [searchQuery, setSearchQuery] = useState('');
 
-  const showToast = (msg: string, type: 'success' | 'error' = 'success') => {
+  const handleSearch = useCallback((query: string) => {
+    setSearchQuery(query);
+  }, []);
+
+  const filteredEvents = useMemo(() => {
+    if (!searchQuery) return events;
+    const q = searchQuery.toLowerCase();
+    return events.filter(
+      (e) =>
+        e.title.toLowerCase().includes(q) ||
+        e.description.toLowerCase().includes(q) ||
+        e.location.toLowerCase().includes(q) ||
+        e.type.toLowerCase().includes(q)
+    );
+  }, [events, searchQuery]);
+
+  const showToast = useCallback((msg: string, type: 'success' | 'error' = 'success') => {
     setToast({ msg, type });
     setTimeout(() => setToast(null), 3000);
-  };
+  }, []);
 
-  const openCreate = () => {
+  const openCreate = useCallback(() => {
     setForm(EMPTY_FORM);
     setEditingId(null);
     setShowForm(true);
-  };
+  }, []);
 
-  const openEdit = (event: EventItem) => {
+  const openEdit = useCallback((event: EventItem) => {
     setForm({
       title: event.title,
       description: event.description,
@@ -79,24 +90,20 @@ export default function AdminEventsPage() {
     });
     setEditingId(event.id);
     setShowForm(true);
-  };
+  }, []);
 
-  const handleSave = () => {
+  const handleSave = useCallback(() => {
     if (!form.title.trim() || !form.date || !form.location.trim()) {
       showToast('Please fill in title, date, and location.', 'error');
       return;
     }
 
     if (editingId) {
-      // ── MOCK: update in local state ──────────────────────────────────────
-      // REAL DB: supabase.from('events').update({ ...form }).eq('id', editingId)
       setEvents((prev) =>
         prev.map((e) => (e.id === editingId ? { ...e, ...form } : e))
       );
       showToast('Event updated successfully!');
     } else {
-      // ── MOCK: insert into local state ────────────────────────────────────
-      // REAL DB: supabase.from('events').insert({ ...form, created_by: userId })
       const newEvent: EventItem = {
         ...form,
         id: `event-${Date.now()}`,
@@ -108,15 +115,13 @@ export default function AdminEventsPage() {
 
     setShowForm(false);
     setEditingId(null);
-  };
+  }, [form, editingId, showToast]);
 
-  const handleDelete = (id: string) => {
-    // ── MOCK: delete from local state ────────────────────────────────────
-    // REAL DB: supabase.from('events').delete().eq('id', id)
+  const handleDelete = useCallback((id: string) => {
     setEvents((prev) => prev.filter((e) => e.id !== id));
     setDeleteConfirm(null);
     showToast('Event deleted.');
-  };
+  }, [showToast]);
 
   return (
     <div className="space-y-6 animate-[slide-up_0.4s_ease-out]">
@@ -152,6 +157,14 @@ export default function AdminEventsPage() {
           New Event
         </Button>
       </div>
+
+      {/* Search Bar */}
+      <SearchBar
+        onSearch={handleSearch}
+        placeholder="Search events by title, description, location, or type..."
+        resultCount={filteredEvents.length}
+        totalCount={events.length}
+      />
 
       {/* Summary stats */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
@@ -192,7 +205,7 @@ export default function AdminEventsPage() {
                 </tr>
               </thead>
               <tbody className="divide-y divide-outline-variant/40">
-                {events.map((event) => {
+                {filteredEvents.map((event) => {
                   const capacityPct = Math.round((event.current_rsvp / event.max_capacity) * 100);
                   const isFull = event.current_rsvp >= event.max_capacity;
                   return (

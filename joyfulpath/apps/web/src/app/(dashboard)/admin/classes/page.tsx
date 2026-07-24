@@ -1,8 +1,8 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useMemo, useCallback } from 'react';
 import { useTranslations } from 'next-intl';
-import { Card, CardContent, CardTitle, Button, Modal, Input } from '@/components/ui';
+import { Card, CardContent, CardTitle, Button, Modal, Input, SearchBar } from '@/components/ui';
 import { useNotificationStore } from '@/stores/notifications.store';
 
 interface Classroom {
@@ -41,6 +41,7 @@ export default function AdminClasses() {
 
   const [classes, setClasses] = useState<Classroom[]>(INITIAL_CLASSES);
   const [isOpen, setIsOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
 
   // Form states
   const [nameEn, setNameEn] = useState('');
@@ -48,10 +49,26 @@ export default function AdminClasses() {
   const [instructorName, setInstructorName] = useState('Servant Luke');
   const [gradeLevel, setGradeLevel] = useState('Grades 1-3');
 
-  const handleCreate = (e: React.FormEvent) => {
+  const handleSearch = useCallback((query: string) => {
+    setSearchQuery(query);
+  }, []);
+
+  const filteredClasses = useMemo(() => {
+    if (!searchQuery) return classes;
+    const q = searchQuery.toLowerCase();
+    return classes.filter(
+      (c) =>
+        c.nameEn.toLowerCase().includes(q) ||
+        c.nameAr.toLowerCase().includes(q) ||
+        c.instructorName.toLowerCase().includes(q) ||
+        c.gradeLevel.toLowerCase().includes(q)
+    );
+  }, [classes, searchQuery]);
+
+  const handleCreate = useCallback((e: React.FormEvent) => {
     e.preventDefault();
     if (!nameEn || !nameAr) {
-      addToast(tCommon('appName') !== 'JoyfulPath' ? 'خطأ: يرجى ملء جميع الحقول!' : 'Error: Please fill all fields!', 'error');
+      addToast('Error: Please fill all fields!', 'error');
       return;
     }
 
@@ -73,7 +90,7 @@ export default function AdminClasses() {
     setNameAr('');
     setInstructorName('Servant Luke');
     setGradeLevel('Grades 1-3');
-  };
+  }, [nameEn, nameAr, instructorName, gradeLevel, classes.length, addToast, tClasses]);
 
   return (
     <div className="space-y-6 animate-[slide-up_0.4s_ease-out]">
@@ -86,14 +103,22 @@ export default function AdminClasses() {
             {tClasses('description')}
           </p>
         </div>
-        <Button variant="primary" size="sm" onClick={() => setIsOpen(true)} icon="add_box" iconPosition="start">
+        <Button variant="primary" size="sm" onClick={() => setIsOpen(true)} icon="add" iconPosition="start">
           {tClasses('addClass')}
         </Button>
       </div>
 
-      {/* Grid of Classes */}
+      {/* Search Bar */}
+      <SearchBar
+        onSearch={handleSearch}
+        placeholder="Search classes by name, servant or grade level..."
+        resultCount={filteredClasses.length}
+        totalCount={classes.length}
+      />
+
+      {/* List of classes */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {classes.map((c) => {
+        {filteredClasses.map((c) => {
           const isAr = tCommon('appName') !== 'JoyfulPath';
           const name = isAr ? c.nameAr : c.nameEn;
 
@@ -101,7 +126,7 @@ export default function AdminClasses() {
             <Card key={c.id} className="border border-outline-variant bg-surface-container-lowest shadow-sm flex flex-col justify-between">
               <CardContent className="p-6 space-y-4">
                 <div className="flex justify-between items-start gap-4">
-                  <span className="text-xs font-black uppercase bg-primary/10 text-primary px-2.5 py-1 rounded-full border border-primary/20">
+                  <span className="text-xs font-black bg-primary/10 text-primary px-2.5 py-1 rounded-full border border-primary/20">
                     {c.gradeLevel}
                   </span>
                   <span className="text-xs font-bold text-outline">
@@ -110,10 +135,10 @@ export default function AdminClasses() {
                 </div>
 
                 <div className="space-y-1">
-                  <CardTitle className="text-lg font-black text-on-surface leading-tight">
+                  <CardTitle className="text-xl font-black text-on-surface">
                     {name}
                   </CardTitle>
-                  <p className="text-xs text-on-surface-variant leading-relaxed">
+                  <p className="text-xs text-on-surface-variant">
                     <strong>{tClasses('instructor')}:</strong> {c.instructorName}
                   </p>
                 </div>
@@ -122,17 +147,21 @@ export default function AdminClasses() {
                   <Button variant="ghost" size="sm" className="h-9 px-3 text-xs">
                     {tCommon('edit')}
                   </Button>
-                  <Button variant="outline" size="sm" className="h-9 px-3 text-xs text-error hover:bg-error/5 hover:text-error border-outline-variant/60">
-                    {tCommon('delete')}
-                  </Button>
                 </div>
               </CardContent>
             </Card>
           );
         })}
+
+        {filteredClasses.length === 0 && (
+          <div className="col-span-full text-center py-16 bg-surface-container-lowest border border-outline-variant/60 rounded-2xl">
+            <span className="material-symbols-outlined text-[48px] text-outline">school</span>
+            <p className="text-on-surface-variant text-sm font-bold mt-2">No classes found.</p>
+          </div>
+        )}
       </div>
 
-      {/* Class Creation Modal */}
+      {/* Creation Modal */}
       {isOpen && (
         <Modal isOpen={true} onClose={() => setIsOpen(false)} title={tClasses('addClass')}>
           <form onSubmit={handleCreate} className="space-y-4 pt-2">
@@ -147,32 +176,25 @@ export default function AdminClasses() {
               </div>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <div className="space-y-1.5">
-                <label className="text-xs font-bold text-on-surface-variant">{tClasses('instructorLabel')}</label>
-                <select
-                  value={instructorName}
-                  onChange={(e) => setInstructorName(e.target.value)}
-                  className="h-12 w-full px-3 rounded-xl border border-outline-variant bg-surface-container-low text-on-surface focus:outline-none focus:border-primary text-sm font-medium"
-                >
-                  <option value="Servant Luke">Servant Luke</option>
-                  <option value="Servant Mary">Servant Mary</option>
-                  <option value="Servant Jonathan">Servant Jonathan</option>
-                </select>
-              </div>
+            <div className="space-y-1.5">
+              <label className="text-xs font-bold text-on-surface-variant">{tClasses('instructorLabel')}</label>
+              <Input
+                value={instructorName}
+                onChange={(e) => setInstructorName(e.target.value)}
+              />
+            </div>
 
-              <div className="space-y-1.5">
-                <label className="text-xs font-bold text-on-surface-variant">{tClasses('gradeLevelParam')}</label>
-                <select
-                  value={gradeLevel}
-                  onChange={(e) => setGradeLevel(e.target.value)}
-                  className="h-12 w-full px-3 rounded-xl border border-outline-variant bg-surface-container-low text-on-surface focus:outline-none focus:border-primary text-sm font-medium"
-                >
-                  <option value="Grades 1-3">Grades 1-3</option>
-                  <option value="Grades 4-6">Grades 4-6</option>
-                  <option value="Seniors">Seniors (Grades 7+)</option>
-                </select>
-              </div>
+            <div className="space-y-1.5">
+              <label className="text-xs font-bold text-on-surface-variant">{tClasses('gradeLevelParam')}</label>
+              <select
+                value={gradeLevel}
+                onChange={(e) => setGradeLevel(e.target.value)}
+                className="w-full p-3 rounded-xl border border-outline-variant bg-surface-container-low text-on-surface text-sm font-medium"
+              >
+                <option value="Grades 1-3">{tClasses('grades1to3')}</option>
+                <option value="Grades 4-6">{tClasses('grades4to6')}</option>
+                <option value="Grades 7+">{tClasses('seniors')}</option>
+              </select>
             </div>
 
             <div className="flex gap-3 justify-end pt-4 border-t border-outline-variant">

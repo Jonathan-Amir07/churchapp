@@ -1,8 +1,8 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useMemo, useCallback } from 'react';
 import { useTranslations } from 'next-intl';
-import { Card, CardContent, CardTitle, Button, Modal, BadgeTag } from '@/components/ui';
+import { Card, CardContent, CardTitle, Button, Modal, SearchBar } from '@/components/ui';
 import { useNotificationStore } from '@/stores/notifications.store';
 
 interface SubmissionFile {
@@ -70,7 +70,6 @@ const FILE_ICONS: Record<string, { icon: string; color: string }> = {
 };
 
 export default function InstructorTasks() {
-  const tNav = useTranslations('nav');
   const tTasks = useTranslations('tasks');
   const tCommon = useTranslations('common');
   const addToast = useNotificationStore(s => s.addToast);
@@ -80,8 +79,24 @@ export default function InstructorTasks() {
   const [selectedSub, setSelectedSub] = useState<Submission | null>(null);
   const [feedback, setFeedback] = useState('');
   const [downloadingFile, setDownloadingFile] = useState<string | null>(null);
+  const [searchQuery, setSearchQuery] = useState('');
 
-  const handleReview = (id: string, approved: boolean) => {
+  const handleSearch = useCallback((query: string) => {
+    setSearchQuery(query);
+  }, []);
+
+  const filteredSubmissions = useMemo(() => {
+    if (!searchQuery) return submissions;
+    const q = searchQuery.toLowerCase();
+    return submissions.filter((sub) =>
+      sub.studentName.toLowerCase().includes(q) ||
+      sub.taskTitleEn.toLowerCase().includes(q) ||
+      sub.taskTitleAr.toLowerCase().includes(q) ||
+      sub.submissionText.toLowerCase().includes(q)
+    );
+  }, [submissions, searchQuery]);
+
+  const handleReview = useCallback((id: string, approved: boolean) => {
     setSubmissions((prev) => prev.filter((sub) => sub.id !== id));
     setSelectedSub(null);
     setFeedback('');
@@ -91,15 +106,15 @@ export default function InstructorTasks() {
         : tTasks('rejectSuccess'),
       'success'
     );
-  };
+  }, [addToast, tTasks]);
 
-  const handleDownloadFile = (fileName: string) => {
+  const handleDownloadFile = useCallback((fileName: string) => {
     setDownloadingFile(fileName);
     setTimeout(() => {
       setDownloadingFile(null);
       addToast(isAr ? `تم تنزيل: ${fileName}` : `Downloaded: ${fileName}`, 'success');
     }, 1000);
-  };
+  }, [addToast, isAr]);
 
   const getFileIcon = (type: string) => {
     const category = type.split('/')[0];
@@ -116,6 +131,14 @@ export default function InstructorTasks() {
           {tTasks('instructorDescription')}
         </p>
       </div>
+
+      {/* Search Bar */}
+      <SearchBar
+        onSearch={handleSearch}
+        placeholder={tCommon('search')}
+        resultCount={filteredSubmissions.length}
+        totalCount={submissions.length}
+      />
 
       {/* Stats Summary */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
@@ -149,7 +172,7 @@ export default function InstructorTasks() {
       </div>
 
       <div className="grid grid-cols-1 gap-4">
-        {submissions.map((sub) => {
+        {filteredSubmissions.map((sub) => {
           const title = isAr ? sub.taskTitleAr : sub.taskTitleEn;
 
           return (
@@ -208,7 +231,7 @@ export default function InstructorTasks() {
           );
         })}
 
-        {submissions.length === 0 && (
+        {filteredSubmissions.length === 0 && (
           <div className="text-center py-16 bg-surface-container-lowest border border-outline-variant/60 rounded-2xl">
             <span className="material-symbols-outlined text-[48px] text-outline">task_alt</span>
             <p className="text-on-surface-variant text-sm font-bold mt-2">{tTasks('noPending')}</p>

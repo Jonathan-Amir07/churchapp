@@ -1,9 +1,9 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo, useCallback } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useTranslations } from 'next-intl';
-import { Card, Button, Input, Skeleton, EmptyState, LoadingSpinner } from '@/components/ui';
+import { Card, Button, Skeleton, EmptyState, SearchBar } from '@/components/ui';
 import { LessonForm } from '@/components/features/lessons/LessonForm';
 import { LessonCard } from '@/components/features/lessons/LessonCard';
 
@@ -39,7 +39,7 @@ export default function InstructorLessons() {
   const [filterStatus, setFilterStatus] = useState<'all' | 'draft' | 'published'>('all');
   const [searchQuery, setSearchQuery] = useState('');
 
-  const fetchLessons = async () => {
+  const fetchLessons = useCallback(async () => {
     if (!classId) return;
     try {
       setLoading(true);
@@ -57,20 +57,29 @@ export default function InstructorLessons() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [classId, filterStatus]);
 
   useEffect(() => {
     fetchLessons();
-  }, [classId, filterStatus]);
+  }, [fetchLessons]);
 
-  const handleLessonCreated = () => {
+  const handleLessonCreated = useCallback(() => {
     setShowForm(false);
     fetchLessons();
-  };
+  }, [fetchLessons]);
 
-  const filteredLessons = lessons.filter(lesson =>
-    lesson.title.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  const handleSearch = useCallback((query: string) => {
+    setSearchQuery(query);
+  }, []);
+
+  const filteredLessons = useMemo(() => {
+    if (!searchQuery) return lessons;
+    const q = searchQuery.toLowerCase();
+    return lessons.filter(lesson =>
+      lesson.title.toLowerCase().includes(q) ||
+      (lesson.description && lesson.description.toLowerCase().includes(q))
+    );
+  }, [lessons, searchQuery]);
 
   if (!classId) {
     return (
@@ -106,13 +115,14 @@ export default function InstructorLessons() {
       {/* Filters & Search */}
       <Card className="p-4 bg-surface-container-low dark:bg-dark-surface-container-low">
         <div className="flex gap-4 items-center flex-wrap">
-          <Input
-            placeholder={t('common.search')}
-            value={searchQuery}
-            onChange={e => setSearchQuery(e.target.value)}
-            className="flex-1 min-w-60"
-            icon="search"
-          />
+          <div className="flex-1 min-w-60">
+            <SearchBar
+              onSearch={handleSearch}
+              placeholder={t('common.search')}
+              resultCount={filteredLessons.length}
+              totalCount={lessons.length}
+            />
+          </div>
           <div className="flex gap-2">
             {['all', 'draft', 'published'].map(status => (
               <button

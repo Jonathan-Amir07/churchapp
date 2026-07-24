@@ -55,6 +55,7 @@
     "leaderboard": "Leaderboard",
     "badges": "Badges",
     "qrCode": "My QR Code",
+    "qr": "QR Scanner",
     "profile": "Profile",
     "attendance": "Attendance",
     "reports": "Progress Reports",
@@ -155,6 +156,7 @@
     "grade": "Grade Task",
     "reviewPending": "Pending Review Tasks",
     "noPending": "All caught up! No tasks need grading.",
+    "noTasks": "No tasks found.",
     "taskName": "Task Name",
     "submitSuccess": "Success! Your task has been submitted and is pending review.",
     "instructorDescription": "Review, provide feedback, and grade the assignments submitted by your class children.",
@@ -246,6 +248,7 @@
     "securityPin": "Security PIN (4 digits)",
     "studentRole": "Child",
     "instructorRole": "Servant (Servant)",
+    "parentRole": "Parent",
     "adminRole": "Administrator",
     "delete": "Delete",
     "mockImport": "Mock Import Upload"

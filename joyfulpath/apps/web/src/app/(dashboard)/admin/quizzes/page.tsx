@@ -1,8 +1,8 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useMemo, useCallback } from 'react';
 import { useTranslations } from 'next-intl';
-import { Card, CardContent, CardTitle, CardDescription, Button, Modal, Input } from '@/components/ui';
+import { Card, CardContent, CardTitle, Button, Modal, Input, SearchBar } from '@/components/ui';
 import { useNotificationStore } from '@/stores/notifications.store';
 
 interface Quiz {
@@ -43,6 +43,7 @@ export default function InstructorQuizzes() {
 
   const [quizzes, setQuizzes] = useState<Quiz[]>(INITIAL_QUIZZES);
   const [isOpen, setIsOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
 
   // Form states
   const [titleEn, setTitleEn] = useState('');
@@ -51,7 +52,21 @@ export default function InstructorQuizzes() {
   const [xp, setXp] = useState(50);
   const [points, setPoints] = useState(10);
 
-  const handleCreate = (e: React.FormEvent) => {
+  const handleSearch = useCallback((query: string) => {
+    setSearchQuery(query);
+  }, []);
+
+  const filteredQuizzes = useMemo(() => {
+    if (!searchQuery) return quizzes;
+    const q = searchQuery.toLowerCase();
+    return quizzes.filter(
+      (quiz) =>
+        quiz.titleEn.toLowerCase().includes(q) ||
+        quiz.titleAr.toLowerCase().includes(q)
+    );
+  }, [quizzes, searchQuery]);
+
+  const handleCreate = useCallback((e: React.FormEvent) => {
     e.preventDefault();
     if (!titleEn || !titleAr) {
       addToast(tLessons('fillAllFields'), 'error');
@@ -77,7 +92,7 @@ export default function InstructorQuizzes() {
     setPassingScore(70);
     setXp(50);
     setPoints(10);
-  };
+  }, [titleEn, titleAr, passingScore, xp, points, quizzes.length, addToast, tLessons, tQuizzes]);
 
   return (
     <div className="space-y-6 animate-[slide-up_0.4s_ease-out]">
@@ -95,9 +110,17 @@ export default function InstructorQuizzes() {
         </Button>
       </div>
 
+      {/* Search Bar */}
+      <SearchBar
+        onSearch={handleSearch}
+        placeholder={tCommon('search')}
+        resultCount={filteredQuizzes.length}
+        totalCount={quizzes.length}
+      />
+
       {/* List of quizzes */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {quizzes.map((quiz) => {
+        {filteredQuizzes.map((quiz) => {
           const isAr = tCommon('appName') !== 'JoyfulPath';
           const title = isAr ? quiz.titleAr : quiz.titleEn;
 
@@ -137,7 +160,7 @@ export default function InstructorQuizzes() {
           );
         })}
 
-        {quizzes.length === 0 && (
+        {filteredQuizzes.length === 0 && (
           <div className="col-span-full text-center py-16 bg-surface-container-lowest border border-outline-variant/60 rounded-2xl">
             <span className="material-symbols-outlined text-[48px] text-outline">quiz</span>
             <p className="text-on-surface-variant text-sm font-bold mt-2">{tQuizzes('noQuizzes')}</p>

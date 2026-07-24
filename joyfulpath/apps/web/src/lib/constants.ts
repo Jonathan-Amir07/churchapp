@@ -18,6 +18,21 @@ export const DEFAULT_LOCALE: Locale = 'en';
  * Navigation items per role.
  */
 export const NAV_ITEMS = {
+  instructor: [
+    { key: 'dashboard',   icon: 'dashboard',           href: '/admin/dashboard' },
+    { key: 'lessons',     icon: 'menu_book',           href: '/admin/lessons' },
+    { key: 'tasks',       icon: 'task_alt',            href: '/admin/tasks' },
+    { key: 'quizzes',     icon: 'quiz',                href: '/admin/quizzes' },
+    { key: 'attendance',  icon: 'event_available',     href: '/admin/attendance' },
+    { key: 'events',      icon: 'event_note',          href: '/admin/events' },
+    { key: 'classes',     icon: 'school',              href: '/admin/classes' },
+    { key: 'students',    icon: 'groups',              href: '/admin/students' },
+    { key: 'rewards',     icon: 'emoji_events',        href: '/admin/rewards' },
+    { key: 'prayers',     icon: 'volunteer_activism',  href: '/admin/prayers' },
+    { key: 'qr',          icon: 'qr_code_scanner',     href: '/admin/qr' },
+    { key: 'crm',         icon: 'contact_mail',        href: '/admin/crm' },
+    { key: 'analytics',   icon: 'analytics',           href: '/admin/analytics' },
+  ],
   student: [
     { key: 'dashboard',   icon: 'dashboard',          href: '/student/dashboard' },
     { key: 'journey',     icon: 'timeline',           href: '/student/journey' },

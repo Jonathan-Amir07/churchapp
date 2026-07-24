@@ -21,7 +21,7 @@ export function MobileNav() {
   const [isMoreOpen, setIsMoreOpen] = useState(false);
 
   const rawRole = profile?.role as string | undefined;
-  const role = rawRole === 'instructor' ? 'admin' : (rawRole as 'student' | 'admin' | 'parent' | undefined);
+  const role = rawRole as 'student' | 'admin' | 'parent' | 'instructor' | undefined;
   
   // Close "more" menu when route changes
   useEffect(() => {

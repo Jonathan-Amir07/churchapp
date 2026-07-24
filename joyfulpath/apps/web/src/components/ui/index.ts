@@ -12,4 +12,5 @@ export { ThemeToggle } from './ThemeToggle';
 export { NotificationBell } from './NotificationBell';
 export { EmptyState, NoLessonsState, NoHomeworkState, NoNotificationsState, NoStudentsState, ErrorState } from './EmptyState';
 export { LoadingSpinner, PageLoadingState, InlineLoadingState } from './LoadingSpinner';
+export { SearchBar, type SearchBarProps } from './SearchBar';
 

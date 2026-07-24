@@ -99,7 +99,7 @@ const MOCK_PROFILES: Record<string, any> = {
     last_name: 'Mark',
     display_name: 'Peter Mark',
     avatar_url: null,
-    role: 'admin',
+    role: 'instructor',
     locale: 'en',
     total_xp: 0,
     total_points: 0,
@@ -370,8 +370,9 @@ export const createMockSupabase = (currentRole?: string) => {
       signInWithPassword: async ({ email }: any) => {
         const norm = email.toLowerCase();
         let role = 'student';
-        if (norm.includes('admin') || norm.includes('instructor') || norm.includes('servant')) role = 'admin';
-        else if (norm.includes('parent'))                                  role = 'parent';
+        if (norm.includes('admin')) role = 'admin';
+        else if (norm.includes('instructor') || norm.includes('servant')) role = 'instructor';
+        else if (norm.includes('parent')) role = 'parent';
         setCookie('MOCK_USER_ROLE', role);
         return { data: { user: getMockUser(role) }, error: null };
       },

@@ -59,14 +59,12 @@ export async function proxy(request: NextRequest) {
 
   const pathname = request.nextUrl.pathname;
   const isAuth = !!user;
-  // Map legacy 'instructor' role to 'admin' for backwards compatibility
-  const rawRole = user?.app_metadata?.role || user?.user_metadata?.role || 'student';
-  const userRole = rawRole === 'instructor' ? 'admin' : rawRole;
+  const userRole = user?.app_metadata?.role || user?.user_metadata?.role || 'student';
 
   // 1. Redirect logged-in users away from /login or /
   if (isAuth && (pathname === '/login' || pathname === '/')) {
     const redirectPath =
-      userRole === 'admin'
+      (userRole === 'admin' || userRole === 'instructor')
         ? `/admin/dashboard`
         : userRole === 'parent'
         ? `/parent/dashboard`
@@ -93,13 +91,21 @@ export async function proxy(request: NextRequest) {
 
     // Role-specific dashboard fallback helper
     const roleDashboard = () =>
-      userRole === 'admin' ? '/admin/dashboard'
+      (userRole === 'admin' || userRole === 'instructor') ? '/admin/dashboard'
       : userRole === 'parent' ? '/parent/dashboard'
       : '/student/dashboard';
 
-    // Admin route — only admins allowed
-    if (isAdminRoute && userRole !== 'admin') {
+    // Admin route — admins and instructors allowed
+    if (isAdminRoute && userRole !== 'admin' && userRole !== 'instructor') {
       return NextResponse.redirect(new URL(roleDashboard(), request.url));
+    }
+
+    // Instructor specific protections
+    if (isAdminRoute && userRole === 'instructor') {
+      const blockedInstructorPaths = ['/admin/users', '/admin/settings', '/admin/approvals', '/admin/permissions', '/admin/files'];
+      if (blockedInstructorPaths.some(p => pathname.startsWith(p))) {
+        return NextResponse.redirect(new URL('/admin/dashboard', request.url));
+      }
     }
 
     // Parent route — only parents allowed
@@ -108,7 +114,7 @@ export async function proxy(request: NextRequest) {
     }
 
     // Student route — students & admins allowed
-    if (isStudentRoute && userRole !== 'student' && userRole !== 'admin') {
+    if (isStudentRoute && userRole !== 'student' && userRole !== 'admin' && userRole !== 'instructor') {
       return NextResponse.redirect(new URL(roleDashboard(), request.url));
     }
   }

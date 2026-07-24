@@ -11,7 +11,7 @@ export interface UserProfile {
   last_name: string;
   display_name: string;
   avatar_url: string | null;
-  role: 'admin' | 'parent' | 'student';
+  role: 'admin' | 'instructor' | 'parent' | 'student';
   locale: string;
   total_xp: number;
   total_points: number;
