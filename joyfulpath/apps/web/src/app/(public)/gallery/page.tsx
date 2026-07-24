@@ -1,6 +1,7 @@
 'use client';
 
 import { useLocale } from 'next-intl';
+import Image from 'next/image';
 import { Card } from '@/components/ui';
 
 const galleryItems = [
@@ -29,8 +30,8 @@ export default function GalleryPage() {
         {galleryItems.map((item, i) => (
           <Card key={i} className="border border-outline-variant bg-surface-container-lowest shadow-sm overflow-hidden group cursor-pointer">
             <div className="relative h-64 overflow-hidden">
-              <img src={item.img} alt={en ? item.title : item.titleAr} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end p-6">
+              <Image src={item.img} alt={en ? item.title : item.titleAr} fill className="object-cover transition-transform duration-500 group-hover:scale-110" sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw" />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end p-6 z-10">
                 <h3 className="text-white font-bold text-lg">{en ? item.title : item.titleAr}</h3>
               </div>
             </div>
@@ -40,3 +41,4 @@ export default function GalleryPage() {
     </div>
   );
 }
+

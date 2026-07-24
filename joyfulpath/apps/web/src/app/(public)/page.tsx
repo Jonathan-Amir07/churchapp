@@ -2,9 +2,11 @@
 
 import { motion } from 'framer-motion';
 import { useLocale } from 'next-intl';
+import Image from 'next/image';
 import Link from 'next/link';
 import { useState } from 'react';
 import { Button, Card, CardContent } from '@/components/ui';
+
 
 export default function LandingPage() {
   const currentLocale = useLocale();
@@ -367,12 +369,15 @@ export default function LandingPage() {
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
           {galleryImages.map((img, idx) => (
             <div key={idx} className="aspect-square rounded-2xl overflow-hidden bg-surface-container-high relative group">
-              <img 
+              <Image 
                 src={img.src} 
                 alt={currentLocale === 'en' ? img.alt : img.altAr} 
-                className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                fill
+                className="object-cover transition-transform duration-500 group-hover:scale-110"
+                sizes="(max-width: 768px) 50vw, 25vw"
               />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end p-4">
+              <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end p-4 z-10">
+
                 <span className="text-white font-bold text-sm">
                   {currentLocale === 'en' ? img.alt : img.altAr}
                 </span>

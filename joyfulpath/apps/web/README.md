@@ -165,11 +165,12 @@ npm run build
 vercel deploy
 ```
 
-### Docker
+### Local Node.js
 ```bash
-docker build -t joyfulpath .
-docker run -p 3000:3000 joyfulpath
+npm run build
+npm start
 ```
+
 
 See [DEPLOYMENT_GUIDE.md](./DEPLOYMENT_GUIDE.md) for detailed instructions.
 

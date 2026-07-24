@@ -299,7 +299,8 @@
 
 ### Deploy
 
-- [ ] [ ] Deploy to production (Vercel/Docker)
+- [ ] [ ] Deploy to production (Vercel / Node.js Host)
+
 - [ ] [ ] Verify health checks passing
 - [ ] [ ] Monitor error rate (< 0.1%)
 - [ ] [ ] Monitor API response times

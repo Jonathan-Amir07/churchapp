@@ -1,16 +1,20 @@
 {
   "name": "JoyfulPath Sunday School",
   "short_name": "JoyfulPath",
-  "description": "Gamified learning platform for Sunday School.",
+  "description": "Gamified Sunday School Learning Platform",
   "start_url": "/",
   "display": "standalone",
+  "orientation": "portrait",
   "background_color": "#111416",
-  "theme_color": "#0057B7",
+  "theme_color": "#1B3A6B",
+  "dir": "rtl",
+  "lang": "ar",
   "icons": [
     {
       "src": "/favicon.ico",
       "sizes": "64x64 32x32 24x24 16x16",
       "type": "image/x-icon"
     }
-  ]
+  ],
+  "categories": ["education", "games", "lifestyle"]
 }

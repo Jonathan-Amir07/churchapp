@@ -127,7 +127,8 @@ Includes:
 - Environment setup
 - Testing procedures
 - Performance optimization
-- Deployment options (Vercel, Docker)
+- Deployment options (Vercel, Node.js)
+
 - Comprehensive troubleshooting
 - Monitoring setup
 
@@ -397,7 +398,8 @@ joyfulpath/
 
 6. **Deploy** (1 hour)
    - Build for production
-   - Deploy to Vercel/Docker
+   - Deploy to Vercel or local Node.js server
+
    - Monitor
 
 ---

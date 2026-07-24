@@ -147,7 +147,8 @@
 
 6. **Deploy** (1-2 hours)
    - Follow deployment section in [DEPLOYMENT_GUIDE.md](./DEPLOYMENT_GUIDE.md)
-   - Deploy to Vercel/Docker
+   - Deploy to Vercel or local Node.js host
+
    - Monitor in production
 
 ---

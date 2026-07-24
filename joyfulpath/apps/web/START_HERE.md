@@ -175,8 +175,9 @@
 ### Finally (Deploy)
 ```
 1. npm run build
-2. Deploy to Vercel/Docker
+2. Deploy to Vercel or local Node.js host
 3. Monitor in production
+
 ```
 
 ---

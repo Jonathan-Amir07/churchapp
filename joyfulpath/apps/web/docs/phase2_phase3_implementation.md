@@ -35,8 +35,9 @@ Remaining / Next steps (recommended):
    - Stream events to an analytics store (e.g., BigQuery) or use a metrics DB.
    - Build admin dashboards and retention funnels.
 7. Ops
-   - Add Redis in CI/dev docker-compose; ensure migrations and seed data run in CI.
+   - Add local Redis in CI/dev environment; ensure migrations and seed data run in CI.
    - Add monitoring for event consumers and notification delivery.
+
 
 Local run notes
 - Requires: Postgres (`DATABASE_URL`) and Redis (`REDIS_URL`).

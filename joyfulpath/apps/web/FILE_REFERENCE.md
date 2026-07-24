@@ -327,8 +327,8 @@ See [IMPLEMENTATION_CHECKLIST.md](./IMPLEMENTATION_CHECKLIST.md) for:
 
 ### Deployment Options
 - Vercel (recommended)
-- Docker container
-- Traditional Node.js hosting
+- Traditional local/remote Node.js hosting
+
 
 ### Post-Deployment
 - Monitoring setup

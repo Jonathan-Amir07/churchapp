@@ -90,8 +90,9 @@ export function Sidebar() {
             آية اليوم
           </h4>
           <p className="text-[11px] font-bold leading-relaxed text-on-surface-variant relative z-10">
-            "فَرَحًا أَفْرَحُ بِالرَّبِّ، تَبْتَهِجُ نَفْسِي بِإِلهِي..."
+            &quot;فَرَحًا أَفْرَحُ بِالرَّبِّ، تَبْتَهِجُ نَفْسِي بِإِلهِي...&quot;
           </p>
+
           <p className="text-[9px] text-outline mt-1 font-bold relative z-10">(إشعياء 61: 10)</p>
         </div>
       </div>

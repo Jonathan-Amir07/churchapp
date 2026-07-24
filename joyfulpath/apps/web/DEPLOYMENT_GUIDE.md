@@ -378,30 +378,14 @@ export async function GET(request: NextRequest) {
 vercel deploy --prod
 ```
 
-### Docker Deployment
+### Local Node.js Server
 
-Create `Dockerfile`:
-```dockerfile
-FROM node:18-alpine
-
-WORKDIR /app
-
-COPY package*.json ./
-RUN npm ci --only=production
-
-COPY . .
-RUN npm run build
-
-EXPOSE 3000
-
-CMD ["npm", "start"]
-```
-
-Build and run:
+Build and start locally using Node.js:
 ```bash
-docker build -t joyfulpath .
-docker run -p 3000:3000 joyfulpath
+npm run build
+npm start
 ```
+
 
 ---
 
