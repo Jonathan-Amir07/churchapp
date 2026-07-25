@@ -1,8 +1,8 @@
-'use client';
+﻿'use client';
 
 import { useState, useEffect } from 'react';
 import { createClient } from '@/lib/supabase/client';
-import { useTranslations } from 'next-intl';
+import { useTranslations, useLocale } from 'next-intl';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, Button, Modal, BadgeTag, ProgressBar } from '@/components/ui';
 import { useNotificationStore } from '@/stores/notifications.store';
 
@@ -143,7 +143,8 @@ export default function StudentLessons() {
   const [selectedLesson, setSelectedLesson] = useState<Lesson | null>(null);
   const [downloadingFile, setDownloadingFile] = useState<string | null>(null);
 
-  const isAr = tCommon('appName') !== 'JoyfulPath';
+  const locale = useLocale();
+  const isAr = locale === 'ar';
 
   useEffect(() => {
     async function fetchLessons() {
@@ -467,3 +468,4 @@ export default function StudentLessons() {
     </div>
   );
 }
+

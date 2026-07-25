@@ -1,9 +1,9 @@
-'use client';
+﻿'use client';
 
 import { useState, useEffect } from 'react';
 import { createClient } from '@/lib/supabase/client';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, ResponsiveContainer, BarChart, Bar, Cell, PieChart, Pie } from 'recharts';
-import { useTranslations } from 'next-intl';
+import { useTranslations, useLocale } from 'next-intl';
 import { Card, CardContent, CardTitle, CardHeader, ProgressBar, BadgeTag } from '@/components/ui';
 
 // ── Mock Data ──────────────────────────────────────────────────────
@@ -63,7 +63,8 @@ export default function AdminAnalytics() {
   const tAnalytics = useTranslations('analytics');
   const tCommon = useTranslations('common');
 
-  const isAr = tCommon('appName') !== 'JoyfulPath';
+  const locale = useLocale();
+  const isAr = locale === 'ar';
 
   const supabase = createClient();
   const [stats, setStats] = useState({
@@ -361,3 +362,4 @@ export default function AdminAnalytics() {
     </div>
   );
 }
+

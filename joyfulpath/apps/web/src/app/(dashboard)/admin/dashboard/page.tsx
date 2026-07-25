@@ -8,6 +8,7 @@ import { useUser } from '@/hooks/useUser';
 export default function AdminDashboard() {
   const { profile } = useUser();
   const tCommon = useTranslations('common');
+  const tAD = useTranslations('adminDashboard');
 
   const user = profile;
 
@@ -25,13 +26,13 @@ export default function AdminDashboard() {
               </svg>
             </div>
             <h1 className="text-2xl md:text-3xl font-extrabold">
-              {user?.role === 'instructor' ? 'Class Administration' : 'Platform Administration'} — Welcome {user?.display_name || 'User'}!
+              {user?.role === 'instructor' ? tAD('classAdmin') : tAD('platformAdmin')} — {tAD('welcomeAdmin', { name: user?.display_name || '' })}
             </h1>
           </div>
           <p className="text-sm md:text-base font-medium opacity-90 max-w-xl">
             {user?.role === 'instructor' 
-              ? 'As a class admin, you can manage your assigned classes, students, tasks, attendance, and rewards.'
-              : 'As a system administrator, you have full control over classes, user creation, CSV bulk imports, rewards configuration, and site-wide settings.'}
+              ? tAD('classAdminDesc')
+              : tAD('platformAdminDesc')}
           </p>
         </div>
       </div>
@@ -42,7 +43,7 @@ export default function AdminDashboard() {
           <CardContent className="p-6 flex items-center justify-between">
             <div className="space-y-1">
               <p className="text-xs uppercase font-black text-on-surface-variant/80 tracking-wider">
-                Total Accounts
+                {tAD('totalAccounts')}
               </p>
               <h3 className="text-3xl font-extrabold text-on-surface">1</h3>
             </div>
@@ -56,7 +57,7 @@ export default function AdminDashboard() {
           <CardContent className="p-6 flex items-center justify-between">
             <div className="space-y-1">
               <p className="text-xs uppercase font-black text-on-surface-variant/80 tracking-wider">
-                Active Classes
+                {tAD('activeClasses')}
               </p>
               <h3 className="text-3xl font-extrabold text-on-surface">1</h3>
             </div>
@@ -70,7 +71,7 @@ export default function AdminDashboard() {
           <CardContent className="p-6 flex items-center justify-between">
             <div className="space-y-1">
               <p className="text-xs uppercase font-black text-on-surface-variant/80 tracking-wider">
-                System Badges
+                {tAD('systemBadges')}
               </p>
               <h3 className="text-3xl font-extrabold text-secondary">6</h3>
             </div>
@@ -90,16 +91,16 @@ export default function AdminDashboard() {
                 <span className="material-symbols-outlined text-[28px] text-primary">groups</span>
               </div>
               <div>
-                <h3 className="text-lg font-bold text-on-surface">Manage Users</h3>
+                <h3 className="text-lg font-bold text-on-surface">{tAD('manageUsers')}</h3>
                 <p className="text-sm text-on-surface-variant leading-relaxed mt-1">
-                  Create new admin profiles or register bulk student accounts via CSV imports.
+                  {tAD('manageUsersDesc')}
                 </p>
               </div>
             </CardContent>
             <div className="p-6 pt-0">
               <Link href="/admin/users">
                 <Button variant="primary" fullWidth size="md">
-                  Users List
+                  {tAD('usersList')}
                 </Button>
               </Link>
             </div>
@@ -112,16 +113,16 @@ export default function AdminDashboard() {
               <span className="material-symbols-outlined text-[28px] text-tertiary">domain</span>
             </div>
             <div>
-              <h3 className="text-lg font-bold text-on-surface">Configure Classes</h3>
+              <h3 className="text-lg font-bold text-on-surface">{tAD('configureClasses')}</h3>
               <p className="text-sm text-on-surface-variant leading-relaxed mt-1">
-                Establish new classes, assign servants, and set grade level parameters.
+                {tAD('configureClassesDesc')}
               </p>
             </div>
           </CardContent>
           <div className="p-6 pt-0">
             <Link href="/admin/classes">
               <Button variant="success" fullWidth size="md">
-                Classes Setup
+                {tAD('classesSetup')}
               </Button>
             </Link>
           </div>
@@ -134,16 +135,16 @@ export default function AdminDashboard() {
                 <span className="material-symbols-outlined text-[28px] text-orange-600">settings_applications</span>
               </div>
               <div>
-                <h3 className="text-lg font-bold text-on-surface">System Settings</h3>
+                <h3 className="text-lg font-bold text-on-surface">{tAD('systemSettings')}</h3>
                 <p className="text-sm text-on-surface-variant leading-relaxed mt-1">
-                  Manage global configuration variables, points multipliers, and backup logs.
+                  {tAD('systemSettingsDesc')}
                 </p>
               </div>
             </CardContent>
             <div className="p-6 pt-0">
               <Link href="/admin/settings">
                 <Button variant="secondary" fullWidth size="md">
-                  Open Settings
+                  {tAD('openSettings')}
                 </Button>
               </Link>
             </div>

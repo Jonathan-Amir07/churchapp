@@ -147,7 +147,7 @@ model User {
   displayName    String    @map("display_name") @db.VarChar(100)
   avatarUrl      String?   @map("avatar_url") @db.Text
   role           UserRole  @default(student)
-  locale         String    @default("en") @db.VarChar(5)
+  locale         String    @default("ar") @db.VarChar(5)
   totalXp        Int       @default(0) @map("total_xp")
   totalPoints    Int       @default(0) @map("total_points")
   currentLevelId String?   @map("current_level_id") @db.Uuid

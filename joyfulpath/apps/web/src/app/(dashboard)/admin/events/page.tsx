@@ -3,6 +3,8 @@
 import { useState, useMemo, useCallback } from 'react';
 import { Card, CardContent, Button, BadgeTag, SearchBar } from '@/components/ui';
 import { MOCK_EVENTS } from '@/lib/supabase/mockClient';
+import { useTranslations } from 'next-intl';
+import { useNotificationStore } from '@/stores/notifications.store';
 
 type EventType = 'camp' | 'service' | 'training' | 'ceremony' | 'other';
 
@@ -41,6 +43,9 @@ const TYPE_COLORS: Record<EventType, string> = {
 };
 
 export default function AdminEventsPage() {
+  const tCommon = useTranslations('common');
+  const tEvents = useTranslations('events');
+  const addToast = useNotificationStore((s: any) => s.addToast);
   const [events, setEvents] = useState<EventItem[]>(MOCK_EVENTS as EventItem[]);
   const [showForm, setShowForm] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
@@ -142,19 +147,12 @@ export default function AdminEventsPage() {
       {/* Header */}
       <div className="flex items-center justify-between gap-4 flex-wrap">
         <div>
-          <h1 className="text-3xl font-extrabold tracking-tight text-on-surface flex items-center gap-3">
-            <span className="material-symbols-outlined text-primary text-[32px]" style={{ fontVariationSettings: "'FILL' 1" }}>
-              event_note
-            </span>
-            Events Management
-          </h1>
-          <p className="text-sm text-on-surface-variant mt-1">
-            Create, edit, and manage all church events and activities.
-          </p>
+          <h1 className="text-3xl font-extrabold tracking-tight text-on-surface">{tEvents('title')}</h1>
+          <p className="text-on-surface-variant text-sm mt-1">{tEvents('description')}</p>
         </div>
         <Button variant="primary" onClick={openCreate} className="gap-2">
           <span className="material-symbols-outlined text-[18px]">add</span>
-          New Event
+          {tEvents('createNew')}
         </Button>
       </div>
 
@@ -195,13 +193,13 @@ export default function AdminEventsPage() {
             <table className="w-full text-sm border-collapse">
               <thead>
                 <tr className="border-b border-outline-variant/60 text-xs uppercase font-black text-outline">
-                  <th className="px-5 py-4 text-start">Event</th>
-                  <th className="px-5 py-4 text-start">Type</th>
-                  <th className="px-5 py-4 text-start">Date</th>
-                  <th className="px-5 py-4 text-start">Location</th>
-                  <th className="px-5 py-4 text-center">RSVPs</th>
-                  <th className="px-5 py-4 text-center">Visibility</th>
-                  <th className="px-5 py-4 text-end">Actions</th>
+                  <th className="px-5 py-4 text-start">{tEvents('event')}</th>
+                  <th className="px-5 py-4 text-start">{tEvents('type')}</th>
+                  <th className="px-5 py-4 text-start">{tEvents('date')}</th>
+                  <th className="px-5 py-4 text-start">{tEvents('location')}</th>
+                  <th className="px-5 py-4 text-center">{tEvents('rsvp')}</th>
+                  <th className="px-5 py-4 text-center">{tEvents('visibility')}</th>
+                  <th className="px-5 py-4 text-end">{tEvents('actions')}</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-outline-variant/40">
@@ -304,7 +302,7 @@ export default function AdminEventsPage() {
 
               {/* Description */}
               <div className="space-y-1">
-                <label className="text-xs font-black text-on-surface-variant uppercase tracking-wider">Description</label>
+                <label className="text-xs font-black text-on-surface-variant uppercase tracking-wider">{tEvents('descriptionLabel')}</label>
                 <textarea
                   value={form.description}
                   onChange={(e) => setForm((f) => ({ ...f, description: e.target.value }))}
@@ -317,28 +315,28 @@ export default function AdminEventsPage() {
               {/* Type + Visibility row */}
               <div className="grid grid-cols-2 gap-3">
                 <div className="space-y-1">
-                  <label className="text-xs font-black text-on-surface-variant uppercase tracking-wider">Type</label>
+                  <label className="text-xs font-black text-on-surface-variant uppercase tracking-wider">{tEvents('type')}</label>
                   <select
                     value={form.type}
                     onChange={(e) => setForm((f) => ({ ...f, type: e.target.value as EventType }))}
                     className="w-full h-10 px-3 rounded-xl border border-outline-variant bg-surface-container-low text-on-surface text-sm font-medium focus:outline-none focus:border-primary"
                   >
-                    <option value="camp">Camp</option>
-                    <option value="service">Service</option>
-                    <option value="training">Training</option>
-                    <option value="ceremony">Ceremony</option>
-                    <option value="other">Other</option>
+                    <option value="camp">{tEvents('camp')}</option>
+                    <option value="service">{tEvents('service')}</option>
+                    <option value="training">{tEvents('training')}</option>
+                    <option value="ceremony">{tEvents('ceremony')}</option>
+                    <option value="other">{tEvents('other')}</option>
                   </select>
                 </div>
                 <div className="space-y-1">
-                  <label className="text-xs font-black text-on-surface-variant uppercase tracking-wider">Visibility</label>
+                  <label className="text-xs font-black text-on-surface-variant uppercase tracking-wider">{tEvents('visibility')}</label>
                   <select
                     value={form.is_public ? 'public' : 'internal'}
                     onChange={(e) => setForm((f) => ({ ...f, is_public: e.target.value === 'public' }))}
                     className="w-full h-10 px-3 rounded-xl border border-outline-variant bg-surface-container-low text-on-surface text-sm font-medium focus:outline-none focus:border-primary"
                   >
-                    <option value="public">Public</option>
-                    <option value="internal">Internal Only</option>
+                    <option value="public">{tEvents('public')}</option>
+                    <option value="internal">{tEvents('internalOnly')}</option>
                   </select>
                 </div>
               </div>
@@ -355,7 +353,7 @@ export default function AdminEventsPage() {
                   />
                 </div>
                 <div className="space-y-1">
-                  <label className="text-xs font-black text-on-surface-variant uppercase tracking-wider">Start</label>
+                  <label className="text-xs font-black text-on-surface-variant uppercase tracking-wider">{tEvents('start')}</label>
                   <input
                     type="time"
                     value={form.time}
@@ -364,7 +362,7 @@ export default function AdminEventsPage() {
                   />
                 </div>
                 <div className="space-y-1">
-                  <label className="text-xs font-black text-on-surface-variant uppercase tracking-wider">End</label>
+                  <label className="text-xs font-black text-on-surface-variant uppercase tracking-wider">{tEvents('end')}</label>
                   <input
                     type="time"
                     value={form.end_time}
@@ -388,7 +386,7 @@ export default function AdminEventsPage() {
 
               {/* Max Capacity */}
               <div className="space-y-1">
-                <label className="text-xs font-black text-on-surface-variant uppercase tracking-wider">Max Capacity</label>
+                <label className="text-xs font-black text-on-surface-variant uppercase tracking-wider">{tEvents('maxCapacity')}</label>
                 <input
                   type="number"
                   min={1}
@@ -400,9 +398,9 @@ export default function AdminEventsPage() {
             </div>
 
             <div className="px-6 py-4 border-t border-outline-variant flex gap-3 justify-end">
-              <Button variant="ghost" onClick={() => setShowForm(false)}>Cancel</Button>
+              <Button variant="ghost" onClick={() => setShowForm(false)}>{tCommon('cancel')}</Button>
               <Button variant="primary" onClick={handleSave}>
-                {editingId ? 'Save Changes' : 'Create Event'}
+                {editingId ? tCommon('save') : tEvents('createNew')}
               </Button>
             </div>
           </div>
@@ -427,10 +425,10 @@ export default function AdminEventsPage() {
               </div>
             </div>
             <div className="flex gap-3 pt-2">
-              <Button variant="ghost" fullWidth onClick={() => setDeleteConfirm(null)}>Cancel</Button>
+              <Button variant="ghost" fullWidth onClick={() => setDeleteConfirm(null)}>{tCommon('cancel')}</Button>
               <Button variant="primary" fullWidth onClick={() => handleDelete(deleteConfirm)}
                 className="bg-error hover:bg-error/90 text-white">
-                Delete
+                {tCommon('delete')}
               </Button>
             </div>
           </div>

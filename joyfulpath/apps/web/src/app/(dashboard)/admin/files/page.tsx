@@ -6,6 +6,7 @@ import { Card, CardContent, CardTitle, Button, BadgeTag } from '@/components/ui'
 
 export default function AdminFileManager() {
   const tCommon = useTranslations('common');
+  const tFiles = useTranslations('files');
   const [activeTab, setActiveTab] = useState<'images' | 'documents' | 'videos'>('images');
 
   const files = [
@@ -21,10 +22,10 @@ export default function AdminFileManager() {
     <div className="space-y-6 animate-[slide-up_0.4s_ease-out]">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-extrabold tracking-tight text-on-surface">File Manager</h1>
-          <p className="text-on-surface-variant text-sm mt-1">Manage global assets, lesson attachments, and media.</p>
+          <h1 className="text-3xl font-extrabold tracking-tight text-on-surface">{tFiles('title')}</h1>
+          <p className="text-on-surface-variant text-sm mt-1">{tFiles('description')}</p>
         </div>
-        <Button variant="primary" icon="upload">Upload File</Button>
+        <Button variant="primary" icon="upload">{tFiles('uploadFile')}</Button>
       </div>
 
       <div className="flex border-b border-outline-variant">
@@ -34,7 +35,7 @@ export default function AdminFileManager() {
             activeTab === 'images' ? 'border-primary text-primary' : 'border-transparent text-on-surface-variant hover:text-on-surface'
           }`}
         >
-          <span className="material-symbols-outlined text-[18px]">image</span> Images
+          <span className="material-symbols-outlined text-[18px]">image</span> {tFiles('images')}
         </button>
         <button
           onClick={() => setActiveTab('documents')}
@@ -42,7 +43,7 @@ export default function AdminFileManager() {
             activeTab === 'documents' ? 'border-primary text-primary' : 'border-transparent text-on-surface-variant hover:text-on-surface'
           }`}
         >
-          <span className="material-symbols-outlined text-[18px]">description</span> Documents
+          <span className="material-symbols-outlined text-[18px]">description</span> {tFiles('documents')}
         </button>
         <button
           onClick={() => setActiveTab('videos')}
@@ -50,7 +51,7 @@ export default function AdminFileManager() {
             activeTab === 'videos' ? 'border-primary text-primary' : 'border-transparent text-on-surface-variant hover:text-on-surface'
           }`}
         >
-          <span className="material-symbols-outlined text-[18px]">movie</span> Videos
+          <span className="material-symbols-outlined text-[18px]">movie</span> {tFiles('videos')}
         </button>
       </div>
 
@@ -58,7 +59,7 @@ export default function AdminFileManager() {
         <CardContent className="p-0">
           <div className="divide-y divide-outline-variant/60">
             {filtered.length === 0 ? (
-              <div className="p-12 text-center text-on-surface-variant">No files found in this category.</div>
+              <div className="p-12 text-center text-on-surface-variant">{tFiles('noFiles')}</div>
             ) : (
               filtered.map((file, i) => (
                 <div key={i} className="flex items-center justify-between p-4 hover:bg-surface-container transition-colors">
@@ -74,8 +75,8 @@ export default function AdminFileManager() {
                     </div>
                   </div>
                   <div className="flex gap-2">
-                    <Button variant="ghost" size="sm" icon="download">Download</Button>
-                    <Button variant="danger" size="sm" icon="delete">Delete</Button>
+                    <Button variant="ghost" size="sm" icon="download">{tFiles('download')}</Button>
+                    <Button variant="danger" size="sm" icon="delete">{tCommon('delete')}</Button>
                   </div>
                 </div>
               ))

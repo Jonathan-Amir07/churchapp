@@ -12,7 +12,7 @@ export const LOCALES = {
 
 export type Locale = keyof typeof LOCALES;
 
-export const DEFAULT_LOCALE: Locale = 'en';
+export const DEFAULT_LOCALE: Locale = 'ar';
 
 /**
  * Navigation items per role.

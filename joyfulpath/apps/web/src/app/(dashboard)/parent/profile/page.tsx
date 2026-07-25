@@ -1,7 +1,7 @@
-'use client';
+﻿'use client';
 
 import { useState } from 'react';
-import { useTranslations } from 'next-intl';
+import { useTranslations, useLocale } from 'next-intl';
 import { Card, CardContent, CardHeader, CardTitle, Button, Input, Avatar } from '@/components/ui';
 import { useUser } from '@/hooks/useUser';
 import { useNotificationStore } from '@/stores/notifications.store';
@@ -13,7 +13,8 @@ export default function ParentProfile() {
   const tProfile = useTranslations('profile');
   const addToast = useNotificationStore(s => s.addToast);
 
-  const isAr = tCommon('appName') !== 'JoyfulPath';
+  const locale = useLocale();
+  const isAr = locale === 'ar';
   const user = profile;
 
   const [name, setName] = useState(user?.display_name || 'Samuel Amir');
@@ -149,3 +150,4 @@ export default function ParentProfile() {
     </div>
   );
 }
+

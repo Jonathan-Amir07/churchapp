@@ -1,10 +1,11 @@
-'use client';
+﻿'use client';
 
 import { useState, useRef, useEffect } from 'react';
 import { createClient } from '@/lib/supabase/client';
-import { useTranslations } from 'next-intl';
+import { useTranslations, useLocale } from 'next-intl';
 import { Card, CardContent, CardTitle, Button, Modal, BadgeTag, ProgressBar } from '@/components/ui';
 import { useNotificationStore } from '@/stores/notifications.store';
+import { useAppStore } from '@/stores/app.store';
 
 interface UploadedFile {
   name: string;
@@ -13,21 +14,6 @@ interface UploadedFile {
   url?: string;
 }
 
-interface Task {
-  id: string;
-  titleEn: string;
-  titleAr: string;
-  points: number;
-  status: 'approved' | 'pending' | 'revise' | 'not-started';
-  instructionsEn: string;
-  instructionsAr: string;
-  feedbackEn?: string;
-  feedbackAr?: string;
-  submittedFile?: UploadedFile;
-}
-
-
-
 export default function StudentTasks() {
   const tNav = useTranslations('nav');
   const tTasks = useTranslations('tasks');
@@ -35,9 +21,24 @@ export default function StudentTasks() {
   const addToast = useNotificationStore(s => s.addToast);
   
   const supabase = createClient();
-  const [tasks, setTasks] = useState<Task[]>([]);
+  const { tasks, addActivity } = useAppStore(); // Use Zustand instead of supabase
+  
+  const mappedTasks = tasks.map((t: any) => ({
+    id: t.id,
+    titleEn: t.taskTitleEn,
+    titleAr: t.taskTitleAr,
+    points: t.points,
+    status: t.status,
+    instructionsEn: 'Complete the assignment as described by your instructor.',
+    instructionsAr: 'أكمل الواجب كما وصفه لك الخادم.',
+    submittedFile: undefined as UploadedFile | undefined,
+    feedbackEn: undefined as string | undefined,
+    feedbackAr: undefined as string | undefined,
+  }));
+  
+  const [localTasks, setLocalTasks] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [selectedTask, setSelectedTask] = useState<Task | null>(null);
+  const [selectedTask, setSelectedTask] = useState<any | null>(null);
   const [submissionText, setSubmissionText] = useState('');
   const [uploadedFile, setUploadedFile] = useState<UploadedFile | null>(null);
   const [uploadProgress, setUploadProgress] = useState(0);
@@ -45,7 +46,13 @@ export default function StudentTasks() {
   const [isDragOver, setIsDragOver] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const isAr = tCommon('appName') !== 'JoyfulPath';
+  useEffect(() => {
+    setLocalTasks(mappedTasks);
+    setIsLoading(false);
+  }, [tasks]);
+
+  const locale = useLocale();
+  const isAr = locale === 'ar';
   
   const FILE_TYPE_ICONS: Record<string, { icon: string; color: string }> = {
     'image': { icon: 'image', color: 'text-blue-500 dark:text-blue-400 bg-blue-50 dark:bg-blue-950/20' },
@@ -54,31 +61,7 @@ export default function StudentTasks() {
     'application': { icon: 'description', color: 'text-orange-500 dark:text-orange-400 bg-orange-50 dark:bg-orange-950/20' },
   };
 
-  useEffect(() => {
-    async function fetchTasks() {
-      // Mock fetch: use supabase.from('tasks') in a real scenario
-      const { data, error } = await supabase.from('tasks').select('*');
-      if (!error && data) {
-        // Map data to Task interface
-        setTasks(data.map((t: any) => ({
-          id: t.id,
-          titleEn: t.title,
-          titleAr: t.title, // DB currently doesn't have title_ar for tasks
-          points: t.points_reward || 30,
-          status: t.status === 'draft' ? 'not-started' : t.status,
-          instructionsEn: t.description,
-          instructionsAr: t.description,
-        })));
-      } else {
-        // Fallback to empty if table is empty or error
-        setTasks([]);
-      }
-      setIsLoading(false);
-    }
-    fetchTasks();
-  }, [supabase]);
-
-  const handleOpenSubmit = (task: Task) => {
+  const handleOpenSubmit = (task: any) => {
     setSelectedTask(task);
     setSubmissionText('');
     setUploadedFile(null);
@@ -138,24 +121,21 @@ export default function StudentTasks() {
     if (!selectedTask) return;
 
     try {
-      const userRes = await supabase.auth.getUser();
-      const userId = userRes.data.user?.id || 'mock-student-id';
-      
-      await supabase.from('task_submissions').insert({
-        task_id: selectedTask.id,
-        student_id: userId,
-        content: submissionText,
-        attachment_url: uploadedFile?.url || null,
-        status: 'pending'
-      });
-
-      setTasks(prev =>
+      setLocalTasks(prev =>
         prev.map(t =>
           t.id === selectedTask.id
-            ? { ...t, status: 'pending' as const, submittedFile: uploadedFile || undefined }
+            ? { ...t, status: 'pending', submittedFile: uploadedFile || undefined }
             : t
         )
       );
+      
+      addActivity(
+        'Jonathan',
+        'task_completed',
+        `Submitted task: ${selectedTask.titleEn}`,
+        `تم تسليم المهمة: ${selectedTask.titleAr}`
+      );
+      
       setSelectedTask(null);
       setUploadedFile(null);
       addToast(tTasks('submitSuccess'), 'success');
@@ -182,7 +162,7 @@ export default function StudentTasks() {
       </div>
 
       <div className="grid grid-cols-1 gap-4">
-        {tasks.map((task) => {
+        {localTasks.map((task) => {
           const title = isAr ? task.titleAr : task.titleEn;
           const instructions = isAr ? task.instructionsAr : task.instructionsEn;
           const feedback = isAr ? task.feedbackAr : task.feedbackEn;
@@ -268,7 +248,7 @@ export default function StudentTasks() {
           );
         })}
         
-        {tasks.length === 0 && !isLoading && (
+        {localTasks.length === 0 && !isLoading && (
           <div className="text-center py-16 bg-surface-container-lowest border border-outline-variant/60 rounded-2xl">
             <span className="material-symbols-outlined text-[48px] text-outline">assignment</span>
             <p className="text-on-surface-variant text-sm font-bold mt-2">{tTasks('noTasks')}</p>
@@ -390,3 +370,4 @@ export default function StudentTasks() {
     </div>
   );
 }
+

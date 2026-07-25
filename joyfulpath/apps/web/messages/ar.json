@@ -1,6 +1,6 @@
 {
   "common": {
-    "appName": "JoyfulPath",
+    "appName": "نوصل و نوصل للسماء",
     "loading": "جاري التحميل...",
     "save": "حفظ",
     "cancel": "إلغاء",
@@ -288,7 +288,10 @@
     "materialIcon": "أيقونة الرمز",
     "createItemBtn": "إضافة الجائزة",
     "stockLabel": "المخزن: {stock}",
-    "addSuccess": "تم بنجاح! تمت إضافة البركة بنجاح."
+    "addSuccess": "تم بنجاح! تمت إضافة البركة بنجاح.",
+    "monthlyLimitReached": "تم الوصول للحد الشهري",
+    "monthlyLimitInfo": "يمكنك استبدال حتى {limit} هدايا شهرياً.",
+    "giftsRedeemed": "الهدايا المستبدلة هذا الشهر: {count}/{limit}"
   },
   "analytics": {
     "title": "لوحة التحليلات",
@@ -391,5 +394,105 @@
     "tapWords": "اضغط على الكلمات بالترتيب:",
     "rewardChapters": "البركة: +{xp} نقطة خبرة عند الإكمال التام",
     "planFinished": "اكتملت الخطة"
+  },
+  "adminDashboard": {
+    "classAdmin": "إدارة الفصل",
+    "platformAdmin": "إدارة المنصة",
+    "welcomeAdmin": "مرحباً {name}!",
+    "classAdminDesc": "كخادم للفصل، يمكنك إدارة فصولك المخصصة والمخدومين والمهام والحضور والبركات.",
+    "platformAdminDesc": "كمسؤول نظام، لديك تحكم كامل في الفصول وإنشاء المستخدمين والاستيراد الجماعي وتكوين البركات والإعدادات.",
+    "totalAccounts": "إجمالي الحسابات",
+    "activeClasses": "الفصول النشطة",
+    "systemBadges": "شارات النظام",
+    "manageUsers": "إدارة المستخدمين",
+    "manageUsersDesc": "إنشاء حسابات مسؤولين جدد أو تسجيل حسابات مخدومين جماعياً عبر CSV.",
+    "usersList": "قائمة المستخدمين",
+    "configureClasses": "تكوين الفصول",
+    "configureClassesDesc": "إنشاء فصول جديدة وتعيين الخدام وتحديد مستويات الصفوف.",
+    "classesSetup": "إعداد الفصول",
+    "systemSettings": "إعدادات النظام",
+    "systemSettingsDesc": "إدارة المتغيرات العامة ومضاعفات النقاط وسجلات النسخ الاحتياطي.",
+    "openSettings": "فتح الإعدادات"
+  },
+  "crm": {
+    "title": "أدوات التواصل والمتابعة",
+    "description": "إدارة تواصلات الفصل، جدولة الزيارات المنزلية، ومتابعة ملاحظات المخدومين.",
+    "directMessaging": "الرسائل المباشرة",
+    "directMessagingDesc": "إرسال رسائل مباشرة لأولياء الأمور والمخدومين.",
+    "openMessages": "فتح الرسائل",
+    "callLog": "سجل المكالمات والمتابعة",
+    "callLogDesc": "تسجيل وجدولة مكالمات المتابعة مع أولياء الأمور.",
+    "logPhoneCall": "تسجيل مكالمة",
+    "homeVisits": "الزيارات المنزلية",
+    "homeVisitsDesc": "جدولة وتسجيل الزيارات المنزلية للمخدومين.",
+    "scheduleVisit": "جدولة زيارة",
+    "classAnnouncements": "إعلانات الفصل",
+    "classAnnouncementsDesc": "بث إعلانات لفصلك أو مستوياتك المحددة.",
+    "newAnnouncement": "إعلان جديد",
+    "behavioralNotes": "ملاحظات سلوكية",
+    "behavioralNotesDesc": "احتفظ بملاحظات خاصة حول سلوك المخدومين ونموهم الروحي.",
+    "addNote": "إضافة ملاحظة"
+  },
+  "permissions": {
+    "title": "صلاحيات الأدوار",
+    "description": "تكوين مستويات التحكم في الوصول لأدوار النظام المختلفة.",
+    "saveChanges": "حفظ التغييرات",
+    "administrator": "مسؤول النظام",
+    "parent": "ولي الأمر",
+    "student": "مخدوم",
+    "moduleFeature": "الوحدة / الميزة",
+    "view": "عرض",
+    "createEdit": "إنشاء / تعديل",
+    "userManagement": "إدارة المستخدمين",
+    "contentLessons": "المحتوى والدروس",
+    "analytics": "التحليلات",
+    "systemSettings": "إعدادات النظام"
+  },
+  "files": {
+    "title": "إدارة الملفات",
+    "description": "إدارة الملفات العامة ومرفقات الدروس والوسائط.",
+    "uploadFile": "رفع ملف",
+    "images": "صور",
+    "documents": "مستندات",
+    "videos": "فيديوهات",
+    "noFiles": "لا توجد ملفات في هذه الفئة.",
+    "download": "تحميل"
+  },
+  "qr": {
+    "scanAttendance": "مسح الحضور",
+    "scanDescription": "امسح رمز QR الخاص بالمخدوم لتسجيل حضوره."
+  },
+  "events": {
+    "title": "مناسبات الكنيسة",
+    "description": "إنشاء وإدارة مناسبات الكنيسة والمخيمات وجلسات التدريب.",
+    "event": "المناسبة",
+    "type": "النوع",
+    "date": "التاريخ",
+    "location": "المكان",
+    "visibility": "الرؤية",
+    "actions": "إجراءات",
+    "descriptionLabel": "الوصف",
+    "start": "البداية",
+    "end": "النهاية",
+    "maxCapacity": "السعة القصوى",
+    "camp": "مخيم",
+    "service": "خدمة",
+    "training": "تدريب",
+    "ceremony": "احتفال",
+    "other": "أخرى",
+    "public": "عام",
+    "internalOnly": "داخلي فقط",
+    "createNew": "مناسبة جديدة",
+    "rsvp": "تأكيدات الحضور"
+  },
+  "storeExtra": {
+    "yourBalance": "رصيدك",
+    "availablePrizes": "الجوائز المتاحة",
+    "claimHistory": "سجل الاستبدال",
+    "noRedemptions": "لم يتم استبدال أي هدايا بعد.",
+    "limitReached": "تم الوصول للحد",
+    "locked": "مقفل",
+    "digitalAsset": "أصل رقمي",
+    "note": "ملاحظة:"
   }
 }

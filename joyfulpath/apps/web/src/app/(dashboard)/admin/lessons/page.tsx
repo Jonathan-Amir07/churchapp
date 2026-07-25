@@ -34,10 +34,26 @@ export default function InstructorLessons() {
   const classId = searchParams.get('classId');
 
   const [lessons, setLessons] = useState<Lesson[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [showForm, setShowForm] = useState(false);
   const [filterStatus, setFilterStatus] = useState<'all' | 'draft' | 'published'>('all');
   const [searchQuery, setSearchQuery] = useState('');
+
+  // Mock classes
+  const mockClasses = [
+    { id: 'c1', name: 'Angels Class (Grade 1-2)' },
+    { id: 'c2', name: 'Saints Class (Grade 3-4)' },
+    { id: 'c3', name: 'Martyrs Class (Grade 5-6)' },
+  ];
+
+  const handleClassSelect = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const selected = e.target.value;
+    if (selected) {
+      router.push(`/admin/lessons?classId=${selected}`);
+    } else {
+      router.push(`/admin/lessons`);
+    }
+  };
 
   const fetchLessons = useCallback(async () => {
     if (!classId) return;
@@ -81,15 +97,19 @@ export default function InstructorLessons() {
     );
   }, [lessons, searchQuery]);
 
-  if (!classId) {
-    return (
-      <EmptyState
-        icon="school"
-        title="Select a Class"
-        description="Please select a class to view lessons"
-      />
-    );
-  }
+  // Remove early return for !classId so we can show the header and selector
+  const renderContent = () => {
+    if (!classId) {
+      return (
+        <EmptyState
+          icon="school"
+          title="Select a Class"
+          description="Please select a class from the dropdown above to view lessons."
+        />
+      );
+    }
+    return null;
+  };
 
   return (
     <div className="space-y-6">
@@ -110,6 +130,18 @@ export default function InstructorLessons() {
           <span className="material-symbols-outlined mr-2">add</span>
           {t('common.create')}
         </Button>
+        <div className="flex gap-4 items-center flex-wrap">
+          <select 
+            className="p-2.5 rounded-xl border border-outline-variant bg-surface-container-lowest text-sm font-medium focus:outline-none focus:border-primary min-w-[200px]"
+            value={classId || ''}
+            onChange={handleClassSelect}
+          >
+            <option value="">-- Select Class --</option>
+            {mockClasses.map(c => (
+              <option key={c.id} value={c.id}>{c.name}</option>
+            ))}
+          </select>
+        </div>
       </div>
 
       {/* Filters & Search */}
@@ -144,39 +176,43 @@ export default function InstructorLessons() {
       {/* Form Modal */}
       {showForm && (
         <LessonForm
-          classId={classId}
+          classId={classId || ''}
           onSuccess={handleLessonCreated}
           onCancel={() => setShowForm(false)}
         />
       )}
 
       {/* Lessons List */}
-      {loading ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {Array.from({ length: 6 }).map((_, i) => (
-            <Skeleton key={i} className="h-80 rounded-2xl" />
-          ))}
-        </div>
-      ) : filteredLessons.length === 0 ? (
-        <EmptyState
-          icon="article"
-          title={t('lessons.empty')}
-          description={t('lessons.emptyDesc')}
-          action={{
-            label: t('lessons.createFirst'),
-            onClick: () => setShowForm(true),
-          }}
-        />
-      ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {filteredLessons.map(lesson => (
-            <LessonCard
-              key={lesson.id}
-              lesson={lesson as any}
-              onUpdate={fetchLessons}
-            />
-          ))}
-        </div>
+      {renderContent()}
+      
+      {classId && (
+        loading ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {Array.from({ length: 6 }).map((_, i) => (
+              <Skeleton key={i} className="h-80 rounded-2xl" />
+            ))}
+          </div>
+        ) : filteredLessons.length === 0 ? (
+          <EmptyState
+            icon="article"
+            title={t('lessons.empty')}
+            description={t('lessons.emptyDesc')}
+            action={{
+              label: t('lessons.createFirst'),
+              onClick: () => setShowForm(true),
+            }}
+          />
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {filteredLessons.map(lesson => (
+              <LessonCard
+                key={lesson.id}
+                lesson={lesson as any}
+                onUpdate={fetchLessons}
+              />
+            ))}
+          </div>
+        )
       )}
     </div>
   );

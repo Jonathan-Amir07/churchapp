@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { useTranslations } from 'next-intl';
+import { useTranslations, useLocale } from 'next-intl';
 import { Card, CardContent, CardTitle, Avatar, BadgeTag } from '@/components/ui';
 
 interface LeaderboardUser {
@@ -43,6 +43,8 @@ export default function StudentLeaderboard() {
   const tNav = useTranslations('nav');
   const tLeaderboard = useTranslations('leaderboard');
   const tCommon = useTranslations('common');
+  const locale = useLocale();
+  const isAr = locale === 'ar';
 
   const [activeTab, setActiveTab] = useState<'weekly' | 'monthly' | 'allTime'>('weekly');
 
@@ -174,9 +176,9 @@ export default function StudentLeaderboard() {
               <thead>
                 <tr className="border-b border-outline-variant/60 text-outline text-xs uppercase font-black">
                   <th className="px-6 py-4 text-start w-16">#</th>
-                  <th className="px-6 py-4 text-start">{tCommon('appName') === 'JoyfulPath' ? 'Explorer' : 'المستكشف'}</th>
-                  <th className="px-6 py-4 text-start">{tCommon('appName') === 'JoyfulPath' ? 'Level' : 'المستوى'}</th>
-                  <th className="px-6 py-4 text-start">{tCommon('appName') === 'JoyfulPath' ? 'Badges' : 'الشارات'}</th>
+                  <th className="px-6 py-4 text-start">{!isAr ? 'Explorer' : 'المستكشف'}</th>
+                  <th className="px-6 py-4 text-start">{!isAr ? 'Level' : 'المستوى'}</th>
+                  <th className="px-6 py-4 text-start">{!isAr ? 'Badges' : 'الشارات'}</th>
                   <th className="px-6 py-4 text-end">XP</th>
                 </tr>
               </thead>

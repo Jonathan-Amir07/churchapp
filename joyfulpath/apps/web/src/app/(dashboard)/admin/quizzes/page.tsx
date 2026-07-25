@@ -1,37 +1,10 @@
-'use client';
+﻿'use client';
 
 import { useState, useMemo, useCallback } from 'react';
-import { useTranslations } from 'next-intl';
+import { useTranslations, useLocale } from 'next-intl';
 import { Card, CardContent, CardTitle, Button, Modal, Input, SearchBar } from '@/components/ui';
 import { useNotificationStore } from '@/stores/notifications.store';
-
-interface Quiz {
-  id: string;
-  titleEn: string;
-  titleAr: string;
-  passingScore: number;
-  xp: number;
-  points: number;
-}
-
-const INITIAL_QUIZZES: Quiz[] = [
-  {
-    id: '1',
-    titleEn: 'The Story of Creation Quiz',
-    titleAr: 'اختبار قصة الخلق',
-    passingScore: 70,
-    xp: 50,
-    points: 10,
-  },
-  {
-    id: '2',
-    titleEn: "Noah's Ark & Rainbow Covenant",
-    titleAr: 'فلك نوح وعهد قوس قزح',
-    passingScore: 70,
-    xp: 50,
-    points: 10,
-  },
-];
+import { useAppStore } from '@/stores/app.store';
 
 export default function InstructorQuizzes() {
   const tNav = useTranslations('nav');
@@ -40,8 +13,8 @@ export default function InstructorQuizzes() {
   const tLessons = useTranslations('lessons');
   const tGamification = useTranslations('gamification');
   const addToast = useNotificationStore(s => s.addToast);
+  const { quizzes, addQuiz } = useAppStore();
 
-  const [quizzes, setQuizzes] = useState<Quiz[]>(INITIAL_QUIZZES);
   const [isOpen, setIsOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
 
@@ -73,16 +46,17 @@ export default function InstructorQuizzes() {
       return;
     }
 
-    const newQuiz: Quiz = {
-      id: String(quizzes.length + 1),
+    addQuiz({
       titleEn,
       titleAr,
+      descriptionEn: 'New quiz',
+      descriptionAr: 'اختبار جديد',
       passingScore,
       xp,
       points,
-    };
+      questions: [],
+    });
 
-    setQuizzes((prev) => [newQuiz, ...prev]);
     setIsOpen(false);
     addToast(tQuizzes('publishSuccess'), 'success');
 
@@ -121,7 +95,8 @@ export default function InstructorQuizzes() {
       {/* List of quizzes */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {filteredQuizzes.map((quiz) => {
-          const isAr = tCommon('appName') !== 'JoyfulPath';
+          const locale = useLocale();
+  const isAr = locale === 'ar';
           const title = isAr ? quiz.titleAr : quiz.titleEn;
 
           return (
@@ -212,3 +187,4 @@ export default function InstructorQuizzes() {
     </div>
   );
 }
+

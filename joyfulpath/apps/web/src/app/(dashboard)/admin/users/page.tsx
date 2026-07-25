@@ -9,7 +9,7 @@ interface UserAccount {
   id: string;
   name: string;
   usernameOrEmail: string;
-  role: 'student' | 'admin' | 'parent';
+  role: 'student' | 'admin' | 'parent' | 'instructor';
 }
 
 const INITIAL_USERS: UserAccount[] = [
@@ -25,7 +25,7 @@ export default function AdminUsers() {
   const addToast = useNotificationStore(s => s.addToast);
 
   const [users, setUsers] = useState<UserAccount[]>(INITIAL_USERS);
-  const [filter, setFilter] = useState<'all' | 'admin' | 'student' | 'parent'>('all');
+  const [filter, setFilter] = useState<'all' | 'admin' | 'student' | 'parent' | 'instructor'>('all');
   const [searchQuery, setSearchQuery] = useState('');
   
   // Modals state
@@ -36,7 +36,7 @@ export default function AdminUsers() {
   const [name, setName] = useState('');
   const [usernameOrEmail, setUsernameOrEmail] = useState('');
   const [passwordOrPin, setPasswordOrPin] = useState('');
-  const [role, setRole] = useState<'student' | 'admin' | 'parent'>('student');
+  const [role, setRole] = useState<'student' | 'admin' | 'parent' | 'instructor'>('student');
 
   const handleSearch = useCallback((query: string) => {
     setSearchQuery(query);
@@ -61,7 +61,7 @@ export default function AdminUsers() {
   const handleAddUser = useCallback((e: React.FormEvent) => {
     e.preventDefault();
     if (!name || !usernameOrEmail || !passwordOrPin) {
-      addToast('Error: Please fill all fields!', 'error');
+      addToast(tCommon('error'), 'error');
       return;
     }
 
@@ -85,7 +85,7 @@ export default function AdminUsers() {
 
   const handleDeleteUser = useCallback((id: string) => {
     setUsers((prev) => prev.filter((u) => u.id !== id));
-    addToast('User deleted successfully', 'success');
+    addToast(tCommon('success'), 'success');
   }, [addToast]);
 
   const handleMockImport = useCallback(() => {
@@ -117,7 +117,7 @@ export default function AdminUsers() {
       {/* Filters & Search Bar */}
       <div className="flex flex-col sm:flex-row gap-4 items-center justify-between">
         <div className="flex gap-2 p-1 bg-surface-container-low rounded-2xl border border-outline-variant/50 w-fit">
-          {(['all', 'admin', 'student', 'parent'] as const).map((r) => (
+          {(['all', 'admin', 'instructor', 'student', 'parent'] as const).map((r) => (
             <button
               key={r}
               onClick={() => setFilter(r)}
@@ -134,7 +134,7 @@ export default function AdminUsers() {
 
         <SearchBar
           onSearch={handleSearch}
-          placeholder="Search users by name, username or role..."
+          placeholder={tCommon('search')}
           resultCount={filteredUsers.length}
           totalCount={users.length}
           className="w-full sm:w-80"
@@ -160,7 +160,7 @@ export default function AdminUsers() {
                     <td className="px-6 py-4 font-black text-on-surface">{user.name}</td>
                     <td className="px-6 py-4 text-on-surface-variant">{user.usernameOrEmail}</td>
                     <td className="px-6 py-4">
-                      <BadgeTag variant={user.role === 'admin' ? 'primary' : user.role === 'parent' ? 'secondary' : 'outline'}>
+                      <BadgeTag variant={user.role === 'admin' ? 'primary' : user.role === 'instructor' ? 'secondary' : user.role === 'parent' ? 'outline' : 'outline'}>
                         {user.role}
                       </BadgeTag>
                     </td>
@@ -192,12 +192,12 @@ export default function AdminUsers() {
             </div>
 
             <div className="space-y-1.5">
-              <label className="text-xs font-bold text-on-surface-variant">Username / Email</label>
+              <label className="text-xs font-bold text-on-surface-variant">{tUsers('username')} / {tUsers('email')}</label>
               <Input required value={usernameOrEmail} onChange={(e) => setUsernameOrEmail(e.target.value)} />
             </div>
 
             <div className="space-y-1.5">
-              <label className="text-xs font-bold text-on-surface-variant">Password / PIN</label>
+              <label className="text-xs font-bold text-on-surface-variant">{tUsers('password')} / {tUsers('pin')}</label>
               <Input type="password" required value={passwordOrPin} onChange={(e) => setPasswordOrPin(e.target.value)} />
             </div>
 
@@ -210,6 +210,7 @@ export default function AdminUsers() {
               >
                 <option value="student">{tUsers('studentRole')}</option>
                 <option value="parent">{tUsers('parentRole')}</option>
+                <option value="instructor">{tUsers('instructorRole')}</option>
                 <option value="admin">{tUsers('adminRole')}</option>
               </select>
             </div>

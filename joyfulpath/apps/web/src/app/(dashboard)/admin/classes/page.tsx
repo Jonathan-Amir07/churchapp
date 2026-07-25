@@ -1,7 +1,7 @@
-'use client';
+﻿'use client';
 
 import { useState, useMemo, useCallback } from 'react';
-import { useTranslations } from 'next-intl';
+import { useTranslations, useLocale } from 'next-intl';
 import { Card, CardContent, CardTitle, Button, Modal, Input, SearchBar } from '@/components/ui';
 import { useNotificationStore } from '@/stores/notifications.store';
 
@@ -119,7 +119,8 @@ export default function AdminClasses() {
       {/* List of classes */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {filteredClasses.map((c) => {
-          const isAr = tCommon('appName') !== 'JoyfulPath';
+          const locale = useLocale();
+  const isAr = locale === 'ar';
           const name = isAr ? c.nameAr : c.nameEn;
 
           return (
@@ -211,3 +212,4 @@ export default function AdminClasses() {
     </div>
   );
 }
+

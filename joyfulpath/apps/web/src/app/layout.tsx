@@ -21,15 +21,15 @@ const cairo = Cairo({
 
 export const metadata: Metadata = {
   title: {
-    default: 'JoyfulPath — Sunday School Gamified Learning',
-    template: '%s | JoyfulPath',
+    default: 'نوصل و نوصل للسماء — مدارس الأحد للتعلم التفاعلي',
+    template: '%s | نوصل و نوصل للسماء',
   },
   description:
     'An engaging gamified learning platform for Sunday School children. Learn Bible stories, earn XP, unlock badges, and climb the leaderboard!',
   keywords: ['Sunday School', 'Bible', 'gamified learning', 'children', 'education', 'church'],
   authors: [{ name: 'JoyfulPath' }],
   openGraph: {
-    title: 'JoyfulPath — Sunday School Gamified Learning',
+    title: 'نوصل و نوصل للسماء — مدارس الأحد للتعلم التفاعلي',
     description: 'Learn Bible stories, earn XP, unlock badges!',
     type: 'website',
   },

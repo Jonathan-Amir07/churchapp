@@ -1,9 +1,10 @@
-'use client';
+﻿'use client';
 
 import { useState, useMemo, useCallback } from 'react';
-import { useTranslations } from 'next-intl';
+import { useTranslations, useLocale } from 'next-intl';
 import { Card, CardContent, CardTitle, Button, Modal, SearchBar } from '@/components/ui';
 import { useNotificationStore } from '@/stores/notifications.store';
+import { useAppStore } from '@/stores/app.store';
 
 interface SubmissionFile {
   name: string;
@@ -73,13 +74,29 @@ export default function InstructorTasks() {
   const tTasks = useTranslations('tasks');
   const tCommon = useTranslations('common');
   const addToast = useNotificationStore(s => s.addToast);
+  const { addTask } = useAppStore();
 
-  const isAr = tCommon('appName') !== 'JoyfulPath';
+  const locale = useLocale();
+  const isAr = locale === 'ar';
   const [submissions, setSubmissions] = useState<Submission[]>(INITIAL_SUBMISSIONS);
   const [selectedSub, setSelectedSub] = useState<Submission | null>(null);
   const [feedback, setFeedback] = useState('');
   const [downloadingFile, setDownloadingFile] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
+
+  // Task creation states
+  const [isCreatingTask, setIsCreatingTask] = useState(false);
+  const [newTaskTitleEn, setNewTaskTitleEn] = useState('');
+  const [newTaskTitleAr, setNewTaskTitleAr] = useState('');
+  const [newTaskPoints, setNewTaskPoints] = useState('30');
+  const [newTaskClassId, setNewTaskClassId] = useState('c1');
+
+  // Mock classes
+  const mockClasses = [
+    { id: 'c1', name: 'Angels Class (Grade 1-2)' },
+    { id: 'c2', name: 'Saints Class (Grade 3-4)' },
+    { id: 'c3', name: 'Martyrs Class (Grade 5-6)' },
+  ];
 
   const handleSearch = useCallback((query: string) => {
     setSearchQuery(query);
@@ -116,6 +133,23 @@ export default function InstructorTasks() {
     }, 1000);
   }, [addToast, isAr]);
 
+  const handleCreateTask = useCallback((e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newTaskTitleEn.trim() || !newTaskTitleAr.trim()) return;
+    
+    addTask({
+      taskTitleEn: newTaskTitleEn,
+      taskTitleAr: newTaskTitleAr,
+      points: parseInt(newTaskPoints) || 30,
+      classId: newTaskClassId,
+    });
+    
+    addToast(isAr ? 'تم إنشاء المهمة بنجاح' : 'Task created successfully', 'success');
+    setIsCreatingTask(false);
+    setNewTaskTitleEn('');
+    setNewTaskTitleAr('');
+  }, [newTaskTitleEn, newTaskTitleAr, newTaskPoints, newTaskClassId, addTask, addToast, isAr]);
+
   const getFileIcon = (type: string) => {
     const category = type.split('/')[0];
     return FILE_ICONS[category] || FILE_ICONS.application;
@@ -123,13 +157,22 @@ export default function InstructorTasks() {
 
   return (
     <div className="space-y-6 animate-[slide-up_0.4s_ease-out]">
-      <div className="flex flex-col gap-2">
-        <h1 className="text-3xl font-extrabold tracking-tight text-on-surface">
-          {tTasks('reviewPending')}
-        </h1>
-        <p className="text-on-surface-variant text-sm max-w-2xl">
-          {tTasks('instructorDescription')}
-        </p>
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div className="flex flex-col gap-2">
+          <h1 className="text-3xl font-extrabold tracking-tight text-on-surface">
+            {tTasks('reviewPending')}
+          </h1>
+          <p className="text-on-surface-variant text-sm max-w-2xl">
+            {tTasks('instructorDescription')}
+          </p>
+        </div>
+        <Button
+          onClick={() => setIsCreatingTask(true)}
+          className="bg-primary text-on-primary px-6 h-11"
+        >
+          <span className="material-symbols-outlined mr-2">add</span>
+          {isAr ? 'إنشاء مهمة جديدة' : 'Create New Task'}
+        </Button>
       </div>
 
       {/* Search Bar */}
@@ -329,6 +372,78 @@ export default function InstructorTasks() {
           </div>
         </Modal>
       )}
+
+      {/* Create Task Modal */}
+      {isCreatingTask && (
+        <Modal
+          isOpen={true}
+          onClose={() => setIsCreatingTask(false)}
+          title={isAr ? 'إنشاء مهمة جديدة' : 'Create New Task'}
+        >
+          <form onSubmit={handleCreateTask} className="space-y-4 pt-2">
+            <div className="space-y-1.5">
+              <label className="text-xs font-bold text-on-surface-variant">
+                {isAr ? 'الفصل' : 'Class'}
+              </label>
+              <select
+                value={newTaskClassId}
+                onChange={(e) => setNewTaskClassId(e.target.value)}
+                className="w-full p-3 rounded-xl border border-outline-variant bg-surface-container-low text-sm font-medium focus:outline-none focus:border-primary"
+              >
+                {mockClasses.map(c => (
+                  <option key={c.id} value={c.id}>{c.name}</option>
+                ))}
+              </select>
+            </div>
+            <div className="space-y-1.5">
+              <label className="text-xs font-bold text-on-surface-variant">
+                {isAr ? 'عنوان المهمة (بالإنجليزية)' : 'Task Title (English)'}
+              </label>
+              <input
+                required
+                value={newTaskTitleEn}
+                onChange={(e) => setNewTaskTitleEn(e.target.value)}
+                placeholder="e.g. Draw Noah's Ark"
+                className="w-full p-3 rounded-xl border border-outline-variant bg-surface-container-low text-sm font-medium focus:outline-none focus:border-primary"
+              />
+            </div>
+            <div className="space-y-1.5">
+              <label className="text-xs font-bold text-on-surface-variant">
+                {isAr ? 'عنوان المهمة (بالعربية)' : 'Task Title (Arabic)'}
+              </label>
+              <input
+                required
+                value={newTaskTitleAr}
+                onChange={(e) => setNewTaskTitleAr(e.target.value)}
+                placeholder="مثال: ارسم فلك نوح"
+                className="w-full p-3 rounded-xl border border-outline-variant bg-surface-container-low text-sm font-medium focus:outline-none focus:border-primary"
+              />
+            </div>
+            <div className="space-y-1.5">
+              <label className="text-xs font-bold text-on-surface-variant">
+                {isAr ? 'النقاط' : 'Points'}
+              </label>
+              <input
+                type="number"
+                min="0"
+                value={newTaskPoints}
+                onChange={(e) => setNewTaskPoints(e.target.value)}
+                className="w-full p-3 rounded-xl border border-outline-variant bg-surface-container-low text-sm font-medium focus:outline-none focus:border-primary"
+              />
+            </div>
+
+            <div className="flex gap-3 justify-end pt-4 border-t border-outline-variant">
+              <Button variant="outline" size="sm" type="button" onClick={() => setIsCreatingTask(false)}>
+                {tCommon('cancel')}
+              </Button>
+              <Button variant="primary" size="sm" type="submit">
+                {tCommon('create')}
+              </Button>
+            </div>
+          </form>
+        </Modal>
+      )}
     </div>
   );
 }
+

@@ -1,7 +1,7 @@
-'use client';
+﻿'use client';
 
 import { useState } from 'react';
-import { useTranslations } from 'next-intl';
+import { useTranslations, useLocale } from 'next-intl';
 import { Card, CardContent, CardTitle, CardDescription, Modal, Button } from '@/components/ui';
 
 interface Badge {
@@ -110,7 +110,8 @@ export default function StudentBadges() {
       {/* Grid of Badges */}
       <div className="grid grid-cols-2 sm:grid-cols-3 gap-6">
         {MOCK_BADGES.map((badge) => {
-          const isAr = tCommon('appName') !== 'JoyfulPath';
+          const locale = useLocale();
+  const isAr = locale === 'ar';
           const name = isAr ? badge.nameAr : badge.nameEn;
           const description = isAr ? badge.descriptionAr : badge.descriptionEn;
 
@@ -202,3 +203,4 @@ export default function StudentBadges() {
     </div>
   );
 }
+

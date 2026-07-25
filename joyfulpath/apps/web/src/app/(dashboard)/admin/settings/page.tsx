@@ -1,7 +1,7 @@
-'use client';
+﻿'use client';
 
 import { useState, useEffect } from 'react';
-import { useTranslations } from 'next-intl';
+import { useTranslations, useLocale } from 'next-intl';
 import { Card, CardContent, CardTitle, CardHeader, Button, Input } from '@/components/ui';
 import { useNotificationStore } from '@/stores/notifications.store';
 
@@ -11,7 +11,8 @@ export default function AdminSettings() {
   const tCommon = useTranslations('common');
   const addToast = useNotificationStore(s => s.addToast);
 
-  const isAr = tCommon('appName') !== 'JoyfulPath';
+  const locale = useLocale();
+  const isAr = locale === 'ar';
   const [maintenance, setMaintenance] = useState(false);
   const [allowRegister, setAllowRegister] = useState(true);
   const [xpMultiplier, setXpMultiplier] = useState(1);
@@ -197,3 +198,4 @@ export default function AdminSettings() {
     </div>
   );
 }
+

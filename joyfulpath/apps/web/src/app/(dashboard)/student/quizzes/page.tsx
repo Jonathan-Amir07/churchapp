@@ -1,102 +1,26 @@
 'use client';
 
-import { useState } from 'react';
-import { useTranslations } from 'next-intl';
+import { useState, useEffect } from 'react';
+import { useTranslations, useLocale } from 'next-intl';
 import { Card, CardContent, CardTitle, CardDescription, Button, Modal, BadgeTag } from '@/components/ui';
 
-interface Question {
-  id: string;
-  textEn: string;
-  textAr: string;
-  optionsEn: string[];
-  optionsAr: string[];
-  correctIndex: number;
-}
-
-interface Quiz {
-  id: string;
-  titleEn: string;
-  titleAr: string;
-  descriptionEn: string;
-  descriptionAr: string;
-  passingScore: number; // in percent
-  xp: number;
-  points: number;
-  status: 'passed' | 'failed' | 'not-started';
-  questions: Question[];
-}
-
-const MOCK_QUIZZES: Quiz[] = [
-  {
-    id: '1',
-    titleEn: 'The Story of Creation Quiz',
-    titleAr: 'اختبار قصة الخلق',
-    descriptionEn: 'Test your knowledge on the six days of creation.',
-    descriptionAr: 'اختبر معلوماتك حول الأيام الستة للخليقة.',
-    passingScore: 70,
-    xp: 50,
-    points: 10,
-    status: 'passed',
-    questions: [
-      {
-        id: 'q1',
-        textEn: 'What did God create on the first day?',
-        textAr: 'ماذا خلق الله في اليوم الأول؟',
-        optionsEn: ['Light', 'Sun & Moon', 'Plants', 'Animals'],
-        optionsAr: ['النور', 'الشمس والقمر', 'النباتات', 'الحيوانات'],
-        correctIndex: 0,
-      },
-      {
-        id: 'q2',
-        textEn: 'On which day did God rest?',
-        textAr: 'في أي يوم استراح الله؟',
-        optionsEn: ['Day 5', 'Day 6', 'Day 7', 'Day 1'],
-        optionsAr: ['اليوم الخامس', 'اليوم السادس', 'اليوم السابع', 'اليوم الأول'],
-        correctIndex: 2,
-      },
-    ],
-  },
-  {
-    id: '2',
-    titleEn: "Noah's Ark & Rainbow Covenant",
-    titleAr: 'فلك نوح وعهد قوس قزح',
-    descriptionEn: 'Find out how much you know about Noah, the Ark, and God\'s promise.',
-    descriptionAr: 'اكتشف مدى معرفتك بنوح والفلك ووعد الله.',
-    passingScore: 70,
-    xp: 50,
-    points: 10,
-    status: 'not-started',
-    questions: [
-      {
-        id: 'q3',
-        textEn: 'How many days and nights did it rain during the great flood?',
-        textAr: 'كم يوماً وليلة استمر المطر خلال الطوفان العظيم؟',
-        optionsEn: ['7 days', '40 days', '10 days', '100 days'],
-        optionsAr: ['٧ أيام', '٤٠ يوماً', '١٠ أيام', '١٠٠ يوم'],
-        correctIndex: 1,
-      },
-      {
-        id: 'q4',
-        textEn: 'What sign did God put in the sky as a covenant promise?',
-        textAr: 'ما هي العلامة التي وضعها الله في السماء كعهد ووعد؟',
-        optionsEn: ['Rainbow', 'Bright Star', 'Eclipse', 'Lightning'],
-        optionsAr: ['قوس قزح', 'نجم ساطع', 'خسوف', 'برق'],
-        correctIndex: 0,
-      },
-    ],
-  },
-];
+import { useAppStore } from '@/stores/app.store';
 
 export default function StudentQuizzes() {
   const tNav = useTranslations('nav');
   const tQuizzes = useTranslations('quizzes');
   const tCommon = useTranslations('common');
   const tGamification = useTranslations('gamification');
+  const { quizzes, addXP, addPoints } = useAppStore();
 
-  const [quizzes, setQuizzes] = useState<Quiz[]>(MOCK_QUIZZES);
+  const [localQuizzes, setLocalQuizzes] = useState(quizzes);
+  
+  useEffect(() => {
+    setLocalQuizzes(quizzes);
+  }, [quizzes]);
   
   // Quiz Player State
-  const [activeQuiz, setActiveQuiz] = useState<Quiz | null>(null);
+  const [activeQuiz, setActiveQuiz] = useState<any | null>(null);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [selectedAnswers, setSelectedAnswers] = useState<Record<number, number>>({});
   const [quizResult, setQuizResult] = useState<{
@@ -106,7 +30,7 @@ export default function StudentQuizzes() {
     points: number;
   } | null>(null);
 
-  const handleStartQuiz = (quiz: Quiz) => {
+  const handleStartQuiz = (quiz: any) => {
     setActiveQuiz(quiz);
     setCurrentQuestionIndex(0);
     setSelectedAnswers({});
@@ -127,7 +51,7 @@ export default function StudentQuizzes() {
     } else {
       // Calculate score
       let correctCount = 0;
-      activeQuiz.questions.forEach((q, idx) => {
+      activeQuiz.questions.forEach((q: any, idx: number) => {
         if (selectedAnswers[idx] === q.correctIndex) {
           correctCount++;
         }
@@ -140,13 +64,18 @@ export default function StudentQuizzes() {
       const pointsEarned = isPassed ? activeQuiz.points : 0;
 
       // Update quiz list status
-      setQuizzes((prev) =>
+      setLocalQuizzes((prev) =>
         prev.map((q) =>
           q.id === activeQuiz.id
             ? { ...q, status: isPassed ? 'passed' : 'failed' }
             : q
         )
       );
+
+      if (isPassed) {
+        addXP(xpEarned);
+        addPoints(pointsEarned);
+      }
 
       setQuizResult({
         score: scorePct,
@@ -174,8 +103,9 @@ export default function StudentQuizzes() {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {quizzes.map((quiz) => {
-          const isAr = tCommon('appName') !== 'JoyfulPath';
+        {localQuizzes.map((quiz) => {
+          const locale = useLocale();
+  const isAr = locale === 'ar';
           const title = isAr ? quiz.titleAr : quiz.titleEn;
           const description = isAr ? quiz.descriptionAr : quiz.descriptionEn;
 
@@ -273,7 +203,7 @@ export default function StudentQuizzes() {
                     {(tCommon('appName') !== 'JoyfulPath'
                       ? activeQuiz.questions[currentQuestionIndex].optionsAr
                       : activeQuiz.questions[currentQuestionIndex].optionsEn
-                    ).map((option, idx) => {
+                    ).map((option: any, idx: number) => {
                       const isSelected = selectedAnswers[currentQuestionIndex] === idx;
                       return (
                         <button
@@ -362,3 +292,4 @@ export default function StudentQuizzes() {
     </div>
   );
 }
+

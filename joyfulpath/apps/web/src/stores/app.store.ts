@@ -64,6 +64,18 @@ export interface ActivityFeedItem {
   createdAt: string;
 }
 
+export interface Task {
+  id: string;
+  studentName: string;
+  taskTitleEn: string;
+  taskTitleAr: string;
+  submissionText: string;
+  submittedAt: string;
+  points: number;
+  classId: string;
+  status: 'pending' | 'approved' | 'rejected' | 'revise' | 'not_started';
+}
+
 export interface ReadingPlan {
   id: string;
   title: string;
@@ -82,6 +94,29 @@ export interface MemorizedVerse {
   isMastered: boolean;
 }
 
+export interface Question {
+  id: string;
+  textEn: string;
+  textAr: string;
+  optionsEn: string[];
+  optionsAr: string[];
+  correctIndex: number;
+}
+
+export interface Quiz {
+  id: string;
+  titleEn: string;
+  titleAr: string;
+  descriptionEn: string;
+  descriptionAr: string;
+  passingScore: number;
+  xp: number;
+  points: number;
+  classId?: string;
+  status: 'passed' | 'failed' | 'not-started';
+  questions: Question[];
+}
+
 interface AppState {
   // Student statistics
   xp: number;
@@ -89,6 +124,10 @@ interface AppState {
   level: number;
   streak: number;
   longestStreak: number;
+  
+  // Store limits
+  monthlyRedemptionsCount: number;
+  lastRedemptionMonth: string;
   
   // Lists
   prayers: PrayerRequest[];
@@ -98,8 +137,12 @@ interface AppState {
   activities: ActivityFeedItem[];
   readingPlans: ReadingPlan[];
   memorizedVerses: MemorizedVerse[];
+  tasks: Task[];
+  quizzes: Quiz[];
   
   // Actions
+  addTask: (task: Omit<Task, 'id' | 'status' | 'submittedAt' | 'submissionText' | 'studentName'>) => void;
+  addQuiz: (quiz: Omit<Quiz, 'id' | 'status'>) => void;
   addXP: (amount: number) => void;
   addPoints: (amount: number) => void;
   addPrayer: (type: 'prayer' | 'thanksgiving', content: string, isPrivate: boolean, studentName: string) => void;
@@ -124,6 +167,9 @@ export const useAppStore = create<AppState>()(
       level: 3,
       streak: 5,
       longestStreak: 12,
+      
+      monthlyRedemptionsCount: 0,
+      lastRedemptionMonth: '',
       
       prayers: [
         {
@@ -158,6 +204,69 @@ export const useAppStore = create<AppState>()(
           prayedCount: 0,
           createdAt: new Date().toISOString(),
         }
+      ],
+      
+      tasks: [],
+      
+      quizzes: [
+        {
+          id: '1',
+          titleEn: 'The Story of Creation Quiz',
+          titleAr: 'اختبار قصة الخلق',
+          descriptionEn: 'Test your knowledge on the six days of creation.',
+          descriptionAr: 'اختبر معلوماتك حول الأيام الستة للخليقة.',
+          passingScore: 70,
+          xp: 50,
+          points: 10,
+          status: 'passed',
+          questions: [
+            {
+              id: 'q1',
+              textEn: 'What did God create on the first day?',
+              textAr: 'ماذا خلق الله في اليوم الأول؟',
+              optionsEn: ['Light', 'Sun & Moon', 'Plants', 'Animals'],
+              optionsAr: ['النور', 'الشمس والقمر', 'النباتات', 'الحيوانات'],
+              correctIndex: 0,
+            },
+            {
+              id: 'q2',
+              textEn: 'On which day did God rest?',
+              textAr: 'في أي يوم استراح الله؟',
+              optionsEn: ['Day 5', 'Day 6', 'Day 7', 'Day 1'],
+              optionsAr: ['اليوم الخامس', 'اليوم السادس', 'اليوم السابع', 'اليوم الأول'],
+              correctIndex: 2,
+            },
+          ],
+        },
+        {
+          id: '2',
+          titleEn: "Noah's Ark & Rainbow Covenant",
+          titleAr: 'فلك نوح وعهد قوس قزح',
+          descriptionEn: 'Find out how much you know about Noah, the Ark, and God\'s promise.',
+          descriptionAr: 'اكتشف مدى معرفتك بنوح والفلك ووعد الله.',
+          passingScore: 70,
+          xp: 50,
+          points: 10,
+          status: 'not-started',
+          questions: [
+            {
+              id: 'q3',
+              textEn: 'How many days and nights did it rain during the great flood?',
+              textAr: 'كم يوماً وليلة استمر المطر خلال الطوفان العظيم؟',
+              optionsEn: ['7 days', '40 days', '10 days', '100 days'],
+              optionsAr: ['٧ أيام', '٤٠ يوماً', '١٠ أيام', '١٠٠ يوم'],
+              correctIndex: 1,
+            },
+            {
+              id: 'q4',
+              textEn: 'What sign did God put in the sky as a covenant promise?',
+              textAr: 'ما هي العلامة التي وضعها الله في السماء كعهد ووعد؟',
+              optionsEn: ['Rainbow', 'Bright Star', 'Eclipse', 'Lightning'],
+              optionsAr: ['قوس قزح', 'نجم ساطع', 'خسوف', 'برق'],
+              correctIndex: 0,
+            },
+          ],
+        },
       ],
       
       rewards: [
@@ -430,6 +539,31 @@ export const useAppStore = create<AppState>()(
         )
       })),
       
+      addTask: (task) => set((state) => ({
+        tasks: [
+          {
+            ...task,
+            id: Math.random().toString(),
+            studentName: '',
+            status: 'not_started',
+            submissionText: '',
+            submittedAt: '',
+          },
+          ...state.tasks
+        ]
+      })),
+      
+      addQuiz: (quiz) => set((state) => ({
+        quizzes: [
+          {
+            ...quiz,
+            id: Math.random().toString(),
+            status: 'not-started',
+          },
+          ...state.quizzes
+        ]
+      })),
+      
       redeemReward: (itemId, studentName) => {
         let success = false;
         set((state) => {
@@ -437,6 +571,15 @@ export const useAppStore = create<AppState>()(
           if (!item) return state;
           if (state.points < item.pointsCost) return state;
           if (item.type === 'physical' && item.stock <= 0) return state;
+          
+          const currentMonth = new Date().toISOString().slice(0, 7); // "YYYY-MM"
+          let currentCount = state.monthlyRedemptionsCount;
+          
+          if (state.lastRedemptionMonth !== currentMonth) {
+            currentCount = 0;
+          }
+          
+          if (currentCount >= 2) return state;
           
           success = true;
           const updatedRewards = state.rewards.map((r) => 
@@ -469,7 +612,9 @@ export const useAppStore = create<AppState>()(
                 createdAt: new Date().toISOString(),
               },
               ...state.activities
-            ]
+            ],
+            monthlyRedemptionsCount: currentCount + 1,
+            lastRedemptionMonth: currentMonth
           };
         });
         return success;

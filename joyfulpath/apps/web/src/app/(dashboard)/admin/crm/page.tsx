@@ -5,6 +5,7 @@ import { Card, CardContent, Button } from '@/components/ui';
 
 export default function InstructorCRMPage() {
   const tCommon = useTranslations('common');
+  const tCrm = useTranslations('crm');
 
   return (
     <div className="space-y-6 animate-[slide-up_0.4s_ease-out]">
@@ -16,11 +17,11 @@ export default function InstructorCRMPage() {
               <span className="material-symbols-outlined text-[28px] text-white">hub</span>
             </div>
             <h1 className="text-2xl md:text-3xl font-extrabold">
-              Instructor CRM & Communication
+              {tCrm('title')}
             </h1>
           </div>
           <p className="text-sm md:text-base font-medium opacity-90 max-w-xl">
-            Manage your class communications, schedule home visits, and track student behavioral notes.
+            {tCrm('description')}
           </p>
         </div>
       </div>
@@ -32,15 +33,15 @@ export default function InstructorCRMPage() {
               <span className="material-symbols-outlined text-[28px] text-blue-600">message</span>
             </div>
             <div>
-              <h3 className="text-lg font-bold text-on-surface">Direct Messaging</h3>
+              <h3 className="text-lg font-bold text-on-surface">{tCrm('directMessaging')}</h3>
               <p className="text-sm text-on-surface-variant leading-relaxed mt-1">
-                Send messages directly to parents and students.
+                {tCrm('directMessagingDesc')}
               </p>
             </div>
           </CardContent>
           <div className="p-6 pt-0">
             <Button variant="outline" fullWidth size="md">
-              Open Messages
+              {tCrm('openMessages')}
             </Button>
           </div>
         </Card>
@@ -51,15 +52,15 @@ export default function InstructorCRMPage() {
               <span className="material-symbols-outlined text-[28px] text-orange-600">contact_phone</span>
             </div>
             <div>
-              <h3 className="text-lg font-bold text-on-surface">Call & Follow-Up Log</h3>
+              <h3 className="text-lg font-bold text-on-surface">{tCrm('callLog')}</h3>
               <p className="text-sm text-on-surface-variant leading-relaxed mt-1">
-                Record and schedule follow-up phone calls with parents.
+                {tCrm('callLogDesc')}
               </p>
             </div>
           </CardContent>
           <div className="p-6 pt-0">
             <Button variant="outline" fullWidth size="md">
-              Log Phone Call
+              {tCrm('logPhoneCall')}
             </Button>
           </div>
         </Card>
@@ -70,15 +71,15 @@ export default function InstructorCRMPage() {
               <span className="material-symbols-outlined text-[28px] text-teal-600">home_pin</span>
             </div>
             <div>
-              <h3 className="text-lg font-bold text-on-surface">Home Visits</h3>
+              <h3 className="text-lg font-bold text-on-surface">{tCrm('homeVisits')}</h3>
               <p className="text-sm text-on-surface-variant leading-relaxed mt-1">
-                Schedule and log in-person home visits for your students.
+                {tCrm('homeVisitsDesc')}
               </p>
             </div>
           </CardContent>
           <div className="p-6 pt-0">
             <Button variant="outline" fullWidth size="md">
-              Schedule Visit
+              {tCrm('scheduleVisit')}
             </Button>
           </div>
         </Card>
@@ -89,15 +90,15 @@ export default function InstructorCRMPage() {
               <span className="material-symbols-outlined text-[28px] text-purple-600">campaign</span>
             </div>
             <div>
-              <h3 className="text-lg font-bold text-on-surface">Class Announcements</h3>
+              <h3 className="text-lg font-bold text-on-surface">{tCrm('classAnnouncements')}</h3>
               <p className="text-sm text-on-surface-variant leading-relaxed mt-1">
-                Broadcast announcements to your specific class or grades.
+                {tCrm('classAnnouncementsDesc')}
               </p>
             </div>
           </CardContent>
           <div className="p-6 pt-0">
             <Button variant="outline" fullWidth size="md">
-              New Announcement
+              {tCrm('newAnnouncement')}
             </Button>
           </div>
         </Card>
@@ -108,15 +109,15 @@ export default function InstructorCRMPage() {
               <span className="material-symbols-outlined text-[28px] text-pink-600">psychology</span>
             </div>
             <div>
-              <h3 className="text-lg font-bold text-on-surface">Behavioral Notes</h3>
+              <h3 className="text-lg font-bold text-on-surface">{tCrm('behavioralNotes')}</h3>
               <p className="text-sm text-on-surface-variant leading-relaxed mt-1">
-                Keep private notes on student behavior and spiritual growth.
+                {tCrm('behavioralNotesDesc')}
               </p>
             </div>
           </CardContent>
           <div className="p-6 pt-0">
             <Button variant="outline" fullWidth size="md">
-              Add Note
+              {tCrm('addNote')}
             </Button>
           </div>
         </Card>

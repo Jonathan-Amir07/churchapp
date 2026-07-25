@@ -1,6 +1,6 @@
-'use client';
+﻿'use client';
 
-import { useTranslations } from 'next-intl';
+import { useTranslations, useLocale } from 'next-intl';
 import Link from 'next/link';
 import { Card, CardContent, CardHeader, CardTitle, ProgressBar, Button } from '@/components/ui';
 import { useAppStore } from '@/stores/app.store';
@@ -285,7 +285,8 @@ export default function StudentDashboard() {
             <CardContent className="p-0">
               <div className="divide-y divide-outline-variant/60">
                 {activities.slice(0, 4).map((activity) => {
-                  const isAr = tCommon('appName') !== 'JoyfulPath';
+                  const locale = useLocale();
+  const isAr = locale === 'ar';
                   const detail = isAr ? activity.detailAr : activity.detail;
                   
                   // Icon picking
@@ -327,3 +328,4 @@ export default function StudentDashboard() {
     </div>
   );
 }
+
