@@ -1,4 +1,4 @@
-import { Sidebar } from '@/components/layout/Sidebar';
+import { DashboardSidebar } from '@/components/layout/DashboardSidebar';
 import { Topbar } from '@/components/layout/Topbar';
 import { MobileNav } from '@/components/layout/MobileNav';
 
@@ -10,7 +10,7 @@ export default function DashboardLayout({
   return (
     <div className="flex h-screen overflow-hidden bg-background">
       {/* Sidebar - Desktop Only */}
-      <Sidebar />
+      <DashboardSidebar />
 
       {/* Main Panel */}
       <div className="flex-1 flex flex-col min-w-0 overflow-hidden relative">

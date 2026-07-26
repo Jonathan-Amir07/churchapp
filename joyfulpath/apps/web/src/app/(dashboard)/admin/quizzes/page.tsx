@@ -1,4 +1,4 @@
-﻿'use client';
+'use client';
 
 import { useState, useMemo, useCallback } from 'react';
 import { useTranslations, useLocale } from 'next-intl';
@@ -13,6 +13,8 @@ export default function InstructorQuizzes() {
   const tLessons = useTranslations('lessons');
   const tGamification = useTranslations('gamification');
   const addToast = useNotificationStore(s => s.addToast);
+  const locale = useLocale();
+  const isAr = locale === 'ar';
   const { quizzes, addQuiz } = useAppStore();
 
   const [isOpen, setIsOpen] = useState(false);
@@ -95,8 +97,6 @@ export default function InstructorQuizzes() {
       {/* List of quizzes */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {filteredQuizzes.map((quiz) => {
-          const locale = useLocale();
-  const isAr = locale === 'ar';
           const title = isAr ? quiz.titleAr : quiz.titleEn;
 
           return (

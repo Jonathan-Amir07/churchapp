@@ -6,6 +6,7 @@ import { useTranslations } from 'next-intl';
 import { Card, Button, Skeleton, EmptyState, SearchBar } from '@/components/ui';
 import { LessonForm } from '@/components/features/lessons/LessonForm';
 import { LessonCard } from '@/components/features/lessons/LessonCard';
+import { DataTable } from '@/components/ui/DataTable';
 
 interface Lesson {
   id: string;
@@ -189,7 +190,7 @@ export default function InstructorLessons() {
         loading ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {Array.from({ length: 6 }).map((_, i) => (
-              <Skeleton key={i} className="h-80 rounded-2xl" />
+              <Skeleton key={i} className="h-24 rounded-2xl" />
             ))}
           </div>
         ) : filteredLessons.length === 0 ? (
@@ -203,15 +204,27 @@ export default function InstructorLessons() {
             }}
           />
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {filteredLessons.map(lesson => (
-              <LessonCard
-                key={lesson.id}
-                lesson={lesson as any}
-                onUpdate={fetchLessons}
-              />
-            ))}
-          </div>
+          <DataTable 
+            data={filteredLessons as any[]}
+            columns={[
+              { key: 'title', header: 'العنوان', cell: (l: any) => <div className="font-bold">{l.title}</div> },
+              { key: 'status', header: 'الحالة', cell: (l: any) => (
+                <span className={`px-2 py-1 rounded-full text-xs font-bold ${l.status === 'published' ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-700'}`}>
+                  {t(`lessons.status.${l.status}`)}
+                </span>
+              )},
+              { key: 'xpReward', header: 'مكافأة XP' },
+              { key: 'createdAt', header: 'تاريخ الإنشاء', cell: (l: any) => new Date(l.createdAt).toLocaleDateString('ar-EG') },
+              { key: 'actions', header: 'إجراءات', cell: (l: any) => (
+                <div className="flex gap-2">
+                  <Button variant="outline" size="sm">تعديل</Button>
+                  <Button variant="outline" size="sm" className="text-red-500 hover:bg-red-50 hover:border-red-200">حذف</Button>
+                </div>
+              )}
+            ]}
+            onExportPdf={() => {}}
+            onExportExcel={() => {}}
+          />
         )
       )}
     </div>

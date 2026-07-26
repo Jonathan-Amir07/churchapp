@@ -1,4 +1,4 @@
-﻿'use client';
+'use client';
 
 import { useState, useMemo, useCallback } from 'react';
 import { useTranslations, useLocale } from 'next-intl';
@@ -48,6 +48,9 @@ export default function AdminClasses() {
   const [nameAr, setNameAr] = useState('');
   const [instructorName, setInstructorName] = useState('Servant Luke');
   const [gradeLevel, setGradeLevel] = useState('Grades 1-3');
+  const [showForm, setShowForm] = useState(false);
+  const locale = useLocale();
+  const isAr = locale === 'ar';
 
   const handleSearch = useCallback((query: string) => {
     setSearchQuery(query);
@@ -119,8 +122,6 @@ export default function AdminClasses() {
       {/* List of classes */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {filteredClasses.map((c) => {
-          const locale = useLocale();
-  const isAr = locale === 'ar';
           const name = isAr ? c.nameAr : c.nameEn;
 
           return (
