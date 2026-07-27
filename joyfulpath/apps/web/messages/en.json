@@ -17,7 +17,11 @@
     "success": "Success!",
     "confirm": "Are you sure?",
     "viewAll": "View All",
-    "seeAllHistory": "See All History"
+    "seeAllHistory": "See All History",
+    "title": "Title",
+    "description": "Description",
+    "attachment": "Attachment",
+    "creating": "Creating..."
   },
   "auth": {
     "login": "Login to Path",
@@ -117,7 +121,19 @@
     "verseEn": "Memorization Verse (English)",
     "verseAr": "Memorization Verse (Arabic)",
     "unlockLevelReq": "Unlock Level Required",
-    "fillAllFields": "Error: Please fill all fields!"
+    "fillAllFields": "Error: Please fill all fields!",
+    "manage": "Publish, edit, and manage lessons for your classes.",
+    "content": "Lesson Content",
+    "create": "Create Lesson",
+    "empty": "No lessons yet",
+    "emptyDesc": "Create your first lesson to get started.",
+    "createFirst": "Create First Lesson",
+    "status": {
+      "all": "All",
+      "draft": "Draft",
+      "published": "Published",
+      "archived": "Archived"
+    }
   },
   "leaderboard": {
     "championHall": "Champion Hall",

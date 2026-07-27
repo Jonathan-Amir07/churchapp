@@ -17,7 +17,11 @@
     "success": "تم بنجاح!",
     "confirm": "هل أنت متأكد؟",
     "viewAll": "عرض الكل",
-    "seeAllHistory": "عرض كل السجل"
+    "seeAllHistory": "عرض كل السجل",
+    "title": "العنوان",
+    "description": "الوصف",
+    "attachment": "مرفق",
+    "creating": "جاري الإنشاء..."
   },
   "auth": {
     "login": "تسجيل الدخول",
@@ -117,7 +121,19 @@
     "verseEn": "آية الحفظ (بالإنجليزي)",
     "verseAr": "آية الحفظ (بالعربي)",
     "unlockLevelReq": "المستوى المطلوب لفتح الدرس مدارس الأحد",
-    "fillAllFields": "خطأ: يرجى ملء جميع الحقول!"
+    "fillAllFields": "خطأ: يرجى ملء جميع الحقول!",
+    "manage": "نشر وتعديل وإدارة الدروس لفصولك.",
+    "content": "محتوى الدرس",
+    "create": "إنشاء درس",
+    "empty": "لا توجد دروس بعد",
+    "emptyDesc": "أنشئ درسك الأول للبدء.",
+    "createFirst": "إنشاء أول درس",
+    "status": {
+      "all": "الكل",
+      "draft": "مسودة",
+      "published": "منشور",
+      "archived": "مؤرشف"
+    }
   },
   "leaderboard": {
     "championHall": "قاعة الأبطال",
