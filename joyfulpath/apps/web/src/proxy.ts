@@ -13,16 +13,14 @@ export async function proxy(request: NextRequest) {
   let user: any = null;
 
   if (isMockMode()) {
-    const mockRole = request.cookies.get('MOCK_USER_ROLE')?.value;
+    const mockRole = request.cookies.get('MOCK_USER_ROLE')?.value || 'admin';
     supabase = createMockSupabase(mockRole);
-    if (mockRole) {
-      user = {
-        id: `mock-${mockRole}-id`,
-        email: `${mockRole}@joyfulpath.org`,
-        app_metadata: { role: mockRole },
-        user_metadata: { role: mockRole },
-      };
-    }
+    user = {
+      id: `mock-${mockRole}-id`,
+      email: `${mockRole}@joyfulpath.org`,
+      app_metadata: { role: mockRole },
+      user_metadata: { role: mockRole },
+    };
   } else {
     supabase = createServerClient(
       process.env.NEXT_PUBLIC_SUPABASE_URL!,

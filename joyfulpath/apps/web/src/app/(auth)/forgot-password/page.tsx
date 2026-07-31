@@ -55,36 +55,26 @@ export default function ForgotPasswordPage() {
           </CardDescription>
         </CardHeader>
 
-        <CardContent className="p-6 pt-4">
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <Input
-              label={currentLocale === 'en' ? 'Email Address' : 'عنوان البريد الإلكتروني'}
-              type="email"
-              placeholder="explorer@path.com"
-              icon="mail"
-              disabled={loading}
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
-            />
-
-            <Button
-              type="submit"
-              variant="primary"
-              fullWidth
-              size="lg"
-              loading={loading}
-              className="mt-6"
-            >
-              {currentLocale === 'en' ? 'Send Link' : 'إرسال الرابط'}
-            </Button>
-
-            <p className="text-center text-xs font-semibold text-on-surface-variant/80 mt-4">
-              <Link href="/login" className="text-primary hover:underline">
-                {currentLocale === 'en' ? 'Back to Sign In' : 'العودة لتسجيل الدخول'}
-              </Link>
+        <CardContent className="p-6 pt-4 text-center space-y-6">
+          <div className="bg-surface-container rounded-xl p-6 text-on-surface">
+            <span className="material-symbols-outlined text-4xl text-secondary mb-3">contact_support</span>
+            <p className="text-sm font-semibold leading-relaxed">
+              {currentLocale === 'en' 
+                ? 'For security reasons, password resets are managed by the church administration. Please contact your Sunday School servant or the church office to reset your password.' 
+                : 'لأسباب أمنية، تتم إدارة إعادة تعيين كلمة المرور من قبل إدارة الكنيسة. يرجى الاتصال بخادم مدارس الأحد أو مكتب الكنيسة لإعادة تعيين كلمة المرور الخاصة بك.'}
             </p>
-          </form>
+          </div>
+
+          <Button
+            href="/login"
+            variant="outline"
+            fullWidth
+            size="lg"
+            className="mt-6"
+            as={Link}
+          >
+            {currentLocale === 'en' ? 'Back to Sign In' : 'العودة لتسجيل الدخول'}
+          </Button>
         </CardContent>
       </Card>
     </div>

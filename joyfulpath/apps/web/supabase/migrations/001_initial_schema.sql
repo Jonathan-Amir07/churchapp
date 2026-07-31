@@ -66,7 +66,7 @@ create table user_profiles (
   display_name varchar(100) not null,
   avatar_url text,
   role user_role default 'student'::user_role not null,
-  locale varchar(5) default 'en' not null,
+  locale varchar(5) default 'ar' not null,
   phone_number varchar(20),
   birth_date date,
   gender varchar(10),

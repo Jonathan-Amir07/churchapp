@@ -119,11 +119,7 @@ export default function LandingPage() {
                 : 'انضم لمنصة تعليمية مشوقة ومبتكرة تربط بين المخدومين، أولياء الأمور وخدام الكنيسة لمسار نمو روحي فريد.'}
             </p>
             <div className="flex flex-wrap gap-4 pt-4">
-              <Link href="/register">
-                <Button variant="primary" size="lg" className="rounded-full shadow-elevated px-8">
-                  {currentLocale === 'en' ? 'Join Now' : 'انضم الآن'}
-                </Button>
-              </Link>
+
               <Link href="/login">
                 <Button variant="outline" size="lg" className="rounded-full px-8 border-secondary/50 text-secondary-container hover:bg-secondary/10">
                   {currentLocale === 'en' ? 'Servant / Parent Login' : 'دخول الخدام / أولياء الأمور'}

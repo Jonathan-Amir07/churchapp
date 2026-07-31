@@ -1,7 +1,9 @@
 'use client';
 
-import { useState, useMemo, useCallback } from 'react';
+import { useState, useMemo, useCallback, useRef } from 'react';
 import { useTranslations } from 'next-intl';
+import Papa from 'papaparse';
+import bcrypt from 'bcryptjs';
 import { Card, CardContent, CardTitle, Button, Modal, Input, BadgeTag, SearchBar } from '@/components/ui';
 import { useNotificationStore } from '@/stores/notifications.store';
 
@@ -10,12 +12,13 @@ interface UserAccount {
   name: string;
   usernameOrEmail: string;
   role: 'student' | 'admin' | 'parent' | 'instructor';
+  isActive?: boolean;
 }
 
 const INITIAL_USERS: UserAccount[] = [
-  { id: '1', name: 'Jonathan Amir', usernameOrEmail: 'admin1@joyfulpath.org', role: 'admin' },
-  { id: '2', name: 'Servant Luke', usernameOrEmail: 'admin2@joyfulpath.org', role: 'admin' },
-  { id: '3', name: 'Mark Faith', usernameOrEmail: 'student1', role: 'student' },
+  { id: '1', name: 'Jonathan Amir', usernameOrEmail: 'admin1@joyfulpath.org', role: 'admin', isActive: true },
+  { id: '2', name: 'Servant Luke', usernameOrEmail: 'instructor1@joyfulpath.org', role: 'instructor', isActive: true },
+  { id: '3', name: 'Mark Faith', usernameOrEmail: 'student1', role: 'student', isActive: true },
 ];
 
 export default function AdminUsers() {
@@ -30,7 +33,14 @@ export default function AdminUsers() {
   
   // Modals state
   const [isOpenAdd, setIsOpenAdd] = useState(false);
+  const [isOpenEdit, setIsOpenEdit] = useState(false);
+  const [isOpenResetPwd, setIsOpenResetPwd] = useState(false);
   const [isOpenImport, setIsOpenImport] = useState(false);
+  const [editingUserId, setEditingUserId] = useState<string | null>(null);
+  const [resettingUserId, setResettingUserId] = useState<string | null>(null);
+  
+  const [importSummary, setImportSummary] = useState<{ success: number; failed: number; errors: string[] } | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   // Form states
   const [name, setName] = useState('');
@@ -70,11 +80,12 @@ export default function AdminUsers() {
       name,
       usernameOrEmail,
       role,
+      isActive: true,
     };
 
     setUsers((prev) => [newUser, ...prev]);
     setIsOpenAdd(false);
-    addToast(tUsers('addSuccess'), 'success');
+    addToast(tUsers('addSuccess') || 'User created successfully', 'success');
 
     // Reset Form
     setName('');
@@ -83,15 +94,130 @@ export default function AdminUsers() {
     setRole('student');
   }, [name, usernameOrEmail, passwordOrPin, role, users.length, addToast, tUsers]);
 
-  const handleDeleteUser = useCallback((id: string) => {
-    setUsers((prev) => prev.filter((u) => u.id !== id));
-    addToast(tCommon('success'), 'success');
+  const openEditModal = useCallback((user: UserAccount) => {
+    setEditingUserId(user.id);
+    setName(user.name);
+    setUsernameOrEmail(user.usernameOrEmail);
+    setRole(user.role);
+    setIsOpenEdit(true);
+  }, []);
+
+  const handleEditUser = useCallback((e: React.FormEvent) => {
+    e.preventDefault();
+    setUsers(prev => prev.map(u => u.id === editingUserId ? { ...u, name, usernameOrEmail, role } : u));
+    setIsOpenEdit(false);
+    addToast('User updated successfully', 'success');
+  }, [editingUserId, name, usernameOrEmail, role, addToast]);
+
+  const toggleUserActive = useCallback((id: string, currentStatus: boolean) => {
+    setUsers(prev => prev.map(u => u.id === id ? { ...u, isActive: !currentStatus } : u));
+    addToast(`User ${!currentStatus ? 'activated' : 'deactivated'} successfully`, 'success');
   }, [addToast]);
 
-  const handleMockImport = useCallback(() => {
-    setIsOpenImport(false);
-    addToast(tUsers('importSuccess'), 'success');
-  }, [addToast, tUsers]);
+  const openResetPasswordModal = useCallback((id: string) => {
+    setResettingUserId(id);
+    setPasswordOrPin('');
+    setIsOpenResetPwd(true);
+  }, []);
+
+  const handleResetPassword = useCallback((e: React.FormEvent) => {
+    e.preventDefault();
+    // Simulate password reset (hash it in real app)
+    if (passwordOrPin) {
+       bcrypt.hashSync(passwordOrPin, 10);
+    }
+    addToast('Password reset successfully', 'success');
+    setIsOpenResetPwd(false);
+  }, [passwordOrPin, addToast]);
+
+  const handleDeleteUser = useCallback((id: string) => {
+    if (confirm('Are you sure you want to delete this user?')) {
+      setUsers((prev) => prev.filter((u) => u.id !== id));
+      addToast(tCommon('success') || 'User deleted successfully', 'success');
+    }
+  }, [addToast, tCommon]);
+
+  const downloadTemplate = () => {
+    const csvContent = 'name,usernameOrEmail,role,password\nJohn Doe,john@joyfulpath.org,student,password123';
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.setAttribute('download', 'users_template.csv');
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
+  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    Papa.parse(file, {
+      header: true,
+      skipEmptyLines: true,
+      complete: (results) => {
+        const rows = results.data as any[];
+        let successCount = 0;
+        let failedCount = 0;
+        const errors: string[] = [];
+        const newUsers: UserAccount[] = [];
+
+        const existingEmails = new Set(users.map(u => u.usernameOrEmail.toLowerCase()));
+
+        for (const [index, row] of rows.entries()) {
+          const rowNum = index + 2;
+          const { name, usernameOrEmail, role, password } = row;
+
+          if (!name || !usernameOrEmail || !role || !password) {
+            errors.push(`Row ${rowNum}: Missing required fields.`);
+            failedCount++;
+            continue;
+          }
+
+          const roleLower = role.toLowerCase();
+          if (!['student', 'admin', 'parent', 'instructor'].includes(roleLower)) {
+            errors.push(`Row ${rowNum}: Invalid role "${role}".`);
+            failedCount++;
+            continue;
+          }
+
+          if (existingEmails.has(usernameOrEmail.toLowerCase())) {
+            errors.push(`Row ${rowNum}: Duplicate username/email "${usernameOrEmail}".`);
+            failedCount++;
+            continue;
+          }
+          
+          existingEmails.add(usernameOrEmail.toLowerCase());
+
+          // Password hashing
+          const hashedPassword = bcrypt.hashSync(password, 10);
+
+          newUsers.push({
+            id: `imported-${Date.now()}-${index}`,
+            name,
+            usernameOrEmail,
+            role: roleLower as any,
+            isActive: true,
+          });
+          
+          successCount++;
+        }
+
+        if (newUsers.length > 0) {
+          setUsers(prev => [...newUsers, ...prev]);
+        }
+
+        setImportSummary({ success: successCount, failed: failedCount, errors });
+        addToast(tUsers('importSuccess') || 'Import completed', 'success');
+        if (fileInputRef.current) fileInputRef.current.value = '';
+      },
+      error: (error) => {
+        addToast('Error parsing CSV file.', 'error');
+        if (fileInputRef.current) fileInputRef.current.value = '';
+      }
+    });
+  };
 
   return (
     <div className="space-y-6 animate-[slide-up_0.4s_ease-out]">
@@ -151,6 +277,7 @@ export default function AdminUsers() {
                   <th className="px-6 py-4 text-start">{tUsers('fullName')}</th>
                   <th className="px-6 py-4 text-start">{tUsers('username')} / Email</th>
                   <th className="px-6 py-4 text-start">{tUsers('role')}</th>
+                  <th className="px-6 py-4 text-start">Status</th>
                   <th className="px-6 py-4 text-end">Actions</th>
                 </tr>
               </thead>
@@ -164,15 +291,26 @@ export default function AdminUsers() {
                         {user.role}
                       </BadgeTag>
                     </td>
+                    <td className="px-6 py-4">
+                      <BadgeTag variant={user.isActive === false ? 'error' : 'success'}>
+                        {user.isActive === false ? 'Inactive' : 'Active'}
+                      </BadgeTag>
+                    </td>
                     <td className="px-6 py-4 text-end">
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        className="text-error hover:bg-error/10"
-                        onClick={() => handleDeleteUser(user.id)}
-                      >
-                        {tCommon('delete')}
-                      </Button>
+                      <div className="flex justify-end gap-2">
+                        <Button variant="ghost" size="sm" onClick={() => toggleUserActive(user.id, user.isActive !== false)} title={user.isActive === false ? "Activate" : "Deactivate"}>
+                          <span className="material-symbols-outlined text-xl">{user.isActive === false ? 'check_circle' : 'block'}</span>
+                        </Button>
+                        <Button variant="ghost" size="sm" onClick={() => openResetPasswordModal(user.id)} title="Reset Password">
+                          <span className="material-symbols-outlined text-xl">key</span>
+                        </Button>
+                        <Button variant="ghost" size="sm" onClick={() => openEditModal(user)} title="Edit">
+                          <span className="material-symbols-outlined text-xl">edit</span>
+                        </Button>
+                        <Button variant="ghost" size="sm" className="text-error hover:bg-error/10" onClick={() => handleDeleteUser(user.id)} title="Delete">
+                          <span className="material-symbols-outlined text-xl">delete</span>
+                        </Button>
+                      </div>
                     </td>
                   </tr>
                 ))}
@@ -217,10 +355,71 @@ export default function AdminUsers() {
 
             <div className="flex gap-3 justify-end pt-4 border-t border-outline-variant">
               <Button variant="outline" size="sm" type="button" onClick={() => setIsOpenAdd(false)}>
-                {tCommon('cancel')}
+                {tCommon('cancel') || 'Cancel'}
               </Button>
               <Button variant="primary" size="sm" type="submit">
-                {tCommon('create')}
+                {tCommon('create') || 'Create'}
+              </Button>
+            </div>
+          </form>
+        </Modal>
+      )}
+
+      {/* Edit User Modal */}
+      {isOpenEdit && (
+        <Modal isOpen={true} onClose={() => setIsOpenEdit(false)} title="Edit User">
+          <form onSubmit={handleEditUser} className="space-y-4 pt-2">
+            <div className="space-y-1.5">
+              <label className="text-xs font-bold text-on-surface-variant">{tUsers('fullName')}</label>
+              <Input required value={name} onChange={(e) => setName(e.target.value)} />
+            </div>
+
+            <div className="space-y-1.5">
+              <label className="text-xs font-bold text-on-surface-variant">{tUsers('username')} / {tUsers('email')}</label>
+              <Input required value={usernameOrEmail} onChange={(e) => setUsernameOrEmail(e.target.value)} />
+            </div>
+
+            <div className="space-y-1.5">
+              <label className="text-xs font-bold text-on-surface-variant">{tUsers('role')}</label>
+              <select
+                value={role}
+                onChange={(e) => setRole(e.target.value as any)}
+                className="w-full p-3 rounded-xl border border-outline-variant bg-surface-container-low text-on-surface text-sm font-medium"
+              >
+                <option value="student">{tUsers('studentRole')}</option>
+                <option value="parent">{tUsers('parentRole')}</option>
+                <option value="instructor">{tUsers('instructorRole')}</option>
+                <option value="admin">{tUsers('adminRole')}</option>
+              </select>
+            </div>
+
+            <div className="flex gap-3 justify-end pt-4 border-t border-outline-variant">
+              <Button variant="outline" size="sm" type="button" onClick={() => setIsOpenEdit(false)}>
+                {tCommon('cancel') || 'Cancel'}
+              </Button>
+              <Button variant="primary" size="sm" type="submit">
+                Save Changes
+              </Button>
+            </div>
+          </form>
+        </Modal>
+      )}
+
+      {/* Reset Password Modal */}
+      {isOpenResetPwd && (
+        <Modal isOpen={true} onClose={() => setIsOpenResetPwd(false)} title="Reset Password">
+          <form onSubmit={handleResetPassword} className="space-y-4 pt-2">
+            <div className="space-y-1.5">
+              <label className="text-xs font-bold text-on-surface-variant">New Password / PIN</label>
+              <Input type="password" required value={passwordOrPin} onChange={(e) => setPasswordOrPin(e.target.value)} />
+            </div>
+
+            <div className="flex gap-3 justify-end pt-4 border-t border-outline-variant">
+              <Button variant="outline" size="sm" type="button" onClick={() => setIsOpenResetPwd(false)}>
+                {tCommon('cancel') || 'Cancel'}
+              </Button>
+              <Button variant="primary" size="sm" type="submit">
+                Reset Password
               </Button>
             </div>
           </form>
@@ -229,18 +428,56 @@ export default function AdminUsers() {
 
       {/* CSV Import Modal */}
       {isOpenImport && (
-        <Modal isOpen={true} onClose={() => setIsOpenImport(false)} title={tUsers('csvImport')}>
-          <div className="space-y-4 pt-2 text-center">
-            <div className="p-8 border-2 border-dashed border-outline-variant rounded-2xl bg-surface-container-low flex flex-col items-center gap-2">
-              <span className="material-symbols-outlined text-[48px] text-primary">upload_file</span>
-              <p className="text-sm font-bold text-on-surface">{tUsers('dragDrop')}</p>
-            </div>
+        <Modal isOpen={true} onClose={() => { setIsOpenImport(false); setImportSummary(null); }} title={tUsers('csvImport') || 'Bulk Import Users'}>
+          <div className="space-y-4 pt-2">
+            {!importSummary ? (
+              <>
+                <div className="flex justify-between items-center bg-surface-container-low p-4 rounded-xl border border-outline-variant">
+                  <div>
+                    <h4 className="font-bold text-sm text-on-surface">CSV Template</h4>
+                    <p className="text-xs text-on-surface-variant">Download the template to see the required format.</p>
+                  </div>
+                  <Button variant="outline" size="sm" onClick={downloadTemplate} icon="download">
+                    Template
+                  </Button>
+                </div>
+                
+                <div 
+                  className="p-8 border-2 border-dashed border-outline-variant rounded-2xl bg-surface-container-low flex flex-col items-center gap-4 cursor-pointer hover:bg-surface-container transition-colors"
+                  onClick={() => fileInputRef.current?.click()}
+                >
+                  <input type="file" accept=".csv" className="hidden" ref={fileInputRef} onChange={handleFileUpload} />
+                  <span className="material-symbols-outlined text-[48px] text-primary">upload_file</span>
+                  <p className="text-sm font-bold text-on-surface">{tUsers('dragDrop') || 'Click to select CSV file'}</p>
+                </div>
+              </>
+            ) : (
+              <div className="space-y-4">
+                <div className="flex gap-4">
+                  <div className="flex-1 bg-success/10 border border-success/30 p-4 rounded-xl text-center">
+                    <div className="text-2xl font-black text-success">{importSummary.success}</div>
+                    <div className="text-xs font-bold text-success">Imported</div>
+                  </div>
+                  <div className="flex-1 bg-error/10 border border-error/30 p-4 rounded-xl text-center">
+                    <div className="text-2xl font-black text-error">{importSummary.failed}</div>
+                    <div className="text-xs font-bold text-error">Failed</div>
+                  </div>
+                </div>
+                
+                {importSummary.errors.length > 0 && (
+                  <div className="bg-surface-container-lowest border border-error/20 p-4 rounded-xl max-h-40 overflow-y-auto">
+                    <h5 className="text-xs font-bold text-error mb-2">Errors:</h5>
+                    <ul className="text-xs text-on-surface-variant space-y-1 list-disc pl-4">
+                      {importSummary.errors.map((err, i) => <li key={i}>{err}</li>)}
+                    </ul>
+                  </div>
+                )}
+              </div>
+            )}
+            
             <div className="flex gap-3 justify-end pt-4 border-t border-outline-variant">
-              <Button variant="outline" size="sm" onClick={() => setIsOpenImport(false)}>
-                {tCommon('cancel')}
-              </Button>
-              <Button variant="primary" size="sm" onClick={handleMockImport}>
-                {tUsers('mockImport')}
+              <Button variant="outline" size="sm" onClick={() => { setIsOpenImport(false); setImportSummary(null); }}>
+                {tCommon('close') || 'Close'}
               </Button>
             </div>
           </div>

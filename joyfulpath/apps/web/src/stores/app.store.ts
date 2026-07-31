@@ -206,7 +206,41 @@ export const useAppStore = create<AppState>()(
         }
       ],
       
-      tasks: [],
+      tasks: [
+        {
+          id: 't1',
+          studentName: 'Jonathan',
+          taskTitleEn: 'Memorize Genesis 1:1 Verse',
+          taskTitleAr: 'تسميع آية تكوين ١:١',
+          submissionText: '',
+          submittedAt: '',
+          points: 30,
+          classId: 'c1',
+          status: 'not_started',
+        },
+        {
+          id: 't2',
+          studentName: 'Jonathan',
+          taskTitleEn: 'Draw the Creation Days Activity',
+          taskTitleAr: 'نشاط رسم أيام الخليقة',
+          submissionText: '',
+          submittedAt: '',
+          points: 30,
+          classId: 'c1',
+          status: 'not_started',
+        },
+        {
+          id: 't3',
+          studentName: 'Jonathan',
+          taskTitleEn: "Color Noah's Ark Illustration",
+          taskTitleAr: 'تلوين رسمة فلك نوح',
+          submissionText: '',
+          submittedAt: '',
+          points: 30,
+          classId: 'c1',
+          status: 'not_started',
+        },
+      ],
       
       quizzes: [
         {
@@ -559,6 +593,16 @@ export const useAppStore = create<AppState>()(
             ...quiz,
             id: Math.random().toString(),
             status: 'not-started',
+            questions: quiz.questions && quiz.questions.length > 0 ? quiz.questions : [
+              {
+                id: Math.random().toString(),
+                textEn: `Quiz Question on ${quiz.titleEn}`,
+                textAr: `سؤال حول ${quiz.titleAr}`,
+                optionsEn: ['Option 1', 'Option 2', 'Option 3', 'Option 4'],
+                optionsAr: ['الخيار ١', 'الخيار ٢', 'الخيار ٣', 'الخيار ٤'],
+                correctIndex: 0,
+              }
+            ]
           },
           ...state.quizzes
         ]

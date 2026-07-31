@@ -87,6 +87,14 @@ export default function LoginPage() {
       } else {
         addToast(tCommon('success'), 'success');
         
+        // Check if user has changed their password (first login check)
+        const hasChangedPassword = document.cookie.includes('HAS_CHANGED_PASSWORD=true');
+        if (!hasChangedPassword) {
+          router.refresh();
+          router.push('/change-password');
+          return;
+        }
+
         // Get user role from app metadata
         const user = data.user;
         const rawRole = user?.app_metadata?.role || user?.user_metadata?.role || 'student';
@@ -306,14 +314,8 @@ export default function LoginPage() {
             >
               {currentLocale === 'en' ? 'Continue with Google' : 'الاستمرار باستخدام جوجل'}
             </Button>
-
-            <p className="text-center text-xs font-bold text-on-surface-variant/80 pt-6">
-              {currentLocale === 'en' ? "Don't have an account?" : 'ليس لديك حساب؟'}{' '}
-              <Link href="/register" className="text-primary hover:underline font-black">
-                {currentLocale === 'en' ? 'Register Now' : 'سجل الآن'}
-              </Link>
-            </p>
           </form>
+
 
         </div>
       </Card>

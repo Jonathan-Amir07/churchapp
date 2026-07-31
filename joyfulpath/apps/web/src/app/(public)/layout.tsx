@@ -87,11 +87,6 @@ export default function PublicLayout({
                 {currentLocale === 'en' ? 'Sign In' : 'تسجيل الدخول'}
               </Button>
             </Link>
-            <Link href="/register">
-              <Button variant="primary" size="sm" className="rounded-full">
-                {currentLocale === 'en' ? 'Get Started' : 'ابدأ الآن'}
-              </Button>
-            </Link>
           </div>
 
           {/* Mobile Menu Button */}
@@ -160,11 +155,6 @@ export default function PublicLayout({
               <Link href="/login" onClick={() => setMobileMenuOpen(false)} className="w-full">
                 <Button variant="outline" fullWidth>
                   {currentLocale === 'en' ? 'Sign In' : 'تسجيل الدخول'}
-                </Button>
-              </Link>
-              <Link href="/register" onClick={() => setMobileMenuOpen(false)} className="w-full">
-                <Button variant="primary" fullWidth>
-                  {currentLocale === 'en' ? 'Get Started' : 'ابدأ الآن'}
                 </Button>
               </Link>
             </div>

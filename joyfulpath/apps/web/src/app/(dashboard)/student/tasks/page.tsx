@@ -1,4 +1,4 @@
-﻿'use client';
+'use client';
 
 import { useState, useRef, useEffect } from 'react';
 import { createClient } from '@/lib/supabase/client';
@@ -167,6 +167,11 @@ export default function StudentTasks() {
           const instructions = isAr ? task.instructionsAr : task.instructionsEn;
           const feedback = isAr ? task.feedbackAr : task.feedbackEn;
 
+          const isNotStarted = task.status === 'not-started' || task.status === 'not_started';
+          const isPending = task.status === 'pending';
+          const isApproved = task.status === 'approved';
+          const isRevise = task.status === 'revise' || task.status === 'rejected';
+
           return (
             <Card key={task.id} className="border border-outline-variant bg-surface-container-lowest shadow-sm">
               <CardContent className="p-6 flex flex-col md:flex-row md:items-center justify-between gap-6">
@@ -174,24 +179,22 @@ export default function StudentTasks() {
                   <div className="flex items-center gap-3 flex-wrap">
                     <BadgeTag
                       variant={
-                        task.status === 'approved'
+                        isApproved
                           ? 'success'
-                          : task.status === 'pending'
+                          : isPending
                           ? 'warning'
-                          : task.status === 'revise'
+                          : isRevise
                           ? 'error'
                           : 'outline'
                       }
                     >
-                      {tTasks(
-                        task.status === 'approved'
-                          ? 'statusApproved'
-                          : task.status === 'pending'
-                          ? 'statusPending'
-                          : task.status === 'revise'
-                          ? 'statusRevise'
-                          : 'statusRevise'
-                      )}
+                      {isApproved
+                        ? tTasks('statusApproved')
+                        : isPending
+                        ? tTasks('statusPending')
+                        : isRevise
+                        ? tTasks('statusRevise')
+                        : (isAr ? 'لم يكتمل' : 'Not Started')}
                     </BadgeTag>
                     <span className="text-xs font-black text-secondary">
                       {tTasks('pointsValue', { points: task.points })}
@@ -237,7 +240,7 @@ export default function StudentTasks() {
                 </div>
 
                 <div className="flex items-center">
-                  {(task.status === 'not-started' || task.status === 'revise') && (
+                  {(isNotStarted || isRevise) && (
                     <Button variant="primary" size="sm" onClick={() => handleOpenSubmit(task)}>
                       {tTasks('submitTask')}
                     </Button>

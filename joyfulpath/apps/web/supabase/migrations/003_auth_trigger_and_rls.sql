@@ -39,7 +39,7 @@ begin
     coalesce(new.raw_user_meta_data->>'last_name', ''),
     default_display_name,
     coalesce((new.raw_user_meta_data->>'role')::user_role, 'student'::user_role),
-    coalesce(new.raw_user_meta_data->>'locale', 'en'),
+    coalesce(new.raw_user_meta_data->>'locale', 'ar'),
     new.raw_user_meta_data->>'phone_number',
     new.raw_user_meta_data->>'avatar_url'
   );
