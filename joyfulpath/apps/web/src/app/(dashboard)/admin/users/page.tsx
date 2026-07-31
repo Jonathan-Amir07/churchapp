@@ -1,9 +1,8 @@
 'use client';
 
-import { useState, useMemo, useCallback, useRef } from 'react';
+import { useState, useMemo, useCallback, useRef, useEffect } from 'react';
 import { useTranslations } from 'next-intl';
 import Papa from 'papaparse';
-import bcrypt from 'bcryptjs';
 import { Card, CardContent, CardTitle, Button, Modal, Input, BadgeTag, SearchBar } from '@/components/ui';
 import { useNotificationStore } from '@/stores/notifications.store';
 
@@ -15,19 +14,14 @@ interface UserAccount {
   isActive?: boolean;
 }
 
-const INITIAL_USERS: UserAccount[] = [
-  { id: '1', name: 'Jonathan Amir', usernameOrEmail: 'admin1@joyfulpath.org', role: 'admin', isActive: true },
-  { id: '2', name: 'Servant Luke', usernameOrEmail: 'instructor1@joyfulpath.org', role: 'instructor', isActive: true },
-  { id: '3', name: 'Mark Faith', usernameOrEmail: 'student1', role: 'student', isActive: true },
-];
-
 export default function AdminUsers() {
   const tNav = useTranslations('nav');
   const tUsers = useTranslations('users');
   const tCommon = useTranslations('common');
   const addToast = useNotificationStore(s => s.addToast);
 
-  const [users, setUsers] = useState<UserAccount[]>(INITIAL_USERS);
+  const [users, setUsers] = useState<UserAccount[]>([]);
+  const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState<'all' | 'admin' | 'student' | 'parent' | 'instructor'>('all');
   const [searchQuery, setSearchQuery] = useState('');
   
@@ -47,6 +41,25 @@ export default function AdminUsers() {
   const [usernameOrEmail, setUsernameOrEmail] = useState('');
   const [passwordOrPin, setPasswordOrPin] = useState('');
   const [role, setRole] = useState<'student' | 'admin' | 'parent' | 'instructor'>('student');
+
+  useEffect(() => {
+    fetchUsers();
+  }, []);
+
+  const fetchUsers = async () => {
+    setLoading(true);
+    try {
+      const res = await fetch('/api/users');
+      if (res.ok) {
+        const data = await res.json();
+        setUsers(data);
+      }
+    } catch (e) {
+      console.error(e);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleSearch = useCallback((query: string) => {
     setSearchQuery(query);
@@ -68,31 +81,35 @@ export default function AdminUsers() {
     });
   }, [users, filter, searchQuery]);
 
-  const handleAddUser = useCallback((e: React.FormEvent) => {
+  const handleAddUser = useCallback(async (e: React.FormEvent) => {
     e.preventDefault();
     if (!name || !usernameOrEmail || !passwordOrPin) {
       addToast(tCommon('error'), 'error');
       return;
     }
 
-    const newUser: UserAccount = {
-      id: String(users.length + 1),
-      name,
-      usernameOrEmail,
-      role,
-      isActive: true,
-    };
+    try {
+      const res = await fetch('/api/users', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name, usernameOrEmail, passwordOrPin, role }),
+      });
 
-    setUsers((prev) => [newUser, ...prev]);
-    setIsOpenAdd(false);
-    addToast(tUsers('addSuccess') || 'User created successfully', 'success');
+      if (!res.ok) throw new Error('Failed to create');
+      
+      const newUser = await res.json();
+      setUsers((prev) => [newUser, ...prev]);
+      setIsOpenAdd(false);
+      addToast(tUsers('addSuccess') || 'User created successfully', 'success');
 
-    // Reset Form
-    setName('');
-    setUsernameOrEmail('');
-    setPasswordOrPin('');
-    setRole('student');
-  }, [name, usernameOrEmail, passwordOrPin, role, users.length, addToast, tUsers]);
+      setName('');
+      setUsernameOrEmail('');
+      setPasswordOrPin('');
+      setRole('student');
+    } catch (error) {
+      addToast('Failed to create user', 'error');
+    }
+  }, [name, usernameOrEmail, passwordOrPin, role, addToast, tUsers]);
 
   const openEditModal = useCallback((user: UserAccount) => {
     setEditingUserId(user.id);
@@ -102,16 +119,38 @@ export default function AdminUsers() {
     setIsOpenEdit(true);
   }, []);
 
-  const handleEditUser = useCallback((e: React.FormEvent) => {
+  const handleEditUser = useCallback(async (e: React.FormEvent) => {
     e.preventDefault();
-    setUsers(prev => prev.map(u => u.id === editingUserId ? { ...u, name, usernameOrEmail, role } : u));
-    setIsOpenEdit(false);
-    addToast('User updated successfully', 'success');
+    try {
+      const res = await fetch(`/api/users/${editingUserId}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name, usernameOrEmail, role }),
+      });
+      if (!res.ok) throw new Error();
+      
+      setUsers(prev => prev.map(u => u.id === editingUserId ? { ...u, name, usernameOrEmail, role } : u));
+      setIsOpenEdit(false);
+      addToast('User updated successfully', 'success');
+    } catch (e) {
+      addToast('Failed to update user', 'error');
+    }
   }, [editingUserId, name, usernameOrEmail, role, addToast]);
 
-  const toggleUserActive = useCallback((id: string, currentStatus: boolean) => {
-    setUsers(prev => prev.map(u => u.id === id ? { ...u, isActive: !currentStatus } : u));
-    addToast(`User ${!currentStatus ? 'activated' : 'deactivated'} successfully`, 'success');
+  const toggleUserActive = useCallback(async (id: string, currentStatus: boolean) => {
+    try {
+      const res = await fetch(`/api/users/${id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ isActive: !currentStatus }),
+      });
+      if (!res.ok) throw new Error();
+      
+      setUsers(prev => prev.map(u => u.id === id ? { ...u, isActive: !currentStatus } : u));
+      addToast(`User ${!currentStatus ? 'activated' : 'deactivated'} successfully`, 'success');
+    } catch (e) {
+      addToast('Failed to change status', 'error');
+    }
   }, [addToast]);
 
   const openResetPasswordModal = useCallback((id: string) => {
@@ -120,20 +159,34 @@ export default function AdminUsers() {
     setIsOpenResetPwd(true);
   }, []);
 
-  const handleResetPassword = useCallback((e: React.FormEvent) => {
+  const handleResetPassword = useCallback(async (e: React.FormEvent) => {
     e.preventDefault();
-    // Simulate password reset (hash it in real app)
-    if (passwordOrPin) {
-       bcrypt.hashSync(passwordOrPin, 10);
+    if (!passwordOrPin) return;
+    try {
+      const res = await fetch(`/api/users/${resettingUserId}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ passwordOrPin }),
+      });
+      if (!res.ok) throw new Error();
+      
+      addToast('Password reset successfully', 'success');
+      setIsOpenResetPwd(false);
+    } catch (e) {
+      addToast('Failed to reset password', 'error');
     }
-    addToast('Password reset successfully', 'success');
-    setIsOpenResetPwd(false);
-  }, [passwordOrPin, addToast]);
+  }, [passwordOrPin, resettingUserId, addToast]);
 
-  const handleDeleteUser = useCallback((id: string) => {
+  const handleDeleteUser = useCallback(async (id: string) => {
     if (confirm('Are you sure you want to delete this user?')) {
-      setUsers((prev) => prev.filter((u) => u.id !== id));
-      addToast(tCommon('success') || 'User deleted successfully', 'success');
+      try {
+        const res = await fetch(`/api/users/${id}`, { method: 'DELETE' });
+        if (!res.ok) throw new Error();
+        setUsers((prev) => prev.filter((u) => u.id !== id));
+        addToast(tCommon('success') || 'User deleted successfully', 'success');
+      } catch (e) {
+        addToast('Failed to delete user', 'error');
+      }
     }
   }, [addToast, tCommon]);
 
@@ -282,38 +335,52 @@ export default function AdminUsers() {
                 </tr>
               </thead>
               <tbody className="divide-y divide-outline-variant/40">
-                {filteredUsers.map((user) => (
-                  <tr key={user.id} className="hover:bg-surface-container-low/40 transition duration-150">
-                    <td className="px-6 py-4 font-black text-on-surface">{user.name}</td>
-                    <td className="px-6 py-4 text-on-surface-variant">{user.usernameOrEmail}</td>
-                    <td className="px-6 py-4">
-                      <BadgeTag variant={user.role === 'admin' ? 'primary' : user.role === 'instructor' ? 'secondary' : user.role === 'parent' ? 'outline' : 'outline'}>
-                        {user.role}
-                      </BadgeTag>
-                    </td>
-                    <td className="px-6 py-4">
-                      <BadgeTag variant={user.isActive === false ? 'error' : 'success'}>
-                        {user.isActive === false ? 'Inactive' : 'Active'}
-                      </BadgeTag>
-                    </td>
-                    <td className="px-6 py-4 text-end">
-                      <div className="flex justify-end gap-2">
-                        <Button variant="ghost" size="sm" onClick={() => toggleUserActive(user.id, user.isActive !== false)} title={user.isActive === false ? "Activate" : "Deactivate"}>
-                          <span className="material-symbols-outlined text-xl">{user.isActive === false ? 'check_circle' : 'block'}</span>
-                        </Button>
-                        <Button variant="ghost" size="sm" onClick={() => openResetPasswordModal(user.id)} title="Reset Password">
-                          <span className="material-symbols-outlined text-xl">key</span>
-                        </Button>
-                        <Button variant="ghost" size="sm" onClick={() => openEditModal(user)} title="Edit">
-                          <span className="material-symbols-outlined text-xl">edit</span>
-                        </Button>
-                        <Button variant="ghost" size="sm" className="text-error hover:bg-error/10" onClick={() => handleDeleteUser(user.id)} title="Delete">
-                          <span className="material-symbols-outlined text-xl">delete</span>
-                        </Button>
-                      </div>
+                {loading ? (
+                  <tr>
+                    <td colSpan={5} className="text-center py-8 text-on-surface-variant font-medium">
+                      Loading users...
                     </td>
                   </tr>
-                ))}
+                ) : filteredUsers.length === 0 ? (
+                  <tr>
+                    <td colSpan={5} className="text-center py-8 text-on-surface-variant font-medium">
+                      No users found.
+                    </td>
+                  </tr>
+                ) : (
+                  filteredUsers.map((user) => (
+                    <tr key={user.id} className="hover:bg-surface-container-low/40 transition duration-150">
+                      <td className="px-6 py-4 font-black text-on-surface">{user.name}</td>
+                      <td className="px-6 py-4 text-on-surface-variant">{user.usernameOrEmail}</td>
+                      <td className="px-6 py-4">
+                        <BadgeTag variant={user.role === 'admin' ? 'primary' : user.role === 'instructor' ? 'secondary' : user.role === 'parent' ? 'outline' : 'outline'}>
+                          {user.role}
+                        </BadgeTag>
+                      </td>
+                      <td className="px-6 py-4">
+                        <BadgeTag variant={user.isActive === false ? 'error' : 'success'}>
+                          {user.isActive === false ? 'Inactive' : 'Active'}
+                        </BadgeTag>
+                      </td>
+                      <td className="px-6 py-4 text-end">
+                        <div className="flex justify-end gap-2">
+                          <Button variant="ghost" size="sm" onClick={() => toggleUserActive(user.id, user.isActive !== false)} title={user.isActive === false ? "Activate" : "Deactivate"}>
+                            <span className="material-symbols-outlined text-xl">{user.isActive === false ? 'check_circle' : 'block'}</span>
+                          </Button>
+                          <Button variant="ghost" size="sm" onClick={() => openResetPasswordModal(user.id)} title="Reset Password">
+                            <span className="material-symbols-outlined text-xl">key</span>
+                          </Button>
+                          <Button variant="ghost" size="sm" onClick={() => openEditModal(user)} title="Edit">
+                            <span className="material-symbols-outlined text-xl">edit</span>
+                          </Button>
+                          <Button variant="ghost" size="sm" className="text-error hover:bg-error/10" onClick={() => handleDeleteUser(user.id)} title="Delete">
+                            <span className="material-symbols-outlined text-xl">delete</span>
+                          </Button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))
+                )}
               </tbody>
             </table>
           </div>

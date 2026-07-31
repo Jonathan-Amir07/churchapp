@@ -1,1 +1,1 @@
-// @joyfulpath/database entry point
+export * from '@prisma/client';
