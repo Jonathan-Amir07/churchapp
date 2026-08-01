@@ -22,7 +22,7 @@ export function setCookie(name: string, val: string) {
 
 export function deleteCookie(name: string) {
   if (typeof document !== 'undefined')
-    document.cookie = `${name}=; path=/; max-age=0`;
+    document.cookie = `${name}=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT`;
 }
 
 // ─── Mock users & profiles ───────────────────────────────────────────────────
@@ -387,6 +387,13 @@ export const createMockSupabase = (currentRole?: string) => {
       onAuthStateChange: (_cb: any) => ({
         data: { subscription: { unsubscribe: () => {} } },
       }),
+      updateUser: async (attributes: any) => {
+        const role = getCookie('MOCK_USER_ROLE') || getActiveRole();
+        return { data: { user: getMockUser(role) }, error: null };
+      },
+      resetPasswordForEmail: async (email: string) => {
+        return { data: {}, error: null };
+      },
     },
 
     storage: {

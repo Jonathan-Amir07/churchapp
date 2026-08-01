@@ -40,9 +40,22 @@ export function Topbar() {
   };
 
   const handleLogout = async () => {
-    await supabase.auth.signOut();
-    router.push('/login');
-    router.refresh();
+    try {
+      await supabase.auth.signOut();
+    } catch(e) {}
+    
+    // Clear all cookies
+    document.cookie.split(";").forEach((c) => {
+      document.cookie = c
+        .replace(/^ +/, "")
+        .replace(/=.*/, "=;expires=" + new Date().toUTCString() + ";path=/");
+    });
+    
+    // Clear storage
+    localStorage.clear();
+    sessionStorage.clear();
+    
+    window.location.href = '/login';
   };
 
   const user = profile;

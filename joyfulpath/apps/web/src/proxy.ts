@@ -1,6 +1,29 @@
-import { createServerClient } from '@supabase/ssr';
 import { NextResponse, type NextRequest } from 'next/server';
-import { isMockMode, createMockSupabase } from './lib/supabase/mockClient';
+import { isMockMode } from './lib/supabase/mockClient';
+
+/**
+ * Role hierarchy for route-level access control.
+ * This mirrors the definitions in lib/rbac.ts but runs in Edge middleware
+ * (no Prisma access), so we use simple string checks.
+ */
+
+// Roles that can access /admin/* dashboard pages
+const ADMIN_DASHBOARD_ROLES = ['priest', 'admin', 'instructor'];
+
+// Admin pages blocked for instructors (user management, system settings, etc.)
+const INSTRUCTOR_BLOCKED_ADMIN_PATHS = [
+  '/admin/users',
+  '/admin/settings',
+  '/admin/approvals',
+  '/admin/permissions',
+  '/admin/files',
+];
+
+// Priest-only admin pages (system-level management)
+const PRIEST_ONLY_ADMIN_PATHS = [
+  '/admin/settings',
+  '/admin/permissions',
+];
 
 export async function proxy(request: NextRequest) {
   let response = NextResponse.next({
@@ -9,117 +32,112 @@ export async function proxy(request: NextRequest) {
     },
   });
 
-  let supabase: any;
   let user: any = null;
 
   if (isMockMode()) {
-    const mockRole = request.cookies.get('MOCK_USER_ROLE')?.value || 'admin';
-    supabase = createMockSupabase(mockRole);
-    user = {
-      id: `mock-${mockRole}-id`,
-      email: `${mockRole}@joyfulpath.org`,
-      app_metadata: { role: mockRole },
-      user_metadata: { role: mockRole },
-    };
+    const mockRole = request.cookies.get('MOCK_USER_ROLE')?.value;
+    if (mockRole) {
+      user = {
+        id: `mock-${mockRole}-id`,
+        email: `${mockRole}@joyfulpath.org`,
+        role: mockRole,
+        forcePasswordChange: false,
+      };
+    }
   } else {
-    supabase = createServerClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-      {
-        cookies: {
-          getAll() {
-            return request.cookies.getAll();
-          },
-          setAll(cookiesToSet) {
-            cookiesToSet.forEach(({ name, value, options }) =>
-              request.cookies.set(name, value)
-            );
-            response = NextResponse.next({
-              request,
-            });
-            cookiesToSet.forEach(({ name, value, options }) =>
-              response.cookies.set(name, value, options)
-            );
-          },
-        },
+    const token = request.cookies.get('ACCESS_TOKEN')?.value;
+    if (token) {
+      try {
+        const parts = token.split('.');
+        if (parts.length === 3) {
+          const payloadStr = Buffer.from(parts[1], 'base64').toString('utf8');
+          user = JSON.parse(payloadStr);
+        }
+      } catch (e) {
+        console.warn('Failed to parse JWT in middleware', e);
       }
-    );
-
-    try {
-      const { data } = await supabase.auth.getUser();
-      user = data?.user || null;
-    } catch (e) {
-      console.warn('Supabase auth error in middleware:', e);
     }
   }
 
-
-
   const pathname = request.nextUrl.pathname;
   const isAuth = !!user;
-  const userRole = user?.app_metadata?.role || user?.user_metadata?.role || 'student';
+  const userRole = user?.role || 'student';
 
-  // 1. Redirect logged-in users away from /login or /
+  // ─── 1. Redirect logged-in users away from /login or / ─────────────────────
   if (isAuth && (pathname === '/login' || pathname === '/')) {
-    const redirectPath =
-      (userRole === 'admin' || userRole === 'instructor')
-        ? `/admin/dashboard`
-        : userRole === 'parent'
-        ? `/parent/dashboard`
-        : `/student/dashboard`;
-
+    const redirectPath = getRoleDashboard(userRole);
     return NextResponse.redirect(new URL(redirectPath, request.url));
   }
 
-  // 2. Redirect legacy /instructor/* routes to /admin/*
+  // ─── 2. Redirect legacy /instructor/* routes to /admin/* ───────────────────
   if (pathname.startsWith('/instructor')) {
     const newPath = pathname.replace('/instructor', '/admin');
     return NextResponse.redirect(new URL(newPath, request.url));
   }
 
-  // 3. Protect routes
+  // ─── 3. Protect dashboard route segments ───────────────────────────────────
   const isAdminRoute = pathname.startsWith('/admin');
   const isStudentRoute = pathname.startsWith('/student');
   const isParentRoute = pathname.startsWith('/parent');
 
   if (isAdminRoute || isStudentRoute || isParentRoute) {
+    // Must be authenticated
     if (!isAuth) {
       return NextResponse.redirect(new URL('/login', request.url));
     }
 
-    // Role-specific dashboard fallback helper
-    const roleDashboard = () =>
-      (userRole === 'admin' || userRole === 'instructor') ? '/admin/dashboard'
-      : userRole === 'parent' ? '/parent/dashboard'
-      : '/student/dashboard';
+    // ── /admin/* access ──
+    if (isAdminRoute) {
+      // Only priest, admin, and instructor can access /admin/*
+      if (!ADMIN_DASHBOARD_ROLES.includes(userRole)) {
+        return NextResponse.redirect(new URL(getRoleDashboard(userRole), request.url));
+      }
 
-    // Admin route — admins and instructors allowed
-    if (isAdminRoute && userRole !== 'admin' && userRole !== 'instructor') {
-      return NextResponse.redirect(new URL(roleDashboard(), request.url));
-    }
+      // Instructor restrictions within /admin/*
+      if (userRole === 'instructor') {
+        if (INSTRUCTOR_BLOCKED_ADMIN_PATHS.some(p => pathname.startsWith(p))) {
+          return NextResponse.redirect(new URL('/admin/dashboard', request.url));
+        }
+      }
 
-    // Instructor specific protections
-    if (isAdminRoute && userRole === 'instructor') {
-      const blockedInstructorPaths = ['/admin/users', '/admin/settings', '/admin/approvals', '/admin/permissions', '/admin/files'];
-      if (blockedInstructorPaths.some(p => pathname.startsWith(p))) {
-        return NextResponse.redirect(new URL('/admin/dashboard', request.url));
+      // Admin restrictions (priest-only pages)
+      if (userRole === 'admin') {
+        if (PRIEST_ONLY_ADMIN_PATHS.some(p => pathname.startsWith(p))) {
+          return NextResponse.redirect(new URL('/admin/dashboard', request.url));
+        }
       }
     }
 
-    // Parent route — only parents allowed
-    if (isParentRoute && userRole !== 'parent') {
-      return NextResponse.redirect(new URL(roleDashboard(), request.url));
+    // ── /parent/* access ── only parents (and priest/admin for impersonation)
+    if (isParentRoute && userRole !== 'parent' && userRole !== 'admin' && userRole !== 'priest') {
+      return NextResponse.redirect(new URL(getRoleDashboard(userRole), request.url));
     }
 
-    // Student route — students & admins allowed
-    if (isStudentRoute && userRole !== 'student' && userRole !== 'admin' && userRole !== 'instructor') {
-      return NextResponse.redirect(new URL(roleDashboard(), request.url));
+    // ── /student/* access ── students + admin-level users for observation
+    if (isStudentRoute && userRole !== 'student' && userRole !== 'admin' && userRole !== 'priest' && userRole !== 'instructor') {
+      return NextResponse.redirect(new URL(getRoleDashboard(userRole), request.url));
     }
   }
 
   return response;
 }
 
+/**
+ * Returns the default dashboard path for a given role.
+ */
+function getRoleDashboard(role: string): string {
+  switch (role) {
+    case 'priest':
+    case 'admin':
+    case 'instructor':
+      return '/admin/dashboard';
+    case 'parent':
+      return '/parent/dashboard';
+    case 'student':
+    default:
+      return '/student/dashboard';
+  }
+}
 
 export const config = {
   matcher: ['/((?!api|_next|.*\\..*).*)'],

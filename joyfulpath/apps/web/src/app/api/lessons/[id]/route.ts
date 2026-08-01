@@ -1,17 +1,32 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { auth } from '@/auth';
 import prisma from '@/lib/db';
-import { UserRole } from '@prisma/client';
+import {
+  requireAuth,
+  requireRole,
+  isAdmin,
+  canHardDelete,
+  verifyClassAccess,
+  CONTENT_MANAGER_ROLES,
+  type AuthSession,
+} from '@/lib/rbac';
 
 type Params = Promise<{ id: string }>;
 
 /**
  * GET /api/lessons/[id] - Get lesson details with attachments
+ * 
+ * Priest/Admin: can view any lesson.
+ * Instructor: can view lessons in assigned classes.
+ * Student: can view published lessons in assigned classes.
+ * Parent: blocked.
  */
 export async function GET(request: NextRequest, { params }: { params: Params }) {
+  const result = await requireAuth();
+  if (result instanceof NextResponse) return result;
+  const session = result as AuthSession;
+
   try {
     const { id } = await params;
-    const session = await auth();
 
     const lesson = await prisma.lesson.findUnique({
       where: { id },
@@ -19,7 +34,7 @@ export async function GET(request: NextRequest, { params }: { params: Params }) 
         attachments: true,
         creator: { select: { id: true, displayName: true, avatarUrl: true } },
         class: { select: { id: true, name: true } },
-        progress: session?.user?.id
+        progress: session.user.id
           ? { where: { userId: session.user.id } }
           : false,
         _count: {
@@ -39,8 +54,17 @@ export async function GET(request: NextRequest, { params }: { params: Params }) 
       );
     }
 
-    // Check access
-    if (lesson.status === 'draft' && session?.user?.id !== lesson.createdBy) {
+    // Verify class access
+    const hasAccess = await verifyClassAccess(session.user.id, session.user.role, lesson.classId);
+    if (!hasAccess) {
+      return NextResponse.json(
+        { error: 'Access denied: you are not assigned to this class' },
+        { status: 403 }
+      );
+    }
+
+    // Students cannot view draft lessons
+    if (lesson.status === 'draft' && session.user.role === 'student') {
       return NextResponse.json(
         { error: 'Access denied' },
         { status: 403 }
@@ -62,18 +86,18 @@ export async function GET(request: NextRequest, { params }: { params: Params }) 
 
 /**
  * PATCH /api/lessons/[id] - Update lesson
+ * 
+ * Priest/Admin: can update any lesson.
+ * Instructor: can update lessons only in assigned classes.
+ * Others: blocked.
  */
 export async function PATCH(request: NextRequest, { params }: { params: Params }) {
+  const result = await requireRole(CONTENT_MANAGER_ROLES);
+  if (result instanceof NextResponse) return result;
+  const session = result as AuthSession;
+
   try {
     const { id } = await params;
-    const session = await auth();
-
-    if (!session?.user?.id) {
-      return NextResponse.json(
-        { error: 'Unauthorized' },
-        { status: 401 }
-      );
-    }
 
     const lesson = await prisma.lesson.findUnique({
       where: { id },
@@ -87,10 +111,11 @@ export async function PATCH(request: NextRequest, { params }: { params: Params }
       );
     }
 
-    // Verify authorization
-    if (lesson.createdBy !== session.user.id && session.user.role !== 'admin') {
+    // Verify class access for instructors
+    const hasAccess = await verifyClassAccess(session.user.id, session.user.role, lesson.classId);
+    if (!hasAccess) {
       return NextResponse.json(
-        { error: 'Access denied' },
+        { error: 'Forbidden: you are not assigned to this class' },
         { status: 403 }
       );
     }
@@ -125,19 +150,27 @@ export async function PATCH(request: NextRequest, { params }: { params: Params }
 }
 
 /**
- * DELETE /api/lessons/[id] - Delete lesson
+ * DELETE /api/lessons/[id] - Permanently delete lesson
+ * 
+ * Priest/Admin: can delete.
+ * Instructor: CANNOT permanently delete (returns 403). Use PATCH to archive instead.
+ * Others: blocked.
  */
 export async function DELETE(request: NextRequest, { params }: { params: Params }) {
+  const result = await requireAuth();
+  if (result instanceof NextResponse) return result;
+  const session = result as AuthSession;
+
+  // Instructors cannot permanently delete records
+  if (!canHardDelete(session.user.role)) {
+    return NextResponse.json(
+      { error: 'Forbidden: instructors cannot permanently delete records. Use archive instead.' },
+      { status: 403 }
+    );
+  }
+
   try {
     const { id } = await params;
-    const session = await auth();
-
-    if (!session?.user?.id) {
-      return NextResponse.json(
-        { error: 'Unauthorized' },
-        { status: 401 }
-      );
-    }
 
     const lesson = await prisma.lesson.findUnique({
       where: { id },
@@ -148,13 +181,6 @@ export async function DELETE(request: NextRequest, { params }: { params: Params 
       return NextResponse.json(
         { error: 'Lesson not found' },
         { status: 404 }
-      );
-    }
-
-    if (lesson.createdBy !== session.user.id && session.user.role !== 'admin') {
-      return NextResponse.json(
-        { error: 'Access denied' },
-        { status: 403 }
       );
     }
 

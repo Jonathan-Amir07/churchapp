@@ -1,24 +1,28 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { auth } from '@/auth';
 import prisma from '@/lib/db';
-import { SubmissionStatus } from '@prisma/client';
+import {
+  requireAuth,
+  requireRole,
+  isAdmin,
+  verifyClassAccess,
+  verifyParentChildAccess,
+  CONTENT_MANAGER_ROLES,
+  type AuthSession,
+} from '@/lib/rbac';
 
+type SubmissionStatus = 'pending' | 'approved' | 'rejected' | 'revision_requested';
 type Params = Promise<{ id: string }>;
 
 /**
  * GET /api/homework/[id] - Get submission details
  */
 export async function GET(request: NextRequest, { params }: { params: Params }) {
+  const result = await requireAuth();
+  if (result instanceof NextResponse) return result;
+  const session = result as AuthSession;
+
   try {
     const { id } = await params;
-    const session = await auth();
-
-    if (!session?.user?.id) {
-      return NextResponse.json(
-        { error: 'Unauthorized' },
-        { status: 401 }
-      );
-    }
 
     const submission = await prisma.taskSubmission.findUnique({
       where: { id },
@@ -42,16 +46,20 @@ export async function GET(request: NextRequest, { params }: { params: Params }) 
     }
 
     // Verify access
-    const isStudent = session.user.id === submission.studentId;
-    const isReviewer = session.user.id === submission.reviewedBy;
-    const isTaskCreator = session.user.id === submission.task.createdBy;
-    const isAdmin = session.user.role === 'admin';
-
-    if (!isStudent && !isReviewer && !isTaskCreator && !isAdmin) {
-      return NextResponse.json(
-        { error: 'Access denied' },
-        { status: 403 }
-      );
+    if (session.user.role === 'student') {
+      if (session.user.id !== submission.studentId) {
+        return NextResponse.json({ error: 'Access denied' }, { status: 403 });
+      }
+    } else if (session.user.role === 'parent') {
+      const isChild = await verifyParentChildAccess(session.user.id, submission.studentId);
+      if (!isChild) {
+        return NextResponse.json({ error: 'Access denied' }, { status: 403 });
+      }
+    } else if (session.user.role === 'instructor') {
+      const hasAccess = await verifyClassAccess(session.user.id, session.user.role, submission.task.classId);
+      if (!hasAccess) {
+        return NextResponse.json({ error: 'Access denied' }, { status: 403 });
+      }
     }
 
     return NextResponse.json(submission);
@@ -66,22 +74,22 @@ export async function GET(request: NextRequest, { params }: { params: Params }) 
 
 /**
  * PATCH /api/homework/[id] - Review/update submission
+ * 
+ * Priest/Admin: can review any submission.
+ * Instructor: can review submissions for their assigned classes.
+ * Others: blocked.
  */
 export async function PATCH(request: NextRequest, { params }: { params: Params }) {
+  const result = await requireRole(CONTENT_MANAGER_ROLES);
+  if (result instanceof NextResponse) return result;
+  const session = result as AuthSession;
+
   try {
     const { id } = await params;
-    const session = await auth();
-
-    if (!session?.user?.id) {
-      return NextResponse.json(
-        { error: 'Unauthorized' },
-        { status: 401 }
-      );
-    }
 
     const submission = await prisma.taskSubmission.findUnique({
       where: { id },
-      include: { task: { select: { createdBy: true } } },
+      include: { task: { select: { createdBy: true, classId: true } } },
     });
 
     if (!submission) {
@@ -91,10 +99,11 @@ export async function PATCH(request: NextRequest, { params }: { params: Params }
       );
     }
 
-    // Only admin can review
-    if (session.user.role !== 'admin') {
+    // Instructors must be assigned to the class to review it
+    const hasAccess = await verifyClassAccess(session.user.id, session.user.role, submission.task.classId);
+    if (!hasAccess) {
       return NextResponse.json(
-        { error: 'Access denied' },
+        { error: 'Forbidden: you are not assigned to this class' },
         { status: 403 }
       );
     }
@@ -125,9 +134,8 @@ export async function PATCH(request: NextRequest, { params }: { params: Params }
       },
     });
 
-    // Award XP/Points if approved
+    // Award XP/Points if approved (mock functionality here)
     if (status === 'approved' && (xpAwarded || pointsAwarded)) {
-      // Emit event for XP/points update (integrate with existing points system)
       console.log('Award XP/Points:', {
         studentId: submission.studentId,
         xp: xpAwarded,

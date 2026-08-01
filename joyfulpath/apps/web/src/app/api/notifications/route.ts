@@ -1,21 +1,23 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { auth } from '@/auth';
 import prisma from '@/lib/db';
 import { createClient } from '@/lib/supabase/client';
+import {
+  requireAuth,
+  requireRole,
+  USER_MANAGEMENT_ROLES,
+  type AuthSession,
+} from '@/lib/rbac';
 
 /**
  * GET /api/notifications - List user notifications
+ * Any authenticated user can view their own notifications.
  */
 export async function GET(request: NextRequest) {
-  try {
-    const session = await auth();
-    if (!session?.user?.id) {
-      return NextResponse.json(
-        { error: 'Unauthorized' },
-        { status: 401 }
-      );
-    }
+  const result = await requireAuth();
+  if (result instanceof NextResponse) return result;
+  const session = result as AuthSession;
 
+  try {
     const searchParams = request.nextUrl.searchParams;
     const limit = parseInt(searchParams.get('limit') || '20');
     const offset = parseInt(searchParams.get('offset') || '0');
@@ -54,18 +56,15 @@ export async function GET(request: NextRequest) {
 }
 
 /**
- * POST /api/notifications - Create notification (admin/server only)
+ * POST /api/notifications - Create notification
+ * Only priest/admin can broadcast/create notifications.
  */
 export async function POST(request: NextRequest) {
-  try {
-    const session = await auth();
-    if (!session?.user?.id || session.user.role !== 'admin') {
-      return NextResponse.json(
-        { error: 'Unauthorized' },
-        { status: 403 }
-      );
-    }
+  const result = await requireRole(USER_MANAGEMENT_ROLES);
+  if (result instanceof NextResponse) return result;
+  const session = result as AuthSession;
 
+  try {
     const data = await request.json();
     const {
       userId,
@@ -125,9 +124,7 @@ export async function POST(request: NextRequest) {
 
     // Send push notifications if requested
     if (sendPush && inserted && inserted.length > 0) {
-      // Queue push notification job
       console.log(`Queued push notifications for ${targetUserIds.length} users`);
-      // In production, trigger Firebase Cloud Messaging here
     }
 
     return NextResponse.json(

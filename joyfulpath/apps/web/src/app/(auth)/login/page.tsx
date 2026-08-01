@@ -3,7 +3,6 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useTranslations, useLocale } from 'next-intl';
-import { createClient } from '@/lib/supabase/client';
 import { Button, Input, Card, CardContent } from '@/components/ui';
 import { useNotificationStore } from '@/stores/notifications.store';
 import Link from 'next/link';
@@ -14,7 +13,6 @@ export default function LoginPage() {
   const currentLocale = useLocale();
   const router = useRouter();
   const addToast = useNotificationStore((state) => state.addToast);
-  const supabase = createClient();
 
   const [activeTab, setActiveTab] = useState<'student' | 'servant'>('student');
   const [loading, setLoading] = useState(false);
@@ -31,22 +29,7 @@ export default function LoginPage() {
     window.location.reload();
   };
 
-  const handleGoogleLogin = async () => {
-    setLoading(true);
-    try {
-      const { error } = await supabase.auth.signInWithOAuth({
-        provider: 'google',
-        options: {
-          redirectTo: `${window.location.origin}/auth/callback?next=/`,
-        },
-      });
-      if (error) addToast(error.message, 'error');
-    } catch (err: any) {
-      addToast(err.message || 'OAuth error', 'error');
-    } finally {
-      setLoading(false);
-    }
-  };
+  // OAuth login removed as per Phase 1 - Admin managed accounts only
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -77,31 +60,37 @@ export default function LoginPage() {
         authPassword = password;
       }
 
-      const { data, error } = await supabase.auth.signInWithPassword({
-        email: authEmail,
-        password: authPassword,
+      const res = await fetch('/api/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          username: authEmail, // NestJS handles email or username via 'identifier'
+          password: authPassword
+        }),
       });
 
-      if (error) {
-        addToast(error.message || t('invalidCredentials'), 'error');
+      if (!res.ok) {
+        const errorData = await res.json();
+        addToast(errorData.message || t('invalidCredentials'), 'error');
       } else {
+        const data = await res.json();
         addToast(tCommon('success'), 'success');
         
-        // Check if user has changed their password (first login check)
-        const hasChangedPassword = document.cookie.includes('HAS_CHANGED_PASSWORD=true');
-        if (!hasChangedPassword) {
+        // Save token
+        document.cookie = `ACCESS_TOKEN=${data.access_token}; path=/; max-age=${2 * 60 * 60}`;
+        
+        const user = data.user;
+        if (user.forcePasswordChange) {
+          document.cookie = `HAS_CHANGED_PASSWORD=false; path=/`;
           router.refresh();
           router.push('/change-password');
           return;
         }
 
-        // Get user role from app metadata
-        const user = data.user;
-        const rawRole = user?.app_metadata?.role || user?.user_metadata?.role || 'student';
-        const userRole = rawRole;
+        const userRole = user.role;
         
         const redirectPath =
-          (userRole === 'admin' || userRole === 'instructor')
+          (userRole === 'admin' || userRole === 'instructor' || userRole === 'priest')
             ? `/admin/dashboard`
             : userRole === 'parent'
             ? `/parent/dashboard`
@@ -293,27 +282,6 @@ export default function LoginPage() {
               {tCommon('submit')}
             </Button>
 
-            <div className="relative flex py-4 items-center">
-              <div className="flex-grow border-t border-outline-variant/60"></div>
-              <span className="flex-shrink mx-4 text-xs font-bold text-on-surface-variant/80 uppercase">
-                {currentLocale === 'en' ? 'Or' : 'أو'}
-              </span>
-              <div className="flex-grow border-t border-outline-variant/60"></div>
-            </div>
-
-            <Button
-              type="button"
-              variant="outline"
-              fullWidth
-              size="md"
-              disabled={loading}
-              onClick={handleGoogleLogin}
-              icon="google"
-              iconPosition="start"
-              className="border-outline-variant rounded-xl text-on-surface font-bold hover:bg-surface-container"
-            >
-              {currentLocale === 'en' ? 'Continue with Google' : 'الاستمرار باستخدام جوجل'}
-            </Button>
           </form>
 
 

@@ -1,12 +1,28 @@
 import { NextRequest, NextResponse } from 'next/server';
 import prisma from '@/lib/db';
 import bcrypt from 'bcryptjs';
+import { requireRole, USER_MANAGEMENT_ROLES } from '@/lib/rbac';
 
-export async function PUT(req: NextRequest, { params }: { params: { id: string } }) {
+/**
+ * PUT /api/users/[id] - Update a user
+ * Only priest and admin can update users.
+ */
+export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+  const session = await requireRole(USER_MANAGEMENT_ROLES);
+  if (session instanceof NextResponse) return session;
+
   try {
-    const { id } = params;
+    const { id } = await params;
     const body = await req.json();
     const { name, usernameOrEmail, role, isActive, passwordOrPin } = body;
+
+    // Prevent role escalation: only priest can assign priest/admin roles
+    if ((role === 'priest' || role === 'admin') && session.user.role !== 'priest') {
+      return NextResponse.json(
+        { error: 'Forbidden: only a Priest can assign admin/priest roles' },
+        { status: 403 }
+      );
+    }
 
     const dataToUpdate: any = {};
 
@@ -47,10 +63,25 @@ export async function PUT(req: NextRequest, { params }: { params: { id: string }
   }
 }
 
-export async function DELETE(req: NextRequest, { params }: { params: { id: string } }) {
+/**
+ * DELETE /api/users/[id] - Delete a user
+ * Only priest and admin can delete users.
+ */
+export async function DELETE(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+  const session = await requireRole(USER_MANAGEMENT_ROLES);
+  if (session instanceof NextResponse) return session;
+
   try {
-    const { id } = params;
-    
+    const { id } = await params;
+
+    // Prevent self-deletion
+    if (id === session.user.id) {
+      return NextResponse.json(
+        { error: 'Cannot delete your own account' },
+        { status: 400 }
+      );
+    }
+
     await prisma.user.delete({
       where: { id },
     });

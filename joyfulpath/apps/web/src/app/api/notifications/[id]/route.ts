@@ -1,6 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { auth } from '@/auth';
 import { createClient } from '@/lib/supabase/client';
+import {
+  requireAuth,
+  type AuthSession,
+} from '@/lib/rbac';
 
 type Params = Promise<{ id: string }>;
 
@@ -8,17 +11,12 @@ type Params = Promise<{ id: string }>;
  * PATCH /api/notifications/[id] - Mark notification as read/update
  */
 export async function PATCH(request: NextRequest, { params }: { params: Params }) {
+  const result = await requireAuth();
+  if (result instanceof NextResponse) return result;
+  const session = result as AuthSession;
+
   try {
     const { id } = await params;
-    const session = await auth();
-
-    if (!session?.user?.id) {
-      return NextResponse.json(
-        { error: 'Unauthorized' },
-        { status: 401 }
-      );
-    }
-
     const data = await request.json();
     const { isRead } = data;
 
@@ -71,17 +69,12 @@ export async function PATCH(request: NextRequest, { params }: { params: Params }
  * DELETE /api/notifications/[id] - Delete notification
  */
 export async function DELETE(request: NextRequest, { params }: { params: Params }) {
+  const result = await requireAuth();
+  if (result instanceof NextResponse) return result;
+  const session = result as AuthSession;
+
   try {
     const { id } = await params;
-    const session = await auth();
-
-    if (!session?.user?.id) {
-      return NextResponse.json(
-        { error: 'Unauthorized' },
-        { status: 401 }
-      );
-    }
-
     const supabase = createClient();
 
     // Verify notification belongs to user

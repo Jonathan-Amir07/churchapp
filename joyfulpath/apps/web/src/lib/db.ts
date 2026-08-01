@@ -1,4 +1,4 @@
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient } from '@joyfulpath/database';
 
 const globalForPrisma = globalThis as any;
 

@@ -202,74 +202,38 @@ export default function AdminUsers() {
     document.body.removeChild(link);
   };
 
-  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
-    Papa.parse(file, {
-      header: true,
-      skipEmptyLines: true,
-      complete: (results) => {
-        const rows = results.data as any[];
-        let successCount = 0;
-        let failedCount = 0;
-        const errors: string[] = [];
-        const newUsers: UserAccount[] = [];
+    const formData = new FormData();
+    formData.append('file', file);
 
-        const existingEmails = new Set(users.map(u => u.usernameOrEmail.toLowerCase()));
+    try {
+      const token = document.cookie.match(new RegExp('(^| )ACCESS_TOKEN=([^;]+)'))?.[2];
+      const res = await fetch('/api/users/import', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`
+        },
+        body: formData,
+      });
 
-        for (const [index, row] of rows.entries()) {
-          const rowNum = index + 2;
-          const { name, usernameOrEmail, role, password } = row;
-
-          if (!name || !usernameOrEmail || !role || !password) {
-            errors.push(`Row ${rowNum}: Missing required fields.`);
-            failedCount++;
-            continue;
-          }
-
-          const roleLower = role.toLowerCase();
-          if (!['student', 'admin', 'parent', 'instructor'].includes(roleLower)) {
-            errors.push(`Row ${rowNum}: Invalid role "${role}".`);
-            failedCount++;
-            continue;
-          }
-
-          if (existingEmails.has(usernameOrEmail.toLowerCase())) {
-            errors.push(`Row ${rowNum}: Duplicate username/email "${usernameOrEmail}".`);
-            failedCount++;
-            continue;
-          }
-          
-          existingEmails.add(usernameOrEmail.toLowerCase());
-
-          // Password hashing
-          const hashedPassword = bcrypt.hashSync(password, 10);
-
-          newUsers.push({
-            id: `imported-${Date.now()}-${index}`,
-            name,
-            usernameOrEmail,
-            role: roleLower as any,
-            isActive: true,
-          });
-          
-          successCount++;
-        }
-
-        if (newUsers.length > 0) {
-          setUsers(prev => [...newUsers, ...prev]);
-        }
-
-        setImportSummary({ success: successCount, failed: failedCount, errors });
-        addToast(tUsers('importSuccess') || 'Import completed', 'success');
-        if (fileInputRef.current) fileInputRef.current.value = '';
-      },
-      error: (error) => {
-        addToast('Error parsing CSV file.', 'error');
-        if (fileInputRef.current) fileInputRef.current.value = '';
-      }
-    });
+      if (!res.ok) throw new Error('Upload failed');
+      const data = await res.json();
+      
+      setImportSummary({ 
+        success: data.imported, 
+        failed: data.errors?.length || 0, 
+        errors: data.errors || [] 
+      });
+      addToast(tUsers('importSuccess') || 'Import completed', 'success');
+      fetchUsers();
+    } catch (error) {
+      addToast('Error uploading CSV file.', 'error');
+    } finally {
+      if (fileInputRef.current) fileInputRef.current.value = '';
+    }
   };
 
   return (
@@ -284,6 +248,9 @@ export default function AdminUsers() {
           </p>
         </div>
         <div className="flex gap-3">
+          <Button variant="outline" size="sm" onClick={() => window.print()} icon="print">
+            Print Login Cards
+          </Button>
           <Button variant="outline" size="sm" onClick={() => setIsOpenImport(true)} icon="upload_file">
             {tUsers('importCsv')}
           </Button>
@@ -550,6 +517,40 @@ export default function AdminUsers() {
           </div>
         </Modal>
       )}
+
+      {/* Hidden Printable Section for Login Cards */}
+      <div className="hidden print:block fixed inset-0 bg-white z-[9999] overflow-visible">
+        <div className="p-8">
+          <h1 className="text-2xl font-bold mb-6 text-center text-black">Student Login Cards</h1>
+          <div className="grid grid-cols-2 gap-8">
+            {filteredUsers.filter(u => u.role === 'student').map((user) => (
+              <div key={user.id} className="border-2 border-black rounded-xl p-6 break-inside-avoid shadow-none">
+                <div className="flex items-center gap-2 mb-4 border-b border-black pb-4">
+                  <span className="material-symbols-outlined text-3xl">church</span>
+                  <span className="text-xl font-bold">JoyfulPath</span>
+                </div>
+                <div className="space-y-4 text-lg">
+                  <div>
+                    <span className="font-bold block text-sm text-gray-600">Name:</span>
+                    <span className="font-black text-xl">{user.name}</span>
+                  </div>
+                  <div>
+                    <span className="font-bold block text-sm text-gray-600">Username:</span>
+                    <span className="font-mono bg-gray-100 px-2 py-1 rounded inline-block">{user.usernameOrEmail}</span>
+                  </div>
+                  <div>
+                    <span className="font-bold block text-sm text-gray-600">PIN / Password:</span>
+                    <span className="font-mono bg-gray-100 px-8 py-1 rounded inline-block text-gray-100 selection:text-transparent border border-dashed border-gray-400">______</span>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+          {filteredUsers.filter(u => u.role === 'student').length === 0 && (
+            <p className="text-center text-gray-500 mt-10">No student users found to print.</p>
+          )}
+        </div>
+      </div>
     </div>
   );
 }

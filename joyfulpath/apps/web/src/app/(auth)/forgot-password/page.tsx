@@ -65,16 +65,15 @@ export default function ForgotPasswordPage() {
             </p>
           </div>
 
-          <Button
-            href="/login"
-            variant="outline"
-            fullWidth
-            size="lg"
-            className="mt-6"
-            as={Link}
-          >
-            {currentLocale === 'en' ? 'Back to Sign In' : 'العودة لتسجيل الدخول'}
-          </Button>
+          <Link href="/login" className="block w-full mt-6">
+            <Button
+              variant="outline"
+              fullWidth
+              size="lg"
+            >
+              {currentLocale === 'en' ? 'Back to Sign In' : 'العودة لتسجيل الدخول'}
+            </Button>
+          </Link>
         </CardContent>
       </Card>
     </div>

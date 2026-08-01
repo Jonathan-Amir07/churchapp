@@ -1,8 +1,16 @@
 import { NextRequest, NextResponse } from 'next/server';
 import prisma from '@/lib/db';
 import bcrypt from 'bcryptjs';
+import { requireRole, USER_MANAGEMENT_ROLES } from '@/lib/rbac';
 
+/**
+ * GET /api/users - List all users
+ * Only priest and admin can list all users.
+ */
 export async function GET(req: NextRequest) {
+  const session = await requireRole(USER_MANAGEMENT_ROLES);
+  if (session instanceof NextResponse) return session;
+
   try {
     const users = await prisma.user.findMany({
       select: {
@@ -19,7 +27,6 @@ export async function GET(req: NextRequest) {
       orderBy: { createdAt: 'desc' },
     });
 
-    // Format for frontend
     const formattedUsers = users.map((user: any) => ({
       id: user.id,
       name: user.displayName || `${user.firstName} ${user.lastName}`.trim(),
@@ -35,13 +42,28 @@ export async function GET(req: NextRequest) {
   }
 }
 
+/**
+ * POST /api/users - Create a new user
+ * Only priest and admin can create users.
+ */
 export async function POST(req: NextRequest) {
+  const session = await requireRole(USER_MANAGEMENT_ROLES);
+  if (session instanceof NextResponse) return session;
+
   try {
     const body = await req.json();
     const { name, usernameOrEmail, passwordOrPin, role } = body;
 
     if (!name || !usernameOrEmail || !passwordOrPin) {
       return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
+    }
+
+    // Only priest can create priest or admin accounts
+    if ((role === 'priest' || role === 'admin') && session.user.role !== 'priest') {
+      return NextResponse.json(
+        { error: 'Forbidden: only a Priest can create admin/priest accounts' },
+        { status: 403 }
+      );
     }
 
     const isEmail = usernameOrEmail.includes('@');
