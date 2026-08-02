@@ -1,13 +1,17 @@
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import prisma from '@/lib/db';
 import { routeNotification } from '@/lib/notificationRouter';
+import { requireRole, CONTENT_MANAGER_ROLES, AuthSession } from '@/lib/rbac';
 
+export async function POST(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+  const result = await requireRole(CONTENT_MANAGER_ROLES);
+  if (result instanceof NextResponse) return result;
+  const session = result as AuthSession;
 
-export async function POST(req: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
     const { id } = await params;
-    const body = await req.json();
-    const { reviewerId, shippingInfo } = body;
+    const body = await req.json().catch(() => ({}));
+    const { shippingInfo } = body;
 
     // load redemption and reward
     const redemption = await prisma.rewardRedemption.findUnique({ where: { id }, include: { reward: true } });
@@ -15,7 +19,7 @@ export async function POST(req: Request, { params }: { params: Promise<{ id: str
 
     const updated = await prisma.rewardRedemption.update({
       where: { id },
-      data: { status: 'approved', reviewedBy: reviewerId, reviewedAt: new Date(), shippingInfo },
+      data: { status: 'approved', reviewedBy: session.user.id, reviewedAt: new Date(), shippingInfo },
     });
 
     // Deduct inventory if applicable (safe)
@@ -50,7 +54,7 @@ export async function POST(req: Request, { params }: { params: Promise<{ id: str
         action: 'REWARD_APPROVED',
         entityType: 'reward_redemption',
         entityId: redemption.id,
-        metadata: { rewardId: redemption.rewardId, reviewerId },
+        metadata: { rewardId: redemption.rewardId, reviewerId: session.user.id },
       },
     });
 

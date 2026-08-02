@@ -11,9 +11,13 @@ export class AuthService {
     private jwtService: JwtService
   ) {}
 
-  async signIn(identifier: string, pass: string): Promise<any> {
-    const user = await this.usersService.findByUsernameOrEmail(identifier);
+  async signIn(username: string, pass: string, role: string): Promise<any> {
+    const user = await this.usersService.findByUsernameOrEmail(username);
     if (!user) throw new UnauthorizedException('Invalid credentials');
+    
+    if (user.role !== role) {
+      throw new UnauthorizedException('Role mismatch');
+    }
     
     // Fallback: If user has a pinHash, check it. Otherwise check passwordHash.
     // For students, they might log in with a PIN.

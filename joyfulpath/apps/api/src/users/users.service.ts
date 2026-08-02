@@ -67,13 +67,19 @@ export class UsersService {
       
       try {
         const passwordHash = await bcrypt.hash(cols[5] || 'Welcome123!', 10);
+        let username = cols[3];
+        if (!username) {
+          const baseUsername = `${cols[0]}.${cols[1]}`.toLowerCase().replace(/[^a-z0-9]/g, '');
+          const randomSuffix = Math.floor(Math.random() * 10000).toString().padStart(4, '0');
+          username = `${baseUsername}${randomSuffix}`;
+        }
         await this.prisma.user.create({
           data: {
             firstName: cols[0],
             lastName: cols[1],
             displayName: cols[2] || `${cols[0]} ${cols[1]}`,
-            username: cols[3],
-            email: cols[4],
+            username: username,
+            email: cols[4] || null,
             passwordHash,
             role: cols[6] || 'student',
             churchId: cols[7] || null,

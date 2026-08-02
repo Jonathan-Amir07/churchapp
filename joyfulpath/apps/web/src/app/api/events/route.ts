@@ -1,8 +1,18 @@
 // Events Management API - Create, Read, Update, Delete
 import { NextRequest, NextResponse } from 'next/server';
 import { createAdminClient as createClient } from '@/lib/supabase/admin';
+import {
+  requireAuth,
+  requireRole,
+  canHardDelete,
+  CONTENT_MANAGER_ROLES,
+  type AuthSession,
+} from '@/lib/rbac';
 
 export async function GET(request: NextRequest) {
+  const result = await requireAuth();
+  if (result instanceof NextResponse) return result;
+
   try {
     const supabase = createClient();
     const { searchParams } = new URL(request.url);
@@ -47,6 +57,9 @@ export async function GET(request: NextRequest) {
 }
 
 export async function POST(request: NextRequest) {
+  const result = await requireRole(CONTENT_MANAGER_ROLES);
+  if (result instanceof NextResponse) return result;
+
   try {
     const supabase = createClient();
     const body = await request.json();
@@ -95,6 +108,9 @@ export async function POST(request: NextRequest) {
 }
 
 export async function PATCH(request: NextRequest) {
+  const result = await requireRole(CONTENT_MANAGER_ROLES);
+  if (result instanceof NextResponse) return result;
+
   try {
     const supabase = createClient();
     const body = await request.json();
@@ -133,6 +149,17 @@ export async function PATCH(request: NextRequest) {
 }
 
 export async function DELETE(request: NextRequest) {
+  const result = await requireAuth();
+  if (result instanceof NextResponse) return result;
+  const session = result as AuthSession;
+
+  if (!canHardDelete(session.user.role)) {
+    return NextResponse.json(
+      { success: false, error: 'Forbidden: instructors cannot delete events' },
+      { status: 403 }
+    );
+  }
+
   try {
     const supabase = createClient();
     const { searchParams } = new URL(request.url);

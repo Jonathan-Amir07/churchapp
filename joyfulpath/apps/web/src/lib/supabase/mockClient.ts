@@ -109,10 +109,25 @@ const MOCK_PROFILES: Record<string, any> = {
     active_avatar_frame: null,
     active_profile_theme: null,
   },
+  'mock-priest-id': {
+    id: 'mock-priest-id',
+    email: 'priest@joyfulpath.org',
+    username: 'priest',
+    first_name: 'Abouna',
+    last_name: 'Anthony',
+    display_name: 'Father Anthony',
+    avatar_url: null,
+    role: 'priest',
+    locale: 'ar',
+    total_xp: 0,
+    total_points: 0,
+    current_streak: 0,
+    longest_streak: 0,
+  },
   'mock-admin-id': {
     id: 'mock-admin-id',
     email: 'admin@joyfulpath.org',
-    username: 'admin123',
+    username: 'admin',
     first_name: 'George',
     last_name: 'Bishop',
     display_name: 'George Bishop',
@@ -123,9 +138,51 @@ const MOCK_PROFILES: Record<string, any> = {
     total_points: 0,
     current_streak: 0,
     longest_streak: 0,
-    active_title: null,
-    active_avatar_frame: null,
-    active_profile_theme: null,
+  },
+  'mock-instructor-id1': {
+    id: 'mock-instructor-id',
+    email: 'instructor@joyfulpath.org',
+    username: 'instructor',
+    first_name: 'Peter',
+    last_name: 'Mark',
+    display_name: 'Peter Mark',
+    avatar_url: null,
+    role: 'instructor',
+    locale: 'ar',
+    total_xp: 0,
+    total_points: 0,
+    current_streak: 0,
+    longest_streak: 0,
+  },
+  'mock-parent-id2': {
+    id: 'mock-parent-id',
+    email: 'parent@joyfulpath.org',
+    username: 'parent',
+    first_name: 'Samuel',
+    last_name: 'Amir',
+    display_name: 'Samuel Amir',
+    avatar_url: null,
+    role: 'parent',
+    locale: 'ar',
+    total_xp: 0,
+    total_points: 0,
+    current_streak: 0,
+    longest_streak: 0,
+  },
+  'mock-student-id3': {
+    id: 'mock-student-id',
+    email: 'student@joyfulpath.org',
+    username: 'student',
+    first_name: 'Jonathan',
+    last_name: 'Junior',
+    display_name: 'Jonathan Junior',
+    avatar_url: null,
+    role: 'student',
+    locale: 'ar',
+    total_xp: 1250,
+    total_points: 120,
+    current_streak: 5,
+    longest_streak: 10,
   },
 };
 
@@ -141,30 +198,30 @@ const MOCK_PARENT_CHILDREN = [
 ];
 
 const MOCK_ATTENDANCE = [
-  { id: 'a1', user_id: 'mock-student-id',  date: '2026-06-28', status: 'present', notes: 'Excellent participation' },
-  { id: 'a2', user_id: 'mock-student-id',  date: '2026-06-21', status: 'present', notes: '' },
-  { id: 'a3', user_id: 'mock-student-id',  date: '2026-06-14', status: 'late',    notes: 'Late by 10 mins' },
-  { id: 'a4', user_id: 'mock-student-id',  date: '2026-06-07', status: 'absent',  notes: 'Sick' },
-  { id: 'a5', user_id: 'mock-student-id',  date: '2026-05-31', status: 'present', notes: '' },
-  { id: 'a6', user_id: 'mock-student-id',  date: '2026-05-24', status: 'present', notes: 'Led the prayer' },
+  { id: 'a1', user_id: 'mock-student-id', date: '2026-06-28', status: 'present', notes: 'Excellent participation' },
+  { id: 'a2', user_id: 'mock-student-id', date: '2026-06-21', status: 'present', notes: '' },
+  { id: 'a3', user_id: 'mock-student-id', date: '2026-06-14', status: 'late', notes: 'Late by 10 mins' },
+  { id: 'a4', user_id: 'mock-student-id', date: '2026-06-07', status: 'absent', notes: 'Sick' },
+  { id: 'a5', user_id: 'mock-student-id', date: '2026-05-31', status: 'present', notes: '' },
+  { id: 'a6', user_id: 'mock-student-id', date: '2026-05-24', status: 'present', notes: 'Led the prayer' },
   { id: 'b1', user_id: 'mock-student2-id', date: '2026-06-28', status: 'present', notes: '' },
-  { id: 'b2', user_id: 'mock-student2-id', date: '2026-06-21', status: 'absent',  notes: 'Family trip' },
+  { id: 'b2', user_id: 'mock-student2-id', date: '2026-06-21', status: 'absent', notes: 'Family trip' },
   { id: 'b3', user_id: 'mock-student2-id', date: '2026-06-14', status: 'present', notes: '' },
   { id: 'b4', user_id: 'mock-student2-id', date: '2026-06-07', status: 'present', notes: 'Great quiz score' },
 ];
 
 const MOCK_LESSON_PROGRESS = [
-  { id: 'lp1', user_id: 'mock-student-id',  progress_pct: 100, lessons: { title: 'Genesis — The Creation Story' } },
-  { id: 'lp2', user_id: 'mock-student-id',  progress_pct: 60,  lessons: { title: 'Noah — The Ark and the Covenant' } },
-  { id: 'lp3', user_id: 'mock-student-id',  progress_pct: 0,   lessons: { title: 'Abraham — Father of Many Nations' } },
+  { id: 'lp1', user_id: 'mock-student-id', progress_pct: 100, lessons: { title: 'Genesis — The Creation Story' } },
+  { id: 'lp2', user_id: 'mock-student-id', progress_pct: 60, lessons: { title: 'Noah — The Ark and the Covenant' } },
+  { id: 'lp3', user_id: 'mock-student-id', progress_pct: 0, lessons: { title: 'Abraham — Father of Many Nations' } },
   { id: 'lp4', user_id: 'mock-student2-id', progress_pct: 100, lessons: { title: 'Genesis — The Creation Story' } },
-  { id: 'lp5', user_id: 'mock-student2-id', progress_pct: 30,  lessons: { title: 'Noah — The Ark and the Covenant' } },
+  { id: 'lp5', user_id: 'mock-student2-id', progress_pct: 30, lessons: { title: 'Noah — The Ark and the Covenant' } },
 ];
 
 const MOCK_QUIZ_ATTEMPTS = [
-  { id: 'q1', student_id: 'mock-student-id',  score: 90, total_possible: 100, percentage: 90.0, passed: true,  completed_at: '2026-06-25T10:00:00Z', quizzes: { title: 'Creation Review Quiz' } },
-  { id: 'q2', student_id: 'mock-student-id',  score: 50, total_possible: 100, percentage: 50.0, passed: false, completed_at: '2026-06-20T10:00:00Z', quizzes: { title: 'Covenants Challenge' } },
-  { id: 'q3', student_id: 'mock-student2-id', score: 75, total_possible: 100, percentage: 75.0, passed: true,  completed_at: '2026-06-24T10:00:00Z', quizzes: { title: 'Creation Review Quiz' } },
+  { id: 'q1', student_id: 'mock-student-id', score: 90, total_possible: 100, percentage: 90.0, passed: true, completed_at: '2026-06-25T10:00:00Z', quizzes: { title: 'Creation Review Quiz' } },
+  { id: 'q2', student_id: 'mock-student-id', score: 50, total_possible: 100, percentage: 50.0, passed: false, completed_at: '2026-06-20T10:00:00Z', quizzes: { title: 'Covenants Challenge' } },
+  { id: 'q3', student_id: 'mock-student2-id', score: 75, total_possible: 100, percentage: 75.0, passed: true, completed_at: '2026-06-24T10:00:00Z', quizzes: { title: 'Creation Review Quiz' } },
 ];
 
 const MOCK_BRANCHES = [
@@ -252,7 +309,7 @@ export const MOCK_EVENTS = [
 export const MOCK_EVENT_REGISTRATIONS = [
   { id: 'reg-1', event_id: 'event-1', user_id: 'mock-student-id', registered_at: '2026-06-20T10:00:00Z' },
   { id: 'reg-2', event_id: 'event-2', user_id: 'mock-student-id', registered_at: '2026-06-21T10:00:00Z' },
-  { id: 'reg-3', event_id: 'event-1', user_id: 'mock-parent-id',  registered_at: '2026-06-22T10:00:00Z' },
+  { id: 'reg-3', event_id: 'event-1', user_id: 'mock-parent-id', registered_at: '2026-06-22T10:00:00Z' },
 ];
 
 // ─── Chainable query builder ─────────────────────────────────────────────────
@@ -370,7 +427,8 @@ export const createMockSupabase = (currentRole?: string) => {
       signInWithPassword: async ({ email }: any) => {
         const norm = email.toLowerCase();
         let role = 'student';
-        if (norm.includes('admin')) role = 'admin';
+        if (norm.includes('priest')) role = 'priest';
+        else if (norm.includes('admin')) role = 'admin';
         else if (norm.includes('instructor') || norm.includes('servant')) role = 'instructor';
         else if (norm.includes('parent')) role = 'parent';
         setCookie('MOCK_USER_ROLE', role);
@@ -385,7 +443,7 @@ export const createMockSupabase = (currentRole?: string) => {
         return { error: null };
       },
       onAuthStateChange: (_cb: any) => ({
-        data: { subscription: { unsubscribe: () => {} } },
+        data: { subscription: { unsubscribe: () => { } } },
       }),
       updateUser: async (attributes: any) => {
         const role = getCookie('MOCK_USER_ROLE') || getActiveRole();
@@ -406,11 +464,11 @@ export const createMockSupabase = (currentRole?: string) => {
     channel: (name: string) => ({
       on: () => ({
         subscribe: () => ({
-          unsubscribe: () => {}
+          unsubscribe: () => { }
         })
       }),
       subscribe: () => ({
-        unsubscribe: () => {}
+        unsubscribe: () => { }
       })
     }),
 

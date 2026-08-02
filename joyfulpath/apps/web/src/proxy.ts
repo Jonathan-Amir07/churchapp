@@ -25,7 +25,7 @@ const PRIEST_ONLY_ADMIN_PATHS = [
   '/admin/permissions',
 ];
 
-export async function proxy(request: NextRequest) {
+export default async function proxy(request: NextRequest) {
   let response = NextResponse.next({
     request: {
       headers: request.headers,

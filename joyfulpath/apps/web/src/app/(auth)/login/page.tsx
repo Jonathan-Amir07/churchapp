@@ -14,13 +14,11 @@ export default function LoginPage() {
   const router = useRouter();
   const addToast = useNotificationStore((state) => state.addToast);
 
-  const [activeTab, setActiveTab] = useState<'student' | 'servant'>('student');
+  const [role, setRole] = useState('student');
   const [loading, setLoading] = useState(false);
 
   // Form states
   const [username, setUsername] = useState('');
-  const [pin, setPin] = useState('');
-  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
   const handleLocaleSwitch = () => {
@@ -36,36 +34,19 @@ export default function LoginPage() {
     setLoading(true);
 
     try {
-      let authEmail = '';
-      let authPassword = '';
-
-      if (activeTab === 'student') {
-        if (!username || !pin) {
-          addToast(currentLocale === 'en' ? 'Please enter both username and PIN' : 'يرجى إدخال اسم المستخدم ورمز PIN', 'error');
-          setLoading(false);
-          return;
-        }
-
-        // Student Username mapping:
-        // Try mapping student1 -> student1@joyfulpath.org (standard seeded template)
-        authEmail = username.includes('@') ? username : `${username.trim().toLowerCase()}@joyfulpath.org`;
-        authPassword = pin;
-      } else {
-        if (!email || !password) {
-          addToast(currentLocale === 'en' ? 'Please enter both email and password' : 'يرجى إدخال البريد الإلكتروني وكلمة المرور', 'error');
-          setLoading(false);
-          return;
-        }
-        authEmail = email;
-        authPassword = password;
+      if (!username || !password) {
+        addToast(currentLocale === 'en' ? 'Please enter both username and password' : 'يرجى إدخال اسم المستخدم وكلمة المرور', 'error');
+        setLoading(false);
+        return;
       }
 
       const res = await fetch('/api/auth/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          username: authEmail, // NestJS handles email or username via 'identifier'
-          password: authPassword
+          username,
+          password,
+          role
         }),
       });
 
@@ -182,84 +163,53 @@ export default function LoginPage() {
             <p className="text-sm font-medium text-on-surface-variant mt-2">{t('welcomeBack')}</p>
           </div>
 
-          {/* Tab Controls */}
-          <div className="flex bg-surface-container rounded-xl p-1.5 border border-outline-variant/30 mb-8">
-            <button
-              type="button"
-              onClick={() => setActiveTab('student')}
-              className={`flex-1 py-3 text-center text-sm font-black rounded-lg transition-all flex items-center justify-center gap-2 ${
-                activeTab === 'student'
-                  ? 'bg-surface-container-lowest text-primary shadow-sm border border-outline-variant/20'
-                  : 'text-on-surface-variant hover:text-on-surface'
-              }`}
-            >
-              <span className="material-symbols-outlined text-[20px]">sentiment_satisfied</span>
-              {currentLocale === 'en' ? 'Student' : 'مخدوم'}
-            </button>
-            <button
-              type="button"
-              onClick={() => setActiveTab('servant')}
-              className={`flex-1 py-3 text-center text-sm font-black rounded-lg transition-all flex items-center justify-center gap-2 ${
-                activeTab === 'servant'
-                  ? 'bg-surface-container-lowest text-secondary shadow-sm border border-outline-variant/20'
-                  : 'text-on-surface-variant hover:text-on-surface'
-              }`}
-            >
-              <span className="material-symbols-outlined text-[20px]">school</span>
-              {currentLocale === 'en' ? 'Servant / Parent' : 'خادم / ولي أمر'}
-            </button>
+          {/* Role Selector */}
+          <div className="mb-6">
+            <label className="block text-sm font-bold text-on-surface mb-2">
+              {currentLocale === 'en' ? 'Select Role' : 'اختر الصلاحية'}
+            </label>
+            <div className="relative">
+              <select
+                value={role}
+                onChange={(e) => setRole(e.target.value)}
+                className="w-full appearance-none bg-surface-container border border-outline-variant text-on-surface rounded-xl px-4 py-3 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+                disabled={loading}
+              >
+                <option value="student">{currentLocale === 'en' ? 'Student' : 'مخدوم'}</option>
+                <option value="parent">{currentLocale === 'en' ? 'Parent' : 'ولي أمر'}</option>
+                <option value="instructor">{currentLocale === 'en' ? 'Instructor' : 'خادم'}</option>
+                <option value="admin">{currentLocale === 'en' ? 'Admin' : 'أمين خدمة'}</option>
+                <option value="priest">{currentLocale === 'en' ? 'Priest / Senior Admin' : 'كاهن'}</option>
+              </select>
+              <div className="absolute inset-y-0 end-0 flex items-center px-4 pointer-events-none text-on-surface-variant">
+                <span className="material-symbols-outlined text-[20px]">expand_more</span>
+              </div>
+            </div>
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-5">
-            {activeTab === 'student' ? (
-              <div className="space-y-5 animate-[fade-in_0.3s_ease-out]">
-                <Input
-                  label={t('username')}
-                  placeholder={t('enterUsername')}
-                  value={username}
-                  onChange={(e) => setUsername(e.target.value)}
-                  icon="person"
-                  disabled={loading}
-                  required
-                />
-                <Input
-                  label={t('pin')}
-                  type="password"
-                  placeholder={t('enterPin')}
-                  value={pin}
-                  onChange={(e) => setPin(e.target.value)}
-                  icon="dialpad"
-                  maxLength={6}
-                  disabled={loading}
-                  required
-                  showPasswordToggle
-                />
-              </div>
-            ) : (
-              <div className="space-y-5 animate-[fade-in_0.3s_ease-out]">
-                <Input
-                  label={t('email')}
-                  type="email"
-                  placeholder={t('enterEmail')}
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  icon="mail"
-                  disabled={loading}
-                  required
-                />
-                <Input
-                  label={t('password')}
-                  type="password"
-                  placeholder="••••••••"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  icon="lock"
-                  disabled={loading}
-                  required
-                  showPasswordToggle
-                />
-              </div>
-            )}
+            <div className="space-y-5 animate-[fade-in_0.3s_ease-out]">
+              <Input
+                label={t('username')}
+                placeholder={t('enterUsername')}
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+                icon="person"
+                disabled={loading}
+                required
+              />
+              <Input
+                label={t('password')}
+                type="password"
+                placeholder="••••••••"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                icon="lock"
+                disabled={loading}
+                required
+                showPasswordToggle
+              />
+            </div>
 
             <div className="flex items-center justify-between text-xs font-bold text-on-surface-variant pt-2">
               <label className="flex items-center gap-2 cursor-pointer">
@@ -273,11 +223,11 @@ export default function LoginPage() {
 
             <Button
               type="submit"
-              variant={activeTab === 'student' ? 'primary' : 'outline'}
+              variant="primary"
               fullWidth
               size="lg"
               loading={loading}
-              className={`mt-4 rounded-xl ${activeTab === 'servant' ? 'border-secondary text-secondary hover:bg-secondary/10' : ''}`}
+              className="mt-4 rounded-xl"
             >
               {tCommon('submit')}
             </Button>

@@ -1,14 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server';
 import prisma from '@/lib/db';
-import { auth } from '@/auth';
+import { requireRole, USER_MANAGEMENT_ROLES, AuthSession } from '@/lib/rbac';
 
 export async function GET(request: NextRequest) {
-  try {
-    const session = await auth();
-    if (!session || session.user.role !== 'admin') {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
+  const result = await requireRole(USER_MANAGEMENT_ROLES);
+  if (result instanceof NextResponse) return result;
 
+  try {
     const pendingUsers = await prisma.user.findMany({
       where: { accountStatus: 'pending' },
       select: {
@@ -26,12 +24,11 @@ export async function GET(request: NextRequest) {
 }
 
 export async function POST(request: NextRequest) {
-  try {
-    const session = await auth();
-    if (!session || session.user.role !== 'admin') {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
+  const result = await requireRole(USER_MANAGEMENT_ROLES);
+  if (result instanceof NextResponse) return result;
+  const session = result as AuthSession;
 
+  try {
     const body = await request.json();
     const { userId, action } = body;
 

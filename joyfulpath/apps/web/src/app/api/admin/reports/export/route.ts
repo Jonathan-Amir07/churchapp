@@ -1,13 +1,11 @@
-import { NextResponse } from 'next/server';
-import { auth } from '@/auth';
+import { NextRequest, NextResponse } from 'next/server';
+import { requireRole, CONTENT_MANAGER_ROLES } from '@/lib/rbac';
 
-export async function GET(req: Request) {
+export async function GET(req: NextRequest) {
+  const result = await requireRole(CONTENT_MANAGER_ROLES);
+  if (result instanceof NextResponse) return result;
+
   try {
-    const session = await auth();
-    if (!session || session.user.role !== 'admin') {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
-
     const { searchParams } = new URL(req.url);
     const format = searchParams.get('format') || 'csv';
     const type = searchParams.get('type') || 'attendance';

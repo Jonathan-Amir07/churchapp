@@ -13,15 +13,28 @@
 - Environments: .env.local
 
   Creating an optimized production build ...
-✓ Compiled successfully in 15.0s
+Turbopack build encountered 1 warnings:
+[externals]/@prisma/client
+unexpected export *
+export * used with module [externals]/@prisma/client [external] (@prisma/client, cjs, [project]/packages/database/node_modules/@prisma/client) which is a CommonJS module with exports only available at runtime
+List all export names manually (`export { a, b, c } from "...") or rewrite the module to ESM, to avoid the additional runtime code.`
+
+Import trace:
+  external:
+    [externals]/@prisma/client [external]
+    ./apps/web/src/lib/db.ts [App Route]
+    ./apps/web/src/app/api/rewards/redemptions/export/route.ts [App Route]
+
+
+✓ Compiled successfully in 10.4s
   Running TypeScript ...
-  Finished TypeScript in 10.4s ...
+  Finished TypeScript in 8.4s ...
   Collecting page data using 15 workers ...
-  Generating static pages using 15 workers (0/80) ...
-  Generating static pages using 15 workers (20/80) 
-  Generating static pages using 15 workers (40/80) 
-  Generating static pages using 15 workers (60/80) 
-✓ Generating static pages using 15 workers (80/80) in 853ms
+  Generating static pages using 15 workers (0/82) ...
+  Generating static pages using 15 workers (20/82) 
+  Generating static pages using 15 workers (40/82) 
+  Generating static pages using 15 workers (61/82) 
+✓ Generating static pages using 15 workers (82/82) in 553ms
   Finalizing page optimization ...
 
 Route (app)
@@ -45,6 +58,7 @@ Route (app)
 ├ ƒ /admin/rewards
 ├ ƒ /admin/settings
 ├ ƒ /admin/students
+├ ƒ /admin/students/[id]
 ├ ƒ /admin/tasks
 ├ ƒ /admin/users
 ├ ƒ /api/admin/approvals
@@ -85,8 +99,11 @@ Route (app)
 ├ ƒ /api/rewards/redemptions/[id]/fulfill
 ├ ƒ /api/rewards/redemptions/[id]/reject
 ├ ƒ /api/rewards/redemptions/export
+├ ƒ /api/users
+├ ƒ /api/users/[id]
 ├ ƒ /auth/callback
 ├ ƒ /branches
+├ ƒ /change-password
 ├ ƒ /faq
 ├ ƒ /forgot-password
 ├ ƒ /gallery
@@ -98,7 +115,6 @@ Route (app)
 ├ ƒ /parent/profile
 ├ ƒ /parent/reports
 ├ ƒ /pending
-├ ƒ /register
 ├ ƒ /reset-password
 ├ ƒ /saints
 ├ ƒ /student/badges
@@ -116,6 +132,7 @@ Route (app)
 ├ ƒ /student/quizzes
 ├ ƒ /student/store
 ├ ƒ /student/tasks
+├ ƒ /unauthorized
 └ ƒ /verify-email
 
 

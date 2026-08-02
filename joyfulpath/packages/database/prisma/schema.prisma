@@ -20,7 +20,7 @@ datasource db {
 
 model User {
   id             String    @id @default(uuid())
-  username       String?   @unique
+  username       String    @unique
   email          String?   @unique
   passwordHash   String    @map("password_hash")
   pinHash        String?   @map("pin_hash")
