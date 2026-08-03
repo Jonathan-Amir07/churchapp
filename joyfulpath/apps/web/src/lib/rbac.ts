@@ -167,6 +167,59 @@ export async function verifyParentChildAccess(
 }
 
 /**
+ * For students: verify they are only accessing their own data.
+ */
+export function verifyStudentSelfAccess(
+  userId: string,
+  targetStudentId: string
+): boolean {
+  return userId === targetStudentId;
+}
+
+/**
+ * For instructors: verify they have access to a specific student
+ * (i.e., the student is enrolled in a class the instructor teaches).
+ */
+export async function verifyStudentAccess(
+  userId: string,
+  userRole: string,
+  studentId: string
+): Promise<boolean> {
+  if (isAdmin(userRole)) return true;
+  
+  if (userRole === 'instructor') {
+    // Find if there is any class where both this instructor and this student are members
+    const sharedClasses = await prisma.classMember.findFirst({
+      where: {
+        userId: studentId,
+        role: 'student',
+        isActive: true,
+        class: {
+          members: {
+            some: {
+              userId: userId,
+              role: 'instructor',
+              isActive: true,
+            }
+          }
+        }
+      }
+    });
+    return !!sharedClasses;
+  }
+  
+  if (userRole === 'parent') {
+    return verifyParentChildAccess(userId, studentId);
+  }
+  
+  if (userRole === 'student') {
+    return verifyStudentSelfAccess(userId, studentId);
+  }
+  
+  return false;
+}
+
+/**
  * Get all class IDs an instructor is assigned to.
  */
 export async function getInstructorClassIds(userId: string): Promise<string[]> {

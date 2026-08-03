@@ -41,15 +41,8 @@ export function Topbar() {
 
   const handleLogout = async () => {
     try {
-      await supabase.auth.signOut();
+      await fetch('/api/auth/logout', { method: 'POST' });
     } catch(e) {}
-    
-    // Clear all cookies
-    document.cookie.split(";").forEach((c) => {
-      document.cookie = c
-        .replace(/^ +/, "")
-        .replace(/=.*/, "=;expires=" + new Date().toUTCString() + ";path=/");
-    });
     
     // Clear storage
     localStorage.clear();

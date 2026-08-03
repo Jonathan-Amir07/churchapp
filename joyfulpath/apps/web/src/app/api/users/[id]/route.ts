@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import prisma from '@/lib/db';
 import bcrypt from 'bcryptjs';
-import { requireRole, USER_MANAGEMENT_ROLES } from '@/lib/rbac';
+import { requireRole, USER_MANAGEMENT_ROLES, requireAuth } from '@/lib/rbac';
 
 /**
  * PUT /api/users/[id] - Update a user
@@ -90,5 +90,71 @@ export async function DELETE(req: NextRequest, { params }: { params: Promise<{ i
   } catch (error) {
     console.error('Error deleting user:', error);
     return NextResponse.json({ error: 'Failed to delete user' }, { status: 500 });
+  }
+}
+
+/**
+ * GET /api/users/[id] - Get a user profile
+ * Role-based access:
+ * - Admin/Priest: Can view anyone
+ * - Instructor: Can view only students assigned to them
+ * - Parent: Can view only their own children
+ * - Student: Can view only themselves
+ */
+export async function GET(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+  const session = await requireAuth();
+  if (session instanceof NextResponse) return session;
+
+  try {
+    const { id } = await params;
+    const { user } = session;
+
+    // RBAC Check
+    if (user.role !== 'admin' && user.role !== 'priest') {
+      let isAllowed = false;
+
+      if (user.role === 'student' && user.id === id) {
+        isAllowed = true;
+      } else if (user.role === 'instructor') {
+        // Instructors can only view students in their classes
+        // In a real app we'd use `verifyStudentAccess` from rbac.ts.
+        // I will implement a quick db check here or import verifyStudentAccess.
+        const { verifyStudentAccess } = await import('@/lib/rbac');
+        isAllowed = await verifyStudentAccess(user.id, user.role, id);
+      } else if (user.role === 'parent') {
+        const { verifyParentChildAccess } = await import('@/lib/rbac');
+        isAllowed = await verifyParentChildAccess(user.id, id);
+      }
+
+      if (!isAllowed) {
+        return NextResponse.json(
+          { error: 'Forbidden: You do not have permission to view this profile' },
+          { status: 403 }
+        );
+      }
+    }
+
+    const fetchedUser = await prisma.user.findUnique({
+      where: { id },
+      include: {
+        parentChildren: {
+          include: { parent: true, child: true }
+        },
+        classMemberships: {
+          include: { class: true }
+        }
+      }
+    });
+
+    if (!fetchedUser) {
+      return NextResponse.json({ error: 'User not found' }, { status: 404 });
+    }
+
+    // Omit sensitive data
+    const { passwordHash, ...safeUser } = fetchedUser;
+    return NextResponse.json(safeUser);
+  } catch (error) {
+    console.error('Error fetching user profile:', error);
+    return NextResponse.json({ error: 'Failed to fetch user profile' }, { status: 500 });
   }
 }

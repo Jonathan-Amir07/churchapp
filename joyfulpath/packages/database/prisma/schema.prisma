@@ -463,6 +463,24 @@ model LeaderboardEntry {
   @@index([classId, period, periodStart])
   @@map("leaderboard_entries")
 }
+model Event {
+  id           String   @id @default(uuid())
+  title        String
+  description  String
+  type         String
+  date         DateTime
+  time         String
+  endTime      String   @map("end_time")
+  location     String
+  maxCapacity  Int      @map("max_capacity")
+  currentRsvp  Int      @default(0) @map("current_rsvp")
+  isPublic     Boolean  @default(true) @map("is_public")
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @updatedAt @map("updated_at")
+
+  @@map("events")
+}
+
 
 model Announcement {
   id          String    @id @default(uuid())

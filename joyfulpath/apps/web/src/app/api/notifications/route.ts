@@ -1,70 +1,55 @@
 import { NextRequest, NextResponse } from 'next/server';
 import prisma from '@/lib/db';
-import { createClient } from '@/lib/supabase/client';
-import {
-  requireAuth,
-  requireRole,
-  USER_MANAGEMENT_ROLES,
-  type AuthSession,
-} from '@/lib/rbac';
+import { requireAuth } from '@/lib/rbac';
 
-/**
- * GET /api/notifications - List user notifications
- * Any authenticated user can view their own notifications.
- */
 export async function GET(request: NextRequest) {
-  const result = await requireAuth();
-  if (result instanceof NextResponse) return result;
-  const session = result as AuthSession;
-
   try {
+    const session = await requireAuth();
+    if (session instanceof NextResponse) return session;
+    const user = session.user;
+
     const searchParams = request.nextUrl.searchParams;
     const limit = parseInt(searchParams.get('limit') || '20');
     const offset = parseInt(searchParams.get('offset') || '0');
     const unreadOnly = searchParams.get('unreadOnly') === 'true';
 
-    const supabase = createClient();
-
-    let query = supabase
-      .from('notifications')
-      .select('*', { count: 'exact' })
-      .eq('user_id', session.user.id)
-      .order('created_at', { ascending: false })
-      .range(offset, offset + limit - 1);
-
+    let whereClause: any = { userId: user.id };
     if (unreadOnly) {
-      query = query.eq('is_read', false);
+      whereClause.isRead = false;
     }
 
-    const { data, error, count } = await query;
+    const notifications = await prisma.notification.findMany({
+      where: whereClause,
+      orderBy: { createdAt: 'desc' },
+      skip: offset,
+      take: limit,
+    });
 
-    if (error) throw error;
+    const total = await prisma.notification.count({ where: whereClause });
 
     return NextResponse.json({
-      notifications: data || [],
-      total: count || 0,
+      notifications,
+      total,
       limit,
       offset,
     });
-  } catch (error) {
-    console.error('GET /api/notifications error:', error);
-    return NextResponse.json(
-      { error: 'Failed to fetch notifications' },
-      { status: 500 }
-    );
+  } catch (error: any) {
+    if (error.message === 'Unauthorized') {
+      return NextResponse.json({ error: error.message }, { status: 401 });
+    }
+    return NextResponse.json({ error: 'Failed to fetch notifications' }, { status: 500 });
   }
 }
 
-/**
- * POST /api/notifications - Create notification
- * Only priest/admin can broadcast/create notifications.
- */
 export async function POST(request: NextRequest) {
-  const result = await requireRole(USER_MANAGEMENT_ROLES);
-  if (result instanceof NextResponse) return result;
-  const session = result as AuthSession;
-
   try {
+    const session = await requireAuth();
+    if (session instanceof NextResponse) return session;
+    const user = session.user;
+    if (user.role !== 'admin' && user.role !== 'priest') {
+      return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+    }
+
     const data = await request.json();
     const {
       userId,
@@ -85,16 +70,12 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const supabase = createClient();
-
-    // Determine target users
     let targetUserIds: string[] = [];
     if (userId) {
       targetUserIds = [userId];
-    } else if (targetIds) {
-      targetUserIds = targetIds; // e.g., all users in a class
+    } else if (targetIds && Array.isArray(targetIds)) {
+      targetUserIds = targetIds;
     } else {
-      // Broadcast to all active students
       const users = await prisma.user.findMany({
         where: { role: 'student', isActive: true },
         select: { id: true },
@@ -102,40 +83,29 @@ export async function POST(request: NextRequest) {
       targetUserIds = users.map((u: any) => u.id);
     }
 
-    // Create notifications
-    const notifications = targetUserIds.map((uid: any) => ({
-      user_id: uid,
-      title_en,
-      title_ar,
-      message_en,
-      message_ar,
+    const notifications = targetUserIds.map((uid) => ({
+      userId: uid,
+      titleEn: title_en,
+      titleAr: title_ar || title_en,
+      messageEn: message_en,
+      messageAr: message_ar || message_en,
       type: type || 'announcement',
-      action_url: actionUrl,
-      is_read: false,
-      created_at: new Date().toISOString(),
+      actionUrl: actionUrl,
+      isRead: false,
     }));
 
-    const { data: inserted, error } = await supabase
-      .from('notifications')
-      .insert(notifications)
-      .select();
-
-    if (error) throw error;
-
-    // Send push notifications if requested
-    if (sendPush && inserted && inserted.length > 0) {
-      console.log(`Queued push notifications for ${targetUserIds.length} users`);
-    }
+    await prisma.notification.createMany({
+      data: notifications
+    });
 
     return NextResponse.json(
-      { notifications: inserted, queued: sendPush ? targetUserIds.length : 0 },
+      { success: true, queued: sendPush ? targetUserIds.length : 0 },
       { status: 201 }
     );
-  } catch (error) {
-    console.error('POST /api/notifications error:', error);
-    return NextResponse.json(
-      { error: 'Failed to create notification' },
-      { status: 500 }
-    );
+  } catch (error: any) {
+    if (error.message === 'Unauthorized' || error.message === 'Forbidden') {
+      return NextResponse.json({ error: error.message }, { status: error.message === 'Unauthorized' ? 401 : 403 });
+    }
+    return NextResponse.json({ error: 'Failed to create notification' }, { status: 500 });
   }
 }

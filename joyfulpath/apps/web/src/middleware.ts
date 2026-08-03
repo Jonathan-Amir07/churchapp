@@ -34,7 +34,23 @@ export default async function proxy(request: NextRequest) {
 
   let user: any = null;
 
-  if (isMockMode()) {
+  // Always check for a real token first, even in mock mode,
+  // since the new login API route sets ACCESS_TOKEN.
+  const token = request.cookies.get('ACCESS_TOKEN')?.value;
+  if (token) {
+    try {
+      const parts = token.split('.');
+      if (parts.length === 3) {
+        const payloadStr = atob(parts[1]);
+        user = JSON.parse(payloadStr);
+      }
+    } catch (e) {
+      console.warn('Failed to parse JWT in middleware', e);
+    }
+  }
+
+  // Fallback to MOCK_USER_ROLE if no real token and in mock mode
+  if (!user && isMockMode()) {
     const mockRole = request.cookies.get('MOCK_USER_ROLE')?.value;
     if (mockRole) {
       user = {
@@ -43,19 +59,6 @@ export default async function proxy(request: NextRequest) {
         role: mockRole,
         forcePasswordChange: false,
       };
-    }
-  } else {
-    const token = request.cookies.get('ACCESS_TOKEN')?.value;
-    if (token) {
-      try {
-        const parts = token.split('.');
-        if (parts.length === 3) {
-          const payloadStr = Buffer.from(parts[1], 'base64').toString('utf8');
-          user = JSON.parse(payloadStr);
-        }
-      } catch (e) {
-        console.warn('Failed to parse JWT in middleware', e);
-      }
     }
   }
 

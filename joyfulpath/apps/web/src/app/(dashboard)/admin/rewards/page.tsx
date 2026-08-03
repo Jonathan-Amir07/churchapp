@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useMemo, useCallback } from 'react';
+import { useState, useMemo, useCallback, useEffect } from 'react';
 import { useTranslations } from 'next-intl';
 import { Card, CardContent, CardTitle, Button, Modal, Input, SearchBar } from '@/components/ui';
 import { useAppStore } from '@/stores/app.store';
@@ -11,7 +11,9 @@ export default function AdminRewards() {
   const tRewards = useTranslations('rewards');
   const tCommon = useTranslations('common');
 
-  const { rewards, redemptions, addRewardItem, processRedemption } = useAppStore();
+  const [rewards, setRewards] = useState<any[]>([]);
+  const [redemptions, setRedemptions] = useState<any[]>([]);
+  
   const addToast = useNotificationStore(s => s.addToast);
   
   const [activeTab, setActiveTab] = useState<'catalog' | 'queue'>('catalog');
@@ -32,6 +34,28 @@ export default function AdminRewards() {
   const [type, setType] = useState<'digital' | 'physical'>('digital');
   const [icon, setIcon] = useState('emoji_events');
 
+  const fetchData = useCallback(async () => {
+    try {
+      const [resRewards, resReds] = await Promise.all([
+        fetch('/api/rewards'),
+        fetch('/api/rewards/redemptions')
+      ]);
+      
+      if (resRewards.ok) {
+        setRewards(await resRewards.json());
+      }
+      if (resReds.ok) {
+        setRedemptions(await resReds.json());
+      }
+    } catch (e) {
+      console.error(e);
+    }
+  }, []);
+
+  useEffect(() => {
+    fetchData();
+  }, [fetchData]);
+
   const handleSearch = useCallback((query: string) => {
     setSearchQuery(query);
   }, []);
@@ -42,8 +66,8 @@ export default function AdminRewards() {
     return rewards.filter(
       (item) =>
         item.title.toLowerCase().includes(q) ||
-        item.titleAr.toLowerCase().includes(q) ||
-        item.description.toLowerCase().includes(q)
+        (item.titleAr && item.titleAr.toLowerCase().includes(q)) ||
+        (item.description && item.description.toLowerCase().includes(q))
     );
   }, [rewards, searchQuery]);
 
@@ -58,48 +82,68 @@ export default function AdminRewards() {
     );
   }, [redemptions, searchQuery]);
 
-  const handleCreate = useCallback((e: React.FormEvent) => {
+  const handleCreate = useCallback(async (e: React.FormEvent) => {
     e.preventDefault();
     if (!title || !titleAr || !description || !descriptionAr) {
       addToast('Error: Please fill all fields!', 'error');
       return;
     }
 
-    addRewardItem({
-      title,
-      titleAr,
-      description,
-      descriptionAr,
-      pointsCost,
-      stock,
-      type,
-      icon,
-    });
+    try {
+      const res = await fetch('/api/rewards', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          title, titleAr, description, descriptionAr, pointsCost, stock, type, icon
+        })
+      });
 
-    setIsOpen(false);
-    addToast(tRewards('addSuccess'), 'success');
+      if (res.ok) {
+        addToast(tRewards('addSuccess'), 'success');
+        setIsOpen(false);
+        fetchData();
 
-    // Reset Form
-    setTitle('');
-    setTitleAr('');
-    setDescription('');
-    setDescriptionAr('');
-    setPointsCost(50);
-    setStock(10);
-    setType('digital');
-    setIcon('emoji_events');
-  }, [title, titleAr, description, descriptionAr, pointsCost, stock, type, icon, addRewardItem, addToast, tRewards]);
+        // Reset Form
+        setTitle('');
+        setTitleAr('');
+        setDescription('');
+        setDescriptionAr('');
+        setPointsCost(50);
+        setStock(10);
+        setType('digital');
+        setIcon('emoji_events');
+      } else {
+        addToast('Failed to create reward', 'error');
+      }
+    } catch (error) {
+      addToast('Error occurred', 'error');
+    }
+  }, [title, titleAr, description, descriptionAr, pointsCost, stock, type, icon, addToast, tRewards, fetchData]);
 
-  const handleProcessSubmit = useCallback((e: React.FormEvent) => {
+  const handleProcessSubmit = useCallback(async (e: React.FormEvent) => {
     e.preventDefault();
     if (!selectedRedId) return;
 
-    processRedemption(selectedRedId, processStatus, feedback);
-    setIsFeedbackOpen(false);
-    setSelectedRedId(null);
-    setFeedback('');
-    addToast(`Redemption ${processStatus} successfully!`, 'success');
-  }, [selectedRedId, processStatus, feedback, processRedemption, addToast]);
+    try {
+      const res = await fetch(`/api/rewards/redemptions/${selectedRedId}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ status: processStatus, feedback })
+      });
+
+      if (res.ok) {
+        addToast(`Redemption ${processStatus} successfully!`, 'success');
+        setIsFeedbackOpen(false);
+        setSelectedRedId(null);
+        setFeedback('');
+        fetchData();
+      } else {
+        addToast('Failed to process redemption', 'error');
+      }
+    } catch (error) {
+      addToast('Error occurred', 'error');
+    }
+  }, [selectedRedId, processStatus, feedback, addToast, fetchData]);
 
   const openProcessModal = useCallback((id: string, status: 'approved' | 'rejected') => {
     setSelectedRedId(id);

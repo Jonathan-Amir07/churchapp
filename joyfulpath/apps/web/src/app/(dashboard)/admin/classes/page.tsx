@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useMemo, useCallback } from 'react';
+import { useState, useMemo, useCallback, useEffect } from 'react';
 import { useTranslations, useLocale } from 'next-intl';
 import { Card, CardContent, CardTitle, Button, Modal, Input, SearchBar } from '@/components/ui';
 import { useNotificationStore } from '@/stores/notifications.store';
@@ -14,24 +14,7 @@ interface Classroom {
   gradeLevel: string;
 }
 
-const INITIAL_CLASSES: Classroom[] = [
-  {
-    id: '1',
-    nameEn: 'Primary Class A',
-    nameAr: 'الفئة الابتدائية أ',
-    instructorName: 'Servant Luke',
-    studentsCount: 5,
-    gradeLevel: 'Grades 1-3',
-  },
-  {
-    id: '2',
-    nameEn: 'Junior Class B',
-    nameAr: 'الفئة المتوسطة ب',
-    instructorName: 'Servant Mary',
-    studentsCount: 3,
-    gradeLevel: 'Grades 4-6',
-  },
-];
+
 
 export default function AdminClasses() {
   const tNav = useTranslations('nav');
@@ -39,18 +22,37 @@ export default function AdminClasses() {
   const tCommon = useTranslations('common');
   const addToast = useNotificationStore(s => s.addToast);
 
-  const [classes, setClasses] = useState<Classroom[]>(INITIAL_CLASSES);
+  const [classes, setClasses] = useState<Classroom[]>([]);
+  const [loading, setLoading] = useState(true);
   const [isOpen, setIsOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
 
   // Form states
   const [nameEn, setNameEn] = useState('');
   const [nameAr, setNameAr] = useState('');
-  const [instructorName, setInstructorName] = useState('Servant Luke');
+  const [instructorName, setInstructorName] = useState('');
   const [gradeLevel, setGradeLevel] = useState('Grades 1-3');
-  const [showForm, setShowForm] = useState(false);
   const locale = useLocale();
   const isAr = locale === 'ar';
+
+  useEffect(() => {
+    fetchClasses();
+  }, []);
+
+  const fetchClasses = async () => {
+    setLoading(true);
+    try {
+      const res = await fetch('/api/classes');
+      if (res.ok) {
+        const data = await res.json();
+        setClasses(data);
+      }
+    } catch (e) {
+      console.error(e);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleSearch = useCallback((query: string) => {
     setSearchQuery(query);
@@ -68,32 +70,35 @@ export default function AdminClasses() {
     );
   }, [classes, searchQuery]);
 
-  const handleCreate = useCallback((e: React.FormEvent) => {
+  const handleCreate = useCallback(async (e: React.FormEvent) => {
     e.preventDefault();
     if (!nameEn || !nameAr) {
       addToast('Error: Please fill all fields!', 'error');
       return;
     }
 
-    const newClass: Classroom = {
-      id: String(classes.length + 1),
-      nameEn,
-      nameAr,
-      instructorName,
-      studentsCount: 0,
-      gradeLevel,
-    };
+    try {
+      const res = await fetch('/api/classes', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ nameEn, nameAr, gradeLevel }), // Ignoring instructor assignment here for simplicity, typically you'd pick from a list
+      });
 
-    setClasses((prev) => [...prev, newClass]);
-    setIsOpen(false);
-    addToast(tClasses('saveSuccess'), 'success');
+      if (!res.ok) throw new Error('Failed to create');
+      
+      addToast(tClasses('saveSuccess'), 'success');
+      setIsOpen(false);
+      fetchClasses();
 
-    // Reset Form
-    setNameEn('');
-    setNameAr('');
-    setInstructorName('Servant Luke');
-    setGradeLevel('Grades 1-3');
-  }, [nameEn, nameAr, instructorName, gradeLevel, classes.length, addToast, tClasses]);
+      // Reset Form
+      setNameEn('');
+      setNameAr('');
+      setInstructorName('');
+      setGradeLevel('Grades 1-3');
+    } catch (e) {
+      addToast('Failed to create class', 'error');
+    }
+  }, [nameEn, nameAr, gradeLevel, addToast, tClasses]);
 
   return (
     <div className="space-y-6 animate-[slide-up_0.4s_ease-out]">
@@ -155,12 +160,17 @@ export default function AdminClasses() {
           );
         })}
 
-        {filteredClasses.length === 0 && (
+        {loading ? (
+          <div className="col-span-full text-center py-16 bg-surface-container-lowest border border-outline-variant/60 rounded-2xl">
+            <span className="material-symbols-outlined text-[48px] text-outline animate-spin">refresh</span>
+            <p className="text-on-surface-variant text-sm font-bold mt-2">Loading classes...</p>
+          </div>
+        ) : filteredClasses.length === 0 ? (
           <div className="col-span-full text-center py-16 bg-surface-container-lowest border border-outline-variant/60 rounded-2xl">
             <span className="material-symbols-outlined text-[48px] text-outline">school</span>
             <p className="text-on-surface-variant text-sm font-bold mt-2">No classes found.</p>
           </div>
-        )}
+        ) : null}
       </div>
 
       {/* Creation Modal */}

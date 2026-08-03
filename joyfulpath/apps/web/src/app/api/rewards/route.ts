@@ -1,81 +1,72 @@
 import { NextRequest, NextResponse } from 'next/server';
 import prisma from '@/lib/db';
-import {
-  requireAuth,
-  verifyParentChildAccess,
-  type AuthSession,
-} from '@/lib/rbac';
+import { requireAuth } from '@/lib/rbac';
 
-/**
- * GET /api/rewards - List active rewards
- * Any authenticated user can list active rewards.
- */
-export async function GET() {
-  const result = await requireAuth();
-  if (result instanceof NextResponse) return result;
-
+export async function GET(req: NextRequest) {
   try {
-    const rewards = await prisma.reward.findMany({ where: { isActive: true } });
-    return NextResponse.json(rewards);
-  } catch (err) {
-    return NextResponse.json({ error: 'Failed to load rewards' }, { status: 500 });
+    const session = await requireAuth();
+    if (session instanceof NextResponse) return session;
+    const user = session.user;
+
+    const rewards = await prisma.reward.findMany({
+      orderBy: { createdAt: 'desc' }
+    });
+
+    const formatted = rewards.map((r: any) => ({
+      id: r.id,
+      title: r.titleEn,
+      titleAr: r.titleAr,
+      description: r.descriptionEn,
+      descriptionAr: r.descriptionAr,
+      pointsCost: r.pointsCost,
+      stock: r.stockLevel,
+      type: r.type,
+      icon: r.imageUrl || 'emoji_events',
+    }));
+
+    return NextResponse.json(formatted);
+  } catch (error: any) {
+    if (error.message === 'Unauthorized') {
+      return NextResponse.json({ error: error.message }, { status: 401 });
+    }
+    return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
   }
 }
 
-/**
- * POST /api/rewards - Redeem a reward
- * Student: can redeem for themselves.
- * Parent: can redeem for their children.
- * Priest/Admin/Instructor: cannot redeem rewards here (they approve them instead).
- */
 export async function POST(req: NextRequest) {
-  const result = await requireAuth();
-  if (result instanceof NextResponse) return result;
-  const session = result as AuthSession;
-
   try {
-    const body = await req.json();
-    const { userId, rewardId } = body;
+    const session = await requireAuth();
+    if (session instanceof NextResponse) return session;
+    const user = session.user;
+    if (user.role !== 'admin' && user.role !== 'priest') {
+      return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+    }
 
-    if (!userId || !rewardId) {
+    const body = await req.json();
+    const { title, titleAr, description, descriptionAr, pointsCost, stock, type, icon } = body;
+
+    if (!title || !titleAr || !description || !descriptionAr) {
       return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
     }
 
-    if (session.user.role === 'student') {
-      if (session.user.id !== userId) {
-        return NextResponse.json({ error: 'Access denied: can only redeem for yourself' }, { status: 403 });
-      }
-    } else if (session.user.role === 'parent') {
-      const isChild = await verifyParentChildAccess(session.user.id, userId);
-      if (!isChild) {
-        return NextResponse.json({ error: 'Access denied: student is not your child' }, { status: 403 });
-      }
-    } else {
-      return NextResponse.json({ error: 'Only students and parents can redeem rewards' }, { status: 403 });
-    }
-
-    // Check if reward exists
-    const reward = await prisma.reward.findUnique({
-      where: { id: rewardId },
-    });
-
-    if (!reward || !reward.isActive) {
-      return NextResponse.json({ error: 'Reward is not available' }, { status: 400 });
-    }
-
-    // TODO: Verify if user has enough points (requires points system integration)
-
-    // Create a redemption request
-    const redemption = await prisma.rewardRedemption.create({
+    const reward = await prisma.reward.create({
       data: {
-        userId,
-        rewardId,
-        status: 'pending',
-      },
+        titleEn: title,
+        titleAr: titleAr,
+        descriptionEn: description,
+        descriptionAr: descriptionAr,
+        pointsCost: parseInt(pointsCost) || 50,
+        stockLevel: parseInt(stock) || 10,
+        type: type || 'digital',
+        imageUrl: icon || 'emoji_events',
+      }
     });
 
-    return NextResponse.json(redemption, { status: 201 });
-  } catch (err) {
-    return NextResponse.json({ error: 'Failed to request redemption' }, { status: 500 });
+    return NextResponse.json(reward);
+  } catch (error: any) {
+    if (error.message === 'Unauthorized' || error.message === 'Forbidden') {
+      return NextResponse.json({ error: error.message }, { status: error.message === 'Unauthorized' ? 401 : 403 });
+    }
+    return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
   }
 }

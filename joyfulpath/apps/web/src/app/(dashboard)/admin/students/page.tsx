@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { useTranslations } from 'next-intl';
 import { Button, Modal, Input } from '@/components/ui';
 import { useNotificationStore } from '@/stores/notifications.store';
@@ -19,11 +19,7 @@ interface Student {
   lastActive: string;
 }
 
-const INITIAL_STUDENTS: Student[] = [
-  { id: '1', name: 'Jonathan Amir', username: 'jonathan_amir', totalXp: 450, totalPoints: 90, level: 3, levelTitle: 'Sapling', badgesCount: 4, lastActive: '10 min ago' },
-  { id: '2', name: 'Mary Faith', username: 'mary_faith', totalXp: 380, totalPoints: 75, level: 2, levelTitle: 'Seedling', badgesCount: 3, lastActive: '1 hour ago' },
-  { id: '3', name: 'David Shepherd', username: 'david_shepherd', totalXp: 350, totalPoints: 70, level: 2, levelTitle: 'Seedling', badgesCount: 2, lastActive: '2 days ago' },
-];
+
 
 export default function InstructorStudents() {
   const tNav = useTranslations('nav');
@@ -31,7 +27,24 @@ export default function InstructorStudents() {
   const tCommon = useTranslations('common');
   const addToast = useNotificationStore(s => s.addToast);
 
-  const [students, setStudents] = useState<Student[]>(INITIAL_STUDENTS);
+  const [students, setStudents] = useState<Student[]>([]);
+  const [loading, setLoading] = useState(true);
+  
+  useEffect(() => {
+    async function fetchStudents() {
+      try {
+        const res = await fetch('/api/students');
+        if (!res.ok) throw new Error('Failed to fetch');
+        const data = await res.json();
+        setStudents(data);
+      } catch (error) {
+        addToast('Failed to load students', 'error');
+      } finally {
+        setLoading(false);
+      }
+    }
+    fetchStudents();
+  }, [addToast]);
   const [selectedStudent, setSelectedStudent] = useState<Student | null>(null);
   
   const [xpToAdd, setXpToAdd] = useState(50);

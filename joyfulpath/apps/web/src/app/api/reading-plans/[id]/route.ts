@@ -13,24 +13,19 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
 
     const { id } = await params;
     const body = await req.json();
-    const { title, description, type, date, time, end_time, location, max_capacity, is_public } = body;
+    const { title, description, durationDays, content } = body;
 
-    const event = await prisma.event.update({
+    const plan = await prisma.readingPlan.update({
       where: { id },
       data: {
         title,
         description,
-        type,
-        date: date ? new Date(date) : undefined,
-        time,
-        endTime: end_time,
-        location,
-        maxCapacity: max_capacity,
-        isPublic: is_public
+        durationDays: parseInt(durationDays) || 30,
+        content: content || '[]',
       }
     });
 
-    return NextResponse.json(event);
+    return NextResponse.json(plan);
   } catch (error: any) {
     if (error.message === 'Unauthorized' || error.message === 'Forbidden') {
       return NextResponse.json({ error: error.message }, { status: error.message === 'Unauthorized' ? 401 : 403 });
@@ -50,7 +45,7 @@ export async function DELETE(req: NextRequest, { params }: { params: Promise<{ i
 
     const { id } = await params;
 
-    await prisma.event.delete({
+    await prisma.readingPlan.delete({
       where: { id }
     });
 

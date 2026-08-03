@@ -1,5 +1,6 @@
 'use client';
 
+import { useState, useCallback, useEffect } from 'react';
 import { useTranslations } from 'next-intl';
 import { Card, CardContent, CardTitle, CardDescription, Button } from '@/components/ui';
 import { useAppStore } from '@/stores/app.store';
@@ -13,20 +14,59 @@ export default function StudentStore() {
   const tExtra = useTranslations('storeExtra');
   const addToast = useNotificationStore(s => s.addToast);
   
-  const { points, rewards, redemptions, redeemReward, monthlyRedemptionsCount, lastRedemptionMonth } = useAppStore();
+  const { points, monthlyRedemptionsCount, lastRedemptionMonth } = useAppStore();
   
+  const [rewards, setRewards] = useState<any[]>([]);
+  const [redemptions, setRedemptions] = useState<any[]>([]);
+
+  const fetchData = useCallback(async () => {
+    try {
+      const [resRewards, resReds] = await Promise.all([
+        fetch('/api/rewards'),
+        fetch('/api/rewards/redemptions')
+      ]);
+      
+      if (resRewards.ok) {
+        setRewards(await resRewards.json());
+      }
+      if (resReds.ok) {
+        setRedemptions(await resReds.json());
+      }
+    } catch (e) {
+      console.error(e);
+    }
+  }, []);
+
+
+  
+  useEffect(() => {
+    fetchData();
+  }, [fetchData]);
+
   const currentMonth = new Date().toISOString().slice(0, 7);
   const isDifferentMonth = lastRedemptionMonth !== currentMonth;
   const currentCount = isDifferentMonth ? 0 : monthlyRedemptionsCount;
   const maxLimit = 2;
   const isLimitReached = currentCount >= maxLimit;
 
-  const handleRedeem = (itemId: string, itemTitle: string) => {
-    const success = redeemReward(itemId, 'Jonathan'); // Jonathan is the mock student user
-    if (success) {
-      addToast(`Redemption request submitted successfully for ${itemTitle}!`, 'success');
-    } else {
-      addToast('Failed to redeem item. Please check your points balance.', 'error');
+  const handleRedeem = async (itemId: string, itemTitle: string) => {
+    try {
+      const res = await fetch('/api/rewards/redemptions', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ rewardId: itemId })
+      });
+      
+      if (res.ok) {
+        addToast(`Redemption request submitted successfully for ${itemTitle}!`, 'success');
+        fetchData();
+        // Here we'd ideally fetch updated user points, but we rely on Next.js/Zustand reload
+      } else {
+        const errorData = await res.json();
+        addToast(errorData.error || 'Failed to redeem item.', 'error');
+      }
+    } catch (e) {
+      addToast('An error occurred while redeeming the item.', 'error');
     }
   };
 

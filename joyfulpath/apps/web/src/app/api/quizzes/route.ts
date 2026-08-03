@@ -7,57 +7,39 @@ export async function GET(req: NextRequest) {
     const session = await requireAuth();
     if (session instanceof NextResponse) return session;
     const user = session.user;
-    const { searchParams } = new URL(req.url);
-    const classId = searchParams.get('classId');
-    const status = searchParams.get('status');
 
     let whereClause: any = {};
-    
-    if (classId) {
-      whereClause.classId = classId;
-    }
-
-    if (status && status !== 'all') {
-      whereClause.status = status;
-    }
-
-    // Role-based restrictions
     if (user.role === 'instructor') {
-      // Instructors can only view lessons for classes they instruct
       const instructorClasses = await prisma.class.findMany({
         where: { instructorId: user.id },
         select: { id: true }
       });
       const classIds = instructorClasses.map((c: any) => c.id);
       
-      if (classId && !classIds.includes(classId)) {
-        return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
-      }
-      
-      whereClause.classId = { in: classIds, ...whereClause.classId };
-    } else if (user.role === 'student' || user.role === 'parent') {
-      // Students/Parents should only see published lessons
-      whereClause.status = 'published';
-      // Restrict to their enrolled classes
-      const enrollments = await prisma.enrollment.findMany({
-        where: { studentId: user.role === 'student' ? user.id : undefined }, // Parent logic could be expanded
-        select: { classId: true }
-      });
-      const classIds = enrollments.map((e: any) => e.classId);
-      whereClause.classId = { in: classIds, ...whereClause.classId };
+      whereClause.classId = { in: classIds };
     }
 
-    const lessons = await prisma.lesson.findMany({
+    const quizzes = await prisma.quiz.findMany({
       where: whereClause,
       include: {
         _count: {
-          select: { progress: true }
+          select: { questions: true }
         }
       },
       orderBy: { createdAt: 'desc' }
     });
 
-    return NextResponse.json({ lessons });
+    const formatted = quizzes.map((q: any) => ({
+      id: q.id,
+      titleEn: q.title,
+      titleAr: q.description || q.title, // using description as fallback for Ar
+      passingScore: q.passingScore,
+      xp: q.xpReward,
+      points: q.pointsReward,
+      questionsCount: q._count.questions
+    }));
+
+    return NextResponse.json(formatted);
   } catch (error: any) {
     if (error.message === 'Unauthorized' || error.message === 'Forbidden') {
       return NextResponse.json({ error: error.message }, { status: error.message === 'Unauthorized' ? 401 : 403 });
@@ -76,9 +58,9 @@ export async function POST(req: NextRequest) {
     }
 
     const body = await req.json();
-    const { title, description, content, status, xpReward, pointsReward, classId } = body;
+    const { titleEn, titleAr, passingScore, xp, points, classId } = body;
 
-    if (!title || !content || !classId) {
+    if (!titleEn || !titleAr || !classId) {
       return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
     }
 
@@ -89,20 +71,22 @@ export async function POST(req: NextRequest) {
       }
     }
 
-    const lesson = await prisma.lesson.create({
+    const quiz = await prisma.quiz.create({
       data: {
-        title,
-        description,
-        content,
-        status: status || 'draft',
-        xpReward: parseInt(xpReward) || 0,
-        pointsReward: parseInt(pointsReward) || 0,
+        title: titleEn,
+        description: titleAr,
+        passingScore: parseInt(passingScore) || 70,
+        xpReward: parseInt(xp) || 50,
+        pointsReward: parseInt(points) || 10,
         classId
       }
     });
 
-    return NextResponse.json(lesson);
+    return NextResponse.json(quiz);
   } catch (error: any) {
+    if (error.message === 'Unauthorized' || error.message === 'Forbidden') {
+      return NextResponse.json({ error: error.message }, { status: error.message === 'Unauthorized' ? 401 : 403 });
+    }
     return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
   }
 }

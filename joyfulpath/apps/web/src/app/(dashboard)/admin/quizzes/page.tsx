@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useMemo, useCallback } from 'react';
+import { useState, useMemo, useCallback, useEffect } from 'react';
 import { useTranslations, useLocale } from 'next-intl';
 import { Card, CardContent, CardTitle, Button, Modal, Input, SearchBar } from '@/components/ui';
 import { useNotificationStore } from '@/stores/notifications.store';
@@ -15,8 +15,8 @@ export default function InstructorQuizzes() {
   const addToast = useNotificationStore(s => s.addToast);
   const locale = useLocale();
   const isAr = locale === 'ar';
-  const { quizzes, addQuiz } = useAppStore();
-
+  const [quizzes, setQuizzes] = useState<any[]>([]);
+  const [classes, setClasses] = useState<{id: string, nameEn: string, nameAr: string}[]>([]);
   const [isOpen, setIsOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
 
@@ -26,6 +26,34 @@ export default function InstructorQuizzes() {
   const [passingScore, setPassingScore] = useState(70);
   const [xp, setXp] = useState(50);
   const [points, setPoints] = useState(10);
+  const [classId, setClassId] = useState('');
+
+  const fetchQuizzes = useCallback(async () => {
+    try {
+      const res = await fetch('/api/quizzes');
+      if (res.ok) {
+        const data = await res.json();
+        setQuizzes(data);
+      }
+    } catch (e) {
+      console.error(e);
+    }
+  }, []);
+
+  useEffect(() => {
+    fetchQuizzes();
+    async function loadClasses() {
+      try {
+        const res = await fetch('/api/classes');
+        if (res.ok) {
+          const data = await res.json();
+          setClasses(data);
+          if (data.length > 0) setClassId(data[0].id);
+        }
+      } catch (e) {}
+    }
+    loadClasses();
+  }, [fetchQuizzes]);
 
   const handleSearch = useCallback((query: string) => {
     setSearchQuery(query);
@@ -41,34 +69,45 @@ export default function InstructorQuizzes() {
     );
   }, [quizzes, searchQuery]);
 
-  const handleCreate = useCallback((e: React.FormEvent) => {
+  const handleCreate = useCallback(async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!titleEn || !titleAr) {
+    if (!titleEn || !titleAr || !classId) {
       addToast(tLessons('fillAllFields'), 'error');
       return;
     }
 
-    addQuiz({
-      titleEn,
-      titleAr,
-      descriptionEn: 'New quiz',
-      descriptionAr: 'اختبار جديد',
-      passingScore,
-      xp,
-      points,
-      questions: [],
-    });
+    try {
+      const res = await fetch('/api/quizzes', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          titleEn,
+          titleAr,
+          passingScore,
+          xp,
+          points,
+          classId
+        })
+      });
 
-    setIsOpen(false);
-    addToast(tQuizzes('publishSuccess'), 'success');
-
-    // Reset Form
-    setTitleEn('');
-    setTitleAr('');
-    setPassingScore(70);
-    setXp(50);
-    setPoints(10);
-  }, [titleEn, titleAr, passingScore, xp, points, quizzes.length, addToast, tLessons, tQuizzes]);
+      if (res.ok) {
+        addToast(tQuizzes('publishSuccess'), 'success');
+        setIsOpen(false);
+        fetchQuizzes();
+        
+        // Reset Form
+        setTitleEn('');
+        setTitleAr('');
+        setPassingScore(70);
+        setXp(50);
+        setPoints(10);
+      } else {
+        addToast('Failed to create quiz', 'error');
+      }
+    } catch (error) {
+      addToast('Error occurred', 'error');
+    }
+  }, [titleEn, titleAr, passingScore, xp, points, classId, addToast, tLessons, tQuizzes, fetchQuizzes]);
 
   return (
     <div className="space-y-6 animate-[slide-up_0.4s_ease-out]">
@@ -147,6 +186,19 @@ export default function InstructorQuizzes() {
       {isOpen && (
         <Modal isOpen={true} onClose={() => setIsOpen(false)} title={tQuizzes('createQuizBtn')}>
           <form onSubmit={handleCreate} className="space-y-4 pt-2">
+            <div className="space-y-1.5">
+              <label className="text-xs font-bold text-on-surface-variant">{isAr ? 'الفصل' : 'Class'}</label>
+              <select
+                value={classId}
+                onChange={(e) => setClassId(e.target.value)}
+                className="w-full p-3 rounded-xl border border-outline-variant bg-surface-container-low text-sm font-medium focus:outline-none focus:border-primary"
+              >
+                {classes.map(c => (
+                  <option key={c.id} value={c.id}>{c.nameEn}</option>
+                ))}
+              </select>
+            </div>
+            
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="space-y-1.5">
                 <label className="text-xs font-bold text-on-surface-variant">{tQuizzes('titleEn')}</label>

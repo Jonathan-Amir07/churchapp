@@ -2,47 +2,12 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import { requestForToken, onMessageListener } from '@/lib/firebase';
-import { createClient } from '@/lib/supabase/client';
-
-interface Notification {
-  id: string;
-  title_en: string;
-  title_ar?: string;
-  message_en: string;
-  message_ar?: string;
-  is_read: boolean;
-  created_at: string;
-  type?: string;
-  action_url?: string;
-}
+import { useNotificationStore } from '@/stores/notifications.store';
 
 export function NotificationBell() {
-  const [unreadCount, setUnreadCount] = useState(0);
-  const [notifications, setNotifications] = useState<Notification[]>([]);
+  const { notifications, fetchNotifications, unreadCount, markAsRead, markAllAsRead } = useNotificationStore();
   const [isOpen, setIsOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const supabase = createClient();
-
-  const fetchNotifications = useCallback(async () => {
-    try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return;
-
-      const { data } = await supabase
-        .from('notifications')
-        .select('*')
-        .eq('user_id', user.id)
-        .order('created_at', { ascending: false })
-        .limit(20);
-      
-      if (data) {
-        setNotifications(data);
-        setUnreadCount(data.filter((n: Notification) => !n.is_read).length);
-      }
-    } catch (error) {
-      console.error('Failed to fetch notifications:', error);
-    }
-  }, [supabase]);
 
   useEffect(() => {
     // 1. Request FCM Token
@@ -51,50 +16,19 @@ export function NotificationBell() {
     // 2. Initial fetch
     fetchNotifications();
 
-    // 3. Setup Supabase realtime subscription
-    let subscription: any;
-    supabase.auth.getUser().then(({ data: { user } }: { data: { user: any } }) => {
-      if (user) {
-        subscription = supabase
-          .channel(`notifications:user_id=eq.${user.id}`)
-          .on('postgres_changes', {
-            event: '*',
-            schema: 'public',
-            table: 'notifications',
-            filter: `user_id=eq.${user.id}`,
-          }, (payload: any) => {
-            console.log('Notification change:', payload);
-            if (payload.eventType === 'INSERT') {
-              setNotifications(prev => [payload.new as Notification, ...prev]);
-              setUnreadCount(prev => prev + 1);
-            } else if (payload.eventType === 'UPDATE') {
-              setNotifications(prev => prev.map(n => 
-                n.id === payload.new.id ? payload.new as Notification : n
-              ));
-              if (!payload.new.is_read && payload.old?.is_read) {
-                setUnreadCount(prev => Math.max(0, prev - 1));
-              }
-            } else if (payload.eventType === 'DELETE') {
-              setNotifications(prev => prev.filter(n => n.id !== payload.old.id));
-            }
-          })
-          .subscribe();
-      }
-    });
+    // Polling or websocket could be set up here if needed,
+    // but we will rely on FCM messages for real-time updates now.
 
-    return () => {
-      if (subscription) subscription.unsubscribe();
-    };
-  }, [supabase, fetchNotifications]);
+  }, [fetchNotifications]);
 
-  // 4. Listen for FCM foreground messages
+  // Listen for FCM foreground messages
   useEffect(() => {
     const listenForMessages = async () => {
       try {
         const payload: any = await onMessageListener();
         if (payload && payload.notification) {
           // Trigger refresh to get the new notification from DB
-          await fetchNotifications();
+          fetchNotifications();
         }
         listenForMessages();
       } catch (err) {
@@ -105,31 +39,43 @@ export function NotificationBell() {
     listenForMessages();
   }, [fetchNotifications]);
 
-  const markAsRead = async (id: string) => {
+  const handleMarkAsRead = async (id: string) => {
     try {
-      await supabase.from('notifications').update({ is_read: true }).eq('id', id);
+      await fetch(`/api/notifications/${id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ isRead: true })
+      });
+      markAsRead(id);
     } catch (error) {
       console.error('Failed to mark as read:', error);
     }
   };
 
-  const deleteNotification = async (id: string) => {
+  const handleDelete = async (id: string) => {
     try {
-      await supabase.from('notifications').delete().eq('id', id);
+      await fetch(`/api/notifications/${id}`, {
+        method: 'DELETE',
+      });
+      fetchNotifications();
     } catch (error) {
       console.error('Failed to delete notification:', error);
     }
   };
 
-  const markAllAsRead = async () => {
+  const handleMarkAllAsRead = async () => {
     try {
       setIsLoading(true);
-      await supabase
-        .from('notifications')
-        .update({ is_read: true })
-        .eq('user_id', (await supabase.auth.getUser()).data.user?.id)
-        .eq('is_read', false);
-      await fetchNotifications();
+      // Wait for multiple PATCH requests (or could add a bulk endpoint)
+      const unread = notifications.filter(n => !n.isRead);
+      await Promise.all(unread.map(n => 
+        fetch(`/api/notifications/${n.id}`, {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ isRead: true })
+        })
+      ));
+      markAllAsRead();
     } catch (error) {
       console.error('Failed to mark all as read:', error);
     } finally {
@@ -145,9 +91,9 @@ export function NotificationBell() {
         aria-label="Notifications"
       >
         <span className="material-symbols-outlined text-[24px] text-on-surface dark:text-dark-on-surface">notifications</span>
-        {unreadCount > 0 && (
+        {unreadCount() > 0 && (
           <span className="absolute top-1 right-1 w-5 h-5 bg-error dark:bg-dark-error text-on-error dark:text-dark-on-error text-[11px] font-bold rounded-full flex items-center justify-center animate-pulse">
-            {unreadCount > 9 ? '9+' : unreadCount}
+            {unreadCount() > 9 ? '9+' : unreadCount()}
           </span>
         )}
       </button>
@@ -159,9 +105,9 @@ export function NotificationBell() {
               <span className="material-symbols-outlined">notifications_active</span>
               Notifications
             </h3>
-            {unreadCount > 0 && (
+            {unreadCount() > 0 && (
               <button 
-                onClick={markAllAsRead}
+                onClick={handleMarkAllAsRead}
                 disabled={isLoading}
                 className="text-xs text-primary dark:text-dark-primary font-bold hover:underline disabled:opacity-50"
               >
@@ -181,30 +127,33 @@ export function NotificationBell() {
                 {notifications.map((notif) => (
                   <div 
                     key={notif.id}
+                    onClick={() => {
+                      if (!notif.isRead) handleMarkAsRead(notif.id);
+                    }}
                     className={`p-4 hover:bg-surface-container dark:hover:bg-dark-surface-container cursor-pointer transition-all duration-200 group ${
-                      !notif.is_read ? 'bg-primary/8 dark:bg-dark-primary/8 border-l-2 border-l-primary dark:border-l-dark-primary' : ''
+                      !notif.isRead ? 'bg-primary/8 dark:bg-dark-primary/8 border-l-2 border-l-primary dark:border-l-dark-primary' : ''
                     }`}
                   >
                     <div className="flex justify-between items-start gap-2 mb-2">
                       <div className="flex-1">
                         <h4 className={`text-sm transition-colors duration-200 ${
-                          !notif.is_read 
+                          !notif.isRead 
                             ? 'font-black text-on-surface dark:text-dark-on-surface' 
                             : 'font-semibold text-on-surface-variant dark:text-dark-on-surface-variant'
                         }`}>
-                          {notif.title_en}
+                          {notif.titleEn}
                         </h4>
                         <p className="text-xs text-on-surface-variant dark:text-dark-on-surface-variant line-clamp-2 mt-1">
-                          {notif.message_en}
+                          {notif.messageEn}
                         </p>
                       </div>
-                      {!notif.is_read && (
+                      {!notif.isRead && (
                         <span className="w-2.5 h-2.5 rounded-full bg-primary dark:bg-dark-primary flex-shrink-0 mt-1.5 animate-pulse" />
                       )}
                     </div>
                     <div className="flex justify-between items-center mt-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
                       <span className="text-xs text-on-surface-variant dark:text-dark-on-surface-variant">
-                        {new Date(notif.created_at).toLocaleString('en-US', {
+                        {new Date(notif.createdAt).toLocaleString('en-US', {
                           month: 'short',
                           day: 'numeric',
                           hour: '2-digit',
@@ -214,7 +163,7 @@ export function NotificationBell() {
                       <button
                         onClick={(e) => {
                           e.stopPropagation();
-                          deleteNotification(notif.id);
+                          handleDelete(notif.id);
                         }}
                         className="text-xs text-error dark:text-dark-error hover:underline font-medium"
                       >
@@ -231,3 +180,4 @@ export function NotificationBell() {
     </div>
   );
 }
+

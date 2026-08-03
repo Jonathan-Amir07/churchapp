@@ -1,6 +1,6 @@
-﻿'use client';
+'use client';
 
-import { useState, useMemo, useCallback } from 'react';
+import { useState, useMemo, useCallback, useEffect } from 'react';
 import { useTranslations, useLocale } from 'next-intl';
 import { Card, CardContent, CardTitle, Button, Modal, SearchBar } from '@/components/ui';
 import { useNotificationStore } from '@/stores/notifications.store';
@@ -23,45 +23,7 @@ interface Submission {
   attachedFiles: SubmissionFile[];
 }
 
-const INITIAL_SUBMISSIONS: Submission[] = [
-  {
-    id: 'sub1',
-    studentName: 'Mark Faith',
-    taskTitleEn: 'Draw the Creation Days Activity',
-    taskTitleAr: 'نشاط رسم أيام الخليقة',
-    submissionText: 'A beautiful drawing representing Day 1: separating light from darkness. I used watercolors for the sky gradient.',
-    submittedAt: '2026-06-24T12:30:00Z',
-    points: 30,
-    attachedFiles: [
-      { name: 'mark_creation_day1.png', size: '2.4 MB', type: 'image/png' },
-      { name: 'mark_notes.pdf', size: '340 KB', type: 'application/pdf' },
-    ],
-  },
-  {
-    id: 'sub2',
-    studentName: 'Luke Evangelist',
-    taskTitleEn: 'Color Noah\'s Ark Illustration',
-    taskTitleAr: 'تلوين رسمة فلك نوح',
-    submissionText: 'I colored the Ark brown and the rainbow with all seven colors! The drawing is attached.',
-    submittedAt: '2026-06-24T14:10:00Z',
-    points: 30,
-    attachedFiles: [
-      { name: 'luke_noahs_ark.jpg', size: '1.8 MB', type: 'image/jpeg' },
-    ],
-  },
-  {
-    id: 'sub3',
-    studentName: 'Sarah Grace',
-    taskTitleEn: 'Memorize Genesis 1:1 Verse',
-    taskTitleAr: 'تسميع آية تكوين ١:١',
-    submissionText: 'Recorded my recitation of Genesis 1:1. I practiced it five times before recording!',
-    submittedAt: '2026-06-25T09:45:00Z',
-    points: 30,
-    attachedFiles: [
-      { name: 'sarah_genesis_1_1.mp3', size: '1.1 MB', type: 'audio/mpeg' },
-    ],
-  },
-];
+
 
 const FILE_ICONS: Record<string, { icon: string; color: string }> = {
   image: { icon: 'image', color: 'text-blue-500 bg-blue-50' },
@@ -78,7 +40,8 @@ export default function InstructorTasks() {
 
   const locale = useLocale();
   const isAr = locale === 'ar';
-  const [submissions, setSubmissions] = useState<Submission[]>(INITIAL_SUBMISSIONS);
+  const [submissions, setSubmissions] = useState<Submission[]>([]);
+  const [classes, setClasses] = useState<{id: string, nameEn: string, nameAr: string}[]>([]);
   const [selectedSub, setSelectedSub] = useState<Submission | null>(null);
   const [feedback, setFeedback] = useState('');
   const [downloadingFile, setDownloadingFile] = useState<string | null>(null);
@@ -89,14 +52,34 @@ export default function InstructorTasks() {
   const [newTaskTitleEn, setNewTaskTitleEn] = useState('');
   const [newTaskTitleAr, setNewTaskTitleAr] = useState('');
   const [newTaskPoints, setNewTaskPoints] = useState('30');
-  const [newTaskClassId, setNewTaskClassId] = useState('c1');
+  const [newTaskClassId, setNewTaskClassId] = useState('');
 
-  // Mock classes
-  const mockClasses = [
-    { id: 'c1', name: 'Angels Class (Grade 1-2)' },
-    { id: 'c2', name: 'Saints Class (Grade 3-4)' },
-    { id: 'c3', name: 'Martyrs Class (Grade 5-6)' },
-  ];
+  const fetchSubmissions = useCallback(async () => {
+    try {
+      const res = await fetch('/api/tasks/submissions');
+      if (res.ok) {
+        const data = await res.json();
+        setSubmissions(data);
+      }
+    } catch (e) {
+      console.error(e);
+    }
+  }, []);
+
+  useEffect(() => {
+    fetchSubmissions();
+    async function loadClasses() {
+      try {
+        const res = await fetch('/api/classes');
+        if (res.ok) {
+          const data = await res.json();
+          setClasses(data);
+          if (data.length > 0) setNewTaskClassId(data[0].id);
+        }
+      } catch (e) {}
+    }
+    loadClasses();
+  }, [fetchSubmissions]);
 
   const handleSearch = useCallback((query: string) => {
     setSearchQuery(query);
@@ -113,17 +96,28 @@ export default function InstructorTasks() {
     );
   }, [submissions, searchQuery]);
 
-  const handleReview = useCallback((id: string, approved: boolean) => {
-    setSubmissions((prev) => prev.filter((sub) => sub.id !== id));
-    setSelectedSub(null);
-    setFeedback('');
-    addToast(
-      approved
-        ? tTasks('approveSuccess')
-        : tTasks('rejectSuccess'),
-      'success'
-    );
-  }, [addToast, tTasks]);
+  const handleReview = useCallback(async (id: string, approved: boolean) => {
+    try {
+      const res = await fetch(`/api/tasks/submissions/${id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ approved, feedback })
+      });
+      if (res.ok) {
+        setSubmissions((prev) => prev.filter((sub) => sub.id !== id));
+        setSelectedSub(null);
+        setFeedback('');
+        addToast(
+          approved ? tTasks('approveSuccess') : tTasks('rejectSuccess'),
+          'success'
+        );
+      } else {
+        addToast('Failed to review submission', 'error');
+      }
+    } catch (e) {
+      addToast('Error occurred', 'error');
+    }
+  }, [addToast, tTasks, feedback]);
 
   const handleDownloadFile = useCallback((fileName: string) => {
     setDownloadingFile(fileName);
@@ -133,22 +127,34 @@ export default function InstructorTasks() {
     }, 1000);
   }, [addToast, isAr]);
 
-  const handleCreateTask = useCallback((e: React.FormEvent) => {
+  const handleCreateTask = useCallback(async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!newTaskTitleEn.trim() || !newTaskTitleAr.trim()) return;
+    if (!newTaskTitleEn.trim() || !newTaskTitleAr.trim() || !newTaskClassId) return;
     
-    addTask({
-      taskTitleEn: newTaskTitleEn,
-      taskTitleAr: newTaskTitleAr,
-      points: parseInt(newTaskPoints) || 30,
-      classId: newTaskClassId,
-    });
-    
-    addToast(isAr ? 'تم إنشاء المهمة بنجاح' : 'Task created successfully', 'success');
-    setIsCreatingTask(false);
-    setNewTaskTitleEn('');
-    setNewTaskTitleAr('');
-  }, [newTaskTitleEn, newTaskTitleAr, newTaskPoints, newTaskClassId, addTask, addToast, isAr]);
+    try {
+      const res = await fetch('/api/tasks', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          taskTitleEn: newTaskTitleEn,
+          taskTitleAr: newTaskTitleAr,
+          points: parseInt(newTaskPoints) || 30,
+          classId: newTaskClassId,
+        })
+      });
+      
+      if (res.ok) {
+        addToast(isAr ? 'تم إنشاء المهمة بنجاح' : 'Task created successfully', 'success');
+        setIsCreatingTask(false);
+        setNewTaskTitleEn('');
+        setNewTaskTitleAr('');
+      } else {
+        addToast('Failed to create task', 'error');
+      }
+    } catch (e) {
+      addToast('Error occurred', 'error');
+    }
+  }, [newTaskTitleEn, newTaskTitleAr, newTaskPoints, newTaskClassId, addToast, isAr]);
 
   const getFileIcon = (type: string) => {
     const category = type.split('/')[0];
@@ -390,8 +396,8 @@ export default function InstructorTasks() {
                 onChange={(e) => setNewTaskClassId(e.target.value)}
                 className="w-full p-3 rounded-xl border border-outline-variant bg-surface-container-low text-sm font-medium focus:outline-none focus:border-primary"
               >
-                {mockClasses.map(c => (
-                  <option key={c.id} value={c.id}>{c.name}</option>
+                {classes.map(c => (
+                  <option key={c.id} value={c.id}>{c.nameEn}</option>
                 ))}
               </select>
             </div>

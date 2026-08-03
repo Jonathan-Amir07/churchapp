@@ -1,8 +1,8 @@
 'use client';
 
-import { useState, useMemo, useCallback } from 'react';
+import { useState, useMemo, useCallback, useEffect } from 'react';
 import { Card, CardContent, Button, BadgeTag, SearchBar } from '@/components/ui';
-import { MOCK_EVENTS } from '@/lib/supabase/mockClient';
+
 import { useTranslations } from 'next-intl';
 import { useNotificationStore } from '@/stores/notifications.store';
 
@@ -46,13 +46,29 @@ export default function AdminEventsPage() {
   const tCommon = useTranslations('common');
   const tEvents = useTranslations('events');
   const addToast = useNotificationStore((s: any) => s.addToast);
-  const [events, setEvents] = useState<EventItem[]>(MOCK_EVENTS as EventItem[]);
+  const [events, setEvents] = useState<EventItem[]>([]);
   const [showForm, setShowForm] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [form, setForm] = useState<Omit<EventItem, 'id' | 'current_rsvp'>>(EMPTY_FORM);
   const [deleteConfirm, setDeleteConfirm] = useState<string | null>(null);
   const [toast, setToast] = useState<{ msg: string; type: 'success' | 'error' } | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
+
+
+  const fetchEvents = useCallback(async () => {
+    try {
+      const res = await fetch('/api/events');
+      if (res.ok) {
+        setEvents(await res.json());
+      }
+    } catch (e) {
+      console.error(e);
+    }
+  }, []);
+
+  useEffect(() => {
+    fetchEvents();
+  }, [fetchEvents]);
 
   const handleSearch = useCallback((query: string) => {
     setSearchQuery(query);
@@ -64,8 +80,8 @@ export default function AdminEventsPage() {
     return events.filter(
       (e) =>
         e.title.toLowerCase().includes(q) ||
-        e.description.toLowerCase().includes(q) ||
-        e.location.toLowerCase().includes(q) ||
+        (e.description && e.description.toLowerCase().includes(q)) ||
+        (e.location && e.location.toLowerCase().includes(q)) ||
         e.type.toLowerCase().includes(q)
     );
   }, [events, searchQuery]);
@@ -84,7 +100,7 @@ export default function AdminEventsPage() {
   const openEdit = useCallback((event: EventItem) => {
     setForm({
       title: event.title,
-      description: event.description,
+      description: event.description || '',
       type: event.type,
       date: event.date,
       time: event.time,
@@ -97,36 +113,62 @@ export default function AdminEventsPage() {
     setShowForm(true);
   }, []);
 
-  const handleSave = useCallback(() => {
+  const handleSave = useCallback(async () => {
     if (!form.title.trim() || !form.date || !form.location.trim()) {
       showToast('Please fill in title, date, and location.', 'error');
       return;
     }
 
-    if (editingId) {
-      setEvents((prev) =>
-        prev.map((e) => (e.id === editingId ? { ...e, ...form } : e))
-      );
-      showToast('Event updated successfully!');
-    } else {
-      const newEvent: EventItem = {
-        ...form,
-        id: `event-${Date.now()}`,
-        current_rsvp: 0,
-      };
-      setEvents((prev) => [newEvent, ...prev]);
-      showToast('Event created successfully!');
+    try {
+      if (editingId) {
+        const res = await fetch(`/api/events/${editingId}`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(form)
+        });
+        if (res.ok) {
+          showToast('Event updated successfully!');
+          fetchEvents();
+        } else {
+          showToast('Failed to update event', 'error');
+        }
+      } else {
+        const res = await fetch('/api/events', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(form)
+        });
+        if (res.ok) {
+          showToast('Event created successfully!');
+          fetchEvents();
+        } else {
+          showToast('Failed to create event', 'error');
+        }
+      }
+    } catch (error) {
+      showToast('An error occurred', 'error');
     }
 
     setShowForm(false);
     setEditingId(null);
-  }, [form, editingId, showToast]);
+  }, [form, editingId, showToast, fetchEvents]);
 
-  const handleDelete = useCallback((id: string) => {
-    setEvents((prev) => prev.filter((e) => e.id !== id));
+  const handleDelete = useCallback(async (id: string) => {
+    try {
+      const res = await fetch(`/api/events/${id}`, {
+        method: 'DELETE'
+      });
+      if (res.ok) {
+        showToast('Event deleted.');
+        fetchEvents();
+      } else {
+        showToast('Failed to delete event', 'error');
+      }
+    } catch (e) {
+      showToast('An error occurred', 'error');
+    }
     setDeleteConfirm(null);
-    showToast('Event deleted.');
-  }, [showToast]);
+  }, [showToast, fetchEvents]);
 
   return (
     <div className="space-y-6 animate-[slide-up_0.4s_ease-out]">

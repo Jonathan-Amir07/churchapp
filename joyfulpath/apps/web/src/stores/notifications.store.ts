@@ -35,81 +35,6 @@ const NOTIFICATION_ICONS: Record<AppNotificationType, string> = {
   event: 'event',
 };
 
-const INITIAL_NOTIFICATIONS: AppNotification[] = [
-  {
-    id: 'n1',
-    type: 'badge',
-    titleEn: 'Badge Unlocked! 🏆',
-    titleAr: 'تم فتح شارة جديدة! 🏆',
-    messageEn: 'Congratulations! You earned the "Attendance Hero" badge for 5 consecutive check-ins.',
-    messageAr: 'مبروك! لقد حصلت على شارة "بطل الحضور" لتسجيل حضورك 5 مرات متتالية.',
-    isRead: false,
-    createdAt: new Date(Date.now() - 1000 * 60 * 15).toISOString(), // 15 mins ago
-    link: '/student/badges',
-    icon: 'military_tech',
-  },
-  {
-    id: 'n2',
-    type: 'lesson',
-    titleEn: 'New Lesson Available 📖',
-    titleAr: 'درس جديد متاح 📖',
-    messageEn: 'Lesson 3: "David and Goliath" is now unlocked. Start learning and earn +50 XP!',
-    messageAr: 'الدرس ٣: "داود وجليات" متاح الآن. ابدأ التعلم واربح +50 نقطة خبرة!',
-    isRead: false,
-    createdAt: new Date(Date.now() - 1000 * 60 * 45).toISOString(), // 45 mins ago
-    link: '/student/lessons',
-    icon: 'menu_book',
-  },
-  {
-    id: 'n3',
-    type: 'challenge',
-    titleEn: 'Challenge Expiring Soon ⏰',
-    titleAr: 'التحدي ينتهي قريباً ⏰',
-    messageEn: 'Your daily challenge "Quiz Champion" expires in 3 hours. Complete 1 more quiz to claim your reward!',
-    messageAr: 'تحديك اليومي "بطل الاختبارات" ينتهي خلال 3 ساعات. أكمل اختبار واحد آخر للحصول على مكافأتك!',
-    isRead: false,
-    createdAt: new Date(Date.now() - 1000 * 60 * 60 * 2).toISOString(), // 2 hours ago
-    link: '/student/challenges',
-    icon: 'explore',
-  },
-  {
-    id: 'n4',
-    type: 'reward',
-    titleEn: 'Reward Approved ✅',
-    titleAr: 'تم الموافقة على المكافأة ✅',
-    messageEn: 'Your redemption of "Illustrated Bible Storybook" has been approved! Ask your teacher for pickup.',
-    messageAr: 'تم الموافقة على طلب استبدال "قصص الكتاب المقدس المصورة"! اسأل معلمك عن موعد الاستلام.',
-    isRead: true,
-    createdAt: new Date(Date.now() - 1000 * 60 * 60 * 24).toISOString(), // 1 day ago
-    link: '/student/store',
-    icon: 'redeem',
-  },
-  {
-    id: 'n5',
-    type: 'event',
-    titleEn: 'Upcoming Event 🎉',
-    titleAr: 'فعالية قادمة 🎉',
-    messageEn: 'Summer Bible Camp starts next Sunday! Register now to secure your spot.',
-    messageAr: 'معسكر الكتاب المقدس الصيفي يبدأ الأحد القادم! سجل الآن لحجز مكانك.',
-    isRead: true,
-    createdAt: new Date(Date.now() - 1000 * 60 * 60 * 48).toISOString(), // 2 days ago
-    link: '/student/events',
-    icon: 'event',
-  },
-  {
-    id: 'n6',
-    type: 'prayer',
-    titleEn: 'Prayer Answered 🙏',
-    titleAr: 'تم الرد على الصلاة 🙏',
-    messageEn: 'A servant responded to your prayer request with words of encouragement.',
-    messageAr: 'قام معلمك بالرد على طلب صلاتك بكلمات تشجيع.',
-    isRead: true,
-    createdAt: new Date(Date.now() - 1000 * 60 * 60 * 72).toISOString(), // 3 days ago
-    link: '/student/prayers',
-    icon: 'volunteer_activism',
-  },
-];
-
 interface NotificationStore {
   // Toasts (ephemeral)
   toasts: ToastMessage[];
@@ -118,6 +43,7 @@ interface NotificationStore {
 
   // App Notifications (persistent)
   notifications: AppNotification[];
+  fetchNotifications: () => Promise<void>;
   unreadCount: () => number;
   markAsRead: (id: string) => void;
   markAllAsRead: () => void;
@@ -150,7 +76,31 @@ export const useNotificationStore = create<NotificationStore>()(
         })),
 
       // === APP NOTIFICATIONS ===
-      notifications: INITIAL_NOTIFICATIONS,
+      notifications: [],
+      fetchNotifications: async () => {
+        try {
+          const res = await fetch('/api/notifications');
+          if (res.ok) {
+            const data = await res.json();
+            // Maps backend Notification model to AppNotification
+            const mapped = data.notifications.map((n: any) => ({
+              id: n.id,
+              type: n.type,
+              titleEn: n.titleEn,
+              titleAr: n.titleAr || n.titleEn,
+              messageEn: n.messageEn,
+              messageAr: n.messageAr || n.messageEn,
+              isRead: n.isRead,
+              createdAt: n.createdAt,
+              link: n.actionUrl,
+              icon: NOTIFICATION_ICONS[n.type as AppNotificationType] || 'notifications'
+            }));
+            set({ notifications: mapped });
+          }
+        } catch (e) {
+          console.error('Failed to fetch notifications', e);
+        }
+      },
 
       unreadCount: () => {
         return get().notifications.filter((n) => !n.isRead).length;
