@@ -124,15 +124,34 @@ export default function ParentDashboard() {
                   </div>
                 </CardContent>
 
-                <div className="p-6 pt-0 flex gap-2">
-                  <Link href={`/parent/attendance?child=${child.id}`} className="flex-1">
-                    <Button variant="outline" size="sm" fullWidth>
-                      {currentLocale === 'en' ? 'Attendance' : 'حضور'}
-                    </Button>
-                  </Link>
-                  <Link href={`/parent/reports?child=${child.id}`} className="flex-1">
+                <div className="p-6 pt-0 flex flex-col gap-2">
+                  <div className="flex gap-2">
+                    <Link href={`/parent/attendance?child=${child.id}`} className="flex-1">
+                      <Button variant="outline" size="sm" fullWidth>
+                        {currentLocale === 'en' ? 'Attendance' : 'حضور'}
+                      </Button>
+                    </Link>
+                    <Link href={`/parent/grades?child=${child.id}`} className="flex-1">
+                      <Button variant="outline" size="sm" fullWidth>
+                        {currentLocale === 'en' ? 'Grades' : 'درجات'}
+                      </Button>
+                    </Link>
+                  </div>
+                  <div className="flex gap-2">
+                    <Link href={`/parent/rewards?child=${child.id}`} className="flex-1">
+                      <Button variant="outline" size="sm" fullWidth>
+                        {currentLocale === 'en' ? 'Rewards' : 'مكافآت'}
+                      </Button>
+                    </Link>
+                    <Link href={`/parent/reading?child=${child.id}`} className="flex-1">
+                      <Button variant="outline" size="sm" fullWidth>
+                        {currentLocale === 'en' ? 'Reading' : 'قراءة'}
+                      </Button>
+                    </Link>
+                  </div>
+                  <Link href={`/parent/reports?child=${child.id}`} className="w-full mt-2">
                     <Button variant="primary" size="sm" fullWidth>
-                      {currentLocale === 'en' ? 'View Report' : 'التقرير'}
+                      {currentLocale === 'en' ? 'Full Report' : 'التقرير الشامل'}
                     </Button>
                   </Link>
                 </div>

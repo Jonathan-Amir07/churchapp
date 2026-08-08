@@ -13,4 +13,7 @@ export { NotificationBell } from './NotificationBell';
 export { EmptyState, NoLessonsState, NoHomeworkState, NoNotificationsState, NoStudentsState, ErrorState } from './EmptyState';
 export { LoadingSpinner, PageLoadingState, InlineLoadingState } from './LoadingSpinner';
 export { SearchBar, type SearchBarProps } from './SearchBar';
+export { PageTransition, StaggerContainer, StaggerItem } from './PageTransition';
+export { StatCard, type StatCardProps } from './StatCard';
+export { HeroBanner, type HeroBannerProps } from './HeroBanner';
 

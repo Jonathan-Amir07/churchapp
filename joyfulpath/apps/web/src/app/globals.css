@@ -60,6 +60,17 @@
   --color-surface-tint: #005ac2;
   --color-surface-variant: #e0e3e5;
 
+  /* --- Success (Green) --- */
+  --color-success: #16a34a;
+  --color-success-container: #dcfce7;
+  --color-on-success: #ffffff;
+  --color-on-success-container: #14532d;
+
+  /* --- Warning (Amber) --- */
+  --color-warning: #d97706;
+  --color-warning-container: #fef3c7;
+  --color-on-warning: #ffffff;
+
   /* --- Outline --- */
   --color-outline: #727785;
   --color-outline-variant: #c2c6d6;
@@ -96,6 +107,8 @@
   --animate-celebrate: celebrate 0.6s ease-out;
   --animate-bounce-in: bounce-in 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
   --animate-xp-burst: xp-burst 1s ease-out;
+  --animate-stagger-fade: stagger-fade-in 0.5s ease-out both;
+  --animate-glow-pulse: glow-pulse 2s ease-in-out infinite;
 }
 
 /* ============================================
@@ -154,6 +167,16 @@
 @keyframes spin-slow {
   from { transform: rotate(0deg); }
   to { transform: rotate(360deg); }
+}
+
+@keyframes stagger-fade-in {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes glow-pulse {
+  0%, 100% { filter: drop-shadow(0 0 4px rgba(201, 168, 76, 0.3)); }
+  50% { filter: drop-shadow(0 0 12px rgba(201, 168, 76, 0.6)); }
 }
 
 /* ============================================
@@ -337,6 +360,44 @@ html[dir="rtl"] .speech-bubble::after {
 }
 
 /* ============================================
+   Glass Morphism Utility
+   ============================================ */
+
+.glass {
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+html.dark .glass {
+  background: rgba(17, 20, 22, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+/* ============================================
+   Stagger Animation Helper
+   ============================================ */
+
+.stagger-item { animation: stagger-fade-in 0.5s ease-out both; }
+.stagger-item:nth-child(1) { animation-delay: 0ms; }
+.stagger-item:nth-child(2) { animation-delay: 60ms; }
+.stagger-item:nth-child(3) { animation-delay: 120ms; }
+.stagger-item:nth-child(4) { animation-delay: 180ms; }
+.stagger-item:nth-child(5) { animation-delay: 240ms; }
+.stagger-item:nth-child(6) { animation-delay: 300ms; }
+.stagger-item:nth-child(7) { animation-delay: 360ms; }
+.stagger-item:nth-child(8) { animation-delay: 420ms; }
+
+/* ============================================
+   Gamification Glow
+   ============================================ */
+
+.glow-gold {
+  animation: glow-pulse 2s ease-in-out infinite;
+}
+
+/* ============================================
    Patterns and Ornaments
    ============================================ */
 
@@ -430,6 +491,14 @@ html.dark {
 
   --color-outline: #8c9199;
   --color-outline-variant: #424754;
+
+  --color-success: #4ade80;
+  --color-success-container: #052e16;
+  --color-on-success: #052e16;
+  --color-on-success-container: #bbf7d0;
+  --color-warning: #fbbf24;
+  --color-warning-container: #451a03;
+  --color-on-warning: #451a03;
 
   --color-background: #111416;
   --color-on-background: #e1e3e5;

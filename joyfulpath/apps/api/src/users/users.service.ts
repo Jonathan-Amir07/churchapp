@@ -11,8 +11,65 @@ export class UsersService {
     return this.prisma.user.create({ data });
   }
 
-  async findAll(): Promise<User[]> {
-    return this.prisma.user.findMany();
+  async findAll(currentUser: any, query: any): Promise<User[]> {
+    const { name, phone, school, address } = query;
+    const where: Prisma.UserWhereInput = {};
+
+    // Advanced search filters
+    if (name) {
+      where.OR = [
+        { firstName: { contains: name, mode: 'insensitive' } },
+        { lastName: { contains: name, mode: 'insensitive' } },
+        { displayName: { contains: name, mode: 'insensitive' } }
+      ];
+    }
+    if (phone) where.phone = { contains: phone };
+    if (school) where.school = { contains: school, mode: 'insensitive' };
+    if (address) where.address = { contains: address, mode: 'insensitive' };
+    
+    // Role-based visibility
+    if (currentUser.role === 'student') {
+      where.id = currentUser.userId;
+    } else if (currentUser.role === 'parent') {
+      const parentUser = await this.prisma.user.findUnique({ where: { id: currentUser.userId }});
+      if (parentUser?.familyId) {
+        where.familyId = parentUser.familyId;
+      } else {
+        where.id = currentUser.userId; // fallback if no family
+      }
+    } else if (currentUser.role === 'instructor') {
+      // Find classes where instructor teaches
+      const classes = await this.prisma.class.findMany({ where: { createdBy: currentUser.userId } }); // Simplified relation for now
+      const classIds = classes.map(c => c.id);
+      where.classMembers = {
+        some: { classId: { in: classIds } }
+      };
+    }
+
+    return this.prisma.user.findMany({ where });
+  }
+
+  async completeProfile(id: string, data: any): Promise<User> {
+    return this.prisma.user.update({
+      where: { id },
+      data: {
+        ...data,
+        isProfileComplete: true,
+      },
+    });
+  }
+
+  async getSiblings(id: string): Promise<User[]> {
+    const user = await this.prisma.user.findUnique({ where: { id }});
+    if (!user || !user.familyId) return [];
+    
+    return this.prisma.user.findMany({
+      where: {
+        familyId: user.familyId,
+        id: { not: id },
+        role: 'student'
+      }
+    });
   }
 
   async findOne(id: string): Promise<User | null> {

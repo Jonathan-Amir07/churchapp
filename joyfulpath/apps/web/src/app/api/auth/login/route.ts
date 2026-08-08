@@ -13,6 +13,35 @@ export async function POST(request: Request) {
       );
     }
 
+    // --- MOCK TEST ACCOUNTS ---
+    // Added to allow immediate testing of the UI without needing a populated database
+    const testAccounts: Record<string, string> = {
+      'test_student': 'student',
+      'test_parent': 'parent',
+      'test_instructor': 'instructor',
+      'test_admin': 'admin',
+      'test_priest': 'priest'
+    };
+
+    if (testAccounts[username] && password === 'password123') {
+      const mockRole = testAccounts[username];
+      const jwtPayload = {
+        id: `mock-${mockRole}-id`,
+        email: `${username}@joyfulpath.com`,
+        role: mockRole,
+        forcePasswordChange: false,
+        name: `Test ${mockRole.charAt(0).toUpperCase() + mockRole.slice(1)}`,
+      };
+
+      const access_token = 'mock.' + Buffer.from(JSON.stringify(jwtPayload)).toString('base64') + '.signature';
+
+      return NextResponse.json({
+        access_token,
+        user: jwtPayload
+      });
+    }
+    // ---------------------------
+
     // Find user in the database
     const user = await prisma.user.findFirst({
       where: {

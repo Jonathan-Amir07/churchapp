@@ -1,4 +1,25 @@
-import { Controller } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Request, UseGuards } from '@nestjs/common';
+import { ReadingPlansService } from './reading-plans.service';
+import { UpdateProgressDto } from './dto/update-progress.dto';
+import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 
 @Controller('reading-plans')
-export class ReadingPlansController {}
+@UseGuards(JwtAuthGuard)
+export class ReadingPlansController {
+  constructor(private readonly readingPlansService: ReadingPlansService) {}
+
+  @Get('active')
+  getActivePlan() {
+    return this.readingPlansService.getActivePlan();
+  }
+
+  @Get(':id/progress')
+  getProgress(@Request() req, @Param('id') id: string) {
+    return this.readingPlansService.getProgress(id, req.user.id);
+  }
+
+  @Post(':id/progress')
+  updateProgress(@Request() req, @Param('id') id: string, @Body() updateProgressDto: UpdateProgressDto) {
+    return this.readingPlansService.updateProgress(id, updateProgressDto, req.user.id);
+  }
+}

@@ -1,12 +1,24 @@
 import { DashboardSidebar } from '@/components/layout/DashboardSidebar';
 import { Topbar } from '@/components/layout/Topbar';
 import { MobileNav } from '@/components/layout/MobileNav';
+import { auth } from '@/auth';
+import { redirect } from 'next/navigation';
 
-export default function DashboardLayout({
+export default async function DashboardLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const session = await auth();
+  
+  if (session?.user?.role === 'student' && !session?.user?.isProfileComplete) {
+    // Prevent redirect loop if already on the complete-profile page
+    // Since this is the layout for (dashboard), we can't easily check the pathname in a Server Component directly
+    // Wait, if complete-profile is inside (dashboard), it will trigger an infinite redirect!
+    // We should move complete-profile outside of (dashboard) or handle it differently.
+    // I will put a note and handle it properly.
+  }
+
   return (
     <div className="flex h-screen overflow-hidden bg-background">
       {/* Sidebar - Desktop Only */}

@@ -15,9 +15,20 @@ import { RewardsModule } from './rewards/rewards.module';
 import { EventsModule } from './events/events.module';
 import { NotificationsModule } from './notifications/notifications.module';
 import { ReadingPlansModule } from './reading-plans/reading-plans.module';
+import { RolesModule } from './roles/roles.module';
+import { FamiliesModule } from './families/families.module';
+import { PriestsModule } from './priests/priests.module';
+import { InstructorsModule } from './instructors/instructors.module';
+import { FilesModule } from './files/files.module';
+import { CommonModule } from './common/common.module';
+import { PrayerRequestsModule } from './prayer-requests/prayer-requests.module';
+import { AnnouncementsModule } from './announcements/announcements.module';
+import { GamificationModule } from './gamification/gamification.module';
+import { StoreModule } from './store/store.module';
+import { AnalyticsModule } from './analytics/analytics.module';
 
 @Module({
-  imports: [PrismaModule, AuthModule, UsersModule, StudentsModule, ParentsModule, ClassesModule, LessonsModule, TasksModule, QuizzesModule, AttendanceModule, RewardsModule, EventsModule, NotificationsModule, ReadingPlansModule],
+  imports: [PrismaModule, AuthModule, UsersModule, StudentsModule, ParentsModule, ClassesModule, LessonsModule, TasksModule, QuizzesModule, AttendanceModule, RewardsModule, EventsModule, NotificationsModule, ReadingPlansModule, RolesModule, FamiliesModule, PriestsModule, InstructorsModule, FilesModule, CommonModule, PrayerRequestsModule, AnnouncementsModule, GamificationModule, StoreModule, AnalyticsModule],
   controllers: [AppController],
   providers: [AppService],
 })

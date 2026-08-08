@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useTranslations, useLocale } from 'next-intl';
-import { Card, CardContent, CardTitle, CardDescription, Button, Modal, BadgeTag } from '@/components/ui';
+import { Card, CardContent, CardTitle, CardDescription, Button, Modal, BadgeTag, PageTransition, HeroBanner, StaggerContainer, StaggerItem } from '@/components/ui';
 
 import { useAppStore } from '@/stores/app.store';
 
@@ -92,84 +92,87 @@ export default function StudentQuizzes() {
   };
 
   return (
-    <div className="space-y-6 animate-[slide-up_0.4s_ease-out]">
-      <div className="flex flex-col gap-2">
-        <h1 className="text-3xl font-extrabold tracking-tight text-on-surface">
-          {tNav('quizzes')}
-        </h1>
-        <p className="text-on-surface-variant text-sm md:text-base max-w-2xl">
-          {tQuizzes('description')}
-        </p>
-      </div>
+    <PageTransition className="space-y-6">
+      <HeroBanner
+        title={tNav('quizzes')}
+        subtitle={tQuizzes('description')}
+        icon={
+          <span className="material-symbols-outlined text-secondary text-[24px]" style={{ fontVariationSettings: "'FILL' 1" }}>
+            quiz
+          </span>
+        }
+      />
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <StaggerContainer className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {localQuizzes.map((quiz) => {
           const locale = useLocale();
-  const isAr = locale === 'ar';
+          const isAr = locale === 'ar';
           const title = isAr ? quiz.titleAr : quiz.titleEn;
           const description = isAr ? quiz.descriptionAr : quiz.descriptionEn;
 
           return (
-            <Card key={quiz.id} className="border border-outline-variant bg-surface-container-lowest shadow-sm flex flex-col justify-between">
-              <CardContent className="p-6 space-y-4">
-                <div className="flex justify-between items-start gap-4">
-                  <BadgeTag
-                    variant={
-                      quiz.status === 'passed'
-                        ? 'success'
-                        : quiz.status === 'failed'
-                        ? 'error'
-                        : 'outline'
-                    }
-                  >
-                    {tQuizzes(
-                      quiz.status === 'passed'
-                        ? 'passed'
-                        : quiz.status === 'failed'
-                        ? 'failed'
-                        : 'startQuiz'
-                    )}
-                  </BadgeTag>
-                  <span className="text-xs font-bold text-outline">
-                    {tQuizzes('questionsCount', { count: quiz.questions.length })}
-                  </span>
-                </div>
-
-                <div className="space-y-1">
-                  <CardTitle className="text-lg font-black text-on-surface leading-tight">
-                    {title}
-                  </CardTitle>
-                  <CardDescription className="text-xs md:text-sm">
-                    {description}
-                  </CardDescription>
-                </div>
-
-                <div className="flex justify-between items-center text-xs font-bold pt-2 border-t border-outline-variant/40">
-                  <span className="text-on-surface-variant">
-                    {tQuizzes('passingScore', { score: quiz.passingScore })}
-                  </span>
-                  <div className="flex gap-3">
-                    <span className="text-primary flex items-center gap-1">
-                      <span className="material-symbols-outlined text-[16px]">insights</span>
-                      +{quiz.xp} XP
-                    </span>
-                    <span className="text-secondary flex items-center gap-1">
-                      <span className="material-symbols-outlined text-[16px]">stars</span>
-                      +{quiz.points} pts
+            <StaggerItem key={quiz.id}>
+              <Card className="border border-outline-variant bg-surface-container-lowest shadow-sm flex flex-col justify-between h-full">
+                <CardContent className="p-6 space-y-4">
+                  <div className="flex justify-between items-start gap-4">
+                    <BadgeTag
+                      variant={
+                        quiz.status === 'passed'
+                          ? 'success'
+                          : quiz.status === 'failed'
+                          ? 'error'
+                          : 'outline'
+                      }
+                    >
+                      {tQuizzes(
+                        quiz.status === 'passed'
+                          ? 'passed'
+                          : quiz.status === 'failed'
+                          ? 'failed'
+                          : 'startQuiz'
+                      )}
+                    </BadgeTag>
+                    <span className="text-xs font-bold text-outline">
+                      {tQuizzes('questionsCount', { count: quiz.questions.length })}
                     </span>
                   </div>
-                </div>
-              </CardContent>
 
-              <div className="p-6 pt-0">
-                <Button variant="primary" fullWidth size="sm" onClick={() => handleStartQuiz(quiz)}>
-                  {tQuizzes(quiz.status === 'passed' ? 'retry' : 'startQuiz')}
-                </Button>
-              </div>
-            </Card>
+                  <div className="space-y-1">
+                    <CardTitle className="text-lg font-black text-on-surface leading-tight">
+                      {title}
+                    </CardTitle>
+                    <CardDescription className="text-xs md:text-sm">
+                      {description}
+                    </CardDescription>
+                  </div>
+
+                  <div className="flex justify-between items-center text-xs font-bold pt-2 border-t border-outline-variant/40">
+                    <span className="text-on-surface-variant">
+                      {tQuizzes('passingScore', { score: quiz.passingScore })}
+                    </span>
+                    <div className="flex gap-3">
+                      <span className="text-primary flex items-center gap-1">
+                        <span className="material-symbols-outlined text-[16px]">insights</span>
+                        +{quiz.xp} XP
+                      </span>
+                      <span className="text-secondary flex items-center gap-1 glow-gold">
+                        <span className="material-symbols-outlined text-[16px]">stars</span>
+                        +{quiz.points} pts
+                      </span>
+                    </div>
+                  </div>
+                </CardContent>
+
+                <div className="p-6 pt-0 mt-auto">
+                  <Button variant="primary" fullWidth size="sm" onClick={() => handleStartQuiz(quiz)}>
+                    {tQuizzes(quiz.status === 'passed' ? 'retry' : 'startQuiz')}
+                  </Button>
+                </div>
+              </Card>
+            </StaggerItem>
           );
         })}
-      </div>
+      </StaggerContainer>
 
       {/* Quiz Player Dialog */}
       {activeQuiz && (
@@ -199,97 +202,87 @@ export default function StudentQuizzes() {
                       : activeQuiz.questions[currentQuestionIndex].textEn}
                   </h3>
 
-                  <div className="grid grid-cols-1 gap-3">
-                    {(tCommon('appName') !== 'JoyfulPath'
-                      ? activeQuiz.questions[currentQuestionIndex].optionsAr
-                      : activeQuiz.questions[currentQuestionIndex].optionsEn
-                    ).map((option: any, idx: number) => {
+                  <div className="space-y-2">
+                    {activeQuiz.questions[currentQuestionIndex].optionsEn.map((opt: string, idx: number) => {
                       const isSelected = selectedAnswers[currentQuestionIndex] === idx;
+                      const optText =
+                        tCommon('appName') !== 'JoyfulPath'
+                          ? activeQuiz.questions[currentQuestionIndex].optionsAr[idx]
+                          : opt;
                       return (
                         <button
                           key={idx}
-                          type="button"
                           onClick={() => handleSelectOption(idx)}
-                          className={`w-full text-start p-4 rounded-xl border font-bold text-sm transition-all duration-150 ${
+                          className={`w-full text-start p-4 rounded-xl border-2 transition-all ${
                             isSelected
-                              ? 'border-primary bg-primary/5 text-primary shadow-[0_2px_8px_rgba(0,88,190,0.08)]'
-                              : 'border-outline-variant hover:bg-surface-container bg-transparent text-on-surface'
+                              ? 'border-primary bg-primary/10 text-primary font-bold'
+                              : 'border-outline-variant hover:border-primary/50 text-on-surface hover:bg-surface-container'
                           }`}
                         >
-                          {option}
+                          {optText}
                         </button>
                       );
                     })}
                   </div>
                 </div>
 
-                <div className="flex justify-end gap-3 pt-4 border-t border-outline-variant">
-                  <Button variant="outline" size="sm" onClick={handleClosePlayer}>
-                    {tCommon('cancel')}
-                  </Button>
+                <div className="pt-4 flex justify-end border-t border-outline-variant/40">
                   <Button
                     variant="primary"
-                    size="sm"
                     disabled={selectedAnswers[currentQuestionIndex] === undefined}
                     onClick={handleNext}
                   >
                     {currentQuestionIndex < activeQuiz.questions.length - 1
-                      ? tQuizzes('nextQuestion')
-                      : tQuizzes('submitQuiz')}
+                      ? tQuizzes('next')
+                      : tQuizzes('finish')}
                   </Button>
                 </div>
               </div>
             ) : (
-              // Quiz Results View
-              <div className="text-center py-6 space-y-6">
-                <div className="w-20 h-20 rounded-full flex items-center justify-center mx-auto bg-surface-container shadow-inner">
+              // Quiz Result
+              <div className="text-center space-y-6 py-4">
+                <div className="inline-flex items-center justify-center w-24 h-24 rounded-full bg-surface-container-highest">
                   <span
-                    className={`material-symbols-outlined text-[48px] ${
-                      quizResult.passed ? 'text-tertiary' : 'text-error'
+                    className={`material-symbols-outlined text-[64px] ${
+                      quizResult.passed ? 'text-success' : 'text-error'
                     }`}
                   >
-                    {quizResult.passed ? 'check_circle' : 'cancel'}
+                    {quizResult.passed ? 'workspace_premium' : 'cancel'}
                   </span>
                 </div>
 
-                <div className="space-y-1">
+                <div className="space-y-2">
                   <h3 className="text-2xl font-black text-on-surface">
-                    {tQuizzes(quizResult.passed ? 'passed' : 'failed')}
+                    {quizResult.passed ? tQuizzes('passed') : tQuizzes('failed')}
                   </h3>
-                  <p className="text-sm font-bold text-on-surface-variant">
+                  <p className="text-on-surface-variant font-medium">
                     {tQuizzes('score')}: {quizResult.score}%
                   </p>
                 </div>
 
                 {quizResult.passed && (
-                  <div className="flex items-center justify-center gap-4 py-3 bg-surface-container rounded-xl max-w-xs mx-auto border border-outline-variant/60">
-                    <span className="text-xs font-black text-primary flex items-center gap-1">
-                      <span className="material-symbols-outlined text-[16px]">insights</span>
-                      {tQuizzes('xpEarned', { xp: quizResult.xp })}
-                    </span>
-                    <span className="text-xs font-black text-secondary flex items-center gap-1">
-                      <span className="material-symbols-outlined text-[16px]">stars</span>
-                      {tQuizzes('pointsEarned', { points: quizResult.points })}
-                    </span>
+                  <div className="flex justify-center gap-4 animate-[bounce-in_0.5s_cubic-bezier(0.68,-0.55,0.265,1.55)]">
+                    <div className="bg-primary/10 px-4 py-2 rounded-xl flex flex-col items-center">
+                      <span className="material-symbols-outlined text-primary text-[24px]">insights</span>
+                      <span className="font-bold text-primary">+{quizResult.xp} XP</span>
+                    </div>
+                    <div className="bg-secondary/10 px-4 py-2 rounded-xl flex flex-col items-center">
+                      <span className="material-symbols-outlined text-secondary text-[24px]">stars</span>
+                      <span className="font-bold text-secondary">+{quizResult.points} {tGamification('points')}</span>
+                    </div>
                   </div>
                 )}
 
-                <div className="flex gap-3 justify-center pt-6 border-t border-outline-variant">
-                  <Button variant="outline" size="sm" onClick={handleClosePlayer}>
-                    {tQuizzes('backToQuizzes')}
+                <div className="pt-6">
+                  <Button variant="primary" fullWidth onClick={handleClosePlayer}>
+                    {tCommon('close')}
                   </Button>
-                  {!quizResult.passed && (
-                    <Button variant="primary" size="sm" onClick={() => handleStartQuiz(activeQuiz)}>
-                      {tQuizzes('retry')}
-                    </Button>
-                  )}
                 </div>
               </div>
             )}
           </div>
         </Modal>
       )}
-    </div>
+    </PageTransition>
   );
 }
-

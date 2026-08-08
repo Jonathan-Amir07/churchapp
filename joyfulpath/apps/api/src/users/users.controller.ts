@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, UseInterceptors, UploadedFile, Res } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, UseInterceptors, UploadedFile, Res, Req, Query } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { Prisma } from '@joyfulpath/database';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
@@ -18,10 +18,19 @@ export class UsersController {
     return this.usersService.create(createUserDto);
   }
 
-  @Roles('admin', 'priest')
   @Get()
-  findAll() {
-    return this.usersService.findAll();
+  findAll(@Req() req: any, @Query() query: any) {
+    return this.usersService.findAll(req.user, query);
+  }
+
+  @Patch('complete-profile')
+  completeProfile(@Req() req: any, @Body() data: any) {
+    return this.usersService.completeProfile(req.user.userId, data);
+  }
+
+  @Get(':id/siblings')
+  getSiblings(@Param('id') id: string) {
+    return this.usersService.getSiblings(id);
   }
 
   @Roles('admin', 'priest')
@@ -53,7 +62,7 @@ export class UsersController {
     return this.usersService.update(id, { isActive });
   }
 
-  @Roles('admin', 'priest')
+  // Everyone should be able to view a profile, though we could add visibility checks here too
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.usersService.findOne(id);

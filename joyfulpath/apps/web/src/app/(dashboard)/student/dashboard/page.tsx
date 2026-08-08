@@ -1,8 +1,8 @@
-﻿'use client';
+'use client';
 
 import { useTranslations, useLocale } from 'next-intl';
 import Link from 'next/link';
-import { Card, CardContent, CardHeader, CardTitle, ProgressBar, Button } from '@/components/ui';
+import { Card, CardContent, CardHeader, CardTitle, ProgressBar, Button, PageTransition, HeroBanner, StatCard, StaggerContainer, StaggerItem } from '@/components/ui';
 import { useAppStore } from '@/stores/app.store';
 
 export default function StudentDashboard() {
@@ -53,86 +53,51 @@ export default function StudentDashboard() {
   const activeDaily = challenges.find((c) => c.type === 'daily' && !c.claimed);
 
   return (
-    <div className="space-y-6 animate-[slide-up_0.4s_ease-out]">
+    <PageTransition className="space-y-6">
       {/* Welcome Banner */}
-      <div className="relative rounded-3xl overflow-hidden p-8 md:p-10 bg-gradient-to-br from-primary via-primary-container to-secondary text-on-primary shadow-2xl select-none border border-secondary/30">
-        <div className="absolute inset-0 bg-coptic-pattern opacity-10 mix-blend-overlay pointer-events-none" />
-        <div className="relative z-10 space-y-4">
-          <div className="flex items-center gap-4">
-            <div className="w-12 h-12 rounded-xl bg-white/20 backdrop-blur-sm border border-white/30 flex items-center justify-center animate-[bounce-in_0.5s_cubic-bezier(0.68,-0.55,0.265,1.55)]">
-              <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-6 h-6 text-secondary">
-                <path d="M12 2V22M7 7H17" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
-              </svg>
-            </div>
-            <h1 className="text-2xl md:text-3xl font-extrabold">
-              {t('welcomeMessage', { xpNeeded, nextLevel: currentLevelNum + 1 })}
-            </h1>
-          </div>
-          <p className="text-sm md:text-base font-medium opacity-90 max-w-xl">
-            You are making fantastic progress! Complete today&apos;s lesson to earn more XP and unlock the next wisdom badge.
-          </p>
+      <HeroBanner
+        title={t('welcomeMessage', { xpNeeded, nextLevel: currentLevelNum + 1 })}
+        subtitle="You are making fantastic progress! Complete today's lesson to earn more XP and unlock the next wisdom badge."
+      >
+        <div className="absolute right-0 bottom-0 top-0 w-1/3 hidden md:block opacity-90 mix-blend-luminosity hover:mix-blend-normal transition-all duration-700">
+          <img 
+            src="/images/welcome-illustration.png" 
+            alt="Children learning"
+            className="w-full h-full object-cover object-left mask-image-fade"
+            style={{ WebkitMaskImage: 'linear-gradient(to right, transparent, black 40%)' }}
+          />
         </div>
-      </div>
+      </HeroBanner>
 
       {/* Stats Summary Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
-        {/* Streak Stat */}
-        <Card variant="default" className="border-2 border-secondary/20 shadow-sm relative overflow-hidden bg-surface-container-lowest hover:border-secondary/50 hover:shadow-md transition-all">
-          <CardContent className="p-6 flex items-center justify-between">
-            <div className="space-y-1">
-              <p className="text-xs uppercase font-black text-on-surface-variant/80 tracking-wider">
-                {t('streak')}
-              </p>
-              <h3 className="text-3xl font-extrabold text-on-surface">
-                {streak} {t('days')}
-              </h3>
-            </div>
-            <div className="w-12 h-12 rounded-2xl bg-orange-100 dark:bg-orange-950/30 border border-orange-200/50 flex items-center justify-center animate-[pulse-soft_2s_infinite]">
-              <span className="material-symbols-outlined text-[28px] text-orange-500 dark:text-orange-400" style={{ fontVariationSettings: "'FILL' 1" }}>
-                local_fire_department
-              </span>
-            </div>
-          </CardContent>
-        </Card>
+      <StaggerContainer className="grid grid-cols-1 sm:grid-cols-3 gap-6">
+        <StaggerItem>
+          <StatCard
+            icon="local_fire_department"
+            label={t('streak')}
+            value={`${streak} ${t('days')}`}
+            iconColor="text-orange-500 bg-orange-100 dark:text-orange-400 dark:bg-orange-950/30 glow-gold"
+          />
+        </StaggerItem>
 
-        {/* Points Stat */}
-        <Card variant="default" className="border-2 border-secondary/20 shadow-sm relative overflow-hidden bg-surface-container-lowest hover:border-secondary/50 hover:shadow-md transition-all">
-          <CardContent className="p-6 flex items-center justify-between">
-            <div className="space-y-1">
-              <p className="text-xs uppercase font-black text-on-surface-variant/80 tracking-wider">
-                {t('totalPoints')}
-              </p>
-              <h3 className="text-3xl font-extrabold text-on-surface text-secondary">
-                {points} {tGamification('points')}
-              </h3>
-            </div>
-            <div className="w-12 h-12 rounded-2xl bg-secondary/10 border border-secondary/30 flex items-center justify-center">
-              <span className="material-symbols-outlined text-[28px] text-secondary" style={{ fontVariationSettings: "'FILL' 1" }}>
-                stars
-              </span>
-            </div>
-          </CardContent>
-        </Card>
+        <StaggerItem>
+          <StatCard
+            icon="stars"
+            label={t('totalPoints')}
+            value={`${points} ${tGamification('points')}`}
+            iconColor="text-secondary bg-secondary/10"
+          />
+        </StaggerItem>
 
-        {/* Level Info */}
-        <Card variant="default" className="border-2 border-secondary/20 shadow-sm relative overflow-hidden bg-surface-container-lowest hover:border-secondary/50 hover:shadow-md transition-all">
-          <CardContent className="p-6 flex items-center justify-between">
-            <div className="space-y-1">
-              <p className="text-xs uppercase font-black text-on-surface-variant/80 tracking-wider">
-                {t('level')}
-              </p>
-              <h3 className="text-2xl font-extrabold text-on-surface truncate max-w-[160px]">
-                {currentLevelTitle}
-              </h3>
-            </div>
-            <div className="w-12 h-12 rounded-2xl bg-primary/10 border border-primary/20 flex items-center justify-center">
-              <span className="material-symbols-outlined text-[28px] text-primary" style={{ fontVariationSettings: "'FILL' 1" }}>
-                award_star
-              </span>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
+        <StaggerItem>
+          <StatCard
+            icon="award_star"
+            label={t('level')}
+            value={currentLevelTitle}
+            iconColor="text-primary bg-primary/10"
+          />
+        </StaggerItem>
+      </StaggerContainer>
 
       {/* Gamification Level Progress Meter */}
       <Card variant="default" className="border border-outline-variant bg-surface-container-lowest shadow-sm overflow-hidden relative">
@@ -157,7 +122,7 @@ export default function StudentDashboard() {
       </Card>
 
       {/* Quick Action Navigation Panels */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         {/* Lesson panel */}
         <Card variant="interactive" className="border-2 border-secondary/20 bg-surface-container-lowest shadow-sm hover:shadow-md hover:-translate-y-1 transition-all flex flex-col justify-between">
           <CardContent className="p-5 space-y-4">
@@ -180,45 +145,67 @@ export default function StudentDashboard() {
           </div>
         </Card>
 
-        {/* Timed Quizzes Panel */}
+        {/* Tasks Panel */}
         <Card variant="interactive" className="border-2 border-secondary/20 bg-surface-container-lowest shadow-sm hover:shadow-md hover:-translate-y-1 transition-all flex flex-col justify-between">
           <CardContent className="p-5 space-y-4">
-            <div className="w-10 h-10 rounded-xl bg-tertiary/10 flex items-center justify-center">
-              <span className="material-symbols-outlined text-[24px] text-tertiary">quiz</span>
+            <div className="w-10 h-10 rounded-xl bg-orange-100 flex items-center justify-center text-orange-600">
+              <span className="material-symbols-outlined text-[24px]">task</span>
             </div>
             <div className="space-y-1">
-              <h3 className="text-base font-extrabold text-on-surface">Bible Quizzes</h3>
+              <h3 className="text-base font-extrabold text-on-surface">My Tasks</h3>
               <p className="text-xs text-on-surface-variant leading-relaxed">
-                Test your speed and memory with timed question runs.
+                Complete assignments from your instructor.
               </p>
             </div>
           </CardContent>
           <div className="p-5 pt-0">
-            <Link href="/student/quizzes">
-              <Button variant="success" fullWidth size="sm">
-                Start Quizzes
+            <Link href="/student/tasks">
+              <Button variant="outline" fullWidth size="sm" className="border-orange-200 text-orange-700 hover:bg-orange-50">
+                View Tasks
               </Button>
             </Link>
           </div>
         </Card>
 
-        {/* Learning Hub & Games */}
+        {/* Reading Plan */}
         <Card variant="interactive" className="border-2 border-secondary/20 bg-surface-container-lowest shadow-sm hover:shadow-md hover:-translate-y-1 transition-all flex flex-col justify-between">
           <CardContent className="p-5 space-y-4">
-            <div className="w-10 h-10 rounded-xl bg-teal-100 dark:bg-teal-950/30 flex items-center justify-center text-teal-600 dark:text-teal-400">
-              <span className="material-symbols-outlined text-[24px]">sports_esports</span>
+            <div className="w-10 h-10 rounded-xl bg-purple-100 flex items-center justify-center text-purple-600">
+              <span className="material-symbols-outlined text-[24px]">auto_stories</span>
             </div>
             <div className="space-y-1">
-              <h3 className="text-base font-extrabold text-on-surface">Games & Tracker</h3>
+              <h3 className="text-base font-extrabold text-on-surface">Reading Plan</h3>
               <p className="text-xs text-on-surface-variant leading-relaxed">
-                Play Verse Builder or Saints Match, track reading logs.
+                Track your daily Bible reading progress.
               </p>
             </div>
           </CardContent>
           <div className="p-5 pt-0">
-            <Link href="/student/games">
-              <Button variant="outline" fullWidth size="sm" className="border-teal-200 dark:border-teal-900/50 text-teal-700 dark:text-teal-400 hover:bg-teal-50 dark:hover:bg-teal-950/20">
-                Go to Games
+            <Link href="/student/reading">
+              <Button variant="outline" fullWidth size="sm" className="border-purple-200 text-purple-700 hover:bg-purple-50">
+                Open Plan
+              </Button>
+            </Link>
+          </div>
+        </Card>
+
+        {/* Rewards Panel */}
+        <Card variant="interactive" className="border-2 border-secondary/20 bg-surface-container-lowest shadow-sm hover:shadow-md hover:-translate-y-1 transition-all flex flex-col justify-between">
+          <CardContent className="p-5 space-y-4">
+            <div className="w-10 h-10 rounded-xl bg-yellow-100 flex items-center justify-center text-yellow-600">
+              <span className="material-symbols-outlined text-[24px]">stars</span>
+            </div>
+            <div className="space-y-1">
+              <h3 className="text-base font-extrabold text-on-surface">Rewards</h3>
+              <p className="text-xs text-on-surface-variant leading-relaxed">
+                Redeem your points for badges and prizes.
+              </p>
+            </div>
+          </CardContent>
+          <div className="p-5 pt-0">
+            <Link href="/student/rewards">
+              <Button variant="outline" fullWidth size="sm" className="border-yellow-200 text-yellow-700 hover:bg-yellow-50">
+                View Rewards
               </Button>
             </Link>
           </div>
@@ -325,7 +312,7 @@ export default function StudentDashboard() {
           </Card>
         </div>
       </div>
-    </div>
+    </PageTransition>
   );
 }
 

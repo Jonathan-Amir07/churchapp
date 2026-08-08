@@ -25,6 +25,7 @@ export async function auth() {
             email: parsed.email,
             name: parsed.name,
             accountStatus: parsed.accountStatus || 'active',
+            isProfileComplete: parsed.isProfileComplete || false,
           }
         };
       }
@@ -37,7 +38,7 @@ export async function auth() {
       // Mock mode: find the first user with this role in the local DB
       const dbUser = await prisma.user.findFirst({
         where: { role: mockRole, isActive: true },
-        select: { id: true, role: true, email: true, displayName: true, accountStatus: true, isActive: true },
+        select: { id: true, role: true, email: true, displayName: true, accountStatus: true, isActive: true, isProfileComplete: true },
       });
 
       if (!dbUser) {
@@ -60,6 +61,7 @@ export async function auth() {
           email: dbUser.email,
           name: dbUser.displayName,
           accountStatus: dbUser.accountStatus,
+          isProfileComplete: dbUser.isProfileComplete,
         },
       };
     }
