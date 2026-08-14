@@ -21,30 +21,26 @@ export default function ParentAttendance() {
     async function loadAttendanceData() {
       if (!childId) return;
 
-      const { data: profile } = await supabase
-        .from('user_profiles')
-        .select('display_name')
-        .eq('id', childId)
-        .single();
-      
-      if (profile) setChildProfile(profile);
-
-      const { data: attData } = await supabase
-        .from('attendance')
-        .select('*')
-        .eq('user_id', childId)
-        .order('date', { ascending: false });
-
-      if (attData) {
-        setAttendance(attData);
-      } else {
-        // Mock data fallback
-        setAttendance([
-          { id: '1', date: '2026-06-28', status: 'present', notes: 'Excellent' },
-          { id: '2', date: '2026-06-21', status: 'present', notes: '' },
-          { id: '3', date: '2026-06-14', status: 'late', notes: 'Late by 10 mins' },
-          { id: '4', date: '2026-06-07', status: 'absent', notes: 'Sick' }
-        ]);
+      try {
+        const res = await fetch(`/api/parent/attendance?child=${childId}`);
+        if (res.ok) {
+          const data = await res.json();
+          if (data.profile) setChildProfile({ display_name: data.profile.displayName });
+          
+          if (data.attendance && data.attendance.length > 0) {
+            setAttendance(data.attendance);
+          } else {
+            // Mock data fallback if none found
+            setAttendance([
+              { id: '1', date: '2026-06-28', status: 'present', notes: 'Excellent' },
+              { id: '2', date: '2026-06-21', status: 'present', notes: '' },
+              { id: '3', date: '2026-06-14', status: 'late', notes: 'Late by 10 mins' },
+              { id: '4', date: '2026-06-07', status: 'absent', notes: 'Sick' }
+            ]);
+          }
+        }
+      } catch (e) {
+        console.error('Failed to load attendance', e);
       }
       setLoading(false);
     }

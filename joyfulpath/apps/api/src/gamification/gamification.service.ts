@@ -10,7 +10,7 @@ export class GamificationService {
   async processXpGain(userId: string) {
     const user = await this.prisma.user.findUnique({
       where: { id: userId },
-      include: { level: true }
+      include: { currentLevel: true }
     });
 
     if (!user) return;
@@ -28,10 +28,10 @@ export class GamificationService {
       }
     }
 
-    if (!user.level || user.level.levelNumber < newLevel.levelNumber) {
+    if (!user.currentLevel || user.currentLevel.levelNumber < newLevel.levelNumber) {
       await this.prisma.user.update({
         where: { id: userId },
-        data: { levelId: newLevel.id }
+        data: { currentLevelId: newLevel.id }
       });
       this.logger.log(`User ${userId} leveled up to Level ${newLevel.levelNumber}!`);
       
@@ -39,9 +39,12 @@ export class GamificationService {
       await this.prisma.notification.create({
         data: {
           userId,
-          title: 'Level Up!',
-          message: `Congratulations! You have reached Level ${newLevel.levelNumber}: ${newLevel.title}`,
-          type: 'gamification'
+          channel: 'in-app',
+          type: 'gamification',
+          payload: JSON.stringify({
+            title: 'Level Up!',
+            message: `Congratulations! You have reached Level ${newLevel.levelNumber}: ${newLevel.title}`
+          })
         }
       });
     }

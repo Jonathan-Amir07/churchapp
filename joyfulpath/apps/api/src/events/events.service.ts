@@ -14,15 +14,15 @@ export class EventsService {
     return this.prisma.event.create({
       data: {
         ...createEventDto,
-        createdBy: userId,
+        date: new Date(createEventDto.date)
       }
     });
   }
 
   async findAll() {
     return this.prisma.event.findMany({
-      orderBy: { startDate: 'asc' },
-      where: { endDate: { gte: new Date() } } // Only upcoming events
+      orderBy: { date: 'asc' },
+      where: { date: { gte: new Date() } } // Only upcoming events
     });
   }
 }

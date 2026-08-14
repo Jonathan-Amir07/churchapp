@@ -22,41 +22,33 @@ export default function ParentReports() {
     async function loadReportData() {
       if (!childId) return;
 
-      const { data: profile } = await supabase
-        .from('user_profiles')
-        .select('*')
-        .eq('id', childId)
-        .single();
-      
-      if (profile) setChildProfile(profile);
+      try {
+        const res = await fetch(`/api/parent/reports?child=${childId}`);
+        if (res.ok) {
+          const data = await res.json();
+          if (data.profile) setChildProfile({ display_name: data.profile.displayName });
 
-      // Get lesson progress
-      const { data: progress } = await supabase
-        .from('lesson_progress')
-        .select('*, lessons(title)')
-        .eq('user_id', childId);
-      if (progress) setLessonsProgress(progress);
+          if (data.progress && data.progress.length > 0) {
+            setLessonsProgress(data.progress);
+          } else {
+            setLessonsProgress([
+              { id: '1', progress_pct: 100, lessons: { title: 'Genesis - The Creation story' } },
+              { id: '2', progress_pct: 60, lessons: { title: 'Noah - Ark and covenant' } },
+              { id: '3', progress_pct: 0, lessons: { title: 'Abraham - Father of many nations' } }
+            ]);
+          }
 
-      // Get quiz attempts
-      const { data: quizzes } = await supabase
-        .from('quiz_attempts')
-        .select('*, quizzes(title)')
-        .eq('student_id', childId);
-      if (quizzes) setQuizAttempts(quizzes);
-
-      // Falls back to mock data if empty
-      if (!progress || progress.length === 0) {
-        setLessonsProgress([
-          { id: '1', progress_pct: 100, lessons: { title: 'Genesis - The Creation story' } },
-          { id: '2', progress_pct: 60, lessons: { title: 'Noah - Ark and covenant' } },
-          { id: '3', progress_pct: 0, lessons: { title: 'Abraham - Father of many nations' } }
-        ]);
-      }
-      if (!quizzes || quizzes.length === 0) {
-        setQuizAttempts([
-          { id: '1', score: 90, total_possible: 100, percentage: 90.0, passed: true, completed_at: '2026-06-25', quizzes: { title: 'Creation Review Quiz' } },
-          { id: '2', score: 50, total_possible: 100, percentage: 50.0, passed: false, completed_at: '2026-06-20', quizzes: { title: 'Covenants Challenge' } }
-        ]);
+          if (data.quizzes && data.quizzes.length > 0) {
+            setQuizAttempts(data.quizzes);
+          } else {
+            setQuizAttempts([
+              { id: '1', score: 90, total_possible: 100, percentage: 90.0, passed: true, completed_at: '2026-06-25', quizzes: { title: 'Creation Review Quiz' } },
+              { id: '2', score: 50, total_possible: 100, percentage: 50.0, passed: false, completed_at: '2026-06-20', quizzes: { title: 'Covenants Challenge' } }
+            ]);
+          }
+        }
+      } catch (e) {
+        console.error('Failed to load reports', e);
       }
       
       setLoading(false);

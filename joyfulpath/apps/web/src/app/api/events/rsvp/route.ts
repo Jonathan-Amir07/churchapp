@@ -1,13 +1,14 @@
-// Event RSVP API - Register/Unregister for events
 import { NextRequest, NextResponse } from 'next/server';
-import { createAdminClient as createClient } from '@/lib/supabase/admin';
+import prisma from '@/lib/db';
+import { requireAuth } from '@/lib/rbac';
 
-export async function POST(request: NextRequest) {
+export async function POST(req: NextRequest) {
   try {
-    const supabase = createClient();
-    const body = await request.json();
+    const session = await requireAuth();
+    if (session instanceof NextResponse) return session;
 
-    const { eventId, userId, action = 'rsvp' } = body; // action: 'rsvp' | 'cancel'
+    const body = await req.json();
+    const { eventId, userId, action = 'rsvp' } = body;
 
     if (!eventId || !userId) {
       return NextResponse.json(
@@ -17,31 +18,13 @@ export async function POST(request: NextRequest) {
     }
 
     if (action === 'cancel') {
-      // Cancel RSVP
-      const { error } = await supabase
-        .from('event_attendees')
-        .delete()
-        .eq('event_id', eventId)
-        .eq('user_id', userId);
-
-      if (error) throw error;
-
-      return NextResponse.json({
-        success: true,
-        message: 'RSVP cancelled'
+      await prisma.eventAttendee.deleteMany({
+        where: {
+          eventId,
+          userId
+        }
       });
-    }
-
-    if (action === 'cancel') {
-      // Cancel RSVP
-      const { error } = await supabase
-        .from('event_attendees')
-        .delete()
-        .eq('event_id', eventId)
-        .eq('user_id', userId);
-
-      if (error) throw error;
-
+      
       return NextResponse.json({
         success: true,
         message: 'RSVP cancelled'
@@ -49,12 +32,12 @@ export async function POST(request: NextRequest) {
     }
 
     // Register for event
-    const { data: existing } = await supabase
-      .from('event_attendees')
-      .select('id')
-      .eq('event_id', eventId)
-      .eq('user_id', userId)
-      .single();
+    const existing = await prisma.eventAttendee.findFirst({
+      where: {
+        eventId,
+        userId
+      }
+    });
 
     if (existing) {
       return NextResponse.json(
@@ -63,26 +46,24 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const { data: attendee, error } = await supabase
-      .from('event_attendees')
-      .insert({
-        event_id: eventId,
-        user_id: userId,
-        rsvp_status: 'registered',
-        created_at: new Date().toISOString()
-      })
-      .select()
-      .single();
-
-    if (error) throw error;
+    const attendee = await prisma.eventAttendee.create({
+      data: {
+        eventId,
+        userId,
+        rsvpStatus: 'registered'
+      }
+    });
 
     return NextResponse.json({
       success: true,
       data: attendee,
       message: 'Successfully registered for the event!'
     });
-  } catch (err) {
+  } catch (err: any) {
     console.error('[events/rsvp] POST Error:', err);
+    if (err.message === 'Unauthorized') {
+      return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 401 });
+    }
     return NextResponse.json(
       { success: false, error: 'Failed to process RSVP' },
       { status: 500 }
@@ -90,41 +71,38 @@ export async function POST(request: NextRequest) {
   }
 }
 
-export async function GET(request: NextRequest) {
+export async function GET(req: NextRequest) {
   try {
-    const supabase = createClient();
-    const { searchParams } = new URL(request.url);
+    const session = await requireAuth();
+    if (session instanceof NextResponse) return session;
+
+    const { searchParams } = new URL(req.url);
     const eventId = searchParams.get('eventId');
     const userId = searchParams.get('userId');
 
     if (eventId) {
-      const { data: attendees, error } = await supabase
-        .from('event_attendees')
-        .select('*')
-        .eq('event_id', eventId);
-
-      if (error) throw error;
+      const attendees = await prisma.eventAttendee.findMany({
+        where: { eventId }
+      });
 
       return NextResponse.json({
         success: true,
         eventId,
         attendees,
-        count: attendees?.length || 0
+        count: attendees.length
       });
     }
 
     if (userId) {
-      const { data: registrations, error } = await supabase
-        .from('event_attendees')
-        .select('event_id')
-        .eq('user_id', userId);
-
-      if (error) throw error;
+      const registrations = await prisma.eventAttendee.findMany({
+        where: { userId },
+        select: { eventId: true }
+      });
 
       return NextResponse.json({
         success: true,
         userId,
-        registeredEvents: registrations?.map((r: any) => r.event_id) || []
+        registeredEvents: registrations.map((r: any) => r.eventId)
       });
     }
 
@@ -132,8 +110,11 @@ export async function GET(request: NextRequest) {
       { success: false, error: 'Provide eventId or userId query param' },
       { status: 400 }
     );
-  } catch (err) {
+  } catch (err: any) {
     console.error('[events/rsvp] GET Error:', err);
+    if (err.message === 'Unauthorized') {
+      return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 401 });
+    }
     return NextResponse.json(
       { success: false, error: 'Failed to fetch RSVPs' },
       { status: 500 }

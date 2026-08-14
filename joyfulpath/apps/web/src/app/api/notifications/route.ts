@@ -15,14 +15,31 @@ export async function GET(request: NextRequest) {
 
     let whereClause: any = { userId: user.id };
     if (unreadOnly) {
-      whereClause.isRead = false;
+      whereClause.readAt = null;
     }
 
-    const notifications = await prisma.notification.findMany({
+    const notificationsDb = await prisma.notification.findMany({
       where: whereClause,
       orderBy: { createdAt: 'desc' },
       skip: offset,
       take: limit,
+    });
+
+    const notifications = notificationsDb.map((n: any) => {
+      const payload = JSON.parse(n.payload || '{}');
+      return {
+        id: n.id,
+        userId: n.userId,
+        type: n.type,
+        channel: n.channel,
+        titleEn: payload.titleEn || '',
+        titleAr: payload.titleAr || '',
+        messageEn: payload.messageEn || '',
+        messageAr: payload.messageAr || '',
+        actionUrl: payload.actionUrl || '',
+        isRead: !!n.readAt,
+        createdAt: n.createdAt,
+      };
     });
 
     const total = await prisma.notification.count({ where: whereClause });
@@ -77,21 +94,26 @@ export async function POST(request: NextRequest) {
       targetUserIds = targetIds;
     } else {
       const users = await prisma.user.findMany({
-        where: { role: 'student', isActive: true },
+        where: { isActive: true },
         select: { id: true },
       });
       targetUserIds = users.map((u: any) => u.id);
     }
 
-    const notifications = targetUserIds.map((uid) => ({
-      userId: uid,
+    const payloadObj = JSON.stringify({
       titleEn: title_en,
       titleAr: title_ar || title_en,
       messageEn: message_en,
       messageAr: message_ar || message_en,
-      type: type || 'announcement',
       actionUrl: actionUrl,
-      isRead: false,
+    });
+
+    const notifications = targetUserIds.map((uid) => ({
+      userId: uid,
+      channel: 'in-app',
+      type: type || 'announcement',
+      payload: payloadObj,
+      readAt: null,
     }));
 
     await prisma.notification.createMany({

@@ -1,22 +1,24 @@
-// src/app/api/attendance/scan/route.ts
-// MOCK: attendance scan API — no real DB used.
-// See waiting_database.md > Phase 5 for migration guide.
-
 import { NextRequest, NextResponse } from 'next/server';
+import prisma from '@/lib/db';
+import { requireAuth } from '@/lib/rbac';
 
-// ── In-memory store for duplicate prevention (per server process restart) ──
-// MOCK: replace with DB query on real migration
-const checkedInToday = new Map<string, string>(); // studentId → timestamp
-
-// Helper — date string like "2026-06-29"
 function todayStr() {
   return new Date().toISOString().split('T')[0];
 }
 
 export async function POST(request: NextRequest) {
   try {
+    const session = await requireAuth();
+    if (session instanceof NextResponse) return session;
+    const user = session.user;
+
+    // Only instructors/admins/priests can scan/record attendance
+    if (user.role === 'student' || user.role === 'parent') {
+      return NextResponse.json({ success: false, error: 'Forbidden' }, { status: 403 });
+    }
+
     const body = await request.json();
-    const { studentId, scannedBy } = body;
+    const { studentId } = body;
 
     if (!studentId) {
       return NextResponse.json(
@@ -25,31 +27,33 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const today = todayStr();
-    const dupKey = `${studentId}::${today}`;
+    const today = new Date(todayStr() + 'T00:00:00.000Z');
 
-    // ── MOCK: Duplicate check (in-memory per process) ──────────────────────
-    // REAL DB: SELECT id FROM attendance WHERE user_id=studentId AND date=today
-    if (checkedInToday.has(dupKey)) {
+    // Duplicate check
+    const existingAttendance = await prisma.attendance.findFirst({
+      where: {
+        userId: studentId,
+        date: today
+      }
+    });
+
+    if (existingAttendance) {
       return NextResponse.json(
         {
           success: false,
           alreadyCheckedIn: true,
           error: 'Student already checked in today.',
-          checkedInAt: checkedInToday.get(dupKey),
+          checkedInAt: existingAttendance.date,
         },
         { status: 409 }
       );
     }
 
-    // ── MOCK: Simulate known students ──────────────────────────────────────
-    // REAL DB: SELECT * FROM user_profiles WHERE id=studentId AND role='student'
-    const MOCK_STUDENTS: Record<string, { name: string; streak: number; xp: number }> = {
-      'mock-student-id': { name: 'Jonathan Junior', streak: 5, xp: 1250 },
-      'mock-student2-id': { name: 'Mary Grace', streak: 2, xp: 780 },
-    };
+    // Verify student exists
+    const student = await prisma.user.findFirst({
+      where: { id: studentId, role: 'student' }
+    });
 
-    const student = MOCK_STUDENTS[studentId];
     if (!student) {
       return NextResponse.json(
         { success: false, error: 'Unknown student ID. QR code is not valid.' },
@@ -57,28 +61,46 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // ── MOCK: Insert attendance record ─────────────────────────────────────
-    // REAL DB: INSERT INTO attendance (user_id, date, status, notes) VALUES (studentId, today, 'present', '')
-    const checkInTime = new Date().toISOString();
-    checkedInToday.set(dupKey, checkInTime);
+    // Insert attendance record
+    const checkInTime = new Date();
+    await prisma.attendance.create({
+      data: {
+        userId: studentId,
+        date: today,
+        status: 'present',
+        notes: `Scanned by ${user.name || user.id}`
+      }
+    });
 
-    // ── MOCK: XP reward for attendance (+50 XP) ────────────────────────────
-    // REAL DB: UPDATE user_profiles SET total_xp = total_xp + 50, current_streak = current_streak + 1 WHERE id = studentId
+    // XP reward for attendance (+50 XP)
     const xpAwarded = 50;
-    const newStreak = student.streak + 1;
+    const newStreak = student.currentStreak + 1;
+
+    await prisma.user.update({
+      where: { id: studentId },
+      data: {
+        totalXp: student.totalXp + xpAwarded,
+        totalPoints: student.totalPoints + 10,
+        currentStreak: newStreak,
+        longestStreak: Math.max(student.longestStreak, newStreak)
+      }
+    });
 
     return NextResponse.json({
       success: true,
       studentId,
-      studentName: student.name,
-      date: today,
+      studentName: student.displayName,
+      date: todayStr(),
       checkInTime,
       xpAwarded,
       newStreak,
-      message: `${student.name} checked in successfully! +${xpAwarded} XP`,
+      message: `${student.displayName} checked in successfully! +${xpAwarded} XP`,
     });
-  } catch (err) {
+  } catch (err: any) {
     console.error('[attendance/scan] Error:', err);
+    if (err.message === 'Unauthorized') {
+      return NextResponse.json({ success: false, error: err.message }, { status: 401 });
+    }
     return NextResponse.json(
       { success: false, error: 'Internal server error.' },
       { status: 500 }

@@ -1,6 +1,6 @@
 import { Controller, Get, Post, Patch, Param, Request, UseGuards } from '@nestjs/common';
 import { StoreService } from './store.service';
-import { JwtAuthGuard } from '../auth/jwt-auth.guard';
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 
 @Controller('store')
 @UseGuards(JwtAuthGuard)
@@ -13,7 +13,7 @@ export class StoreController {
   }
 
   @Post('redeem/:id')
-  redeemReward(@Request() req, @Param('id') id: string) {
+  redeemReward(@Request() req: any, @Param('id') id: string) {
     return this.storeService.redeemReward(id, req.user.id);
   }
 
@@ -23,7 +23,7 @@ export class StoreController {
   }
 
   @Patch('redemptions/:id/fulfill')
-  fulfillRedemption(@Request() req, @Param('id') id: string) {
+  fulfillRedemption(@Request() req: any, @Param('id') id: string) {
     return this.storeService.fulfillRedemption(id, req.user.id, req.user.role);
   }
 }

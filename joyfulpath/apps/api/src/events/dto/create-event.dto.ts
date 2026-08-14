@@ -1,4 +1,4 @@
-import { IsString, IsNotEmpty, IsDateString, IsOptional, IsBoolean } from 'class-validator';
+import { IsString, IsNotEmpty, IsDateString, IsOptional, IsBoolean, IsInt } from 'class-validator';
 
 export class CreateEventDto {
   @IsString()
@@ -6,34 +6,34 @@ export class CreateEventDto {
   title: string;
 
   @IsString()
-  @IsOptional()
-  description?: string;
+  @IsNotEmpty()
+  description: string;
 
   @IsString()
-  @IsOptional()
-  eventType?: string;
+  @IsNotEmpty()
+  type: string;
 
   @IsDateString()
   @IsNotEmpty()
-  startDate: string;
+  date: string;
 
-  @IsDateString()
+  @IsString()
   @IsNotEmpty()
-  endDate: string;
+  time: string;
 
   @IsString()
-  @IsOptional()
-  location?: string;
+  @IsNotEmpty()
+  endTime: string;
 
   @IsString()
-  @IsOptional()
-  churchId?: string;
+  @IsNotEmpty()
+  location: string;
+
+  @IsInt()
+  @IsNotEmpty()
+  maxCapacity: number;
 
   @IsBoolean()
   @IsOptional()
-  isRecurring?: boolean;
-
-  @IsString()
-  @IsOptional()
-  recurrenceRule?: string;
+  isPublic?: boolean;
 }

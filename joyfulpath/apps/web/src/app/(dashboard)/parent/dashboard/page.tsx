@@ -17,45 +17,35 @@ export default function ParentDashboard() {
 
   useEffect(() => {
     async function loadChildren() {
-      if (!profile?.id) return;
-      
-      // Get linked children profiles via parent_children table
-      const { data: links } = await supabase
-        .from('parent_children')
-        .select('student_id')
-        .eq('parent_id', profile.id);
-
-      if (links && links.length > 0) {
-        const studentIds = links.map((l: { student_id: string }) => l.student_id);
-        const { data: childrenProfiles } = await supabase
-          .from('user_profiles')
-          .select('*')
-          .in('id', studentIds);
-
-        if (childrenProfiles) {
-          setChildren(childrenProfiles);
-        }
-      } else {
-        // Fallback demo student if none are linked for rapid testing
-        setChildren([
-          {
-            id: 'demo-student-1',
-            display_name: 'Jonathan Junior',
-            total_xp: 1250,
-            total_points: 120,
-            current_streak: 5,
-            avatar_url: null,
-            role: 'student'
+      try {
+        const res = await fetch('/api/parent/children');
+        if (res.ok) {
+          const childrenProfiles = await res.json();
+          if (childrenProfiles && childrenProfiles.length > 0) {
+            setChildren(childrenProfiles);
+          } else {
+            // Fallback demo student if none are linked for rapid testing
+            setChildren([
+              {
+                id: 'demo-student-1',
+                display_name: 'Jonathan Junior',
+                total_xp: 1250,
+                total_points: 120,
+                current_streak: 5,
+                avatar_url: null,
+                role: 'student'
+              }
+            ]);
           }
-        ]);
+        }
+      } catch (e) {
+        console.error('Failed to load children', e);
       }
       setLoading(false);
     }
     
-    if (profile) {
-      loadChildren();
-    }
-  }, [profile]);
+    loadChildren();
+  }, []);
 
   return (
     <div className="space-y-6 animate-[slide-up_0.4s_ease-out]">

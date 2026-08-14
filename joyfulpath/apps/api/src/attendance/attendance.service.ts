@@ -55,7 +55,7 @@ export class AttendanceService {
     const existing = await this.prisma.attendance.findFirst({
       where: {
         classId: session.classId,
-        studentId: userId,
+        userId: userId,
         date: { gte: today }
       }
     });
@@ -73,10 +73,11 @@ export class AttendanceService {
     const record = await this.prisma.attendance.create({
       data: {
         classId: session.classId,
-        studentId: userId,
+        userId: userId,
         date: new Date(),
         status: 'present',
-        pointsAwarded: 20
+        xpAwarded: 20,
+        recordedBy: userId
       }
     });
 
@@ -108,10 +109,11 @@ export class AttendanceService {
         return this.prisma.attendance.create({
           data: {
             classId: dto.classId,
-            studentId: r.studentId,
+            userId: r.studentId,
             date: today,
             status: r.status,
-            pointsAwarded: points
+            xpAwarded: points,
+            recordedBy: userId
           }
         });
       })

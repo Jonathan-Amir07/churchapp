@@ -31,9 +31,17 @@ export default function ChangePasswordPage() {
 
     setLoading(true);
     try {
-      // In a real supabase app:
-      await supabase.auth.updateUser({ password });
-      
+      const res = await fetch('/api/auth/change-password', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ password }),
+      });
+
+      if (!res.ok) {
+        const errorData = await res.json();
+        throw new Error(errorData.message || 'Failed to update password');
+      }
+
       // Set our cookie to bypass the first-login check
       document.cookie = 'HAS_CHANGED_PASSWORD=true; path=/; max-age=31536000';
 

@@ -8,7 +8,7 @@ export class StoreService {
   async getRewards() {
     return this.prisma.reward.findMany({
       where: { isActive: true },
-      orderBy: { costPoints: 'asc' }
+      orderBy: { costXp: 'asc' }
     });
   }
 
@@ -17,24 +17,26 @@ export class StoreService {
     if (!reward || !reward.isActive) throw new NotFoundException('Reward not available');
 
     const user = await this.prisma.user.findUnique({ where: { id: userId } });
-    if (user.totalPoints < reward.costPoints) {
-      throw new BadRequestException('Not enough points');
+    if (!user) throw new NotFoundException('User not found');
+    
+    if (user.totalXp < reward.costXp) {
+      throw new BadRequestException('Not enough XP');
     }
 
-    if (reward.quantityAvailable !== null && reward.quantityAvailable <= 0) {
+    if (reward.inventoryCount !== null && reward.inventoryCount <= 0) {
       throw new BadRequestException('Out of stock');
     }
 
-    // Deduct points
+    // Deduct XP
     await this.prisma.user.update({
       where: { id: userId },
-      data: { totalPoints: { decrement: reward.costPoints } }
+      data: { totalXp: { decrement: reward.costXp } }
     });
 
-    if (reward.quantityAvailable !== null) {
+    if (reward.inventoryCount !== null) {
       await this.prisma.reward.update({
         where: { id: rewardId },
-        data: { quantityAvailable: { decrement: 1 } }
+        data: { inventoryCount: { decrement: 1 } }
       });
     }
 
@@ -42,8 +44,7 @@ export class StoreService {
     return this.prisma.rewardRedemption.create({
       data: {
         rewardId,
-        studentId: userId,
-        pointsSpent: reward.costPoints,
+        userId: userId,
         status: 'pending' // pending fulfillment
       }
     });
@@ -58,8 +59,8 @@ export class StoreService {
       where: { id: redemptionId },
       data: {
         status: 'fulfilled',
-        fulfilledAt: new Date(),
-        fulfilledBy: userId
+        reviewedAt: new Date(),
+        reviewedBy: userId
       }
     });
   }
@@ -68,7 +69,7 @@ export class StoreService {
     return this.prisma.rewardRedemption.findMany({
       where: { status: 'pending' },
       include: {
-        student: { select: { firstName: true, lastName: true } },
+        user: { select: { firstName: true, lastName: true } },
         reward: { select: { title: true, type: true } }
       }
     });

@@ -3,7 +3,15 @@ import { IsString, IsNotEmpty, IsBoolean, IsOptional } from 'class-validator';
 export class CreatePrayerRequestDto {
   @IsString()
   @IsNotEmpty()
-  requestText: string;
+  type: string;
+
+  @IsString()
+  @IsOptional()
+  title?: string;
+
+  @IsString()
+  @IsNotEmpty()
+  body: string;
 
   @IsBoolean()
   @IsOptional()
@@ -13,7 +21,7 @@ export class CreatePrayerRequestDto {
 export class UpdatePrayerRequestDto {
   @IsBoolean()
   @IsOptional()
-  isAnswered?: boolean;
+  isAddressed?: boolean;
 
   @IsString()
   @IsOptional()

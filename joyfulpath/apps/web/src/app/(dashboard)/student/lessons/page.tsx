@@ -1,4 +1,4 @@
-﻿'use client';
+'use client';
 
 import { useState, useEffect } from 'react';
 import { createClient } from '@/lib/supabase/client';
@@ -148,45 +148,51 @@ export default function StudentLessons() {
 
   useEffect(() => {
     async function fetchLessons() {
-      const { data: lessonsData, error: lessonsError } = await supabase.from('lessons').select('*');
-      if (lessonsError || !lessonsData) {
-        setIsLoading(false);
-        return;
-      }
-      
-      const { data: attData } = await supabase.from('lesson_attachments').select('*');
+      try {
+        const res = await fetch('/api/lessons');
+        if (!res.ok) {
+          setIsLoading(false);
+          return;
+        }
+        
+        const data = await res.json();
+        const lessonsData = data.lessons || [];
 
-      const mappedLessons: Lesson[] = lessonsData.map((l: any) => {
-        const lessonAtts = (attData || []).filter((a: any) => a.lesson_id === l.id).map((a: any) => ({
-          name: a.file_name,
-          type: a.file_type as any,
-          size: `${Math.round(a.file_size / 1024)} KB`,
-        }));
-        return {
-          id: l.id,
-          titleEn: l.title,
-          titleAr: l.title_ar || l.title,
-          categoryEn: l.category || 'General',
-          categoryAr: l.category_ar || 'عام',
-          status: 'not-started', // mock status
-          xp: l.xp_reward || 50,
-          points: l.points_reward || 10,
-          verseEn: l.verse || '',
-          verseAr: l.verse_ar || '',
-          contentEn: l.content || '',
-          contentAr: l.content || '',
-          levelRequired: l.level_required || 1,
-          duration: '30 min',
-          objectives: ['Learn the lesson', 'Complete the worksheet'],
-          objectivesAr: ['تعلم الدرس', 'أكمل ورقة العمل'],
-          attachments: lessonAtts,
-        };
-      });
-      setLessons(mappedLessons);
-      setIsLoading(false);
+        const mappedLessons: Lesson[] = lessonsData.map((l: any) => {
+          const lessonAtts = (l.attachments || []).map((a: any) => ({
+            name: a.fileName,
+            type: a.fileType as any,
+            size: `${Math.round(a.fileSize / 1024)} KB`,
+          }));
+          return {
+            id: l.id,
+            titleEn: l.title,
+            titleAr: l.title,
+            categoryEn: l.category || 'General',
+            categoryAr: l.category || 'عام',
+            status: l.progress && l.progress.length > 0 ? l.progress[0].status : 'not-started', // simplified
+            xp: l.xpReward || 50,
+            points: l.pointsReward || 10,
+            verseEn: (l.bibleReferences && l.bibleReferences !== '[]' && l.bibleReferences !== '""') ? l.bibleReferences : '',
+            verseAr: (l.bibleReferences && l.bibleReferences !== '[]' && l.bibleReferences !== '""') ? l.bibleReferences : '',
+            contentEn: l.content || '',
+            contentAr: l.content || '',
+            levelRequired: 1,
+            duration: '30 min',
+            objectives: ['Learn the lesson'],
+            objectivesAr: ['تعلم الدرس'],
+            attachments: lessonAtts,
+          };
+        });
+        setLessons(mappedLessons);
+      } catch (e) {
+        console.error(e);
+      } finally {
+        setIsLoading(false);
+      }
     }
     fetchLessons();
-  }, [supabase]);
+  }, []);
 
   const filteredLessons = lessons.filter((lesson) => {
     const title = (lesson.titleEn + ' ' + lesson.titleAr).toLowerCase();

@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import prisma from '@/lib/db';
 import bcrypt from 'bcryptjs';
+import { SignJWT } from 'jose';
 
 export async function POST(request: Request) {
   try {
@@ -27,13 +28,22 @@ export async function POST(request: Request) {
       const mockRole = testAccounts[username];
       const jwtPayload = {
         id: `mock-${mockRole}-id`,
+        sub: `mock-${mockRole}-id`,
+        username: username,
         email: `${username}@joyfulpath.com`,
         role: mockRole,
         forcePasswordChange: false,
         name: `Test ${mockRole.charAt(0).toUpperCase() + mockRole.slice(1)}`,
       };
 
-      const access_token = 'mock.' + Buffer.from(JSON.stringify(jwtPayload)).toString('base64') + '.signature';
+      const secret = new TextEncoder().encode(process.env.JWT_SECRET || 'super-secret-jwt-key');
+      const alg = 'HS256';
+      
+      const access_token = await new SignJWT(jwtPayload)
+        .setProtectedHeader({ alg })
+        .setIssuedAt()
+        .setExpirationTime('2h')
+        .sign(secret);
 
       return NextResponse.json({
         access_token,
@@ -74,14 +84,22 @@ export async function POST(request: Request) {
     // Construct a JWT payload to encode
     const jwtPayload = {
       id: user.id,
+      sub: user.id,
+      username: user.username,
       email: user.email,
       role: user.role,
       forcePasswordChange: user.forcePasswordChange,
       name: user.displayName || user.firstName,
     };
 
-    // Base64 encode for mock mode (as agreed in plan)
-    const access_token = 'mock.' + Buffer.from(JSON.stringify(jwtPayload)).toString('base64') + '.signature';
+    const secret = new TextEncoder().encode(process.env.JWT_SECRET || 'super-secret-jwt-key');
+    const alg = 'HS256';
+
+    const access_token = await new SignJWT(jwtPayload)
+      .setProtectedHeader({ alg })
+      .setIssuedAt()
+      .setExpirationTime('2h')
+      .sign(secret);
 
     return NextResponse.json({
       access_token,

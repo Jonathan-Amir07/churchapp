@@ -1,6 +1,6 @@
 import { Controller, Get, Param, UseGuards } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
-import { JwtAuthGuard } from '../auth/jwt-auth.guard';
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 
 @Controller('gamification')
 @UseGuards(JwtAuthGuard)
@@ -19,7 +19,7 @@ export class GamificationController {
             lastName: true,
             totalXp: true,
             totalPoints: true,
-            level: true,
+            currentLevel: true,
             avatarUrl: true
           }
         }

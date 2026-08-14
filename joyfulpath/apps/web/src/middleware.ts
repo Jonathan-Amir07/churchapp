@@ -1,5 +1,6 @@
 import { NextResponse, type NextRequest } from 'next/server';
 import { isMockMode } from './lib/supabase/mockClient';
+import { jwtVerify } from 'jose';
 
 /**
  * Role hierarchy for route-level access control.
@@ -45,13 +46,11 @@ export default async function proxy(request: NextRequest) {
   const token = request.cookies.get('ACCESS_TOKEN')?.value;
   if (token) {
     try {
-      const parts = token.split('.');
-      if (parts.length === 3) {
-        const payloadStr = atob(parts[1]);
-        user = JSON.parse(payloadStr);
-      }
+      const secret = new TextEncoder().encode(process.env.JWT_SECRET || 'super-secret-jwt-key');
+      const { payload } = await jwtVerify(token, secret);
+      user = payload;
     } catch (e) {
-      console.warn('Failed to parse JWT in middleware', e);
+      console.warn('Failed to verify JWT in middleware', e);
     }
   }
 

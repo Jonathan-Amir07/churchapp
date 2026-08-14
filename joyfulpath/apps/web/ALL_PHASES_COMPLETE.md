@@ -132,29 +132,22 @@
 
 ---
 
-### ✅ Phase 7: Lesson Management with File Uploads
+### ✅ Phase 7: Lesson Management with File Uploads (JUST COMPLETED)
 **Purpose:** Instructors create rich lessons with multimedia content
 
-**Completed Components:**
+**Newly Completed Components:**
 - ✅ Lesson CRUD API with XP/points rewards
-- ✅ File upload to Supabase storage (PDF, MP4, PNG, JPG)
-- ✅ File attachment management
-- ✅ Lesson form with rich content editor
-- ✅ Lesson cards with metadata
-- ✅ Instructor lesson management page
+- ✅ File upload to Supabase storage (PDF, MP4, PNG, JPG) via POST `/api/lessons/[id]/upload`
+- ✅ File attachment management and schema alignment
+- ✅ Lesson form fully wired to backend `/api/lessons`
+- ✅ Student lesson viewer successfully wired to `/api/lessons` (replacing mock client)
 - ✅ Status tracking (draft/published)
-- ✅ Student tracking count
-- ✅ Search and filter capabilities
-- ✅ Mobile responsive grid (1-3 columns)
 
-**Files:**
+**Files Updated:**
 - `src/app/api/lessons/route.ts` - Lesson CRUD
-- `src/app/api/lessons/[id]/route.ts` - Individual lesson ops
 - `src/app/api/lessons/[id]/upload/route.ts` - File uploads
-- `src/lib/supabase/storage.ts` - Storage utilities
-- `src/components/features/lessons/LessonForm.tsx` - Create/edit form
-- `src/components/features/lessons/LessonCard.tsx` - Display card
-- `src/app/(dashboard)/instructor/lessons/page.tsx` - Management page
+- `src/app/(dashboard)/instructor/lessons/new/page.tsx` - Create/edit form wired
+- `src/app/(dashboard)/student/lessons/page.tsx` - Viewer wired
 
 ---
 

@@ -10,7 +10,9 @@ export class PrayerRequestsService {
     return this.prisma.prayerRequest.create({
       data: {
         studentId: userId,
-        requestText: dto.requestText,
+        type: dto.type,
+        title: dto.title,
+        body: dto.body,
         isPrivate: dto.isPrivate || false
       }
     });
@@ -27,9 +29,9 @@ export class PrayerRequestsService {
     if (dto.response && (role === 'priest' || role === 'instructor')) {
       await this.prisma.prayerResponse.create({
         data: {
-          requestId: id,
+          prayerRequestId: id,
           responderId: userId,
-          responseText: dto.response
+          message: dto.response
         }
       });
     }
@@ -37,7 +39,7 @@ export class PrayerRequestsService {
     return this.prisma.prayerRequest.update({
       where: { id },
       data: {
-        isAnswered: dto.isAnswered !== undefined ? dto.isAnswered : request.isAnswered
+        isAddressed: dto.isAddressed !== undefined ? dto.isAddressed : request.isAddressed
       }
     });
   }

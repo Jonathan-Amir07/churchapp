@@ -11,35 +11,10 @@ export default function ForgotPasswordPage() {
   const tCommon = useTranslations('common');
   const currentLocale = useLocale();
   const addToast = useNotificationStore((state) => state.addToast);
-  const supabase = createClient();
-
-  const [email, setEmail] = useState('');
-  const [loading, setLoading] = useState(false);
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!email) {
-      addToast('Please enter your email address', 'error');
-      return;
-    }
-
-    setLoading(true);
-    try {
-      const { error } = await supabase.auth.resetPasswordForEmail(email, {
-        redirectTo: `${window.location.origin}/reset-password`,
-      });
-
-      if (error) {
-        addToast(error.message, 'error');
-      } else {
-        addToast('Password reset link sent! Check your inbox.', 'success');
-      }
-    } catch (err: any) {
-      addToast(err.message || 'An error occurred', 'error');
-    } finally {
-      setLoading(false);
-    }
   };
+
 
   return (
     <div className="w-full max-w-md mx-auto relative py-12">
