@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+
+<html dir="rtl" lang="ar"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Child's Progress - Parent Portal</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;700;800;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "on-tertiary-fixed": "#00210c",
+                      "on-primary-fixed": "#00164e",
+                      "error-container": "#ffdad6",
+                      "on-secondary-container": "#6e5c00",
+                      "surface-container-high": "#e8e7f2",
+                      "on-tertiary-fixed-variant": "#005227",
+                      "on-tertiary-container": "#e2ffe3",
+                      "surface-container-low": "#f3f2fd",
+                      "primary-fixed-dim": "#b6c4ff",
+                      "on-secondary-fixed": "#221b00",
+                      "primary": "#214fc7",
+                      "on-primary-container": "#f8f7ff",
+                      "primary-container": "#4169e1",
+                      "on-secondary": "#ffffff",
+                      "on-secondary-fixed-variant": "#544600",
+                      "on-error-container": "#93000a",
+                      "on-surface-variant": "#434654",
+                      "error": "#ba1a1a",
+                      "surface-container-highest": "#e2e1ec",
+                      "surface-container": "#ededf7",
+                      "surface-container-lowest": "#ffffff",
+                      "inverse-surface": "#2f3038",
+                      "outline-variant": "#c4c5d6",
+                      "tertiary-container": "#008342",
+                      "inverse-primary": "#b6c4ff",
+                      "secondary": "#705d00",
+                      "background": "#faf8ff",
+                      "tertiary-fixed": "#83fba5",
+                      "inverse-on-surface": "#f0f0fa",
+                      "surface-bright": "#faf8ff",
+                      "on-error": "#ffffff",
+                      "surface": "#faf8ff",
+                      "secondary-container": "#fcd400",
+                      "primary-fixed": "#dce1ff",
+                      "on-tertiary": "#ffffff",
+                      "secondary-fixed-dim": "#e9c400",
+                      "tertiary-fixed-dim": "#66dd8b",
+                      "on-primary-fixed-variant": "#003baf",
+                      "secondary-fixed": "#ffe16d",
+                      "outline": "#747685",
+                      "tertiary": "#006732",
+                      "on-background": "#1a1b23",
+                      "surface-variant": "#e2e1ec",
+                      "surface-dim": "#d9d9e3",
+                      "on-primary": "#ffffff",
+                      "on-surface": "#1a1b23",
+                      "surface-tint": "#2854cc"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.25rem",
+                      "lg": "0.5rem",
+                      "xl": "0.75rem",
+                      "full": "9999px"
+              },
+              "spacing": {
+                      "unit": "8px",
+                      "margin-desktop": "48px",
+                      "student-gap": "32px",
+                      "margin-mobile": "16px",
+                      "gutter": "24px",
+                      "admin-gap": "12px"
+              },
+              "fontFamily": {
+                      "headline-md": ["Be Vietnam Pro"],
+                      "body-lg": ["Be Vietnam Pro"],
+                      "display-lg": ["Be Vietnam Pro"],
+                      "student-hero": ["Be Vietnam Pro"],
+                      "display-lg-mobile": ["Be Vietnam Pro"],
+                      "label-caps": ["Be Vietnam Pro"],
+                      "body-md": ["Be Vietnam Pro"]
+              },
+              "fontSize": {
+                      "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "700"}],
+                      "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
+                      "display-lg": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "800"}],
+                      "student-hero": ["28px", {"lineHeight": "34px", "fontWeight": "900"}],
+                      "display-lg-mobile": ["32px", {"lineHeight": "40px", "fontWeight": "800"}],
+                      "label-caps": ["12px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "700"}],
+                      "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}]
+              }
+            }
+          }
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .icon-filled {
+            font-variation-settings: 'FILL' 1;
+        }
+        
+        @keyframes shimmer {
+            0% { transform: translateX(100%); }
+            100% { transform: translateX(-100%); }
+        }
+        .animate-shimmer {
+            animation: shimmer 3s infinite linear;
+        }
+
+        .level-2-card {
+            box-shadow: 0px 4px 20px rgba(33, 79, 199, 0.04);
+        }
+
+        .progress-ring__circle {
+            transition: stroke-dashoffset 0.35s;
+            transform: rotate(-90deg);
+            transform-origin: 50% 50%;
+        }
+    </style>
+</head>
+<body class="bg-background text-on-background font-body-md text-body-md antialiased min-h-screen relative overflow-x-hidden">
+<!-- TopAppBar -->
+<header class="fixed z-50 bg-surface dark:bg-on-background shadow-md docked full-width top-0 flex justify-between items-center w-full px-margin-mobile md:px-margin-desktop py-unit max-w-full">
+<div class="flex items-center gap-4">
+<span class="font-student-hero text-student-hero text-primary dark:text-primary-fixed-dim">Coptic Learn</span>
+</div>
+<div class="flex items-center gap-4">
+<button class="text-on-surface-variant dark:text-outline-variant hover:bg-primary/5 transition-colors p-2 rounded-full hidden md:flex items-center justify-center active:scale-95 duration-100">
+<span class="material-symbols-outlined">star</span>
+</button>
+<button class="text-on-surface-variant dark:text-outline-variant hover:bg-primary/5 transition-colors p-2 rounded-full hidden md:flex items-center justify-center active:scale-95 duration-100">
+<span class="material-symbols-outlined">database</span>
+</button>
+<button class="text-on-surface-variant dark:text-outline-variant hover:bg-primary/5 transition-colors p-2 rounded-full items-center justify-center active:scale-95 duration-100 flex">
+<span class="material-symbols-outlined">bolt</span>
+</button>
+<img alt="Student avatar" class="w-10 h-10 rounded-full border border-outline-variant ml-2 object-cover" data-alt="A small, circular digital avatar of a young student used for profile identification in a header. The style is clean, modern, and perfectly suited for a top navigation bar in a light-mode educational application." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAHtKyzo2SzRLqBK-bXYxDfypJftHxQOq5e5XbfIUks18rA2_OV3ayFg2189zlE1Jg9EckFKAh8U8yjhCqHswrQtp5E4o5VvBzVbYuJu4A3h8YgPuihlpB7jGb9RFlC-ZG3bwzh1LxaYho_lJM1KLBPvHzCR4cE4aPqA_YmqLAqspB1aZ6QOOHcJN3-EfPXcPOmYhIFG-bmsSxiEeHtysRNj0ewxJ_oVnYuR9bhALkjlfmlIWTwJqGk"/>
+</div>
+</header>
+<!-- SideNavBar (Desktop) -->
+<nav class="hidden md:flex flex-col h-full bg-surface-container-low dark:bg-inverse-surface border-r border-outline-variant dark:border-outline py-student-gap px-admin-gap fixed left-0 w-64 z-40 top-0 pt-[80px]" style="border-right-width: 0; border-left-width: 1px;">
+<div class="mb-8 px-4 flex flex-col items-center text-center">
+<img alt="Clergy profile" class="w-16 h-16 rounded-full border-2 border-primary-container mb-3 object-cover" data-alt="A professional circular avatar portrait of clergy personnel, featuring a warm and welcoming expression. The lighting is soft and corporate-modern, suitable for an administrative portal interface in an ecclesial setting." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCWnBZELJJzW28EnSFDw4Xoj7Lz6nzKoVx4hqrUjJOwl-Z1LUUuTqEhGPD7k03IdJc7ilfudoQOTNu94KL42zynoaLGX6tpB9hi67yXfHfXDZDaNevRdO7mhH1foYFAt78MPkO8AP18eXH8GP4-fy03AB92s97UBttbiuqjLpESiz7ByKkOO7k_-zyOcF8JssQcJFGUyitvrv41lDr35G2qCkNEJIjWCsoYcMIADz7KgYsn7J-GDePp"/>
+<h2 class="font-headline-md text-headline-md text-primary">Admin Portal</h2>
+<p class="font-label-caps text-label-caps text-on-surface-variant mt-1">St. Mark Diocese</p>
+</div>
+<ul class="flex flex-col gap-2 flex-grow">
+<li>
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg bg-primary/10 text-primary dark:text-primary-fixed-dim font-bold border-r-4 border-primary hover:bg-surface-container-high dark:hover:bg-surface-variant hover:translate-x-1 transition-transform" href="#" style="border-right-width: 0; border-left-width: 4px;">
+<span class="material-symbols-outlined icon-filled">dashboard</span>
+<span class="font-label-caps text-label-caps">Dashboard</span>
+</a>
+</li>
+<li>
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant dark:text-outline-variant hover:bg-surface-container-high dark:hover:bg-surface-variant hover:translate-x-1 transition-transform" href="#">
+<span class="material-symbols-outlined">rocket_launch</span>
+<span class="font-label-caps text-label-caps">Missions</span>
+</a>
+</li>
+<li>
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant dark:text-outline-variant hover:bg-surface-container-high dark:hover:bg-surface-variant hover:translate-x-1 transition-transform" href="#">
+<span class="material-symbols-outlined">auto_stories</span>
+<span class="font-label-caps text-label-caps">Library</span>
+</a>
+</li>
+<li>
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant dark:text-outline-variant hover:bg-surface-container-high dark:hover:bg-surface-variant hover:translate-x-1 transition-transform" href="#">
+<span class="material-symbols-outlined">groups</span>
+<span class="font-label-caps text-label-caps">Community</span>
+</a>
+</li>
+<li>
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant dark:text-outline-variant hover:bg-surface-container-high dark:hover:bg-surface-variant hover:translate-x-1 transition-transform" href="#">
+<span class="material-symbols-outlined">settings</span>
+<span class="font-label-caps text-label-caps">Settings</span>
+</a>
+</li>
+</ul>
+<div class="mt-auto pt-4">
+<button class="w-full bg-primary hover:bg-primary-container text-on-primary font-label-caps text-label-caps py-3 rounded-lg transition-colors shadow-sm">
+                Daily Mission
+            </button>
+</div>
+</nav>
+<!-- BottomNavBar (Mobile) -->
+<nav class="md:hidden fixed bottom-0 left-0 w-full z-50 flex justify-around items-end px-4 pb-4 h-20 bg-surface/80 dark:bg-on-background/80 backdrop-blur-md rounded-t-xl shadow-[0_-4px_20px_rgba(0,0,0,0.05)] shadow-lg">
+<a class="flex flex-col items-center justify-center bg-primary-container text-on-primary-container rounded-full p-2 scale-110 -translate-y-2 active:scale-90 transition-all duration-300 ease-out w-16" href="#">
+<span class="material-symbols-outlined icon-filled">home</span>
+<span class="font-label-caps text-label-caps-mobile mt-1">Home</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant dark:text-outline-variant p-2 active:scale-90 transition-all duration-300 ease-out w-16" href="#">
+<span class="material-symbols-outlined">menu_book</span>
+<span class="font-label-caps text-label-caps-mobile mt-1">Lessons</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant dark:text-outline-variant p-2 active:scale-90 transition-all duration-300 ease-out w-16" href="#">
+<span class="material-symbols-outlined">qr_code_scanner</span>
+<span class="font-label-caps text-label-caps-mobile mt-1">Scan</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant dark:text-outline-variant p-2 active:scale-90 transition-all duration-300 ease-out w-16" href="#">
+<span class="material-symbols-outlined">redeem</span>
+<span class="font-label-caps text-label-caps-mobile mt-1">Gifts</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant dark:text-outline-variant p-2 active:scale-90 transition-all duration-300 ease-out w-16" href="#">
+<span class="material-symbols-outlined">person</span>
+<span class="font-label-caps text-label-caps-mobile mt-1">Profile</span>
+</a>
+</nav>
+<!-- Main Content Area -->
+<main class="pt-[88px] pb-[100px] md:pb-gutter md:pl-64 w-full">
+<div class="px-margin-mobile md:px-margin-desktop py-gutter max-w-7xl mx-auto">
+<!-- Page Header -->
+<header class="mb-student-gap">
+<h1 class="font-display-lg-mobile text-display-lg-mobile md:font-display-lg md:text-display-lg text-primary">تقدم الطفل</h1>
+<p class="font-body-lg text-body-lg text-on-surface-variant mt-2">بوابة الوالدين - تتبع نمو طفلك الروحي والتعليمي</p>
+</header>
+<!-- Bento Grid Layout -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-gutter">
+<!-- Child Overview Card (Span 8) -->
+<div class="lg:col-span-8 bg-surface rounded-xl level-2-card p-gutter flex flex-col sm:flex-row items-center gap-student-gap relative overflow-hidden border border-outline-variant/30">
+<div class="relative shrink-0">
+<img alt="Child Portrait" class="w-32 h-32 rounded-full border-4 border-surface shadow-md object-cover z-10 relative" data-alt="A highly vibrant and engaging digital portrait of a young Coptic student, rendered with friendly, expressive features. The image uses a modern light-mode aesthetic with soft, off-white background and bright primary color accents. The character is smiling, creating a warm, welcoming vibe suitable for a prominent dashboard avatar." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCzdCPOHS5-QY99ydKnfmqskCUPYVO_3-Jjr7SCbf0hlpg-mKHunOO_43EURIVcyTmK3cZ77X4ScC93huB1Thg0jmqI3r0j6927ZPNdfy4PV9txlgfMdrtETre7iTRWfznZQqmk_KLH33tAle0honxKKcGDdjuCnQKKxWAiVA81GpnRo5w0VNNjdYuzgSj-oWZxqu-uVED79FxAvCpTWm7Ep0dtjYxFanG9FAdlT4WE-O4umMzDRiAQ"/>
+<div class="absolute -bottom-2 -right-2 bg-secondary-container text-on-secondary-container font-label-caps text-label-caps px-3 py-1 rounded-full shadow-sm z-20">
+                            مستوى ٤
+                        </div>
+</div>
+<div class="flex-grow w-full">
+<div class="flex justify-between items-end mb-2">
+<div>
+<h3 class="font-headline-md text-headline-md text-on-surface mb-1">يوسف ميخائيل</h3>
+<p class="font-body-md text-body-md text-on-surface-variant">مستكشف الكتاب المقدس</p>
+</div>
+<div class="text-right">
+<span class="font-student-hero text-student-hero text-primary">2,450</span>
+<span class="font-label-caps text-label-caps text-on-surface-variant ml-1">نقاط الخبرة (XP)</span>
+</div>
+</div>
+<!-- XP Bar -->
+<div class="w-full h-6 bg-surface-variant rounded-full mt-4 relative overflow-hidden border-2 border-surface shadow-inner">
+<div class="absolute top-0 right-0 h-full bg-[#FFD700] rounded-full transition-all duration-1000 ease-out" style="width: 75%;">
+<div class="absolute inset-0 bg-gradient-to-r from-transparent via-white/40 to-transparent w-full h-full animate-shimmer"></div>
+</div>
+</div>
+<div class="flex justify-between mt-2 font-label-caps text-label-caps text-outline">
+<span>المستوى الحالي</span>
+<span>550 نقطة للوصول للمستوى ٥</span>
+</div>
+</div>
+</div>
+<!-- Progress Rings (Span 4) -->
+<div class="lg:col-span-4 bg-surface rounded-xl level-2-card p-gutter border border-outline-variant/30 flex flex-col justify-center">
+<h3 class="font-headline-md text-headline-md text-on-surface mb-6 text-center">نظرة عامة على التقدم</h3>
+<div class="flex justify-around items-center">
+<!-- Ring 1 -->
+<div class="flex flex-col items-center">
+<div class="relative w-16 h-16">
+<svg class="w-full h-full" viewbox="0 0 100 100">
+<circle class="text-surface-variant stroke-current" cx="50" cy="50" fill="transparent" r="40" stroke-width="8"></circle>
+<circle class="text-primary stroke-current progress-ring__circle" cx="50" cy="50" fill="transparent" r="40" stroke-dasharray="251.2" stroke-dashoffset="62.8" stroke-linecap="round" stroke-width="8"></circle> <!-- 75% -->
+</svg>
+<div class="absolute inset-0 flex items-center justify-center">
+<span class="font-label-caps text-label-caps text-primary font-bold">75%</span>
+</div>
+</div>
+<span class="font-label-caps text-label-caps text-on-surface-variant mt-2">القراءة</span>
+</div>
+<!-- Ring 2 -->
+<div class="flex flex-col items-center">
+<div class="relative w-16 h-16">
+<svg class="w-full h-full" viewbox="0 0 100 100">
+<circle class="text-surface-variant stroke-current" cx="50" cy="50" fill="transparent" r="40" stroke-width="8"></circle>
+<circle class="text-tertiary-container stroke-current progress-ring__circle" cx="50" cy="50" fill="transparent" r="40" stroke-dasharray="251.2" stroke-dashoffset="25.12" stroke-linecap="round" stroke-width="8"></circle> <!-- 90% -->
+</svg>
+<div class="absolute inset-0 flex items-center justify-center">
+<span class="font-label-caps text-label-caps text-tertiary-container font-bold">90%</span>
+</div>
+</div>
+<span class="font-label-caps text-label-caps text-on-surface-variant mt-2">الدروس</span>
+</div>
+<!-- Ring 3 -->
+<div class="flex flex-col items-center">
+<div class="relative w-16 h-16">
+<svg class="w-full h-full" viewbox="0 0 100 100">
+<circle class="text-surface-variant stroke-current" cx="50" cy="50" fill="transparent" r="40" stroke-width="8"></circle>
+<circle class="text-secondary-container stroke-current progress-ring__circle" cx="50" cy="50" fill="transparent" r="40" stroke-dasharray="251.2" stroke-dashoffset="100.48" stroke-linecap="round" stroke-width="8"></circle> <!-- 60% -->
+</svg>
+<div class="absolute inset-0 flex items-center justify-center">
+<span class="font-label-caps text-label-caps text-secondary font-bold">60%</span>
+</div>
+</div>
+<span class="font-label-caps text-label-caps text-on-surface-variant mt-2">الاختبارات</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</main>
+</body></html>

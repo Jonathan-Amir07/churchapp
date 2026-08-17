@@ -1,0 +1,610 @@
+@import "tailwindcss";
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+/* ============================================
+   JoyfulPath — Vibrant Faith Explorer Design System
+   ============================================ */
+
+@theme inline {
+  /* --- Primary (Royal Blue) — Navigation, core actions, trust --- */
+  --color-primary: #1B3A6B;
+  --color-primary-container: #2A5298;
+  --color-primary-fixed: #D9E4FA;
+  --color-primary-fixed-dim: #A6C0F1;
+  --color-on-primary: #ffffff;
+  --color-on-primary-container: #ffffff;
+  --color-on-primary-fixed: #0C1E3C;
+  --color-on-primary-fixed-variant: #122B57;
+  --color-inverse-primary: #86A8E7;
+
+  /* --- Secondary (Gold) — Achievements, XP, rewards --- */
+  --color-secondary: #C9A84C;
+  --color-secondary-container: #DABF6B;
+  --color-secondary-fixed: #FAF5E8;
+  --color-secondary-fixed-dim: #F0E1B8;
+  --color-on-secondary: #ffffff;
+  --color-on-secondary-container: #473913;
+  --color-on-secondary-fixed: #2C2209;
+  --color-on-secondary-fixed-variant: #5E4C19;
+
+  /* --- Tertiary (Deep Red) — Special/Accent --- */
+  --color-tertiary: #8B1A1A;
+  --color-tertiary-container: #B22222;
+  --color-tertiary-fixed: #FAD6D6;
+  --color-tertiary-fixed-dim: #F29E9E;
+  --color-on-tertiary: #ffffff;
+  --color-on-tertiary-container: #ffffff;
+  --color-on-tertiary-fixed: #410707;
+  --color-on-tertiary-fixed-variant: #640F0F;
+
+  /* --- Error --- */
+  --color-error: #ba1a1a;
+  --color-error-container: #ffdad6;
+  --color-on-error: #ffffff;
+  --color-on-error-container: #93000a;
+
+  /* --- Surfaces --- */
+  --color-surface: #f7f9fb;
+  --color-surface-dim: #d8dadc;
+  --color-surface-bright: #f7f9fb;
+  --color-surface-container-lowest: #ffffff;
+  --color-surface-container-low: #f2f4f6;
+  --color-surface-container: #eceef0;
+  --color-surface-container-high: #e6e8ea;
+  --color-surface-container-highest: #e0e3e5;
+  --color-on-surface: #191c1e;
+  --color-on-surface-variant: #424754;
+  --color-inverse-surface: #2d3133;
+  --color-inverse-on-surface: #eff1f3;
+  --color-surface-tint: #005ac2;
+  --color-surface-variant: #e0e3e5;
+
+  /* --- Success (Green) --- */
+  --color-success: #16a34a;
+  --color-success-container: #dcfce7;
+  --color-on-success: #ffffff;
+  --color-on-success-container: #14532d;
+
+  /* --- Warning (Amber) --- */
+  --color-warning: #d97706;
+  --color-warning-container: #fef3c7;
+  --color-on-warning: #ffffff;
+
+  /* --- Outline --- */
+  --color-outline: #727785;
+  --color-outline-variant: #c2c6d6;
+
+  /* --- Background --- */
+  --color-background: #f7f9fb;
+  --color-on-background: #191c1e;
+
+  /* --- Typography --- */
+  --font-sans: var(--font-sans-en), var(--font-sans-ar), system-ui, sans-serif;
+
+  /* --- Border Radius (Extreme Roundedness) --- */
+  --radius-sm: 0.25rem;
+  --radius-md: 0.5rem;
+  --radius-lg: 0.75rem;
+  --radius-xl: 1rem;
+  --radius-2xl: 1.5rem;
+  --radius-full: 9999px;
+
+  /* --- Shadows (Ambient Soft, Primary-tinted) --- */
+  --shadow-card: 0 4px 12px rgba(0, 88, 190, 0.08);
+  --shadow-card-hover: 0 8px 24px rgba(0, 88, 190, 0.14);
+  --shadow-elevated: 0 12px 36px rgba(0, 88, 190, 0.16);
+  --shadow-tactile: 0 4px 0 0 #004395;
+  --shadow-tactile-active: 0 2px 0 0 #004395;
+
+  /* --- Animations --- */
+  --animate-float: float 6s ease-in-out infinite;
+  --animate-pulse-soft: pulse-soft 2s ease-in-out infinite;
+  --animate-slide-up: slide-up 0.4s ease-out;
+  --animate-slide-in-right: slide-in-right 0.3s ease-out;
+  --animate-scale-in: scale-in 0.3s ease-out;
+  --animate-shimmer: shimmer 2s linear infinite;
+  --animate-celebrate: celebrate 0.6s ease-out;
+  --animate-bounce-in: bounce-in 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+  --animate-xp-burst: xp-burst 1s ease-out;
+  --animate-stagger-fade: stagger-fade-in 0.5s ease-out both;
+  --animate-glow-pulse: glow-pulse 2s ease-in-out infinite;
+}
+
+/* ============================================
+   Keyframes
+   ============================================ */
+
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+}
+
+@keyframes pulse-soft {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.7; }
+}
+
+@keyframes slide-up {
+  from { transform: translateY(16px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+@keyframes slide-in-right {
+  from { transform: translateX(16px); opacity: 0; }
+  to { transform: translateX(0); opacity: 1; }
+}
+
+@keyframes scale-in {
+  from { transform: scale(0.9); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+@keyframes celebrate {
+  0% { transform: scale(0); opacity: 0; }
+  50% { transform: scale(1.2); opacity: 1; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+@keyframes bounce-in {
+  0% { transform: scale(0); }
+  50% { transform: scale(1.15); }
+  70% { transform: scale(0.95); }
+  100% { transform: scale(1); }
+}
+
+@keyframes xp-burst {
+  0% { transform: scale(0.8); opacity: 0; filter: drop-shadow(0 0 0px var(--color-secondary)); }
+  50% { transform: scale(1.3); opacity: 1; filter: drop-shadow(0 0 20px var(--color-secondary)); }
+  100% { transform: scale(1); opacity: 1; filter: drop-shadow(0 0 5px var(--color-secondary)); }
+}
+
+@keyframes spin-slow {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+@keyframes stagger-fade-in {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes glow-pulse {
+  0%, 100% { filter: drop-shadow(0 0 4px rgba(201, 168, 76, 0.3)); }
+  50% { filter: drop-shadow(0 0 12px rgba(201, 168, 76, 0.6)); }
+}
+
+/* ============================================
+   Base Styles
+   ============================================ */
+
+html {
+  scroll-behavior: smooth;
+  background: var(--color-background);
+  color: var(--color-on-surface);
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+body {
+  background: var(--color-background);
+  color: var(--color-on-surface);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* RTL Support */
+html[dir="rtl"] {
+  font-family: var(--font-sans-ar), "Cairo", "Inter", system-ui, sans-serif;
+}
+
+/* ============================================
+   Tactile Button Styles (3D Push Effect)
+   ============================================ */
+
+.btn-tactile {
+  box-shadow: var(--shadow-tactile);
+  transition: all 0.1s ease;
+  position: relative;
+}
+
+.btn-tactile:hover {
+  filter: brightness(1.05);
+}
+
+.btn-tactile:active {
+  transform: translateY(2px);
+  box-shadow: var(--shadow-tactile-active);
+}
+
+.btn-tactile-secondary {
+  box-shadow: 0 4px 0 0 #653e00;
+}
+
+.btn-tactile-secondary:active {
+  transform: translateY(2px);
+  box-shadow: 0 2px 0 0 #653e00;
+}
+
+.btn-tactile-success {
+  box-shadow: 0 4px 0 0 #005236;
+}
+
+.btn-tactile-success:active {
+  transform: translateY(2px);
+  box-shadow: 0 2px 0 0 #005236;
+}
+
+/* ============================================
+   Card Styles
+   ============================================ */
+
+.card {
+  background: var(--color-surface-container-lowest);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-card);
+  border: 1px solid var(--color-outline-variant);
+  transition: box-shadow 0.2s ease, transform 0.2s ease;
+}
+
+.card-interactive:hover {
+  box-shadow: var(--shadow-card-hover);
+  transform: translateY(-2px);
+}
+
+.card-elevated {
+  box-shadow: var(--shadow-elevated);
+}
+
+/* ============================================
+   XP Progress Bar
+   ============================================ */
+
+.xp-bar-track {
+  background: var(--color-surface-container-high);
+  border-radius: var(--radius-full);
+  height: 12px;
+  overflow: hidden;
+}
+
+.xp-bar-fill {
+  height: 100%;
+  border-radius: var(--radius-full);
+  background: linear-gradient(90deg, var(--color-primary), var(--color-primary-container));
+  position: relative;
+  transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.xp-bar-fill::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 50%;
+  background: linear-gradient(180deg, rgba(255,255,255,0.25), transparent);
+  border-radius: var(--radius-full) var(--radius-full) 0 0;
+}
+
+/* ============================================
+   Badge Styles
+   ============================================ */
+
+.badge-icon {
+  border: 3px solid #f59e0b;
+  border-radius: var(--radius-full);
+  padding: 8px;
+  background: var(--color-surface-container-lowest);
+}
+
+.badge-icon-locked {
+  border-color: var(--color-outline-variant);
+  opacity: 0.5;
+  filter: grayscale(1);
+}
+
+/* ============================================
+   Speech Bubble (Instructor Tips)
+   ============================================ */
+
+.speech-bubble {
+  position: relative;
+  background: var(--color-surface-container-low);
+  border-radius: var(--radius-xl);
+  padding: 16px 20px;
+}
+
+.speech-bubble::after {
+  content: '';
+  position: absolute;
+  bottom: -10px;
+  left: 24px;
+  width: 0;
+  height: 0;
+  border-left: 10px solid transparent;
+  border-right: 10px solid transparent;
+  border-top: 10px solid var(--color-surface-container-low);
+}
+
+html[dir="rtl"] .speech-bubble::after {
+  left: auto;
+  right: 24px;
+}
+
+/* ============================================
+   Scrollbar Styling
+   ============================================ */
+
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--color-outline-variant);
+  border-radius: var(--radius-full);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-outline);
+}
+
+/* ============================================
+   Glass Morphism Utility
+   ============================================ */
+
+.glass {
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+html.dark .glass {
+  background: rgba(17, 20, 22, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+/* ============================================
+   Stagger Animation Helper
+   ============================================ */
+
+.stagger-item { animation: stagger-fade-in 0.5s ease-out both; }
+.stagger-item:nth-child(1) { animation-delay: 0ms; }
+.stagger-item:nth-child(2) { animation-delay: 60ms; }
+.stagger-item:nth-child(3) { animation-delay: 120ms; }
+.stagger-item:nth-child(4) { animation-delay: 180ms; }
+.stagger-item:nth-child(5) { animation-delay: 240ms; }
+.stagger-item:nth-child(6) { animation-delay: 300ms; }
+.stagger-item:nth-child(7) { animation-delay: 360ms; }
+.stagger-item:nth-child(8) { animation-delay: 420ms; }
+
+/* ============================================
+   Gamification Glow
+   ============================================ */
+
+.glow-gold {
+  animation: glow-pulse 2s ease-in-out infinite;
+}
+
+/* ============================================
+   Patterns and Ornaments
+   ============================================ */
+
+.bg-dot-pattern {
+  background-image: radial-gradient(var(--color-primary-fixed) 1.5px, transparent 1.5px);
+  background-size: 32px 32px;
+}
+
+.bg-coptic-pattern {
+  background-image: url("data:image/svg+xml,%3Csvg width='40' height='40' viewBox='0 0 40 40' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M20 0v40m-20-20h40M15 15h10v10H15z' stroke='%23C9A84C' stroke-width='0.5' fill='none' opacity='0.2'/%3E%3C/svg%3E");
+}
+
+.coptic-divider {
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--color-secondary), transparent);
+  margin: 1rem 0;
+}
+
+/* ============================================
+   Focus Styles (Accessibility)
+   ============================================ */
+
+*:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+  border-radius: var(--radius-sm);
+}
+
+/* ============================================
+   Selection
+   ============================================ */
+
+::selection {
+  background: var(--color-primary-fixed);
+  color: var(--color-on-primary-fixed);
+}
+
+/* ============================================
+   Dark Mode Theme
+   ============================================ */
+
+html.dark {
+  --color-primary: #adc6ff;
+  --color-primary-container: #004395;
+  --color-primary-fixed: #d8e2ff;
+  --color-primary-fixed-dim: #adc6ff;
+  --color-on-primary: #002e6a;
+  --color-on-primary-container: #d8e2ff;
+  --color-on-primary-fixed: #001a42;
+  --color-on-primary-fixed-variant: #004395;
+  --color-inverse-primary: #0058be;
+
+  --color-secondary: #ffb95f;
+  --color-secondary-container: #653e00;
+  --color-secondary-fixed: #ffddb8;
+  --color-secondary-fixed-dim: #ffb95f;
+  --color-on-secondary: #462a00;
+  --color-on-secondary-container: #ffddb8;
+  --color-on-secondary-fixed: #2a1700;
+  --color-on-secondary-fixed-variant: #653e00;
+
+  --color-tertiary: #ffb4ab;
+  --color-tertiary-container: #93000a;
+  --color-tertiary-fixed: #ffdad6;
+  --color-tertiary-fixed-dim: #ffb4ab;
+  --color-on-tertiary: #690005;
+  --color-on-tertiary-container: #ffdad6;
+  --color-on-tertiary-fixed: #410002;
+  --color-on-tertiary-fixed-variant: #93000a;
+
+
+  --color-error: #ffb4ab;
+  --color-error-container: #93000a;
+  --color-on-error: #690005;
+  --color-on-error-container: #ffdad6;
+
+  --color-surface: #111416;
+  --color-surface-dim: #111416;
+  --color-surface-bright: #373a3c;
+  --color-surface-container-lowest: #0c0e10;
+  --color-surface-container-low: #191c1e;
+  --color-surface-container: #1d2022;
+  --color-surface-container-high: #282a2d;
+  --color-surface-container-highest: #333537;
+  --color-on-surface: #e1e3e5;
+  --color-on-surface-variant: #c2c6d6;
+  --color-inverse-surface: #e1e3e5;
+  --color-inverse-on-surface: #2d3133;
+  --color-surface-tint: #adc6ff;
+  --color-surface-variant: #424754;
+
+  --color-outline: #8c9199;
+  --color-outline-variant: #424754;
+
+  --color-success: #4ade80;
+  --color-success-container: #052e16;
+  --color-on-success: #052e16;
+  --color-on-success-container: #bbf7d0;
+  --color-warning: #fbbf24;
+  --color-warning-container: #451a03;
+  --color-on-warning: #451a03;
+
+  --color-background: #111416;
+  --color-on-background: #e1e3e5;
+
+  --shadow-card: 0 4px 12px rgba(0, 0, 0, 0.3);
+  --shadow-card-hover: 0 8px 24px rgba(0, 0, 0, 0.4);
+  --shadow-elevated: 0 12px 36px rgba(0, 0, 0, 0.5);
+  --shadow-tactile: 0 4px 0 0 #002e6a;
+  --shadow-tactile-active: 0 2px 0 0 #002e6a;
+}
+
+
+/* Dark mode specific overrides */
+html.dark .badge-icon {
+  border-color: #d97706;
+}
+
+html.dark .bg-dot-pattern {
+  background-image: radial-gradient(rgba(173, 198, 255, 0.15) 1.5px, transparent 1.5px);
+}
+
+html.dark ::-webkit-scrollbar-thumb {
+  background: #424754;
+}
+
+html.dark ::-webkit-scrollbar-thumb:hover {
+  background: #8c9199;
+}
+
+html.dark ::selection {
+  background: rgba(173, 198, 255, 0.3);
+  color: #e1e3e5;
+}
+
+/* Dark mode toggle checkbox fix */
+html.dark input[type="checkbox"] {
+  border-color: var(--color-outline);
+}
+
+html.dark .btn-tactile {
+  box-shadow: 0 4px 0 0 #002e6a;
+}
+
+html.dark .btn-tactile-secondary {
+  box-shadow: 0 4px 0 0 #462a00;
+}
+
+html.dark .btn-tactile-success {
+  box-shadow: 0 4px 0 0 #003822;
+}
+
+/* ============================================
+   Custom Dark Mode Rules & Typography Overrides
+   ============================================ */
+
+/* Force page background and text color globally in dark mode */
+html.dark,
+html.dark body,
+html.dark .bg-background {
+  background-color: #111416 !important;
+  color: #e1e3e5 !important;
+}
+
+/* Force card background and border colors */
+html.dark .card {
+  background-color: #0c0e10 !important;
+  border-color: #282a2d !important;
+}
+
+/* Typography readability in dark mode */
+html.dark .card h1,
+html.dark .card h2,
+html.dark .card h3,
+html.dark .card h4,
+html.dark .card h5,
+html.dark .card h6 {
+  color: #e1e3e5 !important;
+}
+
+html.dark .card p,
+html.dark .card span {
+  color: #e1e3e5;
+}
+
+html.dark .card .text-on-surface {
+  color: #e1e3e5 !important;
+}
+
+html.dark .card .text-on-surface-variant {
+  color: #c2c6d6 !important;
+}
+
+/* Force progress bar track background in dark mode */
+html.dark .bg-surface-container-high,
+html.dark .progress-bar-track {
+  background-color: #282a2d !important;
+}
+
+/* Force progress bar track rounding & clipping */
+.progress-bar-track {
+  border-radius: 9999px !important;
+  overflow: hidden !important;
+  isolation: isolate !important;
+}
+
+/* Ensure rounded-full utility class behaves correctly */
+.rounded-full {
+  border-radius: 9999px !important;
+}

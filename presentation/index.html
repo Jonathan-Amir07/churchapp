@@ -1,0 +1,1951 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>JoyfulPath — Sunday School Gamified Platform Demo</title>
+  
+  <!-- Modern Typography -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <style>
+    /* ─── DESIGN SYSTEM & CORE STYLES ───────────────────────────────────────── */
+    :root {
+      --bg-dark: #0b0d19;
+      --bg-slate: rgba(22, 28, 45, 0.6);
+      --border-glow: rgba(99, 102, 241, 0.15);
+      --text-main: #f3f4f6;
+      --text-muted: #9ca3af;
+      --primary: #6366f1;
+      --primary-gradient: linear-gradient(135deg, #6366f1, #8b5cf6);
+      --secondary-gradient: linear-gradient(135deg, #3b82f6, #06b6d4);
+      --gold-gradient: linear-gradient(135deg, #fbbf24, #f59e0b);
+      --green-gradient: linear-gradient(135deg, #10b981, #059669);
+      --red-gradient: linear-gradient(135deg, #ef4444, #dc2626);
+      --font-heading: 'Outfit', 'Inter', sans-serif;
+      --font-body: 'Inter', sans-serif;
+      --transition-smooth: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: var(--bg-dark);
+      color: var(--text-main);
+      font-family: var(--font-body);
+      overflow: hidden;
+      height: 100vh;
+      display: flex;
+      user-select: none;
+    }
+
+    /* Ambient animated background grid & glows */
+    .ambient-bg {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: -1;
+      overflow: hidden;
+      background: radial-gradient(circle at 10% 20%, rgba(99, 102, 241, 0.08) 0%, transparent 40%),
+                  radial-gradient(circle at 90% 80%, rgba(139, 92, 246, 0.08) 0%, transparent 40%);
+    }
+
+    .ambient-glow-1 {
+      position: absolute;
+      top: 25%;
+      left: 20%;
+      width: 40vw;
+      height: 40vw;
+      border-radius: 50%;
+      background: var(--primary);
+      filter: blur(150px);
+      opacity: 0.05;
+      animation: float 20s infinite alternate;
+    }
+
+    .ambient-glow-2 {
+      position: absolute;
+      bottom: 20%;
+      right: 15%;
+      width: 35vw;
+      height: 35vw;
+      border-radius: 50%;
+      background: #8b5cf6;
+      filter: blur(130px);
+      opacity: 0.06;
+      animation: float 25s infinite alternate-reverse;
+    }
+
+    @keyframes float {
+      0% { transform: translate(0, 0) scale(1); }
+      100% { transform: translate(50px, -50px) scale(1.1); }
+    }
+
+    /* ─── LAYOUT STRUCTURE ───────────────────────────────────────────────────── */
+    
+    /* Collapsible Sidebar / Overview */
+    .sidebar {
+      width: 280px;
+      height: 100%;
+      background: rgba(13, 16, 30, 0.95);
+      border-right: 1px solid rgba(255, 255, 255, 0.08);
+      display: flex;
+      flex-direction: column;
+      transition: var(--transition-smooth);
+      z-index: 100;
+      flex-shrink: 0;
+    }
+
+    .sidebar.collapsed {
+      margin-left: -280px;
+    }
+
+    .sidebar-header {
+      padding: 24px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .logo-badge {
+      width: 36px;
+      height: 36px;
+      border-radius: 10px;
+      background: var(--primary-gradient);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-family: var(--font-heading);
+      box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+    }
+
+    .sidebar-title {
+      font-family: var(--font-heading);
+      font-size: 1.15rem;
+      font-weight: 700;
+      background: linear-gradient(to right, #ffffff, #d1d5db);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .slides-list {
+      flex: 1;
+      overflow-y: auto;
+      padding: 16px;
+      list-style: none;
+    }
+
+    .slides-list::-webkit-scrollbar {
+      width: 4px;
+    }
+    .slides-list::-webkit-scrollbar-thumb {
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 2px;
+    }
+
+    .slide-item {
+      padding: 12px 16px;
+      border-radius: 8px;
+      cursor: pointer;
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      color: var(--text-muted);
+      transition: all 0.2s ease;
+      font-size: 0.9rem;
+    }
+
+    .slide-item:hover {
+      background: rgba(255, 255, 255, 0.04);
+      color: var(--text-main);
+    }
+
+    .slide-item.active {
+      background: var(--primary-gradient);
+      color: #fff;
+      font-weight: 500;
+      box-shadow: 0 4px 12px rgba(99, 102, 241, 0.2);
+    }
+
+    .slide-item-num {
+      font-weight: 700;
+      font-size: 0.8rem;
+      opacity: 0.8;
+      width: 18px;
+    }
+
+    /* Main Presentation Window */
+    .presentation-container {
+      flex: 1;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+    }
+
+    /* Top Control Bar */
+    .top-bar {
+      padding: 20px 40px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      z-index: 50;
+    }
+
+    .toggle-sidebar-btn {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      color: var(--text-main);
+      padding: 8px 12px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-family: var(--font-body);
+      font-size: 0.85rem;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      transition: var(--transition-smooth);
+    }
+
+    .toggle-sidebar-btn:hover {
+      background: rgba(255, 255, 255, 0.1);
+      border-color: rgba(255, 255, 255, 0.2);
+    }
+
+    .slide-counter {
+      font-family: var(--font-heading);
+      font-weight: 500;
+      color: var(--text-muted);
+      font-size: 0.95rem;
+    }
+
+    /* Slide Stage */
+    .slides-stage {
+      flex: 1;
+      position: relative;
+      overflow: hidden;
+      margin: 0 40px 40px 40px;
+      border-radius: 20px;
+      background: var(--bg-slate);
+      border: 1px solid var(--border-glow);
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
+      backdrop-filter: blur(20px);
+    }
+
+    .slide-viewport {
+      width: 100%;
+      height: 100%;
+      position: relative;
+    }
+
+    .slide {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      opacity: 0;
+      pointer-events: none;
+      transform: scale(0.96) translateY(10px);
+      transition: opacity 0.5s cubic-bezier(0.16, 1, 0.3, 1),
+                  transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+      padding: 48px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      overflow-y: auto;
+    }
+
+    .slide.active {
+      opacity: 1;
+      pointer-events: auto;
+      transform: scale(1) translateY(0);
+    }
+
+    /* ─── SLIDE TYPOGRAPHY & BLOCKS ─────────────────────────────────────────── */
+    .slide-title-wrapper {
+      margin-bottom: 24px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .slide-icon {
+      font-size: 2rem;
+      color: var(--primary);
+      text-shadow: 0 0 15px rgba(99, 102, 241, 0.4);
+    }
+
+    .slide h2 {
+      font-family: var(--font-heading);
+      font-size: 2.2rem;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      background: linear-gradient(135deg, #ffffff 30%, #a5b4fc 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .slide p.subtitle {
+      font-size: 1.1rem;
+      color: var(--text-muted);
+      margin-top: -16px;
+      margin-bottom: 30px;
+      font-weight: 400;
+    }
+
+    .slide-content-grid {
+      display: grid;
+      gap: 24px;
+      align-items: center;
+      flex: 1;
+    }
+
+    .grid-2col {
+      grid-template-columns: 1.2fr 1fr;
+    }
+
+    .grid-3col {
+      grid-template-columns: repeat(3, 1fr);
+    }
+
+    .grid-4col {
+      grid-template-columns: repeat(4, 1fr);
+    }
+
+    /* Cards */
+    .glass-card {
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      border-radius: 16px;
+      padding: 24px;
+      transition: var(--transition-smooth);
+      height: 100%;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .glass-card:hover {
+      background: rgba(255, 255, 255, 0.04);
+      border-color: rgba(99, 102, 241, 0.2);
+      transform: translateY(-4px);
+      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.2);
+    }
+
+    .card-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+
+    .card-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 10px;
+      background: rgba(99, 102, 241, 0.1);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--primary);
+      font-size: 1.2rem;
+      font-weight: bold;
+    }
+
+    .card-title {
+      font-family: var(--font-heading);
+      font-weight: 700;
+      font-size: 1.1rem;
+      color: #fff;
+    }
+
+    .card-body {
+      font-size: 0.95rem;
+      color: var(--text-muted);
+      line-height: 1.6;
+    }
+
+    .card-body ul {
+      margin-left: 20px;
+      margin-top: 8px;
+    }
+
+    .card-body li {
+      margin-bottom: 6px;
+    }
+
+    /* Custom Bullet Lists */
+    .feature-list {
+      list-style: none;
+    }
+
+    .feature-list li {
+      position: relative;
+      padding-left: 28px;
+      margin-bottom: 14px;
+      font-size: 1.05rem;
+      line-height: 1.6;
+      color: var(--text-main);
+    }
+
+    .feature-list li::before {
+      content: "✓";
+      position: absolute;
+      left: 0;
+      top: 2px;
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background: rgba(16, 185, 129, 0.15);
+      color: #10b981;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.75rem;
+      font-weight: 800;
+    }
+
+    .feature-list.danger li::before {
+      content: "!";
+      background: rgba(239, 68, 68, 0.15);
+      color: #ef4444;
+      font-weight: bold;
+    }
+
+    /* ─── SLIDE SPECIFIC VIEWS ───────────────────────────────────────────────── */
+
+    /* Slide 1: Cover */
+    .cover-slide {
+      text-align: center;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .cover-badge {
+      background: rgba(99, 102, 241, 0.1);
+      border: 1px solid rgba(99, 102, 241, 0.3);
+      padding: 6px 16px;
+      border-radius: 20px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: #a5b4fc;
+      margin-bottom: 24px;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+    }
+
+    .cover-title {
+      font-size: 4.5rem;
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      line-height: 1;
+      margin-bottom: 12px;
+      background: linear-gradient(135deg, #ffffff 40%, #818cf8 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      font-family: var(--font-heading);
+    }
+
+    .cover-subtitle {
+      font-size: 1.6rem;
+      color: var(--text-muted);
+      max-width: 600px;
+      margin: 0 auto 40px auto;
+      line-height: 1.4;
+      font-weight: 300;
+    }
+
+    .cover-start-btn {
+      background: var(--primary-gradient);
+      color: white;
+      border: none;
+      padding: 16px 36px;
+      border-radius: 12px;
+      font-size: 1.1rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      box-shadow: 0 10px 25px rgba(99, 102, 241, 0.4);
+      transition: var(--transition-smooth);
+    }
+
+    .cover-start-btn:hover {
+      transform: scale(1.05);
+      box-shadow: 0 15px 35px rgba(99, 102, 241, 0.5);
+    }
+
+    /* Slide 2: Credentials Table & Interactive Copy */
+    .login-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 16px;
+    }
+
+    .login-card {
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      border-radius: 14px;
+      padding: 20px;
+      position: relative;
+      transition: var(--transition-smooth);
+    }
+
+    .login-card:hover {
+      border-color: rgba(99, 102, 241, 0.25);
+      background: rgba(255, 255, 255, 0.03);
+    }
+
+    .login-card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+    }
+
+    .login-role-badge {
+      font-size: 0.75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      padding: 4px 8px;
+      border-radius: 6px;
+      letter-spacing: 0.05em;
+    }
+
+    .role-student { background: rgba(99, 102, 241, 0.15); color: #818cf8; }
+    .role-parent { background: rgba(59, 130, 246, 0.15); color: #60a5fa; }
+    .role-instructor { background: rgba(251, 191, 36, 0.15); color: #fbbf24; }
+    .role-admin { background: rgba(245, 158, 11, 0.15); color: #f59e0b; }
+
+    .login-user-name {
+      font-family: var(--font-heading);
+      font-weight: 700;
+      color: #fff;
+    }
+
+    .login-detail-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+      background: rgba(0, 0, 0, 0.2);
+      padding: 10px 12px;
+      border-radius: 8px;
+      font-family: monospace;
+      font-size: 0.85rem;
+      border: 1px solid rgba(255, 255, 255, 0.03);
+    }
+
+    .copy-btn {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      color: var(--text-muted);
+      width: 28px;
+      height: 28px;
+      border-radius: 6px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s ease;
+    }
+
+    .copy-btn:hover {
+      background: var(--primary);
+      color: white;
+      border-color: var(--primary);
+    }
+
+    .copy-btn.copied {
+      background: #10b981;
+      color: white;
+      border-color: #10b981;
+    }
+
+    .mock-notice {
+      margin-top: 20px;
+      background: rgba(99, 102, 241, 0.05);
+      border: 1px solid rgba(99, 102, 241, 0.1);
+      padding: 12px 18px;
+      border-radius: 10px;
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      line-height: 1.5;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .mock-notice strong {
+      color: #a5b4fc;
+    }
+
+    /* Slide 4: Interactive Flow Script Player */
+    .flow-player {
+      display: grid;
+      grid-template-columns: 240px 1fr;
+      gap: 30px;
+      background: rgba(0, 0, 0, 0.15);
+      border: 1px solid rgba(255, 255, 255, 0.04);
+      border-radius: 16px;
+      padding: 24px;
+      min-height: 380px;
+      align-items: stretch;
+    }
+
+    .flow-steps-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      justify-content: center;
+    }
+
+    .flow-step-trigger {
+      padding: 14px 18px;
+      border-radius: 10px;
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      color: var(--text-muted);
+      font-family: var(--font-heading);
+      font-weight: 600;
+      font-size: 0.95rem;
+      cursor: pointer;
+      text-align: left;
+      transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .flow-step-trigger:hover {
+      background: rgba(255, 255, 255, 0.04);
+      color: var(--text-main);
+    }
+
+    .flow-step-trigger.active {
+      background: var(--primary-gradient);
+      color: white;
+      border-color: transparent;
+      box-shadow: 0 4px 15px rgba(99, 102, 241, 0.3);
+      transform: translateX(6px);
+    }
+
+    .flow-step-num {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.1);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.8rem;
+      font-weight: bold;
+    }
+
+    .flow-step-trigger.active .flow-step-num {
+      background: rgba(255, 255, 255, 0.2);
+    }
+
+    .flow-stage {
+      background: rgba(0, 0, 0, 0.2);
+      border: 1px solid rgba(255, 255, 255, 0.03);
+      border-radius: 12px;
+      padding: 30px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      position: relative;
+    }
+
+    .flow-pane {
+      display: none;
+      animation: fadeIn 0.4s ease forwards;
+    }
+
+    .flow-pane.active {
+      display: block;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .flow-actor-row {
+      display: flex;
+      justify-content: space-around;
+      margin-bottom: 40px;
+      position: relative;
+    }
+
+    .flow-actor-row::after {
+      content: "";
+      position: absolute;
+      top: 25px;
+      left: 10%;
+      width: 80%;
+      height: 2px;
+      border-bottom: 2px dashed rgba(255, 255, 255, 0.08);
+      z-index: 1;
+    }
+
+    .flow-actor {
+      position: relative;
+      z-index: 5;
+      background: rgba(13, 16, 30, 0.9);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      padding: 8px 16px;
+      border-radius: 8px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      transition: var(--transition-smooth);
+    }
+
+    .flow-actor.highlight {
+      border-color: var(--primary);
+      color: #fff;
+      box-shadow: 0 0 15px rgba(99, 102, 241, 0.25);
+      background: var(--primary-gradient);
+    }
+
+    .flow-action-box {
+      background: rgba(255, 255, 255, 0.03);
+      border-left: 4px solid var(--primary);
+      padding: 16px 20px;
+      border-radius: 0 10px 10px 0;
+      font-size: 1rem;
+      line-height: 1.6;
+    }
+
+    .flow-action-box h4 {
+      font-family: var(--font-heading);
+      color: #fff;
+      font-size: 1.15rem;
+      margin-bottom: 6px;
+    }
+
+    /* Sub-UI Mockups for Role breakdowns */
+    .mini-ui-mock {
+      background: rgba(0, 0, 0, 0.3);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      border-radius: 12px;
+      padding: 16px;
+      font-size: 0.8rem;
+    }
+
+    /* Student XP bar mockup */
+    .student-xp-bar-mock {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      margin-bottom: 12px;
+    }
+
+    .mock-bar-outer {
+      height: 8px;
+      width: 100%;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 4px;
+      overflow: hidden;
+    }
+
+    .mock-bar-inner {
+      height: 100%;
+      background: var(--primary-gradient);
+      border-radius: 4px;
+    }
+
+    /* Store item card mockup */
+    .store-card-mock {
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      border-radius: 8px;
+      padding: 10px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 10px;
+    }
+
+    .store-points-tag {
+      background: rgba(251, 191, 36, 0.15);
+      color: #fbbf24;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-weight: 700;
+    }
+
+    /* Sibling Selector Mockup */
+    .sibling-selector-mock {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+
+    .sibling-tab-mock {
+      flex: 1;
+      padding: 6px;
+      border-radius: 6px;
+      text-align: center;
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      cursor: pointer;
+    }
+
+    .sibling-tab-mock.active {
+      background: rgba(59, 130, 246, 0.15);
+      border-color: #3b82f6;
+      color: #fff;
+      font-weight: 600;
+    }
+
+    /* Attendance Calendar Mock */
+    .calendar-mock {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 4px;
+      text-align: center;
+      margin-top: 8px;
+    }
+
+    .cal-day-mock {
+      aspect-ratio: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 4px;
+      font-size: 0.7rem;
+      background: rgba(255, 255, 255, 0.02);
+    }
+
+    .cal-day-mock.present { background: rgba(16, 185, 129, 0.2); border: 1px solid #10b981; color: #10b981; }
+    .cal-day-mock.absent { background: rgba(239, 68, 68, 0.2); border: 1px solid #ef4444; color: #ef4444; }
+    .cal-day-mock.late { background: rgba(251, 191, 36, 0.2); border: 1px solid #fbbf24; color: #fbbf24; }
+
+    /* Roster Check-in Status Mock */
+    .roster-row-mock {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 6px 0;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+    }
+
+    .badge-present-mock {
+      background: #10b981;
+      color: #fff;
+      font-size: 0.65rem;
+      font-weight: 700;
+      padding: 2px 6px;
+      border-radius: 4px;
+      text-transform: uppercase;
+    }
+
+    /* Pure CSS Chart Bar Mockup */
+    .bar-chart-mock {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      height: 120px;
+      padding: 10px 20px 0 20px;
+      border-bottom: 2px solid rgba(255, 255, 255, 0.1);
+      margin-top: 15px;
+    }
+
+    .chart-bar-col {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+      width: 30px;
+    }
+
+    .chart-bar-pillar {
+      width: 100%;
+      border-radius: 4px 4px 0 0;
+      background: var(--primary-gradient);
+      transition: height 1s ease-out;
+    }
+
+    .bar-label {
+      font-size: 0.65rem;
+      color: var(--text-muted);
+    }
+
+    .chart-bar-pillar.sec {
+      background: var(--secondary-gradient);
+    }
+
+    /* Timeline Roadmap */
+    .timeline-mock {
+      position: relative;
+      padding-left: 30px;
+      margin-top: 15px;
+    }
+
+    .timeline-mock::after {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 9px;
+      height: 100%;
+      width: 2px;
+      background: rgba(255, 255, 255, 0.08);
+    }
+
+    .timeline-node {
+      position: relative;
+      margin-bottom: 20px;
+    }
+
+    .timeline-node::before {
+      content: "";
+      position: absolute;
+      left: -26px;
+      top: 4px;
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.2);
+      border: 2px solid var(--bg-dark);
+      z-index: 5;
+    }
+
+    .timeline-node.done::before {
+      background: #10b981;
+      box-shadow: 0 0 10px rgba(16, 185, 129, 0.5);
+    }
+
+    .timeline-node.active::before {
+      background: #3b82f6;
+      box-shadow: 0 0 10px rgba(59, 130, 246, 0.5);
+    }
+
+    .timeline-node-title {
+      font-weight: 600;
+      font-size: 0.9rem;
+      color: #fff;
+    }
+
+    .timeline-node-desc {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+    }
+
+    /* Alerts styling */
+    .alert-banner {
+      padding: 16px;
+      border-radius: 12px;
+      margin-bottom: 16px;
+      font-size: 0.95rem;
+      line-height: 1.5;
+    }
+
+    .alert-banner.info {
+      background: rgba(59, 130, 246, 0.05);
+      border: 1px solid rgba(59, 130, 246, 0.15);
+      color: #93c5fd;
+    }
+
+    .alert-banner.warning {
+      background: rgba(245, 158, 11, 0.05);
+      border: 1px solid rgba(245, 158, 11, 0.15);
+      color: #fde047;
+    }
+
+    /* ─── BOTTOM CONTROL CONTROLS ────────────────────────────────────────────── */
+    .bottom-bar {
+      padding: 0 40px 30px 40px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      z-index: 50;
+    }
+
+    .controls-nav {
+      display: flex;
+      gap: 16px;
+    }
+
+    .nav-btn {
+      width: 48px;
+      height: 48px;
+      border-radius: 12px;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      color: var(--text-main);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.2rem;
+      font-weight: bold;
+      transition: var(--transition-smooth);
+    }
+
+    .nav-btn:hover {
+      background: rgba(255, 255, 255, 0.08);
+      border-color: rgba(255, 255, 255, 0.2);
+      transform: translateY(-2px);
+    }
+
+    .nav-btn:active {
+      transform: translateY(0);
+    }
+
+    .btn-primary {
+      background: var(--primary-gradient);
+      border-color: transparent;
+      box-shadow: 0 4px 15px rgba(99, 102, 241, 0.2);
+    }
+
+    .btn-primary:hover {
+      background: var(--primary-gradient);
+      box-shadow: 0 6px 20px rgba(99, 102, 241, 0.3);
+    }
+
+    .extra-actions {
+      display: flex;
+      gap: 12px;
+    }
+
+    .action-btn {
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      color: var(--text-muted);
+      padding: 10px 16px;
+      border-radius: 10px;
+      font-size: 0.85rem;
+      font-weight: 500;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      transition: var(--transition-smooth);
+    }
+
+    .action-btn:hover {
+      background: rgba(255, 255, 255, 0.08);
+      color: var(--text-main);
+    }
+
+    /* Slide Progress Bar */
+    .progress-bar-container {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      height: 4px;
+      background: rgba(255, 255, 255, 0.05);
+    }
+
+    .progress-bar-fill {
+      height: 100%;
+      background: var(--primary-gradient);
+      width: 0%;
+      transition: width 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    /* Clipboard Pop Alert styling */
+    .copy-pop {
+      position: fixed;
+      bottom: 24px;
+      left: 50%;
+      transform: translateX(-50%) translateY(100px);
+      background: #10b981;
+      color: #fff;
+      padding: 12px 24px;
+      border-radius: 8px;
+      font-size: 0.9rem;
+      font-weight: 600;
+      box-shadow: 0 10px 25px rgba(16, 185, 129, 0.3);
+      z-index: 200;
+      transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+      pointer-events: none;
+    }
+
+    .copy-pop.show {
+      transform: translateX(-50%) translateY(0);
+    }
+
+    /* Helper utility classes */
+    .text-glow {
+      text-shadow: 0 0 10px rgba(99, 102, 241, 0.3);
+    }
+
+    .text-gold {
+      color: #fbbf24;
+    }
+
+    /* Responsive */
+    @media (max-width: 900px) {
+      body {
+        overflow-y: auto;
+        height: auto;
+      }
+      .sidebar {
+        display: none;
+      }
+      .slide-viewport {
+        height: auto;
+      }
+      .slide {
+        position: relative;
+        opacity: 1;
+        pointer-events: auto;
+        display: none;
+        padding: 24px;
+        transform: none !important;
+      }
+      .slide.active {
+        display: flex;
+      }
+      .slide-content-grid {
+        grid-template-columns: 1fr !important;
+      }
+      .flow-player {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Background lighting -->
+  <div class="ambient-bg">
+    <div class="ambient-glow-1"></div>
+    <div class="ambient-glow-2"></div>
+  </div>
+
+  <!-- Collapsible Left Navigation -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+      <div class="logo-badge">J</div>
+      <div class="sidebar-title">JoyfulPath Slides</div>
+    </div>
+    <ul class="slides-list" id="slides-list">
+      <!-- Items dynamically populated via JS -->
+    </ul>
+  </aside>
+
+  <!-- Main Slides Stage -->
+  <main class="presentation-container">
+    
+    <!-- Top HUD Bar -->
+    <header class="top-bar">
+      <button class="toggle-sidebar-btn" id="toggle-sidebar-btn" title="Toggle Slide Menu (Key: O)">
+        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16"/></svg>
+        Menu Outline
+      </button>
+      <div class="slide-counter" id="slide-counter">Slide 1 of 10</div>
+    </header>
+
+    <!-- Slide Content Box -->
+    <section class="slides-stage">
+      <div class="slide-viewport" id="slide-viewport">
+        
+        <!-- ─── SLIDE 1: COVER ─── -->
+        <div class="slide active cover-slide" data-title="Title Slide">
+          <div class="cover-badge">Sunday School Gamified Learning</div>
+          <h1 class="cover-title">JoyfulPath</h1>
+          <p class="cover-subtitle">Transforming education through healthy competition, positive reinforcement, and family tracking.</p>
+          <button class="cover-start-btn" onclick="goToSlide(1)">
+            Start Presentation
+            <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
+          </button>
+        </div>
+
+        <!-- ─── SLIDE 2: LOGINS ─── -->
+        <div class="slide" data-title="Demo Accounts">
+          <div class="slide-title-wrapper">
+            <span class="slide-icon">🔑</span>
+            <h2>Demo Login Accounts</h2>
+          </div>
+          <p class="subtitle">The app runs in offline <strong>Mock Database Mode</strong>. You can use <strong>any password</strong> to log in.</p>
+          
+          <div class="login-grid">
+            
+            <!-- Student 1 -->
+            <div class="login-card">
+              <div class="login-card-header">
+                <span class="login-role-badge role-student">Student (Primary)</span>
+                <span class="login-user-name">Jonathan Junior</span>
+              </div>
+              <div class="login-detail-row">
+                <span class="email-text">student@joyfulpath.org</span>
+                <button class="copy-btn" onclick="copyText('student@joyfulpath.org', this)" title="Copy Email">
+                  <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8 7v8a2 2 0 002 2h6M8 7V5a2 2 0 012-2h4.586a1 1 0 01.707.293l4.414 4.414a1 1 0 01.293.707V15a2 2 0 01-2 2h-2M8 7H6a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2v-2"/></svg>
+                </button>
+              </div>
+              <div class="card-body" style="font-size:0.8rem;">
+                Simulates student profile with <strong>1,250 XP</strong>, a <strong>5-day check-in streak</strong>, and points shop entries.
+              </div>
+            </div>
+
+            <!-- Student 2 -->
+            <div class="login-card">
+              <div class="login-card-header">
+                <span class="login-role-badge role-student">Student (Secondary)</span>
+                <span class="login-user-name">Mary Grace</span>
+              </div>
+              <div class="login-detail-row">
+                <span class="email-text">student2@joyfulpath.org</span>
+                <button class="copy-btn" onclick="copyText('student2@joyfulpath.org', this)" title="Copy Email">
+                  <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8 7v8a2 2 0 002 2h6M8 7V5a2 2 0 012-2h4.586a1 1 0 01.707.293l4.414 4.414a1 1 0 01.293.707V15a2 2 0 01-2 2h-2M8 7H6a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2v-2"/></svg>
+                </button>
+              </div>
+              <div class="card-body" style="font-size:0.8rem;">
+                Simulates sibling profile with <strong>780 XP</strong> and <strong>2-day streak</strong>.
+              </div>
+            </div>
+
+            <!-- Parent -->
+            <div class="login-card">
+              <div class="login-card-header">
+                <span class="login-role-badge role-parent">Parent</span>
+                <span class="login-user-name">Samuel Amir</span>
+              </div>
+              <div class="login-detail-row">
+                <span class="email-text">parent@joyfulpath.org</span>
+                <button class="copy-btn" onclick="copyText('parent@joyfulpath.org', this)" title="Copy Email">
+                  <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8 7v8a2 2 0 002 2h6M8 7V5a2 2 0 012-2h4.586a1 1 0 01.707.293l4.414 4.414a1 1 0 01.293.707V15a2 2 0 01-2 2h-2M8 7H6a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2v-2"/></svg>
+                </button>
+              </div>
+              <div class="card-body" style="font-size:0.8rem;">
+                Linked to both children. Shows attendance tables, reports, and event registrations.
+              </div>
+            </div>
+
+            <!-- Instructor -->
+            <div class="login-card">
+              <div class="login-card-header">
+                <span class="login-role-badge role-instructor">Instructor (Servant)</span>
+                <span class="login-user-name">Peter Mark</span>
+              </div>
+              <div class="login-detail-row">
+                <span class="email-text">instructor@joyfulpath.org</span>
+                <button class="copy-btn" onclick="copyText('instructor@joyfulpath.org', this)" title="Copy Email">
+                  <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8 7v8a2 2 0 002 2h6M8 7V5a2 2 0 012-2h4.586a1 1 0 01.707.293l4.414 4.414a1 1 0 01.293.707V15a2 2 0 01-2 2h-2M8 7H6a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2v-2"/></svg>
+                </button>
+              </div>
+              <div class="card-body" style="font-size:0.8rem;">
+                Contains attendance camera scanner, student rosters, lessons list, and quiz tools.
+              </div>
+            </div>
+
+            <!-- Admin -->
+            <div class="login-card">
+              <div class="login-card-header">
+                <span class="login-role-badge role-admin">Admin</span>
+                <span class="login-user-name">George Bishop</span>
+              </div>
+              <div class="login-detail-row">
+                <span class="email-text">admin@joyfulpath.org</span>
+                <button class="copy-btn" onclick="copyText('admin@joyfulpath.org', this)" title="Copy Email">
+                  <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8 7v8a2 2 0 002 2h6M8 7V5a2 2 0 012-2h4.586a1 1 0 01.707.293l4.414 4.414a1 1 0 01.293.707V15a2 2 0 01-2 2h-2M8 7H6a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2v-2"/></svg>
+                </button>
+              </div>
+              <div class="card-body" style="font-size:0.8rem;">
+                System administration panel, analytics summary, class memberships, store setup.
+              </div>
+            </div>
+
+          </div>
+
+          <div class="mock-notice">
+            <span>ℹ️</span>
+            <div><strong>Authentication Logic Note:</strong> In mock mode, the server assigns roles on the fly by checking for keywords in your sign-in email. Any email containing <code>"admin"</code> logs in as Admin, <code>"instructor"</code> or <code>"servant"</code> logs in as Instructor, and <code>"parent"</code> logs in as Parent.</div>
+          </div>
+        </div>
+
+        <!-- ─── SLIDE 3: EXECUTIVE STRATEGY ─── -->
+        <div class="slide" data-title="Executive Strategy">
+          <div class="slide-title-wrapper">
+            <span class="slide-icon">🎯</span>
+            <h2>Executive Presentation Strategy</h2>
+          </div>
+          <p class="subtitle">Focusing the Father's attention on organizational outcomes and child engagement.</p>
+          
+          <div class="slide-content-grid grid-2col">
+            <div>
+              <ul class="feature-list danger">
+                <li><strong>Traditional Challenges:</strong> Sunday School attendance logs on loose paper sheets are easily lost; paper handouts fail to engage students raised on highly gamified video-game interfaces.</li>
+                <li><strong>The JoyfulPath Mission:</strong> To channel gaming mechanics (positive feedback loops) into spiritual education, making attendance, lessons, and tests interactive.</li>
+              </ul>
+              
+              <div class="alert-banner info" style="margin-top: 20px;">
+                <strong>Pastor's Focus:</strong> Emphasize how this app acts as an administrative safety net—notifying servants if a student stops attending for multiple consecutive weeks.
+              </div>
+            </div>
+            
+            <div class="glass-card">
+              <div class="card-header">
+                <span class="card-icon">⚡</span>
+                <span class="card-title">Three Core Audiences</span>
+              </div>
+              <div class="card-body">
+                <p style="margin-bottom: 12px;">The platform binds the parish structure together:</p>
+                <ol style="margin-left: 20px; color: var(--text-main);">
+                  <li style="margin-bottom: 8px;"><strong>Students:</strong> Play quizzes, check-in, earn XP/points, and unlock profile themes.</li>
+                  <li style="margin-bottom: 8px;"><strong>Servants:</strong> Scan check-ins in seconds, track student study statistics, and focus on mentorship.</li>
+                  <li style="margin-bottom: 8px;"><strong>Parents:</strong> View attendance records, quiz grades, and progress on mobile in real-time.</li>
+                </ol>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ─── SLIDE 4: INTERACTIVE SCRIPT PLAYER ─── -->
+        <div class="slide" data-title="Demo Flow Script">
+          <div class="slide-title-wrapper">
+            <span class="slide-icon">🔄</span>
+            <h2>Interactive Live Demo Script</h2>
+          </div>
+          <p class="subtitle">Demonstrate the real-time loop of the system to the Father using this interactive flow.</p>
+          
+          <div class="flow-player">
+            <div class="flow-steps-list">
+              <button class="flow-step-trigger active" onclick="activateFlowStep(1)">
+                <span class="flow-step-num">1</span>
+                Student View
+              </button>
+              <button class="flow-step-trigger" onclick="activateFlowStep(2)">
+                <span class="flow-step-num">2</span>
+                QR Attendance
+              </button>
+              <button class="flow-step-trigger" onclick="activateFlowStep(3)">
+                <span class="flow-step-num">3</span>
+                Servant Scan
+              </button>
+              <button class="flow-step-trigger" onclick="activateFlowStep(4)">
+                <span class="flow-step-num">4</span>
+                Parent Portal
+              </button>
+            </div>
+            
+            <div class="flow-stage" id="flow-stage">
+              <!-- Step 1 Pane -->
+              <div class="flow-pane active" id="pane-1">
+                <div class="flow-actor-row">
+                  <div class="flow-actor highlight">Student (Jonathan)</div>
+                  <div class="flow-actor">Servant (Peter)</div>
+                  <div class="flow-actor">Parent (Samuel)</div>
+                </div>
+                <div class="flow-action-box">
+                  <h4>Step 1: Start with the Student Dashboard</h4>
+                  <p>Log in as <code>student@joyfulpath.org</code>. Show the Father the streaks panel, the leaderboard tab (highlighting class rankings), and open the <strong>My QR Code</strong> page. Explain that each child gets a static ID-based QR code.</p>
+                </div>
+              </div>
+              
+              <!-- Step 2 Pane -->
+              <div class="flow-pane" id="pane-2">
+                <div class="flow-actor-row">
+                  <div class="flow-actor">Student (Jonathan)</div>
+                  <div class="flow-actor highlight">QR Check-in</div>
+                  <div class="flow-actor">Servant (Peter)</div>
+                </div>
+                <div class="flow-action-box">
+                  <h4>Step 2: Explain the QR Attendance System</h4>
+                  <p>Highlight that the QR code represents the student's encrypted ID. It functions as a digital student card. Students can print it, keep it on their phones, or parents can carry it.</p>
+                </div>
+              </div>
+              
+              <!-- Step 3 Pane -->
+              <div class="flow-pane" id="pane-3">
+                <div class="flow-actor-row">
+                  <div class="flow-actor">Student (Jonathan)</div>
+                  <div class="flow-actor highlight">Servant (Peter)</div>
+                  <div class="flow-actor">Parent (Samuel)</div>
+                </div>
+                <div class="flow-action-box">
+                  <h4>Step 3: The Servant Scans the QR Code</h4>
+                  <p>Log out and sign in as <code>instructor@joyfulpath.org</code>. Navigate to the <strong>Attendance Scanner</strong> tab. Demonstrate or explain camera check-in: the servant scans Jonathan's code, instantly logging attendance and granting him 50 XP in the database.</p>
+                </div>
+              </div>
+              
+              <!-- Step 4 Pane -->
+              <div class="flow-pane" id="pane-4">
+                <div class="flow-actor-row">
+                  <div class="flow-actor">Student (Jonathan)</div>
+                  <div class="flow-actor">Servant (Peter)</div>
+                  <div class="flow-actor highlight">Parent (Samuel)</div>
+                </div>
+                <div class="flow-action-box">
+                  <h4>Step 4: Immediate Parent Verification</h4>
+                  <p>Log in as <code>parent@joyfulpath.org</code>. Show the Father that the parent instantly sees the checked-in timestamp, points update, and lesson completion status for both Jonathan and Mary.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ─── SLIDE 5: STUDENT DETAILS ─── -->
+        <div class="slide" data-title="Student Portal">
+          <div class="slide-title-wrapper">
+            <span class="slide-icon">⚡</span>
+            <h2>Student Role & Interface</h2>
+          </div>
+          <p class="subtitle">Vibrant, engaging dashboard designed for children to drive independent learning.</p>
+          
+          <div class="slide-content-grid grid-2col">
+            <div>
+              <ul class="feature-list">
+                <li><strong>Interactive Dashboard:</strong> Shows current levels, XP tallies, coin points, and streak flames to motivate daily logins.</li>
+                <li><strong>Weekly Bible Quizzes:</strong> Students answer questions on recent lectures to convert lessons into active knowledge and score XP.</li>
+                <li><strong>Points Customization Shop:</strong> Redeeming earned coin points for avatar borders, profile colors, and biblical titles (e.g. "David's Warrior").</li>
+              </ul>
+            </div>
+            
+            <div class="glass-card">
+              <div class="card-header">
+                <span class="card-icon">🎮</span>
+                <span class="card-title">Gamification UI Preview</span>
+              </div>
+              <div class="card-body">
+                <div class="mini-ui-mock">
+                  <div style="display:flex; justify-content:space-between; margin-bottom: 8px;">
+                    <strong>Jonathan Junior (Level 5)</strong>
+                    <span class="text-gold">🔥 5-Day Streak</span>
+                  </div>
+                  
+                  <div class="student-xp-bar-mock">
+                    <div style="display:flex; justify-content:space-between; font-size: 0.7rem;">
+                      <span>1,250 / 1,500 XP</span>
+                      <span>83%</span>
+                    </div>
+                    <div class="mock-bar-outer">
+                      <div class="mock-bar-inner" style="width: 83%"></div>
+                    </div>
+                  </div>
+                  
+                  <div style="font-size: 0.75rem; margin-top: 10px; color: var(--text-main);">Available Balance: <strong>120 Coins</strong></div>
+                  
+                  <div class="store-card-mock">
+                    <span>Frame: Gold Laurel Crown</span>
+                    <span class="store-points-tag">100 Coins</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ─── SLIDE 6: PARENT PORTAL ─── -->
+        <div class="slide" data-title="Parent Portal">
+          <div class="slide-title-wrapper">
+            <span class="slide-icon">👨‍👩‍👧</span>
+            <h2>Parent Portal Capabilities</h2>
+          </div>
+          <p class="subtitle">Complete transparency and tracing tools for families.</p>
+          
+          <div class="slide-content-grid grid-2col">
+            <div class="glass-card">
+              <div class="card-header">
+                <span class="card-icon">📱</span>
+                <span class="card-title">Parent Dashboard UI Mockup</span>
+              </div>
+              <div class="card-body">
+                <div class="mini-ui-mock">
+                  <div class="sibling-selector-mock">
+                    <div class="sibling-tab-mock active">Jonathan Jr.</div>
+                    <div class="sibling-tab-mock">Mary Grace</div>
+                  </div>
+                  
+                  <div style="font-size:0.75rem; margin-bottom: 6px;">Attendance Calendar:</div>
+                  <div class="calendar-mock">
+                    <div class="cal-day-mock present">24</div>
+                    <div class="cal-day-mock present">25</div>
+                    <div class="cal-day-mock present">26</div>
+                    <div class="cal-day-mock absent" title="Absent: Family Trip">27</div>
+                    <div class="cal-day-mock present">28</div>
+                    <div class="cal-day-mock present">29</div>
+                    <div class="cal-day-mock late" title="Late by 10 mins">30</div>
+                  </div>
+                  
+                  <div style="font-size:0.75rem; margin-top: 12px; display:flex; justify-content:space-between;">
+                    <span>Genesis Quiz Score:</span>
+                    <span style="color:#10b981; font-weight:700;">90% (Passed)</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <div>
+              <ul class="feature-list">
+                <li><strong>Multi-Sibling Syncing:</strong> Toggle cleanly between multiple children with a single, consolidated parent login.</li>
+                <li><strong>Color-Coded Attendance Logs:</strong> Details if children arrived late, absent with excuse, or present, complete with teacher's notes.</li>
+                <li><strong>Curriculum Progress Tracker:</strong> View children's lesson progress percentages and historical quiz attempt transcripts.</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <!-- ─── SLIDE 7: SERVANT / INSTRUCTOR ─── -->
+        <div class="slide" data-title="Servant Tools">
+          <div class="slide-title-wrapper">
+            <span class="slide-icon">🍎</span>
+            <h2>Instructor (Servant) Features</h2>
+          </div>
+          <p class="subtitle">Minimizing admin tasks to maximize mentorship and teaching time.</p>
+          
+          <div class="slide-content-grid grid-2col">
+            <div>
+              <ul class="feature-list">
+                <li><strong>QR Camera Scanning:</strong> Instant check-ins via any tablet or phone camera. Prevents accidental double-scans on the same day.</li>
+                <li><strong>Class Roster:</strong> Manual override list to check in students who forgot their phones or printed codes.</li>
+                <li><strong>Curriculum & Task Builder:</strong> Upload lessons, assign home reading tasks, and review quiz submissions.</li>
+              </ul>
+            </div>
+            
+            <div class="glass-card">
+              <div class="card-header">
+                <span class="card-icon">📷</span>
+                <span class="card-title">Live QR Scan Mockup</span>
+              </div>
+              <div class="card-body">
+                <div class="mini-ui-mock">
+                  <div style="background:rgba(0,0,0,0.5); border: 2px solid var(--primary); border-radius: 8px; aspect-ratio: 16/9; display:flex; align-items:center; justify-content:center; position:relative; overflow:hidden; margin-bottom: 10px;">
+                    <div style="position:absolute; width: 60px; height: 60px; border:2px solid #10b981; animation: scanBorder 2s infinite alternate;"></div>
+                    <span style="font-size:0.75rem; color:#10b981; font-weight:700; z-index:5;">Align QR Code inside brackets</span>
+                  </div>
+                  
+                  <div style="font-size:0.75rem;">Recent Scan:</div>
+                  <div class="roster-row-mock">
+                    <span>Jonathan Junior</span>
+                    <span class="badge-present-mock">Present (+50 XP)</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <style>
+            @keyframes scanBorder {
+              0% { transform: scale(0.9); opacity: 0.5; }
+              100% { transform: scale(1.1); opacity: 1; }
+            }
+          </style>
+        </div>
+
+        <!-- ─── SLIDE 8: ADMIN CAPABILITIES ─── -->
+        <div class="slide" data-title="Admin & Analytics">
+          <div class="slide-title-wrapper">
+            <span class="slide-icon">👑</span>
+            <h2>Admin Capabilities & Analytics</h2>
+          </div>
+          <p class="subtitle">System control and aggregates for parish leadership.</p>
+          
+          <div class="slide-content-grid grid-2col">
+            <div class="glass-card">
+              <div class="card-header">
+                <span class="card-icon">📊</span>
+                <span class="card-title">Attendance Trends (Mock)</span>
+              </div>
+              <div class="bar-chart-mock" id="attendance-chart">
+                <div class="chart-bar-col">
+                  <div class="chart-bar-pillar" style="height: 40px;"></div>
+                  <span class="bar-label">Wk 1</span>
+                </div>
+                <div class="chart-bar-col">
+                  <div class="chart-bar-pillar" style="height: 65px;"></div>
+                  <span class="bar-label">Wk 2</span>
+                </div>
+                <div class="chart-bar-col">
+                  <div class="chart-bar-pillar" style="height: 72px;"></div>
+                  <span class="bar-label">Wk 3</span>
+                </div>
+                <div class="chart-bar-col">
+                  <div class="chart-bar-pillar" style="height: 50px;"></div>
+                  <span class="bar-label">Wk 4</span>
+                </div>
+                <div class="chart-bar-col">
+                  <div class="chart-bar-pillar" style="height: 85px;"></div>
+                  <span class="bar-label">Wk 5</span>
+                </div>
+                <div class="chart-bar-col">
+                  <div class="chart-bar-pillar" style="height: 95px;"></div>
+                  <span class="bar-label">Wk 6</span>
+                </div>
+              </div>
+            </div>
+            
+            <div>
+              <ul class="feature-list">
+                <li><strong>Class & User Administration:</strong> Create classes, manage student enrollment, and link parents to their children.</li>
+                <li><strong>Store Reward Inventory:</strong> Configure rewards, upload custom frames, themes, and set coin prices.</li>
+                <li><strong>Analytics Aggregates:</strong> Visual tracking of attendance trends, quiz success ratios, and streak counts across the parish.</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <!-- ─── SLIDE 9: TECHNICAL ROAD MAP ─── -->
+        <div class="slide" data-title="Tech Roadmap">
+          <div class="slide-title-wrapper">
+            <span class="slide-icon">🛠️</span>
+            <h2>Technical Roadmap & Architecture</h2>
+          </div>
+          <p class="subtitle">A robust stack ready for live database migration.</p>
+          
+          <div class="slide-content-grid grid-2col">
+            <div>
+              <ul class="feature-list">
+                <li><strong>Modern Core Stack:</strong> Built on Next.js 15+, Tailwind CSS, and Prisma ORM for type-safe database mapping.</li>
+                <li><strong>Supabase Integration:</strong> Currently running in Mock Mode, but PostgreSQL migrations, storage buckets, and auth hooks are fully coded in <code>/supabase</code>.</li>
+              </ul>
+            </div>
+            
+            <div class="glass-card">
+              <div class="card-header">
+                <span class="card-icon">🚀</span>
+                <span class="card-title">Next Steps Timeline</span>
+              </div>
+              <div class="timeline-mock">
+                <div class="timeline-node done">
+                  <div class="timeline-node-title">Step 1: Mock Prototype (Current)</div>
+                  <div class="timeline-node-desc">Full front-end with mock clients.</div>
+                </div>
+                <div class="timeline-node active">
+                  <div class="timeline-node-title">Step 2: Database Migration</div>
+                  <div class="timeline-node-desc">Enter credentials in <code>.env</code> and run SQL scripts.</div>
+                </div>
+                <div class="timeline-node">
+                  <div class="timeline-node-title">Step 3: Staging & Test Launch</div>
+                  <div class="timeline-node-desc">Rollout for a single classroom.</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ─── SLIDE 10: PRESENTATION TIPS ─── -->
+        <div class="slide" data-title="Presentation Tips">
+          <div class="slide-title-wrapper">
+            <span class="slide-icon">💡</span>
+            <h2>Presentation Tips for the Father</h2>
+          </div>
+          <p class="subtitle">Focusing on safety, control, and pastoral care values.</p>
+          
+          <div class="slide-content-grid grid-3col">
+            
+            <!-- Pastoral Care -->
+            <div class="glass-card">
+              <div class="card-header">
+                <span class="card-icon">⛪</span>
+                <span class="card-title">Pastoral Care</span>
+              </div>
+              <div class="card-body">
+                Explain how the system flags students who fall behind or drop off in attendance, allowing servants to proactively call and visit them.
+              </div>
+            </div>
+
+            <!-- Safety & Data Controls -->
+            <div class="glass-card">
+              <div class="card-header">
+                <span class="card-icon">🔒</span>
+                <span class="card-title">Safety & Privacy</span>
+              </div>
+              <div class="card-body">
+                Mention that the QR codes only encode internal server UUIDs. There are no tracking scripts, and parent links are verified manually by admins.
+              </div>
+            </div>
+
+            <!-- Curriculum Customization -->
+            <div class="glass-card">
+              <div class="card-header">
+                <span class="card-icon">⚙️</span>
+                <span class="card-title">Tailored Curricula</span>
+              </div>
+              <div class="card-body">
+                Assure the Father that the quiz questions, bible lessons, titles, and rewards are fully editable by the church's servants to align with their curriculum.
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- Bottom HUD Bar -->
+    <footer class="bottom-bar">
+      <div class="extra-actions">
+        <button class="action-btn" id="fullscreen-btn" title="Toggle Fullscreen (Key: F)">
+          <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4M20 4l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5v-4m0 0h-4m4 4l-5-5"/></svg>
+          Fullscreen
+        </button>
+        <button class="action-btn" id="autoplay-btn">
+          Play Autoplay
+        </button>
+      </div>
+
+      <!-- Controls -->
+      <div class="controls-nav">
+        <button class="nav-btn" id="prev-btn" title="Previous Slide (Key: Left Arrow)">
+          &larr;
+        </button>
+        <button class="nav-btn btn-primary" id="next-btn" title="Next Slide (Key: Right Arrow / Space)">
+          &rarr;
+        </button>
+      </div>
+
+      <!-- Linear progress bar -->
+      <div class="progress-bar-container">
+        <div class="progress-bar-fill" id="progress-bar-fill"></div>
+      </div>
+    </footer>
+
+  </main>
+
+  <!-- Clipboard confirmation popup alert -->
+  <div class="copy-pop" id="copy-pop">Copied to clipboard!</div>
+
+  <!-- ─── SLIDE SYSTEM ENGINE (VANILLA JS) ───────────────────────────────────── -->
+  <script>
+    // Elements references
+    const slides = Array.from(document.querySelectorAll('.slide'));
+    const sidebar = document.getElementById('sidebar');
+    const toggleSidebarBtn = document.getElementById('toggle-sidebar-btn');
+    const slidesList = document.getElementById('slides-list');
+    const slideCounter = document.getElementById('slide-counter');
+    const prevBtn = document.getElementById('prev-btn');
+    const nextBtn = document.getElementById('next-btn');
+    const progressBarFill = document.getElementById('progress-bar-fill');
+    const fullscreenBtn = document.getElementById('fullscreen-btn');
+    const autoplayBtn = document.getElementById('autoplay-btn');
+    const copyPop = document.getElementById('copy-pop');
+    
+    let currentSlideIndex = 0;
+    let autoplayInterval = null;
+
+    // Populates slide outlines in the sidebar list
+    function initSidebar() {
+      slidesList.innerHTML = '';
+      slides.forEach((slide, index) => {
+        const title = slide.getAttribute('data-title') || `Slide ${index + 1}`;
+        const li = document.createElement('li');
+        li.className = `slide-item ${index === currentSlideIndex ? 'active' : ''}`;
+        li.innerHTML = `
+          <span class="slide-item-num">${index + 1}</span>
+          <span>${title}</span>
+        `;
+        li.addEventListener('click', () => {
+          goToSlide(index);
+          stopAutoplay();
+        });
+        slidesList.appendChild(li);
+      });
+    }
+
+    // Updates slides visibility and HUD status elements
+    function updatePresentation() {
+      slides.forEach((slide, index) => {
+        if (index === currentSlideIndex) {
+          slide.classList.add('active');
+        } else {
+          slide.classList.remove('active');
+        }
+      });
+
+      // Update sidebar active highlights
+      const items = Array.from(slidesList.querySelectorAll('.slide-item'));
+      items.forEach((item, index) => {
+        if (index === currentSlideIndex) {
+          item.classList.add('active');
+        } else {
+          item.classList.remove('active');
+        }
+      });
+
+      // Update Top HUD counter
+      slideCounter.textContent = `Slide ${currentSlideIndex + 1} of ${slides.length}`;
+
+      // Update bottom progress bar
+      const progressPercent = ((currentSlideIndex + 1) / slides.length) * 100;
+      progressBarFill.style.width = `${progressPercent}%`;
+
+      // Trigger animations inside columns if applicable
+      triggerColumnAnimations();
+    }
+
+    function goToSlide(index) {
+      if (index >= 0 && index < slides.length) {
+        currentSlideIndex = index;
+        updatePresentation();
+      }
+    }
+
+    function nextSlide() {
+      if (currentSlideIndex < slides.length - 1) {
+        currentSlideIndex++;
+      } else {
+        currentSlideIndex = 0; // Wrap around
+      }
+      updatePresentation();
+    }
+
+    function prevSlide() {
+      if (currentSlideIndex > 0) {
+        currentSlideIndex--;
+      } else {
+        currentSlideIndex = slides.length - 1; // Wrap around
+      }
+      updatePresentation();
+    }
+
+    // Interactive Demo Player tabs trigger
+    function activateFlowStep(stepNum) {
+      const triggers = document.querySelectorAll('.flow-step-trigger');
+      const panes = document.querySelectorAll('.flow-pane');
+      
+      triggers.forEach((trigger, idx) => {
+        if (idx + 1 === stepNum) {
+          trigger.classList.add('active');
+        } else {
+          trigger.classList.remove('active');
+        }
+      });
+
+      panes.forEach((pane, idx) => {
+        if (idx + 1 === stepNum) {
+          pane.classList.add('active');
+        } else {
+          pane.classList.remove('active');
+        }
+      });
+    }
+
+    // Animates column charts if current slide is Active
+    function triggerColumnAnimations() {
+      if (currentSlideIndex === 7) { // Admin Analytics Slide
+        const pillars = document.querySelectorAll('#attendance-chart .chart-bar-pillar');
+        const heights = ['40px', '65px', '72px', '50px', '85px', '95px'];
+        pillars.forEach((pillar, idx) => {
+          pillar.style.height = '0px';
+          setTimeout(() => {
+            pillar.style.height = heights[idx];
+          }, 100 + (idx * 80));
+        });
+      }
+    }
+
+    // Toggle Sidebar Menu
+    toggleSidebarBtn.addEventListener('click', () => {
+      sidebar.classList.toggle('collapsed');
+    });
+
+    // Event listeners for Navigation
+    prevBtn.addEventListener('click', () => {
+      prevSlide();
+      stopAutoplay();
+    });
+    nextBtn.addEventListener('click', () => {
+      nextSlide();
+      stopAutoplay();
+    });
+
+    // Keyboard support
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowRight' || e.key === ' ') {
+        e.preventDefault();
+        nextSlide();
+        stopAutoplay();
+      } else if (e.key === 'ArrowLeft') {
+        e.preventDefault();
+        prevSlide();
+        stopAutoplay();
+      } else if (e.key === 'Home') {
+        e.preventDefault();
+        goToSlide(0);
+        stopAutoplay();
+      } else if (e.key === 'End') {
+        e.preventDefault();
+        goToSlide(slides.length - 1);
+        stopAutoplay();
+      } else if (e.key === 'f' || e.key === 'F') {
+        toggleFullscreen();
+      } else if (e.key === 'o' || e.key === 'O') {
+        sidebar.classList.toggle('collapsed');
+      }
+    });
+
+    // Fullscreen API toggle
+    function toggleFullscreen() {
+      if (!document.fullscreenElement) {
+        document.documentElement.requestFullscreen().catch(err => {
+          console.error(`Fullscreen request failed: ${err.message}`);
+        });
+      } else {
+        document.exitFullscreen();
+      }
+    }
+
+    fullscreenBtn.addEventListener('click', toggleFullscreen);
+
+    // Click-to-copy utility
+    function copyText(text, btnElement) {
+      navigator.clipboard.writeText(text).then(() => {
+        // Show banner alert pop
+        copyPop.classList.add('show');
+        setTimeout(() => {
+          copyPop.classList.remove('show');
+        }, 1500);
+
+        // Flash green class on button
+        if (btnElement) {
+          btnElement.classList.add('copied');
+          const originalSvg = btnElement.innerHTML;
+          btnElement.innerHTML = '✓';
+          setTimeout(() => {
+            btnElement.classList.remove('copied');
+            btnElement.innerHTML = originalSvg;
+          }, 1500);
+        }
+      }).catch(err => {
+        console.error('Clipboard copy failed: ', err);
+      });
+    }
+
+    // Autoplay Controls
+    function startAutoplay() {
+      autoplayInterval = setInterval(nextSlide, 7000); // 7s per slide
+      autoplayBtn.textContent = 'Pause Autoplay';
+      autoplayBtn.style.background = 'rgba(99,102,241,0.2)';
+    }
+
+    function stopAutoplay() {
+      if (autoplayInterval) {
+        clearInterval(autoplayInterval);
+        autoplayInterval = null;
+        autoplayBtn.textContent = 'Play Autoplay';
+        autoplayBtn.style.background = '';
+      }
+    }
+
+    autoplayBtn.addEventListener('click', () => {
+      if (autoplayInterval) {
+        stopAutoplay();
+      } else {
+        startAutoplay();
+      }
+    });
+
+    // Initialize presentation components
+    initSidebar();
+    updatePresentation();
+  </script>
+</body>
+</html>
