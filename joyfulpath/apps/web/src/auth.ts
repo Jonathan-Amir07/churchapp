@@ -35,33 +35,38 @@ export async function auth() {
     const mockRole = cookieStore.get('MOCK_USER_ROLE')?.value;
 
     if (mockRole) {
-      // Mock mode: find the first user with this role in the local DB
-      const dbUser = await prisma.user.findFirst({
-        where: { role: mockRole, isActive: true },
-        select: { id: true, role: true, email: true, displayName: true, accountStatus: true, isActive: true, isProfileComplete: true },
-      });
+      try {
+        // Mock mode: find the first user with this role in the local DB
+        const dbUser = await prisma.user.findFirst({
+          where: { role: mockRole, isActive: true },
+          select: { id: true, role: true, email: true, displayName: true, accountStatus: true, isActive: true, isProfileComplete: true },
+        });
 
-      if (!dbUser) {
-        // Fallback: return a synthetic user so the frontend still works
-        return {
-          user: {
-            id: `mock-${mockRole}-id`,
-            role: mockRole,
-            email: `${mockRole}@joyfulpath.org`,
-            name: mockRole.charAt(0).toUpperCase() + mockRole.slice(1),
-            accountStatus: 'active',
-          },
-        };
+        if (dbUser) {
+          return {
+            user: {
+              id: dbUser.id,
+              role: dbUser.role,
+              email: dbUser.email,
+              name: dbUser.displayName,
+              accountStatus: dbUser.accountStatus,
+              isProfileComplete: dbUser.isProfileComplete ?? true,
+            },
+          };
+        }
+      } catch (dbErr) {
+        console.warn('Prisma lookup failed in auth(), falling back to mock user:', dbErr);
       }
 
+      // Fallback: return a synthetic user so the frontend still works
       return {
         user: {
-          id: dbUser.id,
-          role: dbUser.role,
-          email: dbUser.email,
-          name: dbUser.displayName,
-          accountStatus: dbUser.accountStatus,
-          isProfileComplete: dbUser.isProfileComplete,
+          id: `mock-${mockRole}-id`,
+          role: mockRole,
+          email: `${mockRole}@joyfulpath.org`,
+          name: mockRole.charAt(0).toUpperCase() + mockRole.slice(1),
+          accountStatus: 'active',
+          isProfileComplete: true,
         },
       };
     }

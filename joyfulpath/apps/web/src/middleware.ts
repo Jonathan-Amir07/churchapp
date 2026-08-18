@@ -63,7 +63,7 @@ export default async function proxy(request: NextRequest) {
         email: `${mockRole}@joyfulpath.org`,
         role: mockRole,
         forcePasswordChange: false,
-        isProfileComplete: false, // In mock mode, we assume false to test the flow
+        isProfileComplete: true,
       };
     }
   }
@@ -72,11 +72,8 @@ export default async function proxy(request: NextRequest) {
   const isAuth = !!user;
   const userRole = user?.role || 'student';
 
-  // ─── 1. Redirect logged-in users away from /login or / ─────────────────────
-  if (isAuth && (pathname === '/login' || pathname === '/')) {
-    if (userRole === 'student' && user?.isProfileComplete === false) {
-      return NextResponse.redirect(new URL('/complete-profile', request.url));
-    }
+  // ─── 1. Redirect logged-in users away from /login only (Keep / public for landing page) ───
+  if (token && isAuth && pathname === '/login') {
     const redirectPath = getRoleDashboard(userRole);
     return NextResponse.redirect(new URL(redirectPath, request.url));
   }

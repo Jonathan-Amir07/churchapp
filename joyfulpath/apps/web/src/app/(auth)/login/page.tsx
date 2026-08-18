@@ -227,13 +227,44 @@ export default function LoginPage() {
               fullWidth
               size="lg"
               loading={loading}
-              className="mt-4 rounded-xl"
+              className="mt-4 rounded-xl shadow-md"
             >
               {tCommon('submit')}
             </Button>
-
           </form>
 
+          {/* Quick Demo Login Pills */}
+          <div className="mt-8 pt-6 border-t border-outline-variant/60">
+            <p className="text-xs font-black uppercase tracking-wider text-on-surface-variant mb-3 text-center">
+              {currentLocale === 'en' ? '⚡ 1-Click Quick Demo Logins' : '⚡ تسجيل دخول تجريبي سريع بنقرة واحدة'}
+            </p>
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+              {[
+                { roleName: 'student', label: currentLocale === 'en' ? '🎓 Student' : '🎓 مخدوم', user: 'test_student' },
+                { roleName: 'parent', label: currentLocale === 'en' ? '👨‍👩‍👧 Parent' : '👨‍👩‍👧 ولي أمر', user: 'test_parent' },
+                { roleName: 'instructor', label: currentLocale === 'en' ? '📖 Instructor' : '📖 خادم', user: 'test_instructor' },
+                { roleName: 'admin', label: currentLocale === 'en' ? '⚙️ Admin' : '⚙️ أمين خدمة', user: 'test_admin' },
+                { roleName: 'priest', label: currentLocale === 'en' ? '⛪ Priest' : '⛪ كاهن', user: 'test_priest' },
+              ].map((acc) => (
+                <button
+                  key={acc.roleName}
+                  type="button"
+                  onClick={() => {
+                    setRole(acc.roleName);
+                    setUsername(acc.user);
+                    setPassword('password123');
+                  }}
+                  className="px-2.5 py-2 rounded-xl text-xs font-extrabold border border-outline-variant hover:border-primary hover:bg-primary/5 active:scale-95 transition-all text-start flex flex-col justify-center"
+                >
+                  <span className="text-on-surface">{acc.label}</span>
+                  <span className="text-[10px] text-on-surface-variant font-mono">{acc.user}</span>
+                </button>
+              ))}
+            </div>
+            <p className="text-[11px] text-center text-on-surface-variant mt-2 font-medium">
+              {currentLocale === 'en' ? 'Password for all demo accounts: password123' : 'كلمة المرور لجميع الحسابات التجريبية: password123'}
+            </p>
+          </div>
 
         </div>
       </Card>
