@@ -8,7 +8,7 @@ export async function GET(req: NextRequest) {
     if (session instanceof NextResponse) return session;
     const user = session.user;
 
-    let whereClause: any = {};
+    const whereClause: any = {};
     if (user.role === 'student' || user.role === 'parent') {
       whereClause.isPublic = true;
     }

@@ -2,11 +2,14 @@
 
 import { useTranslations, useLocale } from 'next-intl';
 import Link from 'next/link';
+import Image from 'next/image';
 import { Card, CardContent, CardHeader, CardTitle, ProgressBar, Button, PageTransition, HeroBanner, StatCard, StaggerContainer, StaggerItem } from '@/components/ui';
 import { useAppStore } from '@/stores/app.store';
 
 export default function StudentDashboard() {
   const t = useTranslations('dashboard');
+  const locale = useLocale();
+  const isAr = locale === 'ar';
   const tCommon = useTranslations('common');
   const tGamification = useTranslations('gamification');
 
@@ -60,10 +63,12 @@ export default function StudentDashboard() {
         subtitle="You are making fantastic progress! Complete today's lesson to earn more XP and unlock the next wisdom badge."
       >
         <div className="absolute right-0 bottom-0 top-0 w-1/3 hidden md:block opacity-90 mix-blend-luminosity hover:mix-blend-normal transition-all duration-700">
-          <img 
+          <Image 
             src="/images/welcome-illustration.png" 
             alt="Children learning"
-            className="w-full h-full object-cover object-left mask-image-fade"
+            fill
+            sizes="(max-width: 768px) 100vw, 33vw"
+            className="object-cover object-left mask-image-fade"
             style={{ WebkitMaskImage: 'linear-gradient(to right, transparent, black 40%)' }}
           />
         </div>
@@ -272,8 +277,6 @@ export default function StudentDashboard() {
             <CardContent className="p-0">
               <div className="divide-y divide-outline-variant/60">
                 {activities.slice(0, 4).map((activity) => {
-                  const locale = useLocale();
-  const isAr = locale === 'ar';
                   const detail = isAr ? activity.detailAr : activity.detail;
                   
                   // Icon picking
@@ -301,7 +304,7 @@ export default function StudentDashboard() {
                           <p className="text-[10px] text-on-surface-variant font-medium">By {activity.studentName}</p>
                         </div>
                       </div>
-                      <span className="text-[10px] text-outline font-bold">
+                      <span suppressHydrationWarning className="text-[10px] text-outline font-bold">
                         {new Date(activity.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                       </span>
                     </div>

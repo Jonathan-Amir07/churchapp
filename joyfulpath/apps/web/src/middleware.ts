@@ -33,7 +33,7 @@ const PRIEST_ONLY_ADMIN_PATHS = [
 ];
 
 export default async function proxy(request: NextRequest) {
-  let response = NextResponse.next({
+  const response = NextResponse.next({
     request: {
       headers: request.headers,
     },

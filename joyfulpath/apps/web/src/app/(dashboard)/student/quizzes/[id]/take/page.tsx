@@ -15,6 +15,11 @@ export default function TakeQuizPage() {
     { type: 'SHORT', text: 'Explain the rainbow covenant.' }
   ];
 
+  const handleSubmit = () => {
+    alert('Quiz submitted successfully!');
+    router.push('/student/quizzes/1/results');
+  };
+
   useEffect(() => {
     const timer = setInterval(() => {
       setTimeLeft(prev => {
@@ -28,11 +33,6 @@ export default function TakeQuizPage() {
     }, 1000);
     return () => clearInterval(timer);
   }, []);
-
-  const handleSubmit = () => {
-    alert('Quiz submitted successfully!');
-    router.push('/student/quizzes/1/results');
-  };
 
   const formatTime = (seconds: number) => {
     const m = Math.floor(seconds / 60);

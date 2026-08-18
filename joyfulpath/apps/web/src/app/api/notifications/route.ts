@@ -13,7 +13,7 @@ export async function GET(request: NextRequest) {
     const offset = parseInt(searchParams.get('offset') || '0');
     const unreadOnly = searchParams.get('unreadOnly') === 'true';
 
-    let whereClause: any = { userId: user.id };
+    const whereClause: any = { userId: user.id };
     if (unreadOnly) {
       whereClause.readAt = null;
     }

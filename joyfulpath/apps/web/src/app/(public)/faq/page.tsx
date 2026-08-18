@@ -5,12 +5,12 @@ import { useState } from 'react';
 import { Card, CardContent } from '@/components/ui';
 
 const faqs = [
-  { q: 'What is JoyfulPath?', qAr: 'ما هو JoyfulPath؟', a: 'JoyfulPath is a gamified digital platform for Coptic Orthodox Sunday Schools that makes learning fun through XP, badges, quizzes, and interactive lessons.', aAr: 'JoyfulPath هو منصة رقمية تفاعلية لمدارس الأحد القبطية الأرثوذكسية تجعل التعلم ممتعاً من خلال النقاط والأوسمة والمسابقات والدروس التفاعلية.' },
+  { q: 'What is newsl w nwasl ll sama?', qAr: 'ما هو newsl w nwasl ll sama؟', a: 'newsl w nwasl ll sama is a gamified digital platform for Coptic Orthodox Sunday Schools that makes learning fun through XP, badges, quizzes, and interactive lessons.', aAr: 'newsl w nwasl ll sama هو منصة رقمية تفاعلية لمدارس الأحد القبطية الأرثوذكسية تجعل التعلم ممتعاً من خلال النقاط والأوسمة والمسابقات والدروس التفاعلية.' },
   { q: 'Who can use the platform?', qAr: 'من يمكنه استخدام المنصة؟', a: 'Students, parents, servants, and church administrators can all create accounts and use the platform with role-specific features.', aAr: 'يمكن للطلاب وأولياء الأمور والخدام ومسؤولي الكنيسة إنشاء حسابات واستخدام المنصة بمميزات مخصصة لكل دور.' },
-  { q: 'Is JoyfulPath free?', qAr: 'هل المنصة مجانية؟', a: 'Yes! JoyfulPath is completely free for all churches and Sunday Schools to use.', aAr: 'نعم! JoyfulPath مجاني تماماً لجميع الكنائس ومدارس الأحد.' },
+  { q: 'Is newsl w nwasl ll sama free?', qAr: 'هل المنصة مجانية؟', a: 'Yes! newsl w nwasl ll sama is completely free for all churches and Sunday Schools to use.', aAr: 'نعم! newsl w nwasl ll sama مجاني تماماً لجميع الكنائس ومدارس الأحد.' },
   { q: 'How does the rewards system work?', qAr: 'كيف يعمل نظام المكافآت؟', a: 'Students earn XP and Points through attendance, completing lessons, quizzes, and tasks. Points can be redeemed in the Blessings Store for digital items or physical rewards approved by admins.', aAr: 'يكسب الطلاب نقاط XP ونقاط من خلال الحضور وإكمال الدروس والمسابقات والمهام. يمكن استبدال النقاط في متجر البركات بعناصر رقمية أو مكافآت مادية يوافق عليها المسؤولون.' },
   { q: 'Can parents monitor their children?', qAr: 'هل يمكن لأولياء الأمور متابعة أطفالهم؟', a: 'Absolutely. Parents have a dedicated dashboard with attendance records, progress reports, quiz scores, and event RSVPs for all linked children.', aAr: 'بالتأكيد. يمتلك أولياء الأمور لوحة تحكم مخصصة تتضمن سجلات الحضور وتقارير التقدم ونتائج المسابقات وتسجيلات الفعاليات لجميع الأطفال المرتبطين.' },
-  { q: 'Does it support Arabic?', qAr: 'هل يدعم اللغة العربية؟', a: 'Yes, JoyfulPath fully supports both English and Arabic with proper RTL layout support.', aAr: 'نعم، يدعم JoyfulPath بالكامل اللغتين الإنجليزية والعربية مع دعم كامل لتخطيط الكتابة من اليمين لليسار.' },
+  { q: 'Does it support Arabic?', qAr: 'هل يدعم اللغة العربية؟', a: 'Yes, newsl w nwasl ll sama fully supports both English and Arabic with proper RTL layout support.', aAr: 'نعم، يدعم newsl w nwasl ll sama بالكامل اللغتين الإنجليزية والعربية مع دعم كامل لتخطيط الكتابة من اليمين لليسار.' },
 ];
 
 export default function FAQPage() {

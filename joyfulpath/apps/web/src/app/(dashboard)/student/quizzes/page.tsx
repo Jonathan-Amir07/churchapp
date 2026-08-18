@@ -12,6 +12,7 @@ export default function StudentQuizzes() {
   const tCommon = useTranslations('common');
   const tGamification = useTranslations('gamification');
   const { quizzes, addXP, addPoints } = useAppStore();
+  const locale = useLocale();
 
   const [localQuizzes, setLocalQuizzes] = useState(quizzes);
   
@@ -105,7 +106,6 @@ export default function StudentQuizzes() {
 
       <StaggerContainer className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {localQuizzes.map((quiz) => {
-          const locale = useLocale();
           const isAr = locale === 'ar';
           const title = isAr ? quiz.titleAr : quiz.titleEn;
           const description = isAr ? quiz.descriptionAr : quiz.descriptionEn;
@@ -182,7 +182,7 @@ export default function StudentQuizzes() {
           title={
             quizResult
               ? tQuizzes('quizResult')
-              : `${tCommon('appName') !== 'JoyfulPath' ? activeQuiz.titleAr : activeQuiz.titleEn}`
+              : `${tCommon('appName') !== 'newsl w nwasl ll sama' ? activeQuiz.titleAr : activeQuiz.titleEn}`
           }
         >
           <div className="space-y-6 pt-2">
@@ -197,7 +197,7 @@ export default function StudentQuizzes() {
 
                 <div className="space-y-4">
                   <h3 className="text-lg font-black text-on-surface leading-snug">
-                    {tCommon('appName') !== 'JoyfulPath'
+                    {tCommon('appName') !== 'newsl w nwasl ll sama'
                       ? activeQuiz.questions[currentQuestionIndex].textAr
                       : activeQuiz.questions[currentQuestionIndex].textEn}
                   </h3>
@@ -206,7 +206,7 @@ export default function StudentQuizzes() {
                     {activeQuiz.questions[currentQuestionIndex].optionsEn.map((opt: string, idx: number) => {
                       const isSelected = selectedAnswers[currentQuestionIndex] === idx;
                       const optText =
-                        tCommon('appName') !== 'JoyfulPath'
+                        tCommon('appName') !== 'newsl w nwasl ll sama'
                           ? activeQuiz.questions[currentQuestionIndex].optionsAr[idx]
                           : opt;
                       return (

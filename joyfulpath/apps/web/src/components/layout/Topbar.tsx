@@ -48,7 +48,7 @@ export function Topbar() {
     localStorage.clear();
     sessionStorage.clear();
     
-    window.location.href = '/login';
+    window.location.replace('/login');
   };
 
   const user = profile;
@@ -150,7 +150,7 @@ export function Topbar() {
 
             <button
               onClick={handleLogout}
-              className="hidden sm:inline-flex p-2 hover:bg-surface-container rounded-full text-outline hover:text-error transition-all duration-150"
+              className="inline-flex p-2 hover:bg-surface-container rounded-full text-outline hover:text-error transition-all duration-150"
               title={tAuth('logout')}
               aria-label="Logout"
             >

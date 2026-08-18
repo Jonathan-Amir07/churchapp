@@ -109,7 +109,7 @@ export function AdminSidebar() {
 
       {/* Footer / version info */}
       <div className="p-3 border-t border-outline-variant/60 flex items-center justify-between text-[11px] text-on-surface-variant font-medium bg-surface-container-lowest">
-        <span>&copy; {year || ''} JoyfulPath ERP</span>
+        <span>&copy; {year || ''} newsl w nwasl ll sama ERP</span>
         <span>v2.1.0</span>
       </div>
     </aside>

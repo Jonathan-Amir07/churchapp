@@ -133,10 +133,10 @@ export async function POST(request: Request) {
       { message: 'Invalid credentials or user not active' },
       { status: 401 }
     );
-  } catch (error) {
+  } catch (error: any) {
     console.error('Login error:', error);
     return NextResponse.json(
-      { message: 'Internal server error' },
+      { message: 'Internal server error', error: error?.message || String(error), stack: error?.stack },
       { status: 500 }
     );
   }

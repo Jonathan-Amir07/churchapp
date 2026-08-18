@@ -35,10 +35,6 @@ export default function AdminClasses() {
   const locale = useLocale();
   const isAr = locale === 'ar';
 
-  useEffect(() => {
-    fetchClasses();
-  }, []);
-
   const fetchClasses = async () => {
     setLoading(true);
     try {
@@ -53,6 +49,10 @@ export default function AdminClasses() {
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    fetchClasses();
+  }, []);
 
   const handleSearch = useCallback((query: string) => {
     setSearchQuery(query);

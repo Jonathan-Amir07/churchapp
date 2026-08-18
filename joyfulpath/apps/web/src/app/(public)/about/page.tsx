@@ -17,12 +17,12 @@ export default function AboutPage() {
             initial={{ y: 20, opacity: 0 }} animate={{ y: 0, opacity: 1 }}
             className="text-4xl md:text-5xl font-black tracking-tight text-on-surface"
           >
-            {en ? 'About JoyfulPath' : 'عن منصة JoyfulPath'}
+            {en ? 'About newsl w nwasl ll sama' : 'عن منصة newsl w nwasl ll sama'}
           </motion.h1>
           <p className="text-on-surface-variant text-lg max-w-2xl mx-auto leading-relaxed">
             {en
-              ? 'JoyfulPath is a Coptic Orthodox gamified Sunday School platform created to nurture faith, build community, and make spiritual education engaging for the next generation.'
-              : 'JoyfulPath هي منصة مدارس الأحد القبطية الأرثوذكسية التفاعلية، مصممة لتعزيز الإيمان وبناء المجتمع الكنسي وجعل التعليم الروحي ممتعاً للأجيال القادمة.'}
+              ? 'newsl w nwasl ll sama is a Coptic Orthodox gamified Sunday School platform created to nurture faith, build community, and make spiritual education engaging for the next generation.'
+              : 'newsl w nwasl ll sama هي منصة مدارس الأحد القبطية الأرثوذكسية التفاعلية، مصممة لتعزيز الإيمان وبناء المجتمع الكنسي وجعل التعليم الروحي ممتعاً للأجيال القادمة.'}
           </p>
         </div>
       </section>

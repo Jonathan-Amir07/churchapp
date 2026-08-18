@@ -11,7 +11,7 @@ export async function GET(req: NextRequest) {
     const classId = searchParams.get('classId');
     const status = searchParams.get('status');
 
-    let whereClause: any = {};
+    const whereClause: any = {};
     
     if (classId) {
       whereClause.classId = classId;

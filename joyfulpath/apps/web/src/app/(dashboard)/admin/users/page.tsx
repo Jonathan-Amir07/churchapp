@@ -42,10 +42,6 @@ export default function AdminUsers() {
   const [passwordOrPin, setPasswordOrPin] = useState('');
   const [role, setRole] = useState<'student' | 'admin' | 'parent' | 'instructor'>('student');
 
-  useEffect(() => {
-    fetchUsers();
-  }, []);
-
   const fetchUsers = async () => {
     setLoading(true);
     try {
@@ -60,6 +56,10 @@ export default function AdminUsers() {
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    fetchUsers();
+  }, []);
 
   const handleSearch = useCallback((query: string) => {
     setSearchQuery(query);
@@ -527,7 +527,7 @@ export default function AdminUsers() {
               <div key={user.id} className="border-2 border-black rounded-xl p-6 break-inside-avoid shadow-none">
                 <div className="flex items-center gap-2 mb-4 border-b border-black pb-4">
                   <span className="material-symbols-outlined text-3xl">church</span>
-                  <span className="text-xl font-bold">JoyfulPath</span>
+                  <span className="text-xl font-bold">newsl w nwasl ll sama</span>
                 </div>
                 <div className="space-y-4 text-lg">
                   <div>

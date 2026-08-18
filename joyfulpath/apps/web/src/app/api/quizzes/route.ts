@@ -8,7 +8,7 @@ export async function GET(req: NextRequest) {
     if (session instanceof NextResponse) return session;
     const user = session.user;
 
-    let whereClause: any = {};
+    const whereClause: any = {};
     if (user.role === 'instructor') {
       const instructorClasses = await prisma.class.findMany({
         where: { instructorId: user.id },

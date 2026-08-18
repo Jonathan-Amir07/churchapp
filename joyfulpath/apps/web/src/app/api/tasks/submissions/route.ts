@@ -8,7 +8,7 @@ export async function GET(req: NextRequest) {
     if (session instanceof NextResponse) return session;
     const user = session.user;
 
-    let whereClause: any = {
+    const whereClause: any = {
       status: 'submitted', // we only want to review pending ones
     };
 

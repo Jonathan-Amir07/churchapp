@@ -48,7 +48,7 @@ export default function PublicLayout({
               </svg>
             </div>
             <span className="text-2xl font-black tracking-tight text-primary">
-              {currentLocale === 'en' ? 'JoyfulPath' : 'مسار الفرح'}
+              {currentLocale === 'en' ? 'newsl w nwasl ll sama' : 'نوصل و نوصل للسماء'}
             </span>
           </Link>
 
@@ -174,7 +174,7 @@ export default function PublicLayout({
                 <path d="M12 2V22M7 7H17" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
               </svg>
             </div>
-            <span className="text-xl font-black text-on-surface">{currentLocale === 'en' ? 'JoyfulPath' : 'مسار الفرح'}</span>
+            <span className="text-xl font-black text-on-surface">{currentLocale === 'en' ? 'newsl w nwasl ll sama' : 'نوصل و نوصل للسماء'}</span>
           </div>
           <p className="text-sm max-w-md mx-auto leading-relaxed">
             {currentLocale === 'en'
@@ -186,7 +186,7 @@ export default function PublicLayout({
             <Link href="/terms" className="hover:text-primary">{currentLocale === 'en' ? 'Terms of Service' : 'شروط الخدمة'}</Link>
           </div>
           <p className="text-xs opacity-60">
-            &copy; {year || ''} {currentLocale === 'en' ? 'JoyfulPath Sunday School. All rights reserved.' : 'مدارس الأحد مسار الفرح. جميع الحقوق محفوظة.'}
+            &copy; {year || ''} {currentLocale === 'en' ? 'newsl w nwasl ll sama Sunday School. All rights reserved.' : 'مدارس الأحد نوصل و نوصل للسماء. جميع الحقوق محفوظة.'}
           </p>
         </div>
         <div className="absolute inset-0 bg-coptic-pattern opacity-[0.02] pointer-events-none" />

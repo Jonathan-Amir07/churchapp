@@ -1,4 +1,4 @@
-﻿'use client';
+'use client';
 
 import { useState } from 'react';
 import { useTranslations, useLocale } from 'next-intl';
@@ -87,6 +87,8 @@ export default function StudentBadges() {
   const tGamification = useTranslations('gamification');
   const tCommon = useTranslations('common');
   const tBadges = useTranslations('badges');
+  const locale = useLocale();
+  const isAr = locale === 'ar';
   const [selectedBadge, setSelectedBadge] = useState<Badge | null>(null);
 
   const unlockedCount = MOCK_BADGES.filter((b) => b.unlocked).length;
@@ -110,8 +112,6 @@ export default function StudentBadges() {
       {/* Grid of Badges */}
       <div className="grid grid-cols-2 sm:grid-cols-3 gap-6">
         {MOCK_BADGES.map((badge) => {
-          const locale = useLocale();
-  const isAr = locale === 'ar';
           const name = isAr ? badge.nameAr : badge.nameEn;
           const description = isAr ? badge.descriptionAr : badge.descriptionEn;
 
@@ -179,10 +179,10 @@ export default function StudentBadges() {
 
             <div className="space-y-2">
               <h3 className="text-xl font-black text-on-surface">
-                {tCommon('appName') !== 'JoyfulPath' ? selectedBadge.nameAr : selectedBadge.nameEn}
+                {tCommon('appName') !== 'newsl w nwasl ll sama' ? selectedBadge.nameAr : selectedBadge.nameEn}
               </h3>
               <p className="text-sm text-on-surface-variant max-w-xs mx-auto leading-relaxed">
-                {tCommon('appName') !== 'JoyfulPath' ? selectedBadge.descriptionAr : selectedBadge.descriptionEn}
+                {tCommon('appName') !== 'newsl w nwasl ll sama' ? selectedBadge.descriptionAr : selectedBadge.descriptionEn}
               </p>
             </div>
 

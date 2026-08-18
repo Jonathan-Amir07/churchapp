@@ -55,7 +55,7 @@ export default function CompleteProfilePage() {
     <div className="max-w-2xl mx-auto p-6 bg-white dark:bg-gray-800 rounded-xl shadow-lg mt-10">
       <h1 className="text-2xl font-bold mb-6 text-gray-900 dark:text-white">Complete Your Profile</h1>
       <p className="text-gray-600 dark:text-gray-400 mb-8">
-        Welcome to JoyfulPath! Before you can access the dashboard, we need a little more information about you.
+        Welcome to newsl w nwasl ll sama! Before you can access the dashboard, we need a little more information about you.
       </p>
 
       <form onSubmit={handleSubmit} className="space-y-6">

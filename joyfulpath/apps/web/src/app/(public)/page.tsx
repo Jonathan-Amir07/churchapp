@@ -50,7 +50,7 @@ export default function LandingPage() {
   ];
 
   const testimonials = [
-    { quote: "JoyfulPath turned Sunday school into an exciting adventure. I love earning badges!", author: "Jonathan, Child (11 yo)", authorAr: "جون، مخدوم (11 سنة)" },
+    { quote: "newsl w nwasl ll sama turned Sunday school into an exciting adventure. I love earning badges!", author: "Jonathan, Child (11 yo)", authorAr: "جون، مخدوم (11 سنة)" },
     { quote: "Being able to see my child's attendance and quiz progress in real-time is amazing.", author: "Mary Faith, Parent", authorAr: "ماري فايث، ولي أمر" }
   ];
 
@@ -197,8 +197,8 @@ export default function LandingPage() {
             </h3>
             <p className="text-on-surface-variant text-base leading-relaxed font-medium relative z-10">
               {currentLocale === 'en'
-                ? 'Sunday School was founded by St. Archdeacon Habib Girgis to preserve the Coptic faith across generations. JoyfulPath honors this legacy by using modern technology to connect our youth with the timeless wisdom of the Church fathers.'
-                : 'تأسست مدارس الأحد على يد القديس الأرشيدياكون حبيب جرجس للحفاظ على الإيمان القبطي عبر الأجيال. تكرم مسار الفرح هذا التراث باستخدام التكنولوجيا الحديثة لربط شبابنا بحكمة آباء الكنيسة الخالدة.'}
+                ? 'Sunday School was founded by St. Archdeacon Habib Girgis to preserve the Coptic faith across generations. newsl w nwasl ll sama honors this legacy by using modern technology to connect our youth with the timeless wisdom of the Church fathers.'
+                : 'تأسست مدارس الأحد على يد القديس الأرشيدياكون حبيب جرجس للحفاظ على الإيمان القبطي عبر الأجيال. تكرم نوصل و نوصل للسماء هذا التراث باستخدام التكنولوجيا الحديثة لربط شبابنا بحكمة آباء الكنيسة الخالدة.'}
             </p>
           </div>
         </div>
@@ -359,7 +359,7 @@ export default function LandingPage() {
       <section id="gallery" className="max-w-7xl mx-auto px-4 md:px-8 space-y-12 mb-16">
         <div className="text-center space-y-4">
           <h2 className="text-3xl md:text-4xl font-extrabold tracking-tight text-on-surface">
-            {currentLocale === 'en' ? 'JoyfulPath Gallery' : 'معرض الصور'}
+            {currentLocale === 'en' ? 'newsl w nwasl ll sama Gallery' : 'معرض صور نوصل و نوصل للسماء'}
           </h2>
           <div className="w-24 h-1.5 bg-secondary mx-auto rounded-full" />
         </div>

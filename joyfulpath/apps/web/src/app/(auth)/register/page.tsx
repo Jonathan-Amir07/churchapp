@@ -112,7 +112,7 @@ export default function RegisterPage() {
                 <path d="M12 2V22M7 7H17" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
               </svg>
             </div>
-            <span className="text-2xl font-black tracking-tight">{currentLocale === 'en' ? 'JoyfulPath' : 'مسار الفرح'}</span>
+            <span className="text-2xl font-black tracking-tight">{currentLocale === 'en' ? 'newsl w nwasl ll sama' : 'نوصل و نوصل للسماء'}</span>
           </div>
 
           <div className="relative z-10 space-y-6 max-w-sm mt-12">
@@ -156,7 +156,7 @@ export default function RegisterPage() {
           <div className="hidden md:block mb-8">
             <h2 className="text-3xl font-extrabold text-on-surface">{currentLocale === 'en' ? 'Create Account' : 'إنشاء حساب'}</h2>
             <p className="text-sm font-medium text-on-surface-variant mt-2">
-              {currentLocale === 'en' ? 'Join the JoyfulPath community.' : 'انضم لمجتمع مسار الفرح.'}
+              {currentLocale === 'en' ? 'Join the newsl w nwasl ll sama community.' : 'انضم لمجتمع نوصل و نوصل للسماء.'}
             </p>
           </div>
 

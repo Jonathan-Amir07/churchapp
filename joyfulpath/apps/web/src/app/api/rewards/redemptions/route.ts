@@ -7,7 +7,7 @@ export async function GET(req: NextRequest) {
     const session = await requireAuth();
     if (session instanceof NextResponse) return session;
     const user = session.user;
-    let whereClause: any = {};
+    const whereClause: any = {};
     if (user.role === 'student') {
       whereClause.studentId = user.id;
     } else if (user.role !== 'admin' && user.role !== 'priest') {

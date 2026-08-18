@@ -27,7 +27,7 @@ export const metadata: Metadata = {
   description:
     'An engaging gamified learning platform for Sunday School children. Learn Bible stories, earn XP, unlock badges, and climb the leaderboard!',
   keywords: ['Sunday School', 'Bible', 'gamified learning', 'children', 'education', 'church'],
-  authors: [{ name: 'JoyfulPath' }],
+  authors: [{ name: 'newsl w nwasl ll sama' }],
   openGraph: {
     title: 'نوصل و نوصل للسماء — مدارس الأحد للتعلم التفاعلي',
     description: 'Learn Bible stories, earn XP, unlock badges!',
