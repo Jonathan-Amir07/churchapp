@@ -10,7 +10,7 @@ export async function GET(req: NextRequest) {
     const whereClause: any = {};
     if (user.role === 'student') {
       whereClause.studentId = user.id;
-    } else if (user.role !== 'admin' && user.role !== 'priest') {
+    } else if (user.role !== 'admin' && user.role !== 'priest' && user.role !== 'instructor') {
       return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
     }
 
@@ -69,6 +69,25 @@ export async function POST(req: NextRequest) {
     const student = await prisma.user.findUnique({ where: { id: user.id } });
     if (!student || student.totalPoints < reward.pointsCost) {
       return NextResponse.json({ error: 'Not enough points' }, { status: 400 });
+    }
+
+    // Enforce 2-gifts-per-month limit
+    const now = new Date();
+    const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+    const endOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0, 23, 59, 59, 999);
+    
+    const monthlyRedemptions = await prisma.rewardRedemption.count({
+      where: {
+        studentId: user.id,
+        createdAt: {
+          gte: startOfMonth,
+          lte: endOfMonth
+        }
+      }
+    });
+
+    if (monthlyRedemptions >= 2) {
+      return NextResponse.json({ error: 'Monthly redemption limit reached (max 2 gifts per month)' }, { status: 400 });
     }
 
     // Process inside a transaction

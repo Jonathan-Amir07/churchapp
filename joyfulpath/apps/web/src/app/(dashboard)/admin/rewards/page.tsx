@@ -33,6 +33,7 @@ export default function AdminRewards() {
   const [stock, setStock] = useState(10);
   const [type, setType] = useState<'digital' | 'physical'>('digital');
   const [icon, setIcon] = useState('emoji_events');
+  const [imageUrl, setImageUrl] = useState('');
 
   const fetchData = useCallback(async () => {
     try {
@@ -94,7 +95,7 @@ export default function AdminRewards() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          title, titleAr, description, descriptionAr, pointsCost, stock, type, icon
+          title, titleAr, description, descriptionAr, pointsCost, stock, type, icon, imageUrl
         })
       });
 
@@ -112,13 +113,14 @@ export default function AdminRewards() {
         setStock(10);
         setType('digital');
         setIcon('emoji_events');
+        setImageUrl('');
       } else {
         addToast('Failed to create reward', 'error');
       }
     } catch (error) {
       addToast('Error occurred', 'error');
     }
-  }, [title, titleAr, description, descriptionAr, pointsCost, stock, type, icon, addToast, tRewards, fetchData]);
+  }, [title, titleAr, description, descriptionAr, pointsCost, stock, type, icon, imageUrl, addToast, tRewards, fetchData]);
 
   const handleProcessSubmit = useCallback(async (e: React.FormEvent) => {
     e.preventDefault();
@@ -209,8 +211,12 @@ export default function AdminRewards() {
             <Card key={item.id} className="border border-outline-variant bg-surface-container-lowest shadow-sm flex flex-col justify-between">
               <CardContent className="p-6 space-y-4">
                 <div className="flex justify-between items-start gap-4">
-                  <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center">
-                    <span className="material-symbols-outlined text-[28px] text-primary">{item.icon}</span>
+                  <div className="w-16 h-16 rounded-xl bg-primary/10 flex items-center justify-center overflow-hidden">
+                    {item.imageUrl ? (
+                      <img src={item.imageUrl} alt={item.title} className="w-full h-full object-cover" />
+                    ) : (
+                      <span className="material-symbols-outlined text-[32px] text-primary">{item.icon}</span>
+                    )}
                   </div>
                   <span className="text-xs font-black bg-secondary/10 text-secondary px-2.5 py-1 rounded-full border border-secondary/20">
                     {tRewards('cost', { points: item.pointsCost })}
@@ -320,8 +326,13 @@ export default function AdminRewards() {
               </div>
               <div className="space-y-1.5">
                 <label className="text-xs font-bold text-on-surface-variant">{tRewards('materialIcon')}</label>
-                <Input required value={icon} onChange={(e) => setIcon(e.target.value)} />
+                <Input required={!imageUrl} value={icon} onChange={(e) => setIcon(e.target.value)} />
               </div>
+            </div>
+
+            <div className="space-y-1.5">
+              <label className="text-xs font-bold text-on-surface-variant">Image URL (Optional)</label>
+              <Input value={imageUrl} onChange={(e) => setImageUrl(e.target.value)} placeholder="https://example.com/image.jpg" />
             </div>
 
             <div className="flex gap-3 justify-end pt-4 border-t border-outline-variant">

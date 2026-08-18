@@ -7,7 +7,7 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
     const session = await requireAuth();
     if (session instanceof NextResponse) return session;
     const user = session.user;
-    if (user.role !== 'admin' && user.role !== 'priest') {
+    if (user.role !== 'admin' && user.role !== 'priest' && user.role !== 'instructor') {
       return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
     }
 

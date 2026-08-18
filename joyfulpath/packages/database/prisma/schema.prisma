@@ -594,6 +594,7 @@ model Reward {
   title          String
   description    String?
   type           String
+  imageUrl       String?  @map("image_url")
   metadata       String   @default("{}")
   costXp         Int      @default(0) @map("cost_xp")
   inventoryCount Int?     @map("inventory_count")

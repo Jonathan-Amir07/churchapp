@@ -510,5 +510,27 @@
     "locked": "Locked",
     "digitalAsset": "Digital Asset",
     "note": "Note:"
+  },
+  "store": {
+    "items": {
+      "1": {
+        "title": "Solib El Baraka",
+        "type": "Physical"
+      },
+      "2": {
+        "title": "Ketab Salat",
+        "type": "Physical"
+      },
+      "3": {
+        "title": "Selsela",
+        "type": "Physical"
+      },
+      "4": {
+        "title": "Hedya Roheya",
+        "type": "Physical"
+      }
+    },
+    "redeemBtn": "Redeem Reward",
+    "points": "Your Points"
   }
 }

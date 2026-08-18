@@ -21,7 +21,8 @@ export async function GET(req: NextRequest) {
       pointsCost: r.pointsCost,
       stock: r.stockLevel,
       type: r.type,
-      icon: r.imageUrl || 'emoji_events',
+      icon: r.imageUrl && !r.imageUrl.startsWith('http') ? r.imageUrl : 'emoji_events',
+      imageUrl: r.imageUrl?.startsWith('http') ? r.imageUrl : null,
     }));
 
     return NextResponse.json(formatted);
@@ -38,12 +39,12 @@ export async function POST(req: NextRequest) {
     const session = await requireAuth();
     if (session instanceof NextResponse) return session;
     const user = session.user;
-    if (user.role !== 'admin' && user.role !== 'priest') {
+    if (user.role !== 'admin' && user.role !== 'priest' && user.role !== 'instructor') {
       return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
     }
 
     const body = await req.json();
-    const { title, titleAr, description, descriptionAr, pointsCost, stock, type, icon } = body;
+    const { title, titleAr, description, descriptionAr, pointsCost, stock, type, icon, imageUrl } = body;
 
     if (!title || !titleAr || !description || !descriptionAr) {
       return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
@@ -58,7 +59,7 @@ export async function POST(req: NextRequest) {
         pointsCost: parseInt(pointsCost) || 50,
         stockLevel: parseInt(stock) || 10,
         type: type || 'digital',
-        imageUrl: icon || 'emoji_events',
+        imageUrl: imageUrl || icon || 'emoji_events',
       }
     });
 

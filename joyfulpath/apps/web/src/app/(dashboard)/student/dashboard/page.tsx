@@ -208,7 +208,7 @@ export default function StudentDashboard() {
             </div>
           </CardContent>
           <div className="p-5 pt-0">
-            <Link href="/student/rewards">
+            <Link href="/student/store">
               <Button variant="outline" fullWidth size="sm" className="border-yellow-200 text-yellow-700 hover:bg-yellow-50">
                 View Rewards
               </Button>
