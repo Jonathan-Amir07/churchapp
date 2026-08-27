@@ -11,8 +11,8 @@ export class UsersService {
     return this.prisma.user.create({ data });
   }
 
-  async findAll(currentUser: any, query: any): Promise<User[]> {
-    const { name, phone, school, address } = query;
+  async findAll(currentUser: any, query: any) {
+    const { name, phone, school, address, page = 1, limit = 10, sortBy = 'createdAt', sortDesc = 'true' } = query;
     const where: Prisma.UserWhereInput = {};
 
     // Advanced search filters
@@ -20,33 +20,45 @@ export class UsersService {
       where.OR = [
         { firstName: { contains: name, mode: 'insensitive' } },
         { lastName: { contains: name, mode: 'insensitive' } },
-        { displayName: { contains: name, mode: 'insensitive' } }
+        { displayName: { contains: name, mode: 'insensitive' } },
       ];
     }
     if (phone) where.phone = { contains: phone };
     if (school) where.school = { contains: school, mode: 'insensitive' };
     if (address) where.address = { contains: address, mode: 'insensitive' };
-    
+
     // Role-based visibility
     if (currentUser.role === 'student') {
       where.id = currentUser.userId;
     } else if (currentUser.role === 'parent') {
-      const parentUser = await this.prisma.user.findUnique({ where: { id: currentUser.userId }});
+      const parentUser = await this.prisma.user.findUnique({
+        where: { id: currentUser.userId },
+      });
       if (parentUser?.familyId) {
         where.familyId = parentUser.familyId;
       } else {
         where.id = currentUser.userId; // fallback if no family
       }
     } else if (currentUser.role === 'instructor') {
-      // Find classes where instructor teaches
-      const classes = await this.prisma.class.findMany({ where: { createdBy: currentUser.userId } }); // Simplified relation for now
-      const classIds = classes.map(c => c.id);
+      const classes = await this.prisma.class.findMany({
+        where: { createdBy: currentUser.userId },
+      });
+      const classIds = classes.map((c) => c.id);
       where.classMembers = {
-        some: { classId: { in: classIds } }
+        some: { classId: { in: classIds } },
       };
     }
 
-    return this.prisma.user.findMany({ where });
+    const skip = (Number(page) - 1) * Number(limit);
+    const take = Number(limit);
+    const orderBy = { [sortBy]: sortDesc === 'true' ? 'desc' : 'asc' };
+
+    const [data, total] = await Promise.all([
+      this.prisma.user.findMany({ where, skip, take, orderBy }),
+      this.prisma.user.count({ where }),
+    ]);
+
+    return { data, total, page: Number(page), limit: take };
   }
 
   async completeProfile(id: string, data: any): Promise<User> {
@@ -60,15 +72,15 @@ export class UsersService {
   }
 
   async getSiblings(id: string): Promise<User[]> {
-    const user = await this.prisma.user.findUnique({ where: { id }});
+    const user = await this.prisma.user.findUnique({ where: { id } });
     if (!user || !user.familyId) return [];
-    
+
     return this.prisma.user.findMany({
       where: {
         familyId: user.familyId,
         id: { not: id },
-        role: 'student'
-      }
+        role: 'student',
+      },
     });
   }
 
@@ -79,11 +91,8 @@ export class UsersService {
   async findByUsernameOrEmail(identifier: string): Promise<User | null> {
     return this.prisma.user.findFirst({
       where: {
-        OR: [
-          { username: identifier },
-          { email: identifier }
-        ]
-      }
+        OR: [{ username: identifier }, { email: identifier }],
+      },
     });
   }
 
@@ -103,54 +112,83 @@ export class UsersService {
     // Soft delete
     return this.prisma.user.update({
       where: { id },
-      data: { 
-        isActive: false, 
+      data: {
+        isActive: false,
         accountStatus: 'archived',
-        deletedAt: new Date()
-      }
+        deletedAt: new Date(),
+      },
     });
   }
 
-  async importCsv(csvData: string): Promise<any> {
-    const lines = csvData.split('\n').map(l => l.trim()).filter(l => l);
-    if (lines.length < 2) throw new Error('CSV is empty or missing data');
-    
-    const headers = lines[0].split(',').map(h => h.trim());
-    const results = { imported: 0, errors: [] as string[] };
-    
-    for (let i = 1; i < lines.length; i++) {
-      const line = lines[i];
-      const cols = line.split(',').map(c => c.trim());
-      
-      try {
-        const passwordHash = await bcrypt.hash(cols[5] || 'Welcome123!', 10);
-        let username = cols[3];
-        if (!username) {
-          const baseUsername = `${cols[0]}.${cols[1]}`.toLowerCase().replace(/[^a-z0-9]/g, '');
-          const randomSuffix = Math.floor(Math.random() * 10000).toString().padStart(4, '0');
-          username = `${baseUsername}${randomSuffix}`;
-        }
-        await this.prisma.user.create({
-          data: {
-            firstName: cols[0],
-            lastName: cols[1],
-            displayName: cols[2] || `${cols[0]} ${cols[1]}`,
-            username: username,
-            email: cols[4] || null,
-            passwordHash,
-            role: cols[6] || 'student',
-            churchId: cols[7] || null,
-            branchId: cols[8] || null,
-            // Assuming we'll save parent info in metadata or separate table later
-            forcePasswordChange: true,
+  async importExcel(fileBuffer: Buffer): Promise<any> {
+    const xlsx = await import('xlsx');
+    const workbook = xlsx.read(fileBuffer, { type: 'buffer' });
+    const sheetName = workbook.SheetNames[0];
+    const sheet = workbook.Sheets[sheetName];
+    const rows = xlsx.utils.sheet_to_json<any>(sheet);
+
+    if (rows.length === 0) throw new Error('Excel file is empty or missing data');
+
+    const results = { created: 0, duplicate: 0, invalid: 0, failed: 0, reasons: [] as string[] };
+
+    await this.prisma.$transaction(async (tx) => {
+      for (let i = 0; i < rows.length; i++) {
+        const row = rows[i];
+        try {
+          if (!row.firstName || !row.lastName) {
+            results.invalid++;
+            results.reasons.push(`Row ${i + 2}: Missing firstName or lastName`);
+            continue;
           }
-        });
-        results.imported++;
-      } catch (err: any) {
-        results.errors.push(`Row ${i + 1}: ${err.message}`);
+
+          let username = row.username;
+          if (!username) {
+            const baseUsername = `${row.firstName}.${row.lastName}`.toLowerCase().replace(/[^a-z0-9]/g, '');
+            const randomSuffix = Math.floor(Math.random() * 10000).toString().padStart(4, '0');
+            username = `${baseUsername}${randomSuffix}`;
+          }
+
+          // Check duplicate
+          const existing = await tx.user.findFirst({
+            where: {
+              OR: [
+                { username: username },
+                ...(row.email ? [{ email: row.email }] : []),
+              ]
+            }
+          });
+
+          if (existing) {
+            results.duplicate++;
+            results.reasons.push(`Row ${i + 2}: Duplicate username or email`);
+            continue;
+          }
+
+          const passwordHash = await bcrypt.hash(row.password || 'Welcome123!', 10);
+
+          await tx.user.create({
+            data: {
+              firstName: row.firstName,
+              lastName: row.lastName,
+              displayName: row.displayName || `${row.firstName} ${row.lastName}`,
+              username: username,
+              email: row.email || null,
+              passwordHash,
+              role: row.role || 'student',
+              churchId: row.churchId || null,
+              branchId: row.branchId || null,
+              forcePasswordChange: true,
+            },
+          });
+          results.created++;
+        } catch (err: any) {
+          results.failed++;
+          results.reasons.push(`Row ${i + 2}: ${err.message}`);
+          throw new Error('Transaction rolled back due to error'); // Will rollback transaction
+        }
       }
-    }
-    
+    });
+
     return results;
   }
 }

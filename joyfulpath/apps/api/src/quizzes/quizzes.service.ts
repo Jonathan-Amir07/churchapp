@@ -1,24 +1,37 @@
-import { Injectable, NotFoundException, ForbiddenException, BadRequestException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  ForbiddenException,
+  BadRequestException,
+} from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateQuizDto } from './dto/create-quiz.dto';
 import { CreateQuestionDto } from './dto/create-question.dto';
 import { SubmitAttemptDto } from './dto/submit-attempt.dto';
+import { GamificationService } from '../gamification/gamification.service';
 
 @Injectable()
 export class QuizzesService {
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    private prisma: PrismaService,
+    private gamificationService: GamificationService,
+  ) {}
 
   async createQuiz(createQuizDto: CreateQuizDto, userId: string, role: string) {
     if (role !== 'instructor' && role !== 'admin') {
-      throw new ForbiddenException('Only instructors or admins can create quizzes');
+      throw new ForbiddenException(
+        'Only instructors or admins can create quizzes',
+      );
     }
 
     if (role === 'instructor') {
       const classRecord = await this.prisma.class.findUnique({
-        where: { id: createQuizDto.classId }
+        where: { id: createQuizDto.classId },
       });
       if (!classRecord || classRecord.createdBy !== userId) {
-        throw new ForbiddenException('You can only create quizzes for your own classes');
+        throw new ForbiddenException(
+          'You can only create quizzes for your own classes',
+        );
       }
     }
 
@@ -26,11 +39,16 @@ export class QuizzesService {
       data: {
         ...createQuizDto,
         createdBy: userId,
-      }
+      },
     });
   }
 
-  async addQuestion(quizId: string, createQuestionDto: CreateQuestionDto, userId: string, role: string) {
+  async addQuestion(
+    quizId: string,
+    createQuestionDto: CreateQuestionDto,
+    userId: string,
+    role: string,
+  ) {
     const quiz = await this.prisma.quiz.findUnique({ where: { id: quizId } });
     if (!quiz) throw new NotFoundException('Quiz not found');
 
@@ -46,53 +64,78 @@ export class QuizzesService {
         pointsValue: createQuestionDto.pointsValue,
         explanation: createQuestionDto.explanation,
         answers: {
-          create: createQuestionDto.answers?.map(ans => ({
-            answerText: ans.answerText,
-            isCorrect: ans.isCorrect || false
-          })) || []
-        }
+          create:
+            createQuestionDto.answers?.map((ans) => ({
+              answerText: ans.answerText,
+              isCorrect: ans.isCorrect || false,
+            })) || [],
+        },
       },
-      include: { answers: true }
+      include: { answers: true },
     });
   }
 
   async findAllForClass(classId: string, userId: string, role: string) {
     if (role === 'student') {
       const membership = await this.prisma.classMember.findUnique({
-        where: { classId_userId: { classId, userId } }
+        where: { classId_userId: { classId, userId } },
       });
-      if (!membership) throw new ForbiddenException('You are not a member of this class');
+      if (!membership)
+        throw new ForbiddenException('You are not a member of this class');
     } else if (role === 'instructor') {
-      const classRecord = await this.prisma.class.findUnique({ where: { id: classId } });
+      const classRecord = await this.prisma.class.findUnique({
+        where: { id: classId },
+      });
       if (!classRecord || classRecord.createdBy !== userId) {
         throw new ForbiddenException('You do not own this class');
       }
     }
 
-    return this.prisma.quiz.findMany({
+    const quizzes = await this.prisma.quiz.findMany({
       where: { classId, deletedAt: null },
       include: {
         questions: { include: { answers: true } },
-        attempts: role === 'student' ? { where: { studentId: userId } } : true
-      }
+        attempts: role === 'student' ? { where: { studentId: userId } } : true,
+      },
     });
+
+    if (role === 'student') {
+      quizzes.forEach((quiz) => {
+        quiz.questions.forEach((q) => {
+          q.answers.forEach((a: any) => {
+            delete a.isCorrect;
+          });
+        });
+      });
+    }
+
+    return quizzes;
   }
 
   async findOne(id: string, userId: string, role: string) {
     const quiz = await this.prisma.quiz.findUnique({
       where: { id, deletedAt: null },
       include: {
-        questions: { include: { answers: true } }
-      }
+        questions: { include: { answers: true } },
+      },
     });
     if (!quiz) throw new NotFoundException('Quiz not found');
+
+    if (role === 'student') {
+      quiz.questions.forEach((q) => {
+        q.answers.forEach((a: any) => {
+          delete a.isCorrect;
+        });
+      });
+    }
+
     return quiz;
   }
 
   async startAttempt(quizId: string, userId: string) {
     const quiz = await this.prisma.quiz.findUnique({
       where: { id: quizId },
-      include: { attempts: { where: { studentId: userId } } }
+      include: { attempts: { where: { studentId: userId } } },
     });
 
     if (!quiz) throw new NotFoundException('Quiz not found');
@@ -111,56 +154,85 @@ export class QuizzesService {
         answersSnapshot: '{}',
         attemptNumber: quiz.attempts.length + 1,
         startedAt: new Date(),
-        completedAt: new Date() // Temp value, will be updated on submit
-      }
+        completedAt: new Date(), // Temp value, will be updated on submit
+      },
     });
   }
 
-  async submitAttempt(attemptId: string, submitDto: SubmitAttemptDto, userId: string) {
-    const attempt = await this.prisma.quizAttempt.findUnique({
-      where: { id: attemptId },
-      include: { quiz: { include: { questions: { include: { answers: true } } } } }
-    });
+  async submitAttempt(
+    attemptId: string,
+    submitDto: SubmitAttemptDto,
+    userId: string,
+  ) {
+    const { updatedAttempt, attempt, xpAwarded, pointsAwarded } = await this.prisma.$transaction(async (tx) => {
+      const attempt = await tx.quizAttempt.findUnique({
+        where: { id: attemptId },
+        include: {
+          quiz: { include: { questions: { include: { answers: true } } } },
+        },
+      });
 
-    if (!attempt || attempt.studentId !== userId) {
-      throw new NotFoundException('Attempt not found');
-    }
+      if (!attempt || attempt.studentId !== userId) {
+        throw new NotFoundException('Attempt not found');
+      }
 
-    let score = 0;
-    let totalPossible = 0;
-    const { questions } = attempt.quiz;
+      if (attempt.answersSnapshot !== '{}') {
+        throw new BadRequestException('Attempt already submitted');
+      }
 
-    questions.forEach(question => {
-      totalPossible += question.pointsValue;
-      const studentAnswer = submitDto.answers.find(a => a.questionId === question.id);
-      
-      if (studentAnswer && question.questionType !== 'SHORT') {
-        const correctAns = question.answers.find(a => a.isCorrect);
-        if (correctAns && correctAns.id === studentAnswer.answer) {
-          score += question.pointsValue;
+      let score = 0;
+      let totalPossible = 0;
+      const { questions } = attempt.quiz;
+
+      questions.forEach((question) => {
+        totalPossible += question.pointsValue;
+        const studentAnswer = submitDto.answers.find(
+          (a) => a.questionId === question.id,
+        );
+
+        if (studentAnswer && question.questionType !== 'SHORT') {
+          const correctAns = question.answers.find((a) => a.isCorrect);
+          if (correctAns && correctAns.id === studentAnswer.answer) {
+            score += question.pointsValue;
+          }
         }
-      }
+      });
+
+      const percentage = totalPossible > 0 ? (score / totalPossible) * 100 : 0;
+      const passed = percentage >= attempt.quiz.passingScore;
+
+      // Scale XP and Points based on percentage
+      const xpAwarded = Math.round((percentage / 100) * attempt.quiz.xpReward);
+      const pointsAwarded = Math.round(
+        (percentage / 100) * attempt.quiz.pointsReward,
+      );
+
+      const updatedAttempt = await tx.quizAttempt.update({
+        where: { id: attemptId },
+        data: {
+          score,
+          totalPossible,
+          percentage,
+          passed,
+          answersSnapshot: JSON.stringify(submitDto.answers),
+          xpAwarded,
+          pointsAwarded,
+          completedAt: new Date(),
+        },
+      });
+
+      return { updatedAttempt, attempt, xpAwarded, pointsAwarded };
     });
 
-    const percentage = totalPossible > 0 ? (score / totalPossible) * 100 : 0;
-    const passed = percentage >= attempt.quiz.passingScore;
-    
-    // Scale XP and Points based on percentage
-    const xpAwarded = Math.round((percentage / 100) * attempt.quiz.xpReward);
-    const pointsAwarded = Math.round((percentage / 100) * attempt.quiz.pointsReward);
+    await this.gamificationService.awardActivity(
+      userId,
+      'quiz',
+      attempt.quiz.id, // using quizId so they can only max out on the quiz once
+      xpAwarded,
+      pointsAwarded,
+    );
+    await this.gamificationService.processXpGain(userId);
 
-    return this.prisma.quizAttempt.update({
-      where: { id: attemptId },
-      data: {
-        score,
-        totalPossible,
-        percentage,
-        passed,
-        answersSnapshot: JSON.stringify(submitDto.answers),
-        xpAwarded,
-        pointsAwarded,
-        completedAt: new Date()
-      }
-    });
+    return updatedAttempt;
   }
 }

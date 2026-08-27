@@ -2,15 +2,754 @@
 > joyfulpath@0.1.0 build
 > next build
 
-⚠ Warning: Next.js inferred your workspace root, but it may not be correct.
- We detected multiple lockfiles and selected the directory of D:\Github Projects\churchapp\joyfulpath\package-lock.json as the root directory.
- To silence this warning, set `turbopack.root` in your Next.js config, or consider removing one of the lockfiles if it's not needed.
-   See https://nextjs.org/docs/app/api-reference/config/next-config-js/turbopack#root-directory for more information.
- Detected additional lockfiles: 
-   * D:\Github Projects\churchapp\joyfulpath\apps\web\package-lock.json
-
 ▲ Next.js 16.2.9 (Turbopack)
 - Environments: .env.local
 
-⚠ The "middleware" file convention is deprecated. Please use "proxy" instead. Learn more: https://nextjs.org/docs/messages/middleware-to-proxy
   Creating an optimized production build ...
+Turbopack build encountered 1 warnings:
+[externals]/@prisma/client
+unexpected export *
+export * used with module [externals]/@prisma/client [external] (@prisma/client, cjs, [project]/packages/database/node_modules/@prisma/client) which is a CommonJS module with exports only available at runtime
+List all export names manually (`export { a, b, c } from "...") or rewrite the module to ESM, to avoid the additional runtime code.`
+
+Import trace:
+  external:
+    [externals]/@prisma/client [external]
+    ./apps/web/src/lib/db.ts [App Route]
+    ./apps/web/src/app/api/test-db/route.ts [App Route]
+
+
+✓ Compiled successfully in 14.1s
+  Running TypeScript ...
+  Finished TypeScript in 9.9s ...
+  Collecting page data using 15 workers ...
+  Generating static pages using 15 workers (0/124) ...
+auth() error: Error: Dynamic server usage: Route /admin/students couldn't be rendered statically because it used `cookies`. See more info here: https://nextjs.org/docs/messages/dynamic-server-error
+    at y (D:\Github Projects\churchapp\joyfulpath\apps\web\.next\server\chunks\ssr\0rrk_next_dist_14kn3u_._.js:1:12427)
+    at n (D:\Github Projects\churchapp\joyfulpath\apps\web\.next\server\chunks\ssr\0rrk_next_0zu4w2j._.js:1:9269)
+    at g (D:\Github Projects\churchapp\joyfulpath\apps\web\.next\server\chunks\ssr\apps_web_src_0_484rv._.js:1:4704)
+    at h (D:\Github Projects\churchapp\joyfulpath\apps\web\.next\server\chunks\ssr\apps_web_src_0_484rv._.js:1:5067)
+    at stringify (<anonymous>) {
+  description: "Route /admin/students couldn't be rendered statically because it used `cookies`. See more info here: https://nextjs.org/docs/messages/dynamic-server-error",
+  digest: 'DYNAMIC_SERVER_USAGE'
+}
+auth() error: Error: Dynamic server usage: Route /priest/families couldn't be rendered statically because it used `cookies`. See more info here: https://nextjs.org/docs/messages/dynamic-server-error
+    at y (D:\Github Projects\churchapp\joyfulpath\apps\web\.next\server\chunks\ssr\0rrk_next_dist_14kn3u_._.js:1:12427)
+    at n (D:\Github Projects\churchapp\joyfulpath\apps\web\.next\server\chunks\ssr\0rrk_next_0zu4w2j._.js:1:9269)
+    at g (D:\Github Projects\churchapp\joyfulpath\apps\web\.next\server\chunks\ssr\apps_web_src_0_484rv._.js:1:4704)
+    at h (D:\Github Projects\churchapp\joyfulpath\apps\web\.next\server\chunks\ssr\apps_web_src_0_484rv._.js:1:5067)
+    at stringify (<anonymous>) {
+  description: "Route /priest/families couldn't be rendered statically because it used `cookies`. See more info here: https://nextjs.org/docs/messages/dynamic-server-error",
+  digest: 'DYNAMIC_SERVER_USAGE'
+}
+  Generating static pages using 15 workers (31/124) 
+auth() error: Error: Dynamic server usage: Route /student/attendance couldn't be rendered statically because it used `cookies`. See more info here: https://nextjs.org/docs/messages/dynamic-server-error
+    at y (D:\Github Projects\churchapp\joyfulpath\apps\web\.next\server\chunks\ssr\0rrk_next_dist_14kn3u_._.js:1:12427)
+    at n (D:\Github Projects\churchapp\joyfulpath\apps\web\.next\server\chunks\ssr\0rrk_next_0zu4w2j._.js:1:9269)
+    at g (D:\Github Projects\churchapp\joyfulpath\apps\web\.next\server\chunks\ssr\apps_web_src_0_484rv._.js:1:4704)
+    at h (D:\Github Projects\churchapp\joyfulpath\apps\web\.next\server\chunks\ssr\apps_web_src_0_484rv._.js:1:5067)
+    at stringify (<anonymous>) {
+  description: "Route /student/attendance couldn't be rendered statically because it used `cookies`. See more info here: https://nextjs.org/docs/messages/dynamic-server-error",
+  digest: 'DYNAMIC_SERVER_USAGE'
+}
+auth() error: Error: Dynamic server usage: Route /instructor/analytics couldn't be rendered statically because it used `cookies`. See more info here: https://nextjs.org/docs/messages/dynamic-server-error
+    at y (D:\Github Projects\churchapp\joyfulpath\apps\web\.next\server\chunks\ssr\0rrk_next_dist_14kn3u_._.js:1:12427)
+    at n (D:\Github Projects\churchapp\joyfulpath\apps\web\.next\server\chunks\ssr\0rrk_next_0zu4w2j._.js:1:9269)
+    at g (D:\Github Projects\churchapp\joyfulpath\apps\web\.next\server\chunks\ssr\apps_web_src_0_484rv._.js:1:4704)
+    at h (D:\Github Projects\churchapp\joyfulpath\apps\web\.next\server\chunks\ssr\apps_web_src_0_484rv._.js:1:5067)
+    at stringify (<anonymous>) {
+  description: "Route /instructor/analytics couldn't be rendered statically because it used `cookies`. See more info here: https://nextjs.org/docs/messages/dynamic-server-error",
+  digest: 'DYNAMIC_SERVER_USAGE'
+}
+auth() error: Error: Dynamic server usage: Route /admin/tasks couldn't be rendered statically because it used `cookies`. See more info here: https://nextjs.org/docs/messages/dynamic-server-error
+    at y (D:\Github Projects\churchapp\joyfulpath\apps\web\.next\server\chunks\ssr\0rrk_next_dist_14kn3u_._.js:1:12427)
+    at n (D:\Github Projects\churchapp\joyfulpath\apps\web\.next\server\chunks\ssr\0rrk_next_0zu4w2j._.js:1:9269)
+    at g (D:\Github Projects\churchapp\joyfulpath\apps\web\.next\server\chunks\ssr\apps_web_src_0_484rv._.js:1:4704)
+    at h (D:\Github Projects\churchapp\joyfulpath\apps\web\.next\server\chunks\ssr\apps_web_src_0_484rv._.js:1:5067)
+    at stringify (<anonymous>) {
+  description: "Route /admin/tasks couldn't be rendered statically because it used `cookies`. See more info here: https://nextjs.org/docs/messages/dynamic-server-error",
+  digest: 'DYNAMIC_SERVER_USAGE'
+}
+auth() error: Error: Dynamic server usage: Route /admin/users couldn't be rendered statically because it used `cookies`. See more info here: https://nextjs.org/docs/messages/dynamic-server-error
+    at y (D:\Github Projects\churchapp\joyfulpath\apps\web\.next\server\chunks\ssr\0rrk_next_dist_14kn3u_._.js:1:12427)
+    at n (D:\Github Projects\churchapp\joyfulpath\apps\web\.next\server\chunks\ssr\0rrk_next_0zu4w2j._.js:1:9269)
+    at g (D:\Github Projects\churchapp\joyfulpath\apps\web\.next\server\chunks\ssr\apps_web_src_0_484rv._.js:1:4704)
+    at h (D:\Github Projects\churchapp\joyfulpath\apps\web\.next\server\chunks\ssr\apps_web_src_0_484rv._.js:1:5067)
+    at stringify (<anonymous>) {
+  description: "Route /admin/users couldn't be rendered statically because it used `cookies`. See more info here: https://nextjs.org/docs/messages/dynamic-server-error",
+  digest: 'DYNAMIC_SERVER_USAGE'
+}
+auth() error: Error: Dynamic server usage: Route /instructor/attendance couldn't be rendered statically because it used `cookies`. See more info here: https://nextjs.org/docs/messages/dynamic-server-error
+    at y (D:\Github Projects\churchapp\joyfulpath\apps\web\.next\server\chunks\ssr\0rrk_next_dist_14kn3u_._.js:1:12427)
+    at n (D:\Github Projects\churchapp\joyfulpath\apps\web\.next\server\chunks\ssr\0rrk_next_0zu4w2j._.js:1:9269)
+    at g (D:\Github Projects\churchapp\joyfulpath\apps\web\.next\server\chunks\ssr\apps_web_src_0_484rv._.js:1:4704)
+    at h (D:\Github Projects\churchapp\joyfulpath\apps\web\.next\server\chunks\ssr\apps_web_src_0_484rv._.js:1:5067)
+    at stringify (<anonymous>) {
+  description: "Route /instructor/attendance couldn't be rendered statically because it used `cookies`. See more info here: https://nextjs.org/docs/messages/dynamic-server-error",
+  digest: 'DYNAMIC_SERVER_USAGE'
+}
+auth() error: Error: Dynamic server usage: Route /priest/students couldn't be rendered statically because it used `cookies`. See more info here: https://nextjs.org/docs/messages/dynamic-server-error
+    at y (D:\Github Projects\churchapp\joyfulpath\apps\web\.next\server\chunks\ssr\0rrk_next_dist_14kn3u_._.js:1:12427)
+    at n (D:\Github Projects\churchapp\joyfulpath\apps\web\.next\server\chunks\ssr\0rrk_next_0zu4w2j._.js:1:9269)
+    at g (D:\Github Projects\churchapp\joyfulpath\apps\web\.next\server\chunks\ssr\apps_web_src_0_484rv._.js:1:4704)
+    at h (D:\Github Projects\churchapp\joyfulpath\apps\web\.next\server\chunks\ssr\apps_web_src_0_484rv._.js:1:5067)
+    at stringify (<anonymous>) {
+  description: "Route /priest/students couldn't be rendered statically because it used `cookies`. See more info here: https://nextjs.org/docs/messages/dynamic-server-error",
+  digest: 'DYNAMIC_SERVER_USAGE'
+}
+auth() error: Error: Dynamic server usage: Route /priest/progress couldn't be rendered statically because it used `cookies`. See more info here: https://nextjs.org/docs/messages/dynamic-server-error
+    at y (D:\Github Projects\churchapp\joyfulpath\apps\web\.next\server\chunks\ssr\0rrk_next_dist_14kn3u_._.js:1:12427)
+    at n (D:\Github Projects\churchapp\joyfulpath\apps\web\.next\server\chunks\ssr\0rrk_next_0zu4w2j._.js:1:9269)
+    at g (D:\Github Projects\churchapp\joyfulpath\apps\web\.next\server\chunks\ssr\apps_web_src_0_484rv._.js:1:4704)
+    at h (D:\Github Projects\churchapp\joyfulpath\apps\web\.next\server\chunks\ssr\apps_web_src_0_484rv._.js:1:5067)
+    at stringify (<anonymous>) {
+  description: "Route /priest/progress couldn't be rendered statically because it used `cookies`. See more info here: https://nextjs.org/docs/messages/dynamic-server-error",
+  digest: 'DYNAMIC_SERVER_USAGE'
+}
+auth() error: Error: Dynamic server usage: Route /priest/reports couldn't be rendered statically because it used `cookies`. See more info here: https://nextjs.org/docs/messages/dynamic-server-error
+    at y (D:\Github Projects\churchapp\joyfulpath\apps\web\.next\server\chunks\ssr\0rrk_next_dist_14kn3u_._.js:1:12427)
+    at n (D:\Github Projects\churchapp\joyfulpath\apps\web\.next\server\chunks\ssr\0rrk_next_0zu4w2j._.js:1:9269)
+    at g (D:\Github Projects\churchapp\joyfulpath\apps\web\.next\server\chunks\ssr\apps_web_src_0_484rv._.js:1:4704)
+    at h (D:\Github Projects\churchapp\joyfulpath\apps\web\.next\server\chunks\ssr\apps_web_src_0_484rv._.js:1:5067)
+    at stringify (<anonymous>) {
+  description: "Route /priest/reports couldn't be rendered statically because it used `cookies`. See more info here: https://nextjs.org/docs/messages/dynamic-server-error",
+  digest: 'DYNAMIC_SERVER_USAGE'
+}
+auth() error: Error: Dynamic server usage: Route /complete-profile couldn't be rendered statically because it used `cookies`. See more info here: https://nextjs.org/docs/messages/dynamic-server-error
+    at y (D:\Github Projects\churchapp\joyfulpath\apps\web\.next\server\chunks\ssr\0rrk_next_dist_14kn3u_._.js:1:12427)
+    at n (D:\Github Projects\churchapp\joyfulpath\apps\web\.next\server\chunks\ssr\0rrk_next_0zu4w2j._.js:1:9269)
+    at g (D:\Github Projects\churchapp\joyfulpath\apps\web\.next\server\chunks\ssr\apps_web_src_0_484rv._.js:1:4704)
+    at h (D:\Github Projects\churchapp\joyfulpath\apps\web\.next\server\chunks\ssr\apps_web_src_0_484rv._.js:1:5067)
+    at stringify (<anonymous>) {
+  description: "Route /complete-profile couldn't be rendered statically because it used `cookies`. See more info here: https://nextjs.org/docs/messages/dynamic-server-error",
+  digest: 'DYNAMIC_SERVER_USAGE'
+}
+auth() error: Error: Dynamic server usage: Route /student/badges couldn't be rendered statically because it used `cookies`. See more info here: https://nextjs.org/docs/messages/dynamic-server-error
+    at y (D:\Github Projects\churchapp\joyfulpath\apps\web\.next\server\chunks\ssr\0rrk_next_dist_14kn3u_._.js:1:12427)
+    at n (D:\Github Projects\churchapp\joyfulpath\apps\web\.next\server\chunks\ssr\0rrk_next_0zu4w2j._.js:1:9269)
+    at g (D:\Github Projects\churchapp\joyfulpath\apps\web\.next\server\chunks\ssr\apps_web_src_0_484rv._.js:1:4704)
+    at h (D:\Github Projects\churchapp\joyfulpath\apps\web\.next\server\chunks\ssr\apps_web_src_0_484rv._.js:1:5067)
+    at stringify (<anonymous>) {
+  description: "Route /student/badges couldn't be rendered statically because it used `cookies`. See more info here: https://nextjs.org/docs/messages/dynamic-server-error",
+  digest: 'DYNAMIC_SERVER_USAGE'
+}
+auth() error: Error: Dynamic server usage: Route /instructor/dashboard couldn't be rendered statically because it used `cookies`. See more info here: https://nextjs.org/docs/messages/dynamic-server-error
+    at y (D:\Github Projects\churchapp\joyfulpath\apps\web\.next\server\chunks\ssr\0rrk_next_dist_14kn3u_._.js:1:12427)
+    at n (D:\Github Projects\churchapp\joyfulpath\apps\web\.next\server\chunks\ssr\0rrk_next_0zu4w2j._.js:1:9269)
+    at g (D:\Github Projects\churchapp\joyfulpath\apps\web\.next\server\chunks\ssr\apps_web_src_0_484rv._.js:1:4704)
+    at h (D:\Github Projects\churchapp\joyfulpath\apps\web\.next\server\chunks\ssr\apps_web_src_0_484rv._.js:1:5067)
+    at stringify (<anonymous>) {
+  description: "Route /instructor/dashboard couldn't be rendered statically because it used `cookies`. See more info here: https://nextjs.org/docs/messages/dynamic-server-error",
+  digest: 'DYNAMIC_SERVER_USAGE'
+}
+auth() error: Error: Dynamic server usage: Route /student/challenges couldn't be rendered statically because it used `cookies`. See more info here: https://nextjs.org/docs/messages/dynamic-server-error
+    at y (D:\Github Projects\churchapp\joyfulpath\apps\web\.next\server\chunks\ssr\0rrk_next_dist_14kn3u_._.js:1:12427)
+    at n (D:\Github Projects\churchapp\joyfulpath\apps\web\.next\server\chunks\ssr\0rrk_next_0zu4w2j._.js:1:9269)
+    at g (D:\Github Projects\churchapp\joyfulpath\apps\web\.next\server\chunks\ssr\apps_web_src_0_484rv._.js:1:4704)
+    at h (D:\Github Projects\churchapp\joyfulpath\apps\web\.next\server\chunks\ssr\apps_web_src_0_484rv._.js:1:5067)
+    at stringify (<anonymous>) {
+  description: "Route /student/challenges couldn't be rendered statically because it used `cookies`. See more info here: https://nextjs.org/docs/messages/dynamic-server-error",
+  digest: 'DYNAMIC_SERVER_USAGE'
+}
+auth() error: Error: Dynamic server usage: Route /student/dashboard couldn't be rendered statically because it used `cookies`. See more info here: https://nextjs.org/docs/messages/dynamic-server-error
+    at y (D:\Github Projects\churchapp\joyfulpath\apps\web\.next\server\chunks\ssr\0rrk_next_dist_14kn3u_._.js:1:12427)
+    at n (D:\Github Projects\churchapp\joyfulpath\apps\web\.next\server\chunks\ssr\0rrk_next_0zu4w2j._.js:1:9269)
+    at g (D:\Github Projects\churchapp\joyfulpath\apps\web\.next\server\chunks\ssr\apps_web_src_0_484rv._.js:1:4704)
+    at h (D:\Github Projects\churchapp\joyfulpath\apps\web\.next\server\chunks\ssr\apps_web_src_0_484rv._.js:1:5067)
+    at stringify (<anonymous>) {
+  description: "Route /student/dashboard couldn't be rendered statically because it used `cookies`. See more info here: https://nextjs.org/docs/messages/dynamic-server-error",
+  digest: 'DYNAMIC_SERVER_USAGE'
+}
+  Generating static pages using 15 workers (62/124) 
+auth() error: Error: Dynamic server usage: Route /admin/students/import couldn't be rendered statically because it used `cookies`. See more info here: https://nextjs.org/docs/messages/dynamic-server-error
+    at y (D:\Github Projects\churchapp\joyfulpath\apps\web\.next\server\chunks\ssr\0rrk_next_dist_14kn3u_._.js:1:12427)
+    at n (D:\Github Projects\churchapp\joyfulpath\apps\web\.next\server\chunks\ssr\0rrk_next_0zu4w2j._.js:1:9269)
+    at g (D:\Github Projects\churchapp\joyfulpath\apps\web\.next\server\chunks\ssr\apps_web_src_0_484rv._.js:1:4704)
+    at h (D:\Github Projects\churchapp\joyfulpath\apps\web\.next\server\chunks\ssr\apps_web_src_0_484rv._.js:1:5067)
+    at stringify (<anonymous>) {
+  description: "Route /admin/students/import couldn't be rendered statically because it used `cookies`. See more info here: https://nextjs.org/docs/messages/dynamic-server-error",
+  digest: 'DYNAMIC_SERVER_USAGE'
+}
+auth() error: Error: Dynamic server usage: Route /admin/analytics couldn't be rendered statically because it used `cookies`. See more info here: https://nextjs.org/docs/messages/dynamic-server-error
+    at y (D:\Github Projects\churchapp\joyfulpath\apps\web\.next\server\chunks\ssr\0rrk_next_dist_14kn3u_._.js:1:12427)
+    at n (D:\Github Projects\churchapp\joyfulpath\apps\web\.next\server\chunks\ssr\0rrk_next_0zu4w2j._.js:1:9269)
+    at g (D:\Github Projects\churchapp\joyfulpath\apps\web\.next\server\chunks\ssr\apps_web_src_0_484rv._.js:1:4704)
+    at h (D:\Github Projects\churchapp\joyfulpath\apps\web\.next\server\chunks\ssr\apps_web_src_0_484rv._.js:1:5067)
+    at stringify (<anonymous>) {
+  description: "Route /admin/analytics couldn't be rendered statically because it used `cookies`. See more info here: https://nextjs.org/docs/messages/dynamic-server-error",
+  digest: 'DYNAMIC_SERVER_USAGE'
+}
+auth() error: Error: Dynamic server usage: Route /instructor/lessons/new couldn't be rendered statically because it used `cookies`. See more info here: https://nextjs.org/docs/messages/dynamic-server-error
+    at y (D:\Github Projects\churchapp\joyfulpath\apps\web\.next\server\chunks\ssr\0rrk_next_dist_14kn3u_._.js:1:12427)
+    at n (D:\Github Projects\churchapp\joyfulpath\apps\web\.next\server\chunks\ssr\0rrk_next_0zu4w2j._.js:1:9269)
+    at g (D:\Github Projects\churchapp\joyfulpath\apps\web\.next\server\chunks\ssr\apps_web_src_0_484rv._.js:1:4704)
+    at h (D:\Github Projects\churchapp\joyfulpath\apps\web\.next\server\chunks\ssr\apps_web_src_0_484rv._.js:1:5067)
+    at stringify (<anonymous>) {
+  description: "Route /instructor/lessons/new couldn't be rendered statically because it used `cookies`. See more info here: https://nextjs.org/docs/messages/dynamic-server-error",
+  digest: 'DYNAMIC_SERVER_USAGE'
+}
+auth() error: Error: Dynamic server usage: Route /instructor/quizzes/new couldn't be rendered statically because it used `cookies`. See more info here: https://nextjs.org/docs/messages/dynamic-server-error
+    at y (D:\Github Projects\churchapp\joyfulpath\apps\web\.next\server\chunks\ssr\0rrk_next_dist_14kn3u_._.js:1:12427)
+    at n (D:\Github Projects\churchapp\joyfulpath\apps\web\.next\server\chunks\ssr\0rrk_next_0zu4w2j._.js:1:9269)
+    at g (D:\Github Projects\churchapp\joyfulpath\apps\web\.next\server\chunks\ssr\apps_web_src_0_484rv._.js:1:4704)
+    at h (D:\Github Projects\churchapp\joyfulpath\apps\web\.next\server\chunks\ssr\apps_web_src_0_484rv._.js:1:5067)
+    at stringify (<anonymous>) {
+  description: "Route /instructor/quizzes/new couldn't be rendered statically because it used `cookies`. See more info here: https://nextjs.org/docs/messages/dynamic-server-error",
+  digest: 'DYNAMIC_SERVER_USAGE'
+}
+auth() error: Error: Dynamic server usage: Route /student/events couldn't be rendered statically because it used `cookies`. See more info here: https://nextjs.org/docs/messages/dynamic-server-error
+    at y (D:\Github Projects\churchapp\joyfulpath\apps\web\.next\server\chunks\ssr\0rrk_next_dist_14kn3u_._.js:1:12427)
+    at n (D:\Github Projects\churchapp\joyfulpath\apps\web\.next\server\chunks\ssr\0rrk_next_0zu4w2j._.js:1:9269)
+    at g (D:\Github Projects\churchapp\joyfulpath\apps\web\.next\server\chunks\ssr\apps_web_src_0_484rv._.js:1:4704)
+    at h (D:\Github Projects\churchapp\joyfulpath\apps\web\.next\server\chunks\ssr\apps_web_src_0_484rv._.js:1:5067)
+    at stringify (<anonymous>) {
+  description: "Route /student/events couldn't be rendered statically because it used `cookies`. See more info here: https://nextjs.org/docs/messages/dynamic-server-error",
+  digest: 'DYNAMIC_SERVER_USAGE'
+}
+auth() error: Error: Dynamic server usage: Route /student/games couldn't be rendered statically because it used `cookies`. See more info here: https://nextjs.org/docs/messages/dynamic-server-error
+    at y (D:\Github Projects\churchapp\joyfulpath\apps\web\.next\server\chunks\ssr\0rrk_next_dist_14kn3u_._.js:1:12427)
+    at n (D:\Github Projects\churchapp\joyfulpath\apps\web\.next\server\chunks\ssr\0rrk_next_0zu4w2j._.js:1:9269)
+    at g (D:\Github Projects\churchapp\joyfulpath\apps\web\.next\server\chunks\ssr\apps_web_src_0_484rv._.js:1:4704)
+    at h (D:\Github Projects\churchapp\joyfulpath\apps\web\.next\server\chunks\ssr\apps_web_src_0_484rv._.js:1:5067)
+    at stringify (<anonymous>) {
+  description: "Route /student/games couldn't be rendered statically because it used `cookies`. See more info here: https://nextjs.org/docs/messages/dynamic-server-error",
+  digest: 'DYNAMIC_SERVER_USAGE'
+}
+auth() error: Error: Dynamic server usage: Route /instructor/tasks/new couldn't be rendered statically because it used `cookies`. See more info here: https://nextjs.org/docs/messages/dynamic-server-error
+    at y (D:\Github Projects\churchapp\joyfulpath\apps\web\.next\server\chunks\ssr\0rrk_next_dist_14kn3u_._.js:1:12427)
+    at n (D:\Github Projects\churchapp\joyfulpath\apps\web\.next\server\chunks\ssr\0rrk_next_0zu4w2j._.js:1:9269)
+    at g (D:\Github Projects\churchapp\joyfulpath\apps\web\.next\server\chunks\ssr\apps_web_src_0_484rv._.js:1:4704)
+    at h (D:\Github Projects\churchapp\joyfulpath\apps\web\.next\server\chunks\ssr\apps_web_src_0_484rv._.js:1:5067)
+    at stringify (<anonymous>) {
+  description: "Route /instructor/tasks/new couldn't be rendered statically because it used `cookies`. See more info here: https://nextjs.org/docs/messages/dynamic-server-error",
+  digest: 'DYNAMIC_SERVER_USAGE'
+}
+auth() error: Error: Dynamic server usage: Route /student/journey couldn't be rendered statically because it used `cookies`. See more info here: https://nextjs.org/docs/messages/dynamic-server-error
+    at y (D:\Github Projects\churchapp\joyfulpath\apps\web\.next\server\chunks\ssr\0rrk_next_dist_14kn3u_._.js:1:12427)
+    at n (D:\Github Projects\churchapp\joyfulpath\apps\web\.next\server\chunks\ssr\0rrk_next_0zu4w2j._.js:1:9269)
+    at g (D:\Github Projects\churchapp\joyfulpath\apps\web\.next\server\chunks\ssr\apps_web_src_0_484rv._.js:1:4704)
+    at h (D:\Github Projects\churchapp\joyfulpath\apps\web\.next\server\chunks\ssr\apps_web_src_0_484rv._.js:1:5067)
+    at stringify (<anonymous>) {
+  description: "Route /student/journey couldn't be rendered statically because it used `cookies`. See more info here: https://nextjs.org/docs/messages/dynamic-server-error",
+  digest: 'DYNAMIC_SERVER_USAGE'
+}
+auth() error: Error: Dynamic server usage: Route /student/leaderboard couldn't be rendered statically because it used `cookies`. See more info here: https://nextjs.org/docs/messages/dynamic-server-error
+    at y (D:\Github Projects\churchapp\joyfulpath\apps\web\.next\server\chunks\ssr\0rrk_next_dist_14kn3u_._.js:1:12427)
+    at n (D:\Github Projects\churchapp\joyfulpath\apps\web\.next\server\chunks\ssr\0rrk_next_0zu4w2j._.js:1:9269)
+    at g (D:\Github Projects\churchapp\joyfulpath\apps\web\.next\server\chunks\ssr\apps_web_src_0_484rv._.js:1:4704)
+    at h (D:\Github Projects\churchapp\joyfulpath\apps\web\.next\server\chunks\ssr\apps_web_src_0_484rv._.js:1:5067)
+    at stringify (<anonymous>) {
+  description: "Route /student/leaderboard couldn't be rendered statically because it used `cookies`. See more info here: https://nextjs.org/docs/messages/dynamic-server-error",
+  digest: 'DYNAMIC_SERVER_USAGE'
+}
+auth() error: Error: Dynamic server usage: Route /student/lessons couldn't be rendered statically because it used `cookies`. See more info here: https://nextjs.org/docs/messages/dynamic-server-error
+    at y (D:\Github Projects\churchapp\joyfulpath\apps\web\.next\server\chunks\ssr\0rrk_next_dist_14kn3u_._.js:1:12427)
+    at n (D:\Github Projects\churchapp\joyfulpath\apps\web\.next\server\chunks\ssr\0rrk_next_0zu4w2j._.js:1:9269)
+    at g (D:\Github Projects\churchapp\joyfulpath\apps\web\.next\server\chunks\ssr\apps_web_src_0_484rv._.js:1:4704)
+    at h (D:\Github Projects\churchapp\joyfulpath\apps\web\.next\server\chunks\ssr\apps_web_src_0_484rv._.js:1:5067)
+    at stringify (<anonymous>) {
+  description: "Route /student/lessons couldn't be rendered statically because it used `cookies`. See more info here: https://nextjs.org/docs/messages/dynamic-server-error",
+  digest: 'DYNAMIC_SERVER_USAGE'
+}
+auth() error: Error: Dynamic server usage: Route /admin/attendance couldn't be rendered statically because it used `cookies`. See more info here: https://nextjs.org/docs/messages/dynamic-server-error
+    at y (D:\Github Projects\churchapp\joyfulpath\apps\web\.next\server\chunks\ssr\0rrk_next_dist_14kn3u_._.js:1:12427)
+    at n (D:\Github Projects\churchapp\joyfulpath\apps\web\.next\server\chunks\ssr\0rrk_next_0zu4w2j._.js:1:9269)
+    at g (D:\Github Projects\churchapp\joyfulpath\apps\web\.next\server\chunks\ssr\apps_web_src_0_484rv._.js:1:4704)
+    at h (D:\Github Projects\churchapp\joyfulpath\apps\web\.next\server\chunks\ssr\apps_web_src_0_484rv._.js:1:5067)
+    at stringify (<anonymous>) {
+  description: "Route /admin/attendance couldn't be rendered statically because it used `cookies`. See more info here: https://nextjs.org/docs/messages/dynamic-server-error",
+  digest: 'DYNAMIC_SERVER_USAGE'
+}
+auth() error: Error: Dynamic server usage: Route /parent/attendance couldn't be rendered statically because it used `cookies`. See more info here: https://nextjs.org/docs/messages/dynamic-server-error
+    at y (D:\Github Projects\churchapp\joyfulpath\apps\web\.next\server\chunks\ssr\0rrk_next_dist_14kn3u_._.js:1:12427)
+    at n (D:\Github Projects\churchapp\joyfulpath\apps\web\.next\server\chunks\ssr\0rrk_next_0zu4w2j._.js:1:9269)
+    at g (D:\Github Projects\churchapp\joyfulpath\apps\web\.next\server\chunks\ssr\apps_web_src_0_484rv._.js:1:4704)
+    at h (D:\Github Projects\churchapp\joyfulpath\apps\web\.next\server\chunks\ssr\apps_web_src_0_484rv._.js:1:5067)
+    at stringify (<anonymous>) {
+  description: "Route /parent/attendance couldn't be rendered statically because it used `cookies`. See more info here: https://nextjs.org/docs/messages/dynamic-server-error",
+  digest: 'DYNAMIC_SERVER_USAGE'
+}
+auth() error: Error: Dynamic server usage: Route /admin/approvals couldn't be rendered statically because it used `cookies`. See more info here: https://nextjs.org/docs/messages/dynamic-server-error
+    at y (D:\Github Projects\churchapp\joyfulpath\apps\web\.next\server\chunks\ssr\0rrk_next_dist_14kn3u_._.js:1:12427)
+    at n (D:\Github Projects\churchapp\joyfulpath\apps\web\.next\server\chunks\ssr\0rrk_next_0zu4w2j._.js:1:9269)
+    at g (D:\Github Projects\churchapp\joyfulpath\apps\web\.next\server\chunks\ssr\apps_web_src_0_484rv._.js:1:4704)
+    at h (D:\Github Projects\churchapp\joyfulpath\apps\web\.next\server\chunks\ssr\apps_web_src_0_484rv._.js:1:5067)
+    at stringify (<anonymous>) {
+  description: "Route /admin/approvals couldn't be rendered statically because it used `cookies`. See more info here: https://nextjs.org/docs/messages/dynamic-server-error",
+  digest: 'DYNAMIC_SERVER_USAGE'
+}
+auth() error: Error: Dynamic server usage: Route /student/prayer-requests couldn't be rendered statically because it used `cookies`. See more info here: https://nextjs.org/docs/messages/dynamic-server-error
+    at y (D:\Github Projects\churchapp\joyfulpath\apps\web\.next\server\chunks\ssr\0rrk_next_dist_14kn3u_._.js:1:12427)
+    at n (D:\Github Projects\churchapp\joyfulpath\apps\web\.next\server\chunks\ssr\0rrk_next_0zu4w2j._.js:1:9269)
+    at g (D:\Github Projects\churchapp\joyfulpath\apps\web\.next\server\chunks\ssr\apps_web_src_0_484rv._.js:1:4704)
+    at h (D:\Github Projects\churchapp\joyfulpath\apps\web\.next\server\chunks\ssr\apps_web_src_0_484rv._.js:1:5067)
+    at stringify (<anonymous>) {
+  description: "Route /student/prayer-requests couldn't be rendered statically because it used `cookies`. See more info here: https://nextjs.org/docs/messages/dynamic-server-error",
+  digest: 'DYNAMIC_SERVER_USAGE'
+}
+auth() error: Error: Dynamic server usage: Route /admin/content couldn't be rendered statically because it used `cookies`. See more info here: https://nextjs.org/docs/messages/dynamic-server-error
+    at y (D:\Github Projects\churchapp\joyfulpath\apps\web\.next\server\chunks\ssr\0rrk_next_dist_14kn3u_._.js:1:12427)
+    at n (D:\Github Projects\churchapp\joyfulpath\apps\web\.next\server\chunks\ssr\0rrk_next_0zu4w2j._.js:1:9269)
+    at g (D:\Github Projects\churchapp\joyfulpath\apps\web\.next\server\chunks\ssr\apps_web_src_0_484rv._.js:1:4704)
+    at h (D:\Github Projects\churchapp\joyfulpath\apps\web\.next\server\chunks\ssr\apps_web_src_0_484rv._.js:1:5067)
+    at stringify (<anonymous>) {
+  description: "Route /admin/content couldn't be rendered statically because it used `cookies`. See more info here: https://nextjs.org/docs/messages/dynamic-server-error",
+  digest: 'DYNAMIC_SERVER_USAGE'
+}
+auth() error: Error: Dynamic server usage: Route /student/prayers couldn't be rendered statically because it used `cookies`. See more info here: https://nextjs.org/docs/messages/dynamic-server-error
+    at y (D:\Github Projects\churchapp\joyfulpath\apps\web\.next\server\chunks\ssr\0rrk_next_dist_14kn3u_._.js:1:12427)
+    at n (D:\Github Projects\churchapp\joyfulpath\apps\web\.next\server\chunks\ssr\0rrk_next_0zu4w2j._.js:1:9269)
+    at g (D:\Github Projects\churchapp\joyfulpath\apps\web\.next\server\chunks\ssr\apps_web_src_0_484rv._.js:1:4704)
+    at h (D:\Github Projects\churchapp\joyfulpath\apps\web\.next\server\chunks\ssr\apps_web_src_0_484rv._.js:1:5067)
+    at stringify (<anonymous>) {
+  description: "Route /student/prayers couldn't be rendered statically because it used `cookies`. See more info here: https://nextjs.org/docs/messages/dynamic-server-error",
+  digest: 'DYNAMIC_SERVER_USAGE'
+}
+auth() error: Error: Dynamic server usage: Route /admin/classes couldn't be rendered statically because it used `cookies`. See more info here: https://nextjs.org/docs/messages/dynamic-server-error
+    at y (D:\Github Projects\churchapp\joyfulpath\apps\web\.next\server\chunks\ssr\0rrk_next_dist_14kn3u_._.js:1:12427)
+    at n (D:\Github Projects\churchapp\joyfulpath\apps\web\.next\server\chunks\ssr\0rrk_next_0zu4w2j._.js:1:9269)
+    at g (D:\Github Projects\churchapp\joyfulpath\apps\web\.next\server\chunks\ssr\apps_web_src_0_484rv._.js:1:4704)
+    at h (D:\Github Projects\churchapp\joyfulpath\apps\web\.next\server\chunks\ssr\apps_web_src_0_484rv._.js:1:5067)
+    at stringify (<anonymous>) {
+  description: "Route /admin/classes couldn't be rendered statically because it used `cookies`. See more info here: https://nextjs.org/docs/messages/dynamic-server-error",
+  digest: 'DYNAMIC_SERVER_USAGE'
+}
+auth() error: Error: Dynamic server usage: Route /student/profile couldn't be rendered statically because it used `cookies`. See more info here: https://nextjs.org/docs/messages/dynamic-server-error
+    at y (D:\Github Projects\churchapp\joyfulpath\apps\web\.next\server\chunks\ssr\0rrk_next_dist_14kn3u_._.js:1:12427)
+    at n (D:\Github Projects\churchapp\joyfulpath\apps\web\.next\server\chunks\ssr\0rrk_next_0zu4w2j._.js:1:9269)
+    at g (D:\Github Projects\churchapp\joyfulpath\apps\web\.next\server\chunks\ssr\apps_web_src_0_484rv._.js:1:4704)
+    at h (D:\Github Projects\churchapp\joyfulpath\apps\web\.next\server\chunks\ssr\apps_web_src_0_484rv._.js:1:5067)
+    at stringify (<anonymous>) {
+  description: "Route /student/profile couldn't be rendered statically because it used `cookies`. See more info here: https://nextjs.org/docs/messages/dynamic-server-error",
+  digest: 'DYNAMIC_SERVER_USAGE'
+}
+auth() error: Error: Dynamic server usage: Route /admin/dashboard couldn't be rendered statically because it used `cookies`. See more info here: https://nextjs.org/docs/messages/dynamic-server-error
+    at y (D:\Github Projects\churchapp\joyfulpath\apps\web\.next\server\chunks\ssr\0rrk_next_dist_14kn3u_._.js:1:12427)
+    at n (D:\Github Projects\churchapp\joyfulpath\apps\web\.next\server\chunks\ssr\0rrk_next_0zu4w2j._.js:1:9269)
+    at g (D:\Github Projects\churchapp\joyfulpath\apps\web\.next\server\chunks\ssr\apps_web_src_0_484rv._.js:1:4704)
+    at h (D:\Github Projects\churchapp\joyfulpath\apps\web\.next\server\chunks\ssr\apps_web_src_0_484rv._.js:1:5067)
+    at stringify (<anonymous>) {
+  description: "Route /admin/dashboard couldn't be rendered statically because it used `cookies`. See more info here: https://nextjs.org/docs/messages/dynamic-server-error",
+  digest: 'DYNAMIC_SERVER_USAGE'
+}
+auth() error: Error: Dynamic server usage: Route /instructor/prayer-requests couldn't be rendered statically because it used `cookies`. See more info here: https://nextjs.org/docs/messages/dynamic-server-error
+    at y (D:\Github Projects\churchapp\joyfulpath\apps\web\.next\server\chunks\ssr\0rrk_next_dist_14kn3u_._.js:1:12427)
+    at n (D:\Github Projects\churchapp\joyfulpath\apps\web\.next\server\chunks\ssr\0rrk_next_0zu4w2j._.js:1:9269)
+    at g (D:\Github Projects\churchapp\joyfulpath\apps\web\.next\server\chunks\ssr\apps_web_src_0_484rv._.js:1:4704)
+    at h (D:\Github Projects\churchapp\joyfulpath\apps\web\.next\server\chunks\ssr\apps_web_src_0_484rv._.js:1:5067)
+    at stringify (<anonymous>) {
+  description: "Route /instructor/prayer-requests couldn't be rendered statically because it used `cookies`. See more info here: https://nextjs.org/docs/messages/dynamic-server-error",
+  digest: 'DYNAMIC_SERVER_USAGE'
+}
+auth() error: Error: Dynamic server usage: Route /admin/crm couldn't be rendered statically because it used `cookies`. See more info here: https://nextjs.org/docs/messages/dynamic-server-error
+    at y (D:\Github Projects\churchapp\joyfulpath\apps\web\.next\server\chunks\ssr\0rrk_next_dist_14kn3u_._.js:1:12427)
+    at n (D:\Github Projects\churchapp\joyfulpath\apps\web\.next\server\chunks\ssr\0rrk_next_0zu4w2j._.js:1:9269)
+    at g (D:\Github Projects\churchapp\joyfulpath\apps\web\.next\server\chunks\ssr\apps_web_src_0_484rv._.js:1:4704)
+    at h (D:\Github Projects\churchapp\joyfulpath\apps\web\.next\server\chunks\ssr\apps_web_src_0_484rv._.js:1:5067)
+    at stringify (<anonymous>) {
+  description: "Route /admin/crm couldn't be rendered statically because it used `cookies`. See more info here: https://nextjs.org/docs/messages/dynamic-server-error",
+  digest: 'DYNAMIC_SERVER_USAGE'
+}
+  Generating static pages using 15 workers (93/124) 
+auth() error: Error: Dynamic server usage: Route /instructor/store couldn't be rendered statically because it used `cookies`. See more info here: https://nextjs.org/docs/messages/dynamic-server-error
+    at y (D:\Github Projects\churchapp\joyfulpath\apps\web\.next\server\chunks\ssr\0rrk_next_dist_14kn3u_._.js:1:12427)
+    at n (D:\Github Projects\churchapp\joyfulpath\apps\web\.next\server\chunks\ssr\0rrk_next_0zu4w2j._.js:1:9269)
+    at g (D:\Github Projects\churchapp\joyfulpath\apps\web\.next\server\chunks\ssr\apps_web_src_0_484rv._.js:1:4704)
+    at h (D:\Github Projects\churchapp\joyfulpath\apps\web\.next\server\chunks\ssr\apps_web_src_0_484rv._.js:1:5067)
+    at stringify (<anonymous>) {
+  description: "Route /instructor/store couldn't be rendered statically because it used `cookies`. See more info here: https://nextjs.org/docs/messages/dynamic-server-error",
+  digest: 'DYNAMIC_SERVER_USAGE'
+}
+auth() error: Error: Dynamic server usage: Route /instructor/tasks couldn't be rendered statically because it used `cookies`. See more info here: https://nextjs.org/docs/messages/dynamic-server-error
+    at y (D:\Github Projects\churchapp\joyfulpath\apps\web\.next\server\chunks\ssr\0rrk_next_dist_14kn3u_._.js:1:12427)
+    at n (D:\Github Projects\churchapp\joyfulpath\apps\web\.next\server\chunks\ssr\0rrk_next_0zu4w2j._.js:1:9269)
+    at g (D:\Github Projects\churchapp\joyfulpath\apps\web\.next\server\chunks\ssr\apps_web_src_0_484rv._.js:1:4704)
+    at h (D:\Github Projects\churchapp\joyfulpath\apps\web\.next\server\chunks\ssr\apps_web_src_0_484rv._.js:1:5067)
+    at stringify (<anonymous>) {
+  description: "Route /instructor/tasks couldn't be rendered statically because it used `cookies`. See more info here: https://nextjs.org/docs/messages/dynamic-server-error",
+  digest: 'DYNAMIC_SERVER_USAGE'
+}
+auth() error: Error: Dynamic server usage: Route /parent/dashboard couldn't be rendered statically because it used `cookies`. See more info here: https://nextjs.org/docs/messages/dynamic-server-error
+    at y (D:\Github Projects\churchapp\joyfulpath\apps\web\.next\server\chunks\ssr\0rrk_next_dist_14kn3u_._.js:1:12427)
+    at n (D:\Github Projects\churchapp\joyfulpath\apps\web\.next\server\chunks\ssr\0rrk_next_0zu4w2j._.js:1:9269)
+    at g (D:\Github Projects\churchapp\joyfulpath\apps\web\.next\server\chunks\ssr\apps_web_src_0_484rv._.js:1:4704)
+    at h (D:\Github Projects\churchapp\joyfulpath\apps\web\.next\server\chunks\ssr\apps_web_src_0_484rv._.js:1:5067)
+    at stringify (<anonymous>) {
+  description: "Route /parent/dashboard couldn't be rendered statically because it used `cookies`. See more info here: https://nextjs.org/docs/messages/dynamic-server-error",
+  digest: 'DYNAMIC_SERVER_USAGE'
+}
+auth() error: Error: Dynamic server usage: Route /admin/events couldn't be rendered statically because it used `cookies`. See more info here: https://nextjs.org/docs/messages/dynamic-server-error
+    at y (D:\Github Projects\churchapp\joyfulpath\apps\web\.next\server\chunks\ssr\0rrk_next_dist_14kn3u_._.js:1:12427)
+    at n (D:\Github Projects\churchapp\joyfulpath\apps\web\.next\server\chunks\ssr\0rrk_next_0zu4w2j._.js:1:9269)
+    at g (D:\Github Projects\churchapp\joyfulpath\apps\web\.next\server\chunks\ssr\apps_web_src_0_484rv._.js:1:4704)
+    at h (D:\Github Projects\churchapp\joyfulpath\apps\web\.next\server\chunks\ssr\apps_web_src_0_484rv._.js:1:5067)
+    at stringify (<anonymous>) {
+  description: "Route /admin/events couldn't be rendered statically because it used `cookies`. See more info here: https://nextjs.org/docs/messages/dynamic-server-error",
+  digest: 'DYNAMIC_SERVER_USAGE'
+}
+auth() error: Error: Dynamic server usage: Route /admin/lessons couldn't be rendered statically because it used `cookies`. See more info here: https://nextjs.org/docs/messages/dynamic-server-error
+    at y (D:\Github Projects\churchapp\joyfulpath\apps\web\.next\server\chunks\ssr\0rrk_next_dist_14kn3u_._.js:1:12427)
+    at n (D:\Github Projects\churchapp\joyfulpath\apps\web\.next\server\chunks\ssr\0rrk_next_0zu4w2j._.js:1:9269)
+    at g (D:\Github Projects\churchapp\joyfulpath\apps\web\.next\server\chunks\ssr\apps_web_src_0_484rv._.js:1:4704)
+    at h (D:\Github Projects\churchapp\joyfulpath\apps\web\.next\server\chunks\ssr\apps_web_src_0_484rv._.js:1:5067)
+    at stringify (<anonymous>) {
+  description: "Route /admin/lessons couldn't be rendered statically because it used `cookies`. See more info here: https://nextjs.org/docs/messages/dynamic-server-error",
+  digest: 'DYNAMIC_SERVER_USAGE'
+}
+auth() error: Error: Dynamic server usage: Route /student/qr-code couldn't be rendered statically because it used `cookies`. See more info here: https://nextjs.org/docs/messages/dynamic-server-error
+    at y (D:\Github Projects\churchapp\joyfulpath\apps\web\.next\server\chunks\ssr\0rrk_next_dist_14kn3u_._.js:1:12427)
+    at n (D:\Github Projects\churchapp\joyfulpath\apps\web\.next\server\chunks\ssr\0rrk_next_0zu4w2j._.js:1:9269)
+    at g (D:\Github Projects\churchapp\joyfulpath\apps\web\.next\server\chunks\ssr\apps_web_src_0_484rv._.js:1:4704)
+    at h (D:\Github Projects\churchapp\joyfulpath\apps\web\.next\server\chunks\ssr\apps_web_src_0_484rv._.js:1:5067)
+    at stringify (<anonymous>) {
+  description: "Route /student/qr-code couldn't be rendered statically because it used `cookies`. See more info here: https://nextjs.org/docs/messages/dynamic-server-error",
+  digest: 'DYNAMIC_SERVER_USAGE'
+}
+auth() error: Error: Dynamic server usage: Route /admin/files couldn't be rendered statically because it used `cookies`. See more info here: https://nextjs.org/docs/messages/dynamic-server-error
+    at y (D:\Github Projects\churchapp\joyfulpath\apps\web\.next\server\chunks\ssr\0rrk_next_dist_14kn3u_._.js:1:12427)
+    at n (D:\Github Projects\churchapp\joyfulpath\apps\web\.next\server\chunks\ssr\0rrk_next_0zu4w2j._.js:1:9269)
+    at g (D:\Github Projects\churchapp\joyfulpath\apps\web\.next\server\chunks\ssr\apps_web_src_0_484rv._.js:1:4704)
+    at h (D:\Github Projects\churchapp\joyfulpath\apps\web\.next\server\chunks\ssr\apps_web_src_0_484rv._.js:1:5067)
+    at stringify (<anonymous>) {
+  description: "Route /admin/files couldn't be rendered statically because it used `cookies`. See more info here: https://nextjs.org/docs/messages/dynamic-server-error",
+  digest: 'DYNAMIC_SERVER_USAGE'
+}
+auth() error: Error: Dynamic server usage: Route /student/qr couldn't be rendered statically because it used `cookies`. See more info here: https://nextjs.org/docs/messages/dynamic-server-error
+    at y (D:\Github Projects\churchapp\joyfulpath\apps\web\.next\server\chunks\ssr\0rrk_next_dist_14kn3u_._.js:1:12427)
+    at n (D:\Github Projects\churchapp\joyfulpath\apps\web\.next\server\chunks\ssr\0rrk_next_0zu4w2j._.js:1:9269)
+    at g (D:\Github Projects\churchapp\joyfulpath\apps\web\.next\server\chunks\ssr\apps_web_src_0_484rv._.js:1:4704)
+    at h (D:\Github Projects\churchapp\joyfulpath\apps\web\.next\server\chunks\ssr\apps_web_src_0_484rv._.js:1:5067)
+    at stringify (<anonymous>) {
+  description: "Route /student/qr couldn't be rendered statically because it used `cookies`. See more info here: https://nextjs.org/docs/messages/dynamic-server-error",
+  digest: 'DYNAMIC_SERVER_USAGE'
+}
+auth() error: Error: Dynamic server usage: Route /admin/permissions couldn't be rendered statically because it used `cookies`. See more info here: https://nextjs.org/docs/messages/dynamic-server-error
+    at y (D:\Github Projects\churchapp\joyfulpath\apps\web\.next\server\chunks\ssr\0rrk_next_dist_14kn3u_._.js:1:12427)
+    at n (D:\Github Projects\churchapp\joyfulpath\apps\web\.next\server\chunks\ssr\0rrk_next_0zu4w2j._.js:1:9269)
+    at g (D:\Github Projects\churchapp\joyfulpath\apps\web\.next\server\chunks\ssr\apps_web_src_0_484rv._.js:1:4704)
+    at h (D:\Github Projects\churchapp\joyfulpath\apps\web\.next\server\chunks\ssr\apps_web_src_0_484rv._.js:1:5067)
+    at stringify (<anonymous>) {
+  description: "Route /admin/permissions couldn't be rendered statically because it used `cookies`. See more info here: https://nextjs.org/docs/messages/dynamic-server-error",
+  digest: 'DYNAMIC_SERVER_USAGE'
+}
+auth() error: Error: Dynamic server usage: Route /student/quizzes couldn't be rendered statically because it used `cookies`. See more info here: https://nextjs.org/docs/messages/dynamic-server-error
+    at y (D:\Github Projects\churchapp\joyfulpath\apps\web\.next\server\chunks\ssr\0rrk_next_dist_14kn3u_._.js:1:12427)
+    at n (D:\Github Projects\churchapp\joyfulpath\apps\web\.next\server\chunks\ssr\0rrk_next_0zu4w2j._.js:1:9269)
+    at g (D:\Github Projects\churchapp\joyfulpath\apps\web\.next\server\chunks\ssr\apps_web_src_0_484rv._.js:1:4704)
+    at h (D:\Github Projects\churchapp\joyfulpath\apps\web\.next\server\chunks\ssr\apps_web_src_0_484rv._.js:1:5067)
+    at stringify (<anonymous>) {
+  description: "Route /student/quizzes couldn't be rendered statically because it used `cookies`. See more info here: https://nextjs.org/docs/messages/dynamic-server-error",
+  digest: 'DYNAMIC_SERVER_USAGE'
+}
+auth() error: Error: Dynamic server usage: Route /parent/events couldn't be rendered statically because it used `cookies`. See more info here: https://nextjs.org/docs/messages/dynamic-server-error
+    at y (D:\Github Projects\churchapp\joyfulpath\apps\web\.next\server\chunks\ssr\0rrk_next_dist_14kn3u_._.js:1:12427)
+    at n (D:\Github Projects\churchapp\joyfulpath\apps\web\.next\server\chunks\ssr\0rrk_next_0zu4w2j._.js:1:9269)
+    at g (D:\Github Projects\churchapp\joyfulpath\apps\web\.next\server\chunks\ssr\apps_web_src_0_484rv._.js:1:4704)
+    at h (D:\Github Projects\churchapp\joyfulpath\apps\web\.next\server\chunks\ssr\apps_web_src_0_484rv._.js:1:5067)
+    at stringify (<anonymous>) {
+  description: "Route /parent/events couldn't be rendered statically because it used `cookies`. See more info here: https://nextjs.org/docs/messages/dynamic-server-error",
+  digest: 'DYNAMIC_SERVER_USAGE'
+}
+auth() error: Error: Dynamic server usage: Route /admin/prayers couldn't be rendered statically because it used `cookies`. See more info here: https://nextjs.org/docs/messages/dynamic-server-error
+    at y (D:\Github Projects\churchapp\joyfulpath\apps\web\.next\server\chunks\ssr\0rrk_next_dist_14kn3u_._.js:1:12427)
+    at n (D:\Github Projects\churchapp\joyfulpath\apps\web\.next\server\chunks\ssr\0rrk_next_0zu4w2j._.js:1:9269)
+    at g (D:\Github Projects\churchapp\joyfulpath\apps\web\.next\server\chunks\ssr\apps_web_src_0_484rv._.js:1:4704)
+    at h (D:\Github Projects\churchapp\joyfulpath\apps\web\.next\server\chunks\ssr\apps_web_src_0_484rv._.js:1:5067)
+    at stringify (<anonymous>) {
+  description: "Route /admin/prayers couldn't be rendered statically because it used `cookies`. See more info here: https://nextjs.org/docs/messages/dynamic-server-error",
+  digest: 'DYNAMIC_SERVER_USAGE'
+}
+auth() error: Error: Dynamic server usage: Route /student/reading couldn't be rendered statically because it used `cookies`. See more info here: https://nextjs.org/docs/messages/dynamic-server-error
+    at y (D:\Github Projects\churchapp\joyfulpath\apps\web\.next\server\chunks\ssr\0rrk_next_dist_14kn3u_._.js:1:12427)
+    at n (D:\Github Projects\churchapp\joyfulpath\apps\web\.next\server\chunks\ssr\0rrk_next_0zu4w2j._.js:1:9269)
+    at g (D:\Github Projects\churchapp\joyfulpath\apps\web\.next\server\chunks\ssr\apps_web_src_0_484rv._.js:1:4704)
+    at h (D:\Github Projects\churchapp\joyfulpath\apps\web\.next\server\chunks\ssr\apps_web_src_0_484rv._.js:1:5067)
+    at stringify (<anonymous>) {
+  description: "Route /student/reading couldn't be rendered statically because it used `cookies`. See more info here: https://nextjs.org/docs/messages/dynamic-server-error",
+  digest: 'DYNAMIC_SERVER_USAGE'
+}
+auth() error: Error: Dynamic server usage: Route /parent/gamification couldn't be rendered statically because it used `cookies`. See more info here: https://nextjs.org/docs/messages/dynamic-server-error
+    at y (D:\Github Projects\churchapp\joyfulpath\apps\web\.next\server\chunks\ssr\0rrk_next_dist_14kn3u_._.js:1:12427)
+    at n (D:\Github Projects\churchapp\joyfulpath\apps\web\.next\server\chunks\ssr\0rrk_next_0zu4w2j._.js:1:9269)
+    at g (D:\Github Projects\churchapp\joyfulpath\apps\web\.next\server\chunks\ssr\apps_web_src_0_484rv._.js:1:4704)
+    at h (D:\Github Projects\churchapp\joyfulpath\apps\web\.next\server\chunks\ssr\apps_web_src_0_484rv._.js:1:5067)
+    at stringify (<anonymous>) {
+  description: "Route /parent/gamification couldn't be rendered statically because it used `cookies`. See more info here: https://nextjs.org/docs/messages/dynamic-server-error",
+  digest: 'DYNAMIC_SERVER_USAGE'
+}
+auth() error: Error: Dynamic server usage: Route /admin/quizzes couldn't be rendered statically because it used `cookies`. See more info here: https://nextjs.org/docs/messages/dynamic-server-error
+    at y (D:\Github Projects\churchapp\joyfulpath\apps\web\.next\server\chunks\ssr\0rrk_next_dist_14kn3u_._.js:1:12427)
+    at n (D:\Github Projects\churchapp\joyfulpath\apps\web\.next\server\chunks\ssr\0rrk_next_0zu4w2j._.js:1:9269)
+    at g (D:\Github Projects\churchapp\joyfulpath\apps\web\.next\server\chunks\ssr\apps_web_src_0_484rv._.js:1:4704)
+    at h (D:\Github Projects\churchapp\joyfulpath\apps\web\.next\server\chunks\ssr\apps_web_src_0_484rv._.js:1:5067)
+    at stringify (<anonymous>) {
+  description: "Route /admin/quizzes couldn't be rendered statically because it used `cookies`. See more info here: https://nextjs.org/docs/messages/dynamic-server-error",
+  digest: 'DYNAMIC_SERVER_USAGE'
+}
+auth() error: Error: Dynamic server usage: Route /parent/profile couldn't be rendered statically because it used `cookies`. See more info here: https://nextjs.org/docs/messages/dynamic-server-error
+    at y (D:\Github Projects\churchapp\joyfulpath\apps\web\.next\server\chunks\ssr\0rrk_next_dist_14kn3u_._.js:1:12427)
+    at n (D:\Github Projects\churchapp\joyfulpath\apps\web\.next\server\chunks\ssr\0rrk_next_0zu4w2j._.js:1:9269)
+    at g (D:\Github Projects\churchapp\joyfulpath\apps\web\.next\server\chunks\ssr\apps_web_src_0_484rv._.js:1:4704)
+    at h (D:\Github Projects\churchapp\joyfulpath\apps\web\.next\server\chunks\ssr\apps_web_src_0_484rv._.js:1:5067)
+    at stringify (<anonymous>) {
+  description: "Route /parent/profile couldn't be rendered statically because it used `cookies`. See more info here: https://nextjs.org/docs/messages/dynamic-server-error",
+  digest: 'DYNAMIC_SERVER_USAGE'
+}
+auth() error: Error: Dynamic server usage: Route /admin/qr couldn't be rendered statically because it used `cookies`. See more info here: https://nextjs.org/docs/messages/dynamic-server-error
+    at y (D:\Github Projects\churchapp\joyfulpath\apps\web\.next\server\chunks\ssr\0rrk_next_dist_14kn3u_._.js:1:12427)
+    at n (D:\Github Projects\churchapp\joyfulpath\apps\web\.next\server\chunks\ssr\0rrk_next_0zu4w2j._.js:1:9269)
+    at g (D:\Github Projects\churchapp\joyfulpath\apps\web\.next\server\chunks\ssr\apps_web_src_0_484rv._.js:1:4704)
+    at h (D:\Github Projects\churchapp\joyfulpath\apps\web\.next\server\chunks\ssr\apps_web_src_0_484rv._.js:1:5067)
+    at stringify (<anonymous>) {
+  description: "Route /admin/qr couldn't be rendered statically because it used `cookies`. See more info here: https://nextjs.org/docs/messages/dynamic-server-error",
+  digest: 'DYNAMIC_SERVER_USAGE'
+}
+auth() error: Error: Dynamic server usage: Route /parent/reports couldn't be rendered statically because it used `cookies`. See more info here: https://nextjs.org/docs/messages/dynamic-server-error
+    at y (D:\Github Projects\churchapp\joyfulpath\apps\web\.next\server\chunks\ssr\0rrk_next_dist_14kn3u_._.js:1:12427)
+    at n (D:\Github Projects\churchapp\joyfulpath\apps\web\.next\server\chunks\ssr\0rrk_next_0zu4w2j._.js:1:9269)
+    at g (D:\Github Projects\churchapp\joyfulpath\apps\web\.next\server\chunks\ssr\apps_web_src_0_484rv._.js:1:4704)
+    at h (D:\Github Projects\churchapp\joyfulpath\apps\web\.next\server\chunks\ssr\apps_web_src_0_484rv._.js:1:5067)
+    at stringify (<anonymous>) {
+  description: "Route /parent/reports couldn't be rendered statically because it used `cookies`. See more info here: https://nextjs.org/docs/messages/dynamic-server-error",
+  digest: 'DYNAMIC_SERVER_USAGE'
+}
+auth() error: Error: Dynamic server usage: Route /admin/rewards couldn't be rendered statically because it used `cookies`. See more info here: https://nextjs.org/docs/messages/dynamic-server-error
+    at y (D:\Github Projects\churchapp\joyfulpath\apps\web\.next\server\chunks\ssr\0rrk_next_dist_14kn3u_._.js:1:12427)
+    at n (D:\Github Projects\churchapp\joyfulpath\apps\web\.next\server\chunks\ssr\0rrk_next_0zu4w2j._.js:1:9269)
+    at g (D:\Github Projects\churchapp\joyfulpath\apps\web\.next\server\chunks\ssr\apps_web_src_0_484rv._.js:1:4704)
+    at h (D:\Github Projects\churchapp\joyfulpath\apps\web\.next\server\chunks\ssr\apps_web_src_0_484rv._.js:1:5067)
+    at stringify (<anonymous>) {
+  description: "Route /admin/rewards couldn't be rendered statically because it used `cookies`. See more info here: https://nextjs.org/docs/messages/dynamic-server-error",
+  digest: 'DYNAMIC_SERVER_USAGE'
+}
+auth() error: Error: Dynamic server usage: Route /parent/reading couldn't be rendered statically because it used `cookies`. See more info here: https://nextjs.org/docs/messages/dynamic-server-error
+    at y (D:\Github Projects\churchapp\joyfulpath\apps\web\.next\server\chunks\ssr\0rrk_next_dist_14kn3u_._.js:1:12427)
+    at n (D:\Github Projects\churchapp\joyfulpath\apps\web\.next\server\chunks\ssr\0rrk_next_0zu4w2j._.js:1:9269)
+    at g (D:\Github Projects\churchapp\joyfulpath\apps\web\.next\server\chunks\ssr\apps_web_src_0_484rv._.js:1:4704)
+    at h (D:\Github Projects\churchapp\joyfulpath\apps\web\.next\server\chunks\ssr\apps_web_src_0_484rv._.js:1:5067)
+    at stringify (<anonymous>) {
+  description: "Route /parent/reading couldn't be rendered statically because it used `cookies`. See more info here: https://nextjs.org/docs/messages/dynamic-server-error",
+  digest: 'DYNAMIC_SERVER_USAGE'
+}
+auth() error: Error: Dynamic server usage: Route /student/tasks couldn't be rendered statically because it used `cookies`. See more info here: https://nextjs.org/docs/messages/dynamic-server-error
+    at y (D:\Github Projects\churchapp\joyfulpath\apps\web\.next\server\chunks\ssr\0rrk_next_dist_14kn3u_._.js:1:12427)
+    at n (D:\Github Projects\churchapp\joyfulpath\apps\web\.next\server\chunks\ssr\0rrk_next_0zu4w2j._.js:1:9269)
+    at g (D:\Github Projects\churchapp\joyfulpath\apps\web\.next\server\chunks\ssr\apps_web_src_0_484rv._.js:1:4704)
+    at h (D:\Github Projects\churchapp\joyfulpath\apps\web\.next\server\chunks\ssr\apps_web_src_0_484rv._.js:1:5067)
+    at stringify (<anonymous>) {
+  description: "Route /student/tasks couldn't be rendered statically because it used `cookies`. See more info here: https://nextjs.org/docs/messages/dynamic-server-error",
+  digest: 'DYNAMIC_SERVER_USAGE'
+}
+auth() error: Error: Dynamic server usage: Route /priest/attendance couldn't be rendered statically because it used `cookies`. See more info here: https://nextjs.org/docs/messages/dynamic-server-error
+    at y (D:\Github Projects\churchapp\joyfulpath\apps\web\.next\server\chunks\ssr\0rrk_next_dist_14kn3u_._.js:1:12427)
+    at n (D:\Github Projects\churchapp\joyfulpath\apps\web\.next\server\chunks\ssr\0rrk_next_0zu4w2j._.js:1:9269)
+    at g (D:\Github Projects\churchapp\joyfulpath\apps\web\.next\server\chunks\ssr\apps_web_src_0_484rv._.js:1:4704)
+    at h (D:\Github Projects\churchapp\joyfulpath\apps\web\.next\server\chunks\ssr\apps_web_src_0_484rv._.js:1:5067)
+    at stringify (<anonymous>) {
+  description: "Route /priest/attendance couldn't be rendered statically because it used `cookies`. See more info here: https://nextjs.org/docs/messages/dynamic-server-error",
+  digest: 'DYNAMIC_SERVER_USAGE'
+}
+auth() error: Error: Dynamic server usage: Route /student/store couldn't be rendered statically because it used `cookies`. See more info here: https://nextjs.org/docs/messages/dynamic-server-error
+    at y (D:\Github Projects\churchapp\joyfulpath\apps\web\.next\server\chunks\ssr\0rrk_next_dist_14kn3u_._.js:1:12427)
+    at n (D:\Github Projects\churchapp\joyfulpath\apps\web\.next\server\chunks\ssr\0rrk_next_0zu4w2j._.js:1:9269)
+    at g (D:\Github Projects\churchapp\joyfulpath\apps\web\.next\server\chunks\ssr\apps_web_src_0_484rv._.js:1:4704)
+    at h (D:\Github Projects\churchapp\joyfulpath\apps\web\.next\server\chunks\ssr\apps_web_src_0_484rv._.js:1:5067)
+    at stringify (<anonymous>) {
+  description: "Route /student/store couldn't be rendered statically because it used `cookies`. See more info here: https://nextjs.org/docs/messages/dynamic-server-error",
+  digest: 'DYNAMIC_SERVER_USAGE'
+}
+auth() error: Error: Dynamic server usage: Route /parent/grades couldn't be rendered statically because it used `cookies`. See more info here: https://nextjs.org/docs/messages/dynamic-server-error
+    at y (D:\Github Projects\churchapp\joyfulpath\apps\web\.next\server\chunks\ssr\0rrk_next_dist_14kn3u_._.js:1:12427)
+    at n (D:\Github Projects\churchapp\joyfulpath\apps\web\.next\server\chunks\ssr\0rrk_next_0zu4w2j._.js:1:9269)
+    at g (D:\Github Projects\churchapp\joyfulpath\apps\web\.next\server\chunks\ssr\apps_web_src_0_484rv._.js:1:4704)
+    at h (D:\Github Projects\churchapp\joyfulpath\apps\web\.next\server\chunks\ssr\apps_web_src_0_484rv._.js:1:5067)
+    at stringify (<anonymous>) {
+  description: "Route /parent/grades couldn't be rendered statically because it used `cookies`. See more info here: https://nextjs.org/docs/messages/dynamic-server-error",
+  digest: 'DYNAMIC_SERVER_USAGE'
+}
+auth() error: Error: Dynamic server usage: Route /parent/rewards couldn't be rendered statically because it used `cookies`. See more info here: https://nextjs.org/docs/messages/dynamic-server-error
+    at y (D:\Github Projects\churchapp\joyfulpath\apps\web\.next\server\chunks\ssr\0rrk_next_dist_14kn3u_._.js:1:12427)
+    at n (D:\Github Projects\churchapp\joyfulpath\apps\web\.next\server\chunks\ssr\0rrk_next_0zu4w2j._.js:1:9269)
+    at g (D:\Github Projects\churchapp\joyfulpath\apps\web\.next\server\chunks\ssr\apps_web_src_0_484rv._.js:1:4704)
+    at h (D:\Github Projects\churchapp\joyfulpath\apps\web\.next\server\chunks\ssr\apps_web_src_0_484rv._.js:1:5067)
+    at stringify (<anonymous>) {
+  description: "Route /parent/rewards couldn't be rendered statically because it used `cookies`. See more info here: https://nextjs.org/docs/messages/dynamic-server-error",
+  digest: 'DYNAMIC_SERVER_USAGE'
+}
+auth() error: Error: Dynamic server usage: Route /admin/settings couldn't be rendered statically because it used `cookies`. See more info here: https://nextjs.org/docs/messages/dynamic-server-error
+    at y (D:\Github Projects\churchapp\joyfulpath\apps\web\.next\server\chunks\ssr\0rrk_next_dist_14kn3u_._.js:1:12427)
+    at n (D:\Github Projects\churchapp\joyfulpath\apps\web\.next\server\chunks\ssr\0rrk_next_0zu4w2j._.js:1:9269)
+    at g (D:\Github Projects\churchapp\joyfulpath\apps\web\.next\server\chunks\ssr\apps_web_src_0_484rv._.js:1:4704)
+    at h (D:\Github Projects\churchapp\joyfulpath\apps\web\.next\server\chunks\ssr\apps_web_src_0_484rv._.js:1:5067)
+    at stringify (<anonymous>) {
+  description: "Route /admin/settings couldn't be rendered statically because it used `cookies`. See more info here: https://nextjs.org/docs/messages/dynamic-server-error",
+  digest: 'DYNAMIC_SERVER_USAGE'
+}
+auth() error: Error: Dynamic server usage: Route /priest/dashboard couldn't be rendered statically because it used `cookies`. See more info here: https://nextjs.org/docs/messages/dynamic-server-error
+    at y (D:\Github Projects\churchapp\joyfulpath\apps\web\.next\server\chunks\ssr\0rrk_next_dist_14kn3u_._.js:1:12427)
+    at n (D:\Github Projects\churchapp\joyfulpath\apps\web\.next\server\chunks\ssr\0rrk_next_0zu4w2j._.js:1:9269)
+    at g (D:\Github Projects\churchapp\joyfulpath\apps\web\.next\server\chunks\ssr\apps_web_src_0_484rv._.js:1:4704)
+    at h (D:\Github Projects\churchapp\joyfulpath\apps\web\.next\server\chunks\ssr\apps_web_src_0_484rv._.js:1:5067)
+    at stringify (<anonymous>) {
+  description: "Route /priest/dashboard couldn't be rendered statically because it used `cookies`. See more info here: https://nextjs.org/docs/messages/dynamic-server-error",
+  digest: 'DYNAMIC_SERVER_USAGE'
+}
+✓ Generating static pages using 15 workers (124/124) in 827ms
+  Finalizing page optimization ...
+
+Route (app)
+┌ ƒ /
+├ ƒ /_not-found
+├ ƒ /about
+├ ƒ /admin/analytics
+├ ƒ /admin/approvals
+├ ƒ /admin/attendance
+├ ƒ /admin/classes
+├ ƒ /admin/content
+├ ƒ /admin/crm
+├ ƒ /admin/dashboard
+├ ƒ /admin/events
+├ ƒ /admin/files
+├ ƒ /admin/lessons
+├ ƒ /admin/permissions
+├ ƒ /admin/prayers
+├ ƒ /admin/qr
+├ ƒ /admin/quizzes
+├ ƒ /admin/rewards
+├ ƒ /admin/settings
+├ ƒ /admin/students
+├ ƒ /admin/students/[id]
+├ ƒ /admin/students/import
+├ ƒ /admin/tasks
+├ ƒ /admin/users
+├ ƒ /api/admin/approvals
+├ ƒ /api/admin/reports/export
+├ ƒ /api/ai/lesson-summary
+├ ƒ /api/ai/quiz-generator
+├ ƒ /api/analytics
+├ ƒ /api/attendance/scan
+├ ƒ /api/auth/change-password
+├ ƒ /api/auth/login
+├ ƒ /api/auth/logout
+├ ƒ /api/auth/register
+├ ƒ /api/classes
+├ ƒ /api/classes/[id]
+├ ƒ /api/coptic/saints
+├ ƒ /api/coptic/synaxarium
+├ ƒ /api/crm/announcements
+├ ƒ /api/crm/calls
+├ ƒ /api/events
+├ ƒ /api/events/[id]
+├ ƒ /api/events/rsvp
+├ ƒ /api/games/[id]/action
+├ ƒ /api/games/[id]/end
+├ ƒ /api/games/[id]/save
+├ ƒ /api/games/[id]/state
+├ ƒ /api/games/start
+├ ƒ /api/gamification/lucky-wheel
+├ ƒ /api/gamification/pets
+├ ƒ /api/gamification/teams
+├ ƒ /api/homework
+├ ƒ /api/homework/[id]
+├ ƒ /api/lessons
+├ ƒ /api/lessons/[id]
+├ ƒ /api/lessons/[id]/upload
+├ ƒ /api/messages
+├ ƒ /api/notifications
+├ ƒ /api/notifications/[id]
+├ ƒ /api/parent/attendance
+├ ƒ /api/parent/children
+├ ƒ /api/parent/reports
+├ ƒ /api/prayer
+├ ƒ /api/prayer/[id]/mark-prayed
+├ ƒ /api/prayer/[id]/respond
+├ ƒ /api/quizzes
+├ ƒ /api/reading-plans
+├ ƒ /api/reading-plans/[id]
+├ ƒ /api/rewards
+├ ƒ /api/rewards/redemptions
+├ ƒ /api/rewards/redemptions/[id]
+├ ƒ /api/rewards/redemptions/[id]/approve
+├ ƒ /api/rewards/redemptions/[id]/fulfill
+├ ƒ /api/rewards/redemptions/[id]/reject
+├ ƒ /api/rewards/redemptions/export
+├ ƒ /api/students
+├ ƒ /api/students/import
+├ ƒ /api/tasks
+├ ƒ /api/tasks/submissions
+├ ƒ /api/tasks/submissions/[id]
+├ ƒ /api/test-db
+├ ƒ /api/users
+├ ƒ /api/users/[id]
+├ ƒ /api/users/complete-profile
+├ ƒ /auth/callback
+├ ƒ /branches
+├ ƒ /change-password
+├ ƒ /complete-profile
+├ ƒ /faq
+├ ƒ /forgot-password
+├ ƒ /gallery
+├ ƒ /instructor/analytics
+├ ƒ /instructor/attendance
+├ ƒ /instructor/classes/[id]
+├ ƒ /instructor/dashboard
+├ ƒ /instructor/lessons/new
+├ ƒ /instructor/prayer-requests
+├ ƒ /instructor/quizzes/[id]/builder
+├ ƒ /instructor/quizzes/[id]/grading
+├ ƒ /instructor/quizzes/new
+├ ƒ /instructor/store
+├ ƒ /instructor/tasks
+├ ƒ /instructor/tasks/[taskId]
+├ ƒ /instructor/tasks/new
+├ ƒ /login
+├ ƒ /parent/attendance
+├ ƒ /parent/dashboard
+├ ƒ /parent/events
+├ ƒ /parent/gamification
+├ ƒ /parent/grades
+├ ƒ /parent/profile
+├ ƒ /parent/reading
+├ ƒ /parent/reports
+├ ƒ /parent/rewards
+├ ƒ /pending
+├ ƒ /priest/attendance
+├ ƒ /priest/dashboard
+├ ƒ /priest/families
+├ ƒ /priest/progress
+├ ƒ /priest/reports
+├ ƒ /priest/students
+├ ƒ /privacy
+├ ƒ /register
+├ ƒ /reset-password
+├ ƒ /saints
+├ ƒ /student/attendance
+├ ƒ /student/badges
+├ ƒ /student/challenges
+├ ƒ /student/dashboard
+├ ƒ /student/events
+├ ƒ /student/games
+├ ƒ /student/journey
+├ ƒ /student/leaderboard
+├ ƒ /student/lessons
+├ ƒ /student/prayer-requests
+├ ƒ /student/prayers
+├ ƒ /student/profile
+├ ƒ /student/qr
+├ ƒ /student/qr-code
+├ ƒ /student/quizzes
+├ ƒ /student/quizzes/[id]/results
+├ ƒ /student/quizzes/[id]/take
+├ ƒ /student/reading
+├ ƒ /student/store
+├ ƒ /student/tasks
+├ ƒ /students/[id]
+├ ƒ /terms
+├ ƒ /unauthorized
+└ ƒ /verify-email
+
+
+ƒ Proxy (Middleware)
+
+ƒ  (Dynamic)  server-rendered on demand
+

@@ -20,7 +20,7 @@ export function Sidebar() {
   }, []);
 
   const rawRole = profile?.role as string | undefined;
-  const role = rawRole as 'student' | 'admin' | 'parent' | 'instructor' | undefined;
+  const role = rawRole as 'student' | 'admin' | 'parent' | 'instructor' | 'priest' | undefined;
   
   if (!role || !NAV_ITEMS[role]) return null;
 

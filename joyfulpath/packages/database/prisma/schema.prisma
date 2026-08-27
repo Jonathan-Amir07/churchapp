@@ -597,6 +597,7 @@ model Reward {
   imageUrl       String?  @map("image_url")
   metadata       String   @default("{}")
   costXp         Int      @default(0) @map("cost_xp")
+  costPoints     Int      @default(0) @map("cost_points")
   inventoryCount Int?     @map("inventory_count")
   isActive       Boolean  @default(true) @map("is_active")
   createdAt      DateTime @default(now()) @map("created_at")

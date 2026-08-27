@@ -7,36 +7,53 @@
    ============================================ */
 
 @theme inline {
+  /* --- Gamification Redesign Specific --- */
+  --color-on-tertiary-fixed: #00210c;
+  --color-on-primary-fixed: #00164e;
+  --color-on-secondary-container: #6e5c00;
+  --color-surface-container-high: #e8e7f2;
+  --color-on-tertiary-fixed-variant: #005227;
+  --color-surface-container-low: #f3f2fd;
+  --color-on-secondary-fixed: #221b00;
+  --color-on-secondary-fixed-variant: #544600;
+  --color-inverse-surface: #2f3038;
+  --color-inverse-primary: #b6c4ff;
+  --color-surface-bright: #faf8ff;
+  --color-secondary-fixed-dim: #e9c400;
+  --color-tertiary-fixed-dim: #66dd8b;
+  --color-secondary-fixed: #ffe16d;
+  --color-surface-tint: #2854cc;
+
   /* --- Primary (Royal Blue) — Navigation, core actions, trust --- */
-  --color-primary: #1B3A6B;
-  --color-primary-container: #2A5298;
-  --color-primary-fixed: #D9E4FA;
-  --color-primary-fixed-dim: #A6C0F1;
+  --color-primary: #214fc7;
+  --color-primary-container: #4169e1;
+  --color-primary-fixed: #dce1ff;
+  --color-primary-fixed-dim: #b6c4ff;
   --color-on-primary: #ffffff;
-  --color-on-primary-container: #ffffff;
-  --color-on-primary-fixed: #0C1E3C;
-  --color-on-primary-fixed-variant: #122B57;
-  --color-inverse-primary: #86A8E7;
+  --color-on-primary-container: #f8f7ff;
+  --color-on-primary-fixed: #00164e;
+  --color-on-primary-fixed-variant: #003baf;
+  --color-inverse-primary: #b6c4ff;
 
   /* --- Secondary (Gold) — Achievements, XP, rewards --- */
-  --color-secondary: #C9A84C;
-  --color-secondary-container: #DABF6B;
-  --color-secondary-fixed: #FAF5E8;
-  --color-secondary-fixed-dim: #F0E1B8;
+  --color-secondary: #705d00;
+  --color-secondary-container: #fcd400;
+  --color-secondary-fixed: #ffe16d;
+  --color-secondary-fixed-dim: #e9c400;
   --color-on-secondary: #ffffff;
-  --color-on-secondary-container: #473913;
-  --color-on-secondary-fixed: #2C2209;
-  --color-on-secondary-fixed-variant: #5E4C19;
+  --color-on-secondary-container: #6e5c00;
+  --color-on-secondary-fixed: #221b00;
+  --color-on-secondary-fixed-variant: #544600;
 
   /* --- Tertiary (Deep Red) — Special/Accent --- */
-  --color-tertiary: #8B1A1A;
-  --color-tertiary-container: #B22222;
-  --color-tertiary-fixed: #FAD6D6;
-  --color-tertiary-fixed-dim: #F29E9E;
+  --color-tertiary: #006732;
+  --color-tertiary-container: #008342;
+  --color-tertiary-fixed: #83fba5;
+  --color-tertiary-fixed-dim: #66dd8b;
   --color-on-tertiary: #ffffff;
-  --color-on-tertiary-container: #ffffff;
-  --color-on-tertiary-fixed: #410707;
-  --color-on-tertiary-fixed-variant: #640F0F;
+  --color-on-tertiary-container: #e2ffe3;
+  --color-on-tertiary-fixed: #00210c;
+  --color-on-tertiary-fixed-variant: #005227;
 
   /* --- Error --- */
   --color-error: #ba1a1a;
@@ -45,20 +62,20 @@
   --color-on-error-container: #93000a;
 
   /* --- Surfaces --- */
-  --color-surface: #f7f9fb;
-  --color-surface-dim: #d8dadc;
-  --color-surface-bright: #f7f9fb;
+  --color-surface: #faf8ff;
+  --color-surface-dim: #d9d9e3;
+  --color-surface-bright: #faf8ff;
   --color-surface-container-lowest: #ffffff;
-  --color-surface-container-low: #f2f4f6;
-  --color-surface-container: #eceef0;
-  --color-surface-container-high: #e6e8ea;
-  --color-surface-container-highest: #e0e3e5;
-  --color-on-surface: #191c1e;
-  --color-on-surface-variant: #424754;
-  --color-inverse-surface: #2d3133;
-  --color-inverse-on-surface: #eff1f3;
-  --color-surface-tint: #005ac2;
-  --color-surface-variant: #e0e3e5;
+  --color-surface-container-low: #f3f2fd;
+  --color-surface-container: #ededf7;
+  --color-surface-container-high: #e8e7f2;
+  --color-surface-container-highest: #e2e1ec;
+  --color-on-surface: #1a1b23;
+  --color-on-surface-variant: #434654;
+  --color-inverse-surface: #2f3038;
+  --color-inverse-on-surface: #f0f0fa;
+  --color-surface-tint: #2854cc;
+  --color-surface-variant: #e2e1ec;
 
   /* --- Success (Green) --- */
   --color-success: #16a34a;

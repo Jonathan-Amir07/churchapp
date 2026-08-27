@@ -25,13 +25,29 @@ import { AnalyticsModule } from './analytics/analytics.module';
       isGlobal: true,
       store: redisStore,
       host: process.env.REDIS_HOST || 'localhost',
-      port: process.env.REDIS_PORT ? parseInt(process.env.REDIS_PORT, 10) : 6379,
+      port: process.env.REDIS_PORT
+        ? parseInt(process.env.REDIS_PORT, 10)
+        : 6379,
     }),
-    ThrottlerModule.forRoot([{
-      ttl: 60000,
-      limit: 100,
-    }]),
-    CommonModule, AuthModule, UserModule, AttendanceModule, LessonModule, QuizModule, GameModule, RewardModule, StoreModule, EventModule, PrayerModule, NotificationModule, AnalyticsModule
+    ThrottlerModule.forRoot([
+      {
+        ttl: 60000,
+        limit: 100,
+      },
+    ]),
+    CommonModule,
+    AuthModule,
+    UserModule,
+    AttendanceModule,
+    LessonModule,
+    QuizModule,
+    GameModule,
+    RewardModule,
+    StoreModule,
+    EventModule,
+    PrayerModule,
+    NotificationModule,
+    AnalyticsModule,
   ],
   controllers: [AppController],
   providers: [

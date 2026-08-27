@@ -6,6 +6,6 @@ import { PrismaModule } from '../prisma/prisma.module';
 @Module({
   imports: [PrismaModule],
   controllers: [PrayerRequestsController],
-  providers: [PrayerRequestsService]
+  providers: [PrayerRequestsService],
 })
 export class PrayerRequestsModule {}

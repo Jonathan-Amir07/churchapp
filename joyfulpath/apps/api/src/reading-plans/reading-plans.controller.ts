@@ -1,4 +1,12 @@
-import { Controller, Get, Post, Body, Param, Request, UseGuards } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Param,
+  Request,
+  UseGuards,
+} from '@nestjs/common';
 import { ReadingPlansService } from './reading-plans.service';
 import { UpdateProgressDto } from './dto/update-progress.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
@@ -19,7 +27,15 @@ export class ReadingPlansController {
   }
 
   @Post(':id/progress')
-  updateProgress(@Request() req: any, @Param('id') id: string, @Body() updateProgressDto: UpdateProgressDto) {
-    return this.readingPlansService.updateProgress(id, updateProgressDto, req.user.id);
+  updateProgress(
+    @Request() req: any,
+    @Param('id') id: string,
+    @Body() updateProgressDto: UpdateProgressDto,
+  ) {
+    return this.readingPlansService.updateProgress(
+      id,
+      updateProgressDto,
+      req.user.id,
+    );
   }
 }

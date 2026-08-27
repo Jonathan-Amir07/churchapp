@@ -1,36 +1,19 @@
-import { createServerClient } from '@supabase/ssr';
-import { cookies } from 'next/headers';
-import { isMockMode, createMockSupabase } from './mockClient';
-
+// Dummy client since we moved to NestJS + Prisma
 export async function createClient() {
-  const cookieStore = await cookies();
-
-  if (isMockMode()) {
-    const mockRole = cookieStore.get('MOCK_USER_ROLE')?.value;
-    return createMockSupabase(mockRole);
-  }
-
-  return createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-    {
-      cookies: {
-        getAll() {
-          return cookieStore.getAll();
-        },
-        setAll(cookiesToSet) {
-          try {
-            cookiesToSet.forEach(({ name, value, options }) =>
-              cookieStore.set(name, value, options)
-            );
-          } catch {
-            // The `setAll` method was called from a Server Component.
-            // This can be ignored if you have middleware refreshing
-            // user sessions.
-          }
-        },
-      },
-    }
-  );
+  return {
+    storage: {
+      from: (bucket: string) => ({
+        upload: async (path: string, file: any, options?: any) => ({ data: { path }, error: null }),
+        getPublicUrl: (path: string) => ({ data: { publicUrl: `https://storage.joyfulpath.local/${bucket}/${path}` } }),
+        remove: async (paths: string[]) => ({ data: paths, error: null }),
+      })
+    },
+    auth: {
+      getSession: async () => ({ data: { session: null }, error: null as any }),
+      signOut: async () => ({ error: null as any }),
+      updateUser: async (attributes: any) => ({ data: {}, error: null as any }),
+    },
+    from: (table: string) => ({} as any)
+  };
 }
 

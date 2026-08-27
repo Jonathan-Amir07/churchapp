@@ -9,6 +9,15 @@ export class AnalyticsController {
 
   @Get('class/:classId/overview')
   getClassOverview(@Request() req: any, @Param('classId') classId: string) {
-    return this.analyticsService.getClassOverview(classId, req.user.id, req.user.role);
+    return this.analyticsService.getClassOverview(
+      classId,
+      req.user.id,
+      req.user.role,
+    );
+  }
+
+  @Get('dashboard')
+  getGlobalDashboard(@Request() req: any) {
+    return this.analyticsService.getGlobalDashboard(req.user.role);
   }
 }

@@ -12,14 +12,16 @@ export class AnnouncementsService {
     }
 
     if (role === 'instructor' && !dto.classId) {
-      throw new ForbiddenException('Instructors can only announce to their classes');
+      throw new ForbiddenException(
+        'Instructors can only announce to their classes',
+      );
     }
 
     const announcement = await this.prisma.announcement.create({
       data: {
         ...dto,
         authorId: userId,
-      }
+      },
     });
 
     // In a real system, you would push to a message queue here to notify users.
@@ -38,7 +40,9 @@ export class AnnouncementsService {
     return this.prisma.announcement.findMany({
       where: whereClause,
       orderBy: { createdAt: 'desc' },
-      include: { author: { select: { firstName: true, lastName: true, role: true } } }
+      include: {
+        author: { select: { firstName: true, lastName: true, role: true } },
+      },
     });
   }
 }

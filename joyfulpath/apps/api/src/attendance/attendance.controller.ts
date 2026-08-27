@@ -1,4 +1,12 @@
-import { Controller, Get, Post, Body, Param, Request, UseGuards } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Param,
+  Request,
+  UseGuards,
+} from '@nestjs/common';
 import { AttendanceService } from './attendance.service';
 import { QrGenerateDto, QrScanDto } from './dto/qr.dto';
 import { ManualAttendanceDto } from './dto/manual-attendance.dto';
@@ -26,6 +34,23 @@ export class AttendanceController {
 
   @Get('class/:classId')
   getReports(@Request() req: any, @Param('classId') classId: string) {
-    return this.attendanceService.getReports(classId, req.user.id, req.user.role);
+    return this.attendanceService.getReports(
+      classId,
+      req.user.id,
+      req.user.role,
+    );
+  }
+  @Get('percentage/:classId/:studentId')
+  getStudentPercentage(
+    @Request() req: any,
+    @Param('classId') classId: string,
+    @Param('studentId') studentId: string,
+  ) {
+    return this.attendanceService.getStudentAttendancePercentage(
+      studentId,
+      classId,
+      req.user.id,
+      req.user.role,
+    );
   }
 }

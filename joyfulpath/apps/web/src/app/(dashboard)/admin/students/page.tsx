@@ -134,6 +134,14 @@ export default function InstructorStudents() {
           <h1 className="text-3xl font-extrabold tracking-tight text-on-surface">Member Directory</h1>
           <p className="text-on-surface-variant text-sm max-w-2xl">Search and manage all members in the system.</p>
         </div>
+        <div className="flex gap-3">
+          <Link href="/admin/students/import">
+            <Button variant="outline" className="flex items-center gap-2">
+              <span className="material-symbols-outlined text-[18px]">upload_file</span>
+              Import Excel
+            </Button>
+          </Link>
+        </div>
       </div>
 
       {/* Advanced Search Bar */}

@@ -3,8 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useUser } from '@/hooks/useUser';
 import { createClient } from '@/lib/supabase/client';
-import { Card, CardContent, CardHeader, CardTitle, ProgressBar, Button } from '@/components/ui';
-import Link from 'next/link';
+import { Card } from '@/components/ui';
 import { useLocale } from 'next-intl';
 
 export default function ParentDashboard() {
@@ -24,12 +23,11 @@ export default function ParentDashboard() {
           if (childrenProfiles && childrenProfiles.length > 0) {
             setChildren(childrenProfiles);
           } else {
-            // Fallback demo student if none are linked for rapid testing
             setChildren([
               {
                 id: 'demo-student-1',
-                display_name: 'Jonathan Junior',
-                total_xp: 1250,
+                display_name: 'يوسف ميخائيل',
+                total_xp: 2450,
                 total_points: 120,
                 current_streak: 5,
                 avatar_url: null,
@@ -48,31 +46,11 @@ export default function ParentDashboard() {
   }, []);
 
   return (
-    <div className="space-y-6 animate-[slide-up_0.4s_ease-out]">
-      <div className="relative rounded-3xl overflow-hidden p-8 md:p-10 bg-gradient-to-br from-primary via-primary-container to-secondary text-on-primary shadow-2xl select-none border border-secondary/30">
-        <div className="absolute inset-0 bg-coptic-pattern opacity-10 mix-blend-overlay pointer-events-none" />
-        <div className="relative z-10 space-y-4">
-          <div className="flex items-center gap-4">
-            <div className="w-12 h-12 rounded-xl bg-white/20 backdrop-blur-sm border border-white/30 flex items-center justify-center animate-[bounce-in_0.5s_cubic-bezier(0.68,-0.55,0.265,1.55)]">
-              <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-6 h-6 text-secondary">
-                <path d="M12 2V22M7 7H17" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
-              </svg>
-            </div>
-            <h1 className="text-2xl md:text-3xl font-extrabold">
-              {currentLocale === 'en' ? `Parent Portal — Welcome ${profile?.display_name || ''}!` : `بوابة أولياء الأمور — أهلاً بك يا ${profile?.display_name || ''}!`}
-            </h1>
-          </div>
-          <p className="text-sm md:text-base font-medium opacity-90 max-w-xl">
-            {currentLocale === 'en' 
-              ? 'Monitor your children’s Sunday school attendance, lesson completion progress, and memorization challenges.'
-              : 'تابع حضور أطفالك لمدارس الأحد، ومدى تقدمهم في الدروس وتحديات حفظ الآيات.'}
-          </p>
-        </div>
-      </div>
-
-      <h2 className="text-xl font-black text-on-surface">
-        {currentLocale === 'en' ? 'My Children' : 'أطفالي'}
-      </h2>
+    <div className="space-y-8 animate-[slide-up_0.4s_ease-out]">
+      <header className="mb-8">
+        <h1 className="text-3xl md:text-5xl font-extrabold text-primary font-display-lg-mobile md:font-display-lg">تقدم الطفل</h1>
+        <p className="text-lg text-on-surface-variant mt-2">بوابة الوالدين - تتبع نمو طفلك الروحي والتعليمي</p>
+      </header>
 
       {loading ? (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -80,72 +58,100 @@ export default function ParentDashboard() {
           <Card className="animate-pulse h-48 bg-surface-container" />
         </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="flex flex-col gap-8">
           {children.map((child) => {
             const levelNum = Math.floor(child.total_xp / 300) + 1;
+            const xpForNextLevel = levelNum * 300;
+            const xpProgress = (child.total_xp % 300) / 300 * 100;
+            const xpRemaining = xpForNextLevel - child.total_xp;
+
             return (
-              <Card key={child.id} variant="interactive" className="border-2 border-secondary/20 bg-surface-container-lowest shadow-sm hover:shadow-md hover:-translate-y-1 transition-all flex flex-col justify-between">
-                <CardContent className="p-6 space-y-4">
-                  <div className="flex items-center gap-4">
-                    <div className="w-14 h-14 rounded-full bg-primary/10 flex items-center justify-center font-black text-primary text-xl">
-                      {child.display_name[0]}
-                    </div>
-                    <div>
-                      <h3 className="text-lg font-black text-on-surface">{child.display_name}</h3>
-                      <p className="text-xs text-on-surface-variant font-bold">
-                        Level {levelNum} ({child.total_xp} XP)
-                      </p>
-                    </div>
-                  </div>
-
-                  <div className="grid grid-cols-3 gap-2 text-center bg-surface-container-low p-3 rounded-xl border border-outline-variant/30">
-                    <div>
-                      <p className="text-[10px] uppercase font-black text-outline">Streak</p>
-                      <h4 className="text-sm font-black text-orange-600">{child.current_streak} Days</h4>
-                    </div>
-                    <div>
-                      <p className="text-[10px] uppercase font-black text-outline">Points</p>
-                      <h4 className="text-sm font-black text-yellow-600">{child.total_points} Pts</h4>
-                    </div>
-                    <div>
-                      <p className="text-[10px] uppercase font-black text-outline">Attendance</p>
-                      <h4 className="text-sm font-black text-tertiary">92%</h4>
+              <div key={child.id} className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                {/* Child Overview Card (Span 8) */}
+                <div className="lg:col-span-8 bg-surface rounded-xl p-6 flex flex-col sm:flex-row items-center gap-6 relative overflow-hidden border border-outline-variant/30 shadow-[0px_4px_20px_rgba(33,79,199,0.04)]">
+                  <div className="relative shrink-0">
+                    {child.avatar_url ? (
+                      <img alt="Child Portrait" src={child.avatar_url} className="w-32 h-32 rounded-full border-4 border-surface shadow-md object-cover z-10 relative" />
+                    ) : (
+                      <div className="w-32 h-32 rounded-full border-4 border-surface shadow-md bg-primary/10 flex items-center justify-center font-bold text-4xl text-primary z-10 relative">
+                        {child.display_name[0]}
+                      </div>
+                    )}
+                    <div className="absolute -bottom-2 -right-2 bg-secondary-container text-on-secondary-container text-xs font-bold tracking-widest uppercase px-3 py-1 rounded-full shadow-sm z-20">
+                      مستوى {levelNum}
                     </div>
                   </div>
-                </CardContent>
-
-                <div className="p-6 pt-0 flex flex-col gap-2">
-                  <div className="flex gap-2">
-                    <Link href={`/parent/attendance?child=${child.id}`} className="flex-1">
-                      <Button variant="outline" size="sm" fullWidth>
-                        {currentLocale === 'en' ? 'Attendance' : 'حضور'}
-                      </Button>
-                    </Link>
-                    <Link href={`/parent/grades?child=${child.id}`} className="flex-1">
-                      <Button variant="outline" size="sm" fullWidth>
-                        {currentLocale === 'en' ? 'Grades' : 'درجات'}
-                      </Button>
-                    </Link>
+                  
+                  <div className="flex-grow w-full">
+                    <div className="flex justify-between items-end mb-2">
+                      <div>
+                        <h3 className="text-2xl font-bold text-on-surface mb-1">{child.display_name}</h3>
+                        <p className="text-base text-on-surface-variant">مستكشف الكتاب المقدس</p>
+                      </div>
+                      <div className="text-right">
+                        <span className="text-3xl font-extrabold text-primary">{child.total_xp}</span>
+                        <span className="text-xs font-bold tracking-widest uppercase text-on-surface-variant ml-1">نقاط الخبرة (XP)</span>
+                      </div>
+                    </div>
+                    {/* XP Bar */}
+                    <div className="w-full h-6 bg-surface-variant rounded-full mt-4 relative overflow-hidden border-2 border-surface shadow-inner">
+                      <div className="absolute top-0 right-0 h-full bg-[#FFD700] rounded-full transition-all duration-1000 ease-out" style={{ width: `${xpProgress}%` }}>
+                        <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/40 to-transparent w-full h-full animate-[shimmer_3s_infinite_linear]"></div>
+                      </div>
+                    </div>
+                    <div className="flex justify-between mt-2 text-xs font-bold tracking-widest uppercase text-outline">
+                      <span>المستوى الحالي</span>
+                      <span>{xpRemaining} نقطة للوصول للمستوى {levelNum + 1}</span>
+                    </div>
                   </div>
-                  <div className="flex gap-2">
-                    <Link href={`/parent/rewards?child=${child.id}`} className="flex-1">
-                      <Button variant="outline" size="sm" fullWidth>
-                        {currentLocale === 'en' ? 'Rewards' : 'مكافآت'}
-                      </Button>
-                    </Link>
-                    <Link href={`/parent/reading?child=${child.id}`} className="flex-1">
-                      <Button variant="outline" size="sm" fullWidth>
-                        {currentLocale === 'en' ? 'Reading' : 'قراءة'}
-                      </Button>
-                    </Link>
-                  </div>
-                  <Link href={`/parent/reports?child=${child.id}`} className="w-full mt-2">
-                    <Button variant="primary" size="sm" fullWidth>
-                      {currentLocale === 'en' ? 'Full Report' : 'التقرير الشامل'}
-                    </Button>
-                  </Link>
                 </div>
-              </Card>
+
+                {/* Progress Rings (Span 4) */}
+                <div className="lg:col-span-4 bg-surface rounded-xl p-6 border border-outline-variant/30 flex flex-col justify-center shadow-[0px_4px_20px_rgba(33,79,199,0.04)]">
+                  <h3 className="text-2xl font-bold text-on-surface mb-6 text-center">نظرة عامة على التقدم</h3>
+                  <div className="flex justify-around items-center">
+                    {/* Ring 1 */}
+                    <div className="flex flex-col items-center">
+                      <div className="relative w-16 h-16">
+                        <svg className="w-full h-full" viewBox="0 0 100 100">
+                          <circle className="text-surface-variant stroke-current" cx="50" cy="50" fill="transparent" r="40" strokeWidth="8"></circle>
+                          <circle className="text-primary stroke-current transition-all duration-300" cx="50" cy="50" fill="transparent" r="40" strokeDasharray="251.2" strokeDashoffset={251.2 - (251.2 * 0.75)} strokeLinecap="round" strokeWidth="8" style={{ transform: 'rotate(-90deg)', transformOrigin: '50% 50%' }}></circle>
+                        </svg>
+                        <div className="absolute inset-0 flex items-center justify-center">
+                          <span className="text-xs font-bold tracking-widest uppercase text-primary">75%</span>
+                        </div>
+                      </div>
+                      <span className="text-xs font-bold tracking-widest uppercase text-on-surface-variant mt-2">القراءة</span>
+                    </div>
+                    {/* Ring 2 */}
+                    <div className="flex flex-col items-center">
+                      <div className="relative w-16 h-16">
+                        <svg className="w-full h-full" viewBox="0 0 100 100">
+                          <circle className="text-surface-variant stroke-current" cx="50" cy="50" fill="transparent" r="40" strokeWidth="8"></circle>
+                          <circle className="text-tertiary-container stroke-current transition-all duration-300" cx="50" cy="50" fill="transparent" r="40" strokeDasharray="251.2" strokeDashoffset={251.2 - (251.2 * 0.90)} strokeLinecap="round" strokeWidth="8" style={{ transform: 'rotate(-90deg)', transformOrigin: '50% 50%' }}></circle>
+                        </svg>
+                        <div className="absolute inset-0 flex items-center justify-center">
+                          <span className="text-xs font-bold tracking-widest uppercase text-tertiary-container">90%</span>
+                        </div>
+                      </div>
+                      <span className="text-xs font-bold tracking-widest uppercase text-on-surface-variant mt-2">الدروس</span>
+                    </div>
+                    {/* Ring 3 */}
+                    <div className="flex flex-col items-center">
+                      <div className="relative w-16 h-16">
+                        <svg className="w-full h-full" viewBox="0 0 100 100">
+                          <circle className="text-surface-variant stroke-current" cx="50" cy="50" fill="transparent" r="40" strokeWidth="8"></circle>
+                          <circle className="text-secondary-container stroke-current transition-all duration-300" cx="50" cy="50" fill="transparent" r="40" strokeDasharray="251.2" strokeDashoffset={251.2 - (251.2 * 0.60)} strokeLinecap="round" strokeWidth="8" style={{ transform: 'rotate(-90deg)', transformOrigin: '50% 50%' }}></circle>
+                        </svg>
+                        <div className="absolute inset-0 flex items-center justify-center">
+                          <span className="text-xs font-bold tracking-widest uppercase text-secondary">60%</span>
+                        </div>
+                      </div>
+                      <span className="text-xs font-bold tracking-widest uppercase text-on-surface-variant mt-2">الاختبارات</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
             );
           })}
         </div>

@@ -1,4 +1,4 @@
-﻿'use client';
+'use client';
 
 import { useState, useEffect } from 'react';
 import { createClient } from '@/lib/supabase/client';
@@ -76,10 +76,10 @@ export default function AdminAnalytics() {
   useEffect(() => {
     async function fetchStats() {
       // Mock fetching some basic stats from supabase
-      const { count: studentCount } = await supabase.from('user_profiles').select('*', { count: 'exact', head: true }).eq('role', 'student');
-      if (studentCount) {
-        setStats(prev => ({ ...prev, totalStudents: studentCount }));
-      }
+      // const { count: studentCount } = await supabase.from('user_profiles').select('*', { count: 'exact', head: true }).eq('role', 'student');
+      // if (studentCount) {
+      //   setStats(prev => ({ ...prev, totalStudents: studentCount }));
+      // }
     }
     fetchStats();
   }, [supabase]);

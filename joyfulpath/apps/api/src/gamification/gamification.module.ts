@@ -7,6 +7,6 @@ import { PrismaModule } from '../prisma/prisma.module';
   imports: [PrismaModule],
   controllers: [GamificationController],
   providers: [GamificationService],
-  exports: [GamificationService] // Export to use in other modules when XP is given
+  exports: [GamificationService], // Export to use in other modules when XP is given
 })
 export class GamificationModule {}

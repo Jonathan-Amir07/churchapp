@@ -26,9 +26,37 @@ import { AnnouncementsModule } from './announcements/announcements.module';
 import { GamificationModule } from './gamification/gamification.module';
 import { StoreModule } from './store/store.module';
 import { AnalyticsModule } from './analytics/analytics.module';
+import { GamesModule } from './games/games.module';
 
 @Module({
-  imports: [PrismaModule, AuthModule, UsersModule, StudentsModule, ParentsModule, ClassesModule, LessonsModule, TasksModule, QuizzesModule, AttendanceModule, RewardsModule, EventsModule, NotificationsModule, ReadingPlansModule, RolesModule, FamiliesModule, PriestsModule, InstructorsModule, FilesModule, CommonModule, PrayerRequestsModule, AnnouncementsModule, GamificationModule, StoreModule, AnalyticsModule],
+  imports: [
+    PrismaModule,
+    AuthModule,
+    UsersModule,
+    StudentsModule,
+    ParentsModule,
+    ClassesModule,
+    LessonsModule,
+    TasksModule,
+    QuizzesModule,
+    AttendanceModule,
+    RewardsModule,
+    EventsModule,
+    NotificationsModule,
+    ReadingPlansModule,
+    RolesModule,
+    FamiliesModule,
+    PriestsModule,
+    InstructorsModule,
+    FilesModule,
+    CommonModule,
+    PrayerRequestsModule,
+    AnnouncementsModule,
+    GamificationModule,
+    StoreModule,
+    AnalyticsModule,
+    GamesModule,
+  ],
   controllers: [AppController],
   providers: [AppService],
 })

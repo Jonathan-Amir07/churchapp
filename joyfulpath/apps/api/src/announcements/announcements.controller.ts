@@ -1,4 +1,12 @@
-import { Controller, Get, Post, Body, Query, Request, UseGuards } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Query,
+  Request,
+  UseGuards,
+} from '@nestjs/common';
 import { AnnouncementsService } from './announcements.service';
 import { CreateAnnouncementDto } from './dto/create-announcement.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';

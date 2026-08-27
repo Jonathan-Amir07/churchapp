@@ -1,6 +1,18 @@
-import { Controller, Get, Post, Body, Patch, Param, Request, UseGuards } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Request,
+  UseGuards,
+} from '@nestjs/common';
 import { PrayerRequestsService } from './prayer-requests.service';
-import { CreatePrayerRequestDto, UpdatePrayerRequestDto } from './dto/prayer-request.dto';
+import {
+  CreatePrayerRequestDto,
+  UpdatePrayerRequestDto,
+} from './dto/prayer-request.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 
 @Controller('prayer-requests')
@@ -14,8 +26,17 @@ export class PrayerRequestsController {
   }
 
   @Patch(':id')
-  update(@Request() req: any, @Param('id') id: string, @Body() dto: UpdatePrayerRequestDto) {
-    return this.prayerRequestsService.update(id, dto, req.user.id, req.user.role);
+  update(
+    @Request() req: any,
+    @Param('id') id: string,
+    @Body() dto: UpdatePrayerRequestDto,
+  ) {
+    return this.prayerRequestsService.update(
+      id,
+      dto,
+      req.user.id,
+      req.user.role,
+    );
   }
 
   @Get()

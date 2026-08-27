@@ -1,4 +1,14 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Request, UseGuards } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  Request,
+  UseGuards,
+} from '@nestjs/common';
 import { LessonsService } from './lessons.service';
 import { CreateLessonDto } from './dto/create-lesson.dto';
 import { UpdateLessonDto } from './dto/update-lesson.dto';
@@ -12,12 +22,20 @@ export class LessonsController {
 
   @Post()
   create(@Request() req: any, @Body() createLessonDto: CreateLessonDto) {
-    return this.lessonsService.create(createLessonDto, req.user.id, req.user.role);
+    return this.lessonsService.create(
+      createLessonDto,
+      req.user.id,
+      req.user.role,
+    );
   }
 
   @Get('class/:classId')
   findAllForClass(@Request() req: any, @Param('classId') classId: string) {
-    return this.lessonsService.findAllForClass(classId, req.user.id, req.user.role);
+    return this.lessonsService.findAllForClass(
+      classId,
+      req.user.id,
+      req.user.role,
+    );
   }
 
   @Get(':id')
@@ -26,8 +44,17 @@ export class LessonsController {
   }
 
   @Patch(':id')
-  update(@Request() req: any, @Param('id') id: string, @Body() updateLessonDto: UpdateLessonDto) {
-    return this.lessonsService.update(id, updateLessonDto, req.user.id, req.user.role);
+  update(
+    @Request() req: any,
+    @Param('id') id: string,
+    @Body() updateLessonDto: UpdateLessonDto,
+  ) {
+    return this.lessonsService.update(
+      id,
+      updateLessonDto,
+      req.user.id,
+      req.user.role,
+    );
   }
 
   @Delete(':id')
@@ -36,7 +63,26 @@ export class LessonsController {
   }
 
   @Post(':id/attachments')
-  addAttachment(@Request() req: any, @Param('id') id: string, @Body() addAttachmentDto: AddAttachmentDto) {
-    return this.lessonsService.addAttachment(id, addAttachmentDto, req.user.id, req.user.role);
+  addAttachment(
+    @Request() req: any,
+    @Param('id') id: string,
+    @Body() addAttachmentDto: AddAttachmentDto,
+  ) {
+    return this.lessonsService.addAttachment(
+      id,
+      addAttachmentDto,
+      req.user.id,
+      req.user.role,
+    );
+  }
+
+  @Post(':id/start')
+  startLesson(@Request() req: any, @Param('id') id: string) {
+    return this.lessonsService.startLesson(id, req.user.id, req.user.role);
+  }
+
+  @Post(':id/complete')
+  completeLesson(@Request() req: any, @Param('id') id: string) {
+    return this.lessonsService.completeLesson(id, req.user.id, req.user.role);
   }
 }

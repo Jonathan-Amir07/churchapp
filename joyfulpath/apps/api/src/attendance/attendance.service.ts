@@ -1,11 +1,19 @@
-import { Injectable, ForbiddenException, NotFoundException, BadRequestException } from '@nestjs/common';
+import {
+  Injectable,
+  ForbiddenException,
+  NotFoundException,
+  BadRequestException,
+} from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { QrGenerateDto, QrScanDto } from './dto/qr.dto';
 import { ManualAttendanceDto } from './dto/manual-attendance.dto';
 
 // In a real application, you'd use a Redis cache or signed JWTs for QR tokens.
 // For this prototype, we'll store active QR tokens in memory.
-const activeQrTokens = new Map<string, { classId: string, expiresAt: number }>();
+const activeQrTokens = new Map<
+  string,
+  { classId: string; expiresAt: number }
+>();
 
 @Injectable()
 export class AttendanceService {
@@ -17,7 +25,9 @@ export class AttendanceService {
     }
 
     if (role === 'instructor') {
-      const classRecord = await this.prisma.class.findUnique({ where: { id: dto.classId } });
+      const classRecord = await this.prisma.class.findUnique({
+        where: { id: dto.classId },
+      });
       if (!classRecord || classRecord.createdBy !== userId) {
         throw new ForbiddenException('You do not own this class');
       }
@@ -41,7 +51,7 @@ export class AttendanceService {
     }
 
     const membership = await this.prisma.classMember.findUnique({
-      where: { classId_userId: { classId: session.classId, userId } }
+      where: { classId_userId: { classId: session.classId, userId } },
     });
 
     if (!membership) {
@@ -56,18 +66,21 @@ export class AttendanceService {
       where: {
         classId: session.classId,
         userId: userId,
-        date: { gte: today }
-      }
+        date: { gte: today },
+      },
     });
 
     if (existing) {
-      return { message: 'Attendance already recorded for today', record: existing };
+      return {
+        message: 'Attendance already recorded for today',
+        record: existing,
+      };
     }
 
     // Award 20 XP for attending
     await this.prisma.user.update({
       where: { id: userId },
-      data: { totalXp: { increment: 20 } }
+      data: { totalXp: { increment: 20 } },
     });
 
     const record = await this.prisma.attendance.create({
@@ -77,8 +90,8 @@ export class AttendanceService {
         date: new Date(),
         status: 'present',
         xpAwarded: 20,
-        recordedBy: userId
-      }
+        recordedBy: userId,
+      },
     });
 
     return { message: 'Attendance recorded successfully. +20 XP!', record };
@@ -90,36 +103,89 @@ export class AttendanceService {
     }
 
     if (role === 'instructor') {
-      const classRecord = await this.prisma.class.findUnique({ where: { id: dto.classId } });
+      const classRecord = await this.prisma.class.findUnique({
+        where: { id: dto.classId },
+      });
       if (!classRecord || classRecord.createdBy !== userId) {
         throw new ForbiddenException('You do not own this class');
       }
     }
 
     const today = new Date();
-    const records = await Promise.all(
-      dto.records.map(async (r) => {
+    today.setHours(0, 0, 0, 0);
+
+    const records = await this.prisma.$transaction(async (tx) => {
+      const results = [];
+      for (const r of dto.records) {
+        // Prevent duplicate attendance for the same day
+        const existing = await tx.attendance.findFirst({
+          where: {
+            classId: dto.classId,
+            userId: r.studentId,
+            date: { gte: today },
+          },
+        });
+
+        if (existing) {
+          // If already marked, skip or optionally update. Here we just skip to prevent dupes.
+          continue;
+        }
+
         const points = r.status === 'present' ? 20 : 0;
         if (points > 0) {
-          await this.prisma.user.update({
+          await tx.user.update({
             where: { id: r.studentId },
-            data: { totalXp: { increment: points } }
+            data: { totalXp: { increment: points } },
           });
         }
-        return this.prisma.attendance.create({
+        
+        const newRecord = await tx.attendance.create({
           data: {
             classId: dto.classId,
             userId: r.studentId,
-            date: today,
+            date: new Date(),
             status: r.status,
             xpAwarded: points,
-            recordedBy: userId
-          }
+            recordedBy: userId,
+          },
         });
-      })
-    );
+        results.push(newRecord);
+      }
+      return results;
+    });
 
     return { message: 'Attendance submitted successfully', records };
+  }
+
+  async getStudentAttendancePercentage(studentId: string, classId: string, userId: string, role: string) {
+    if (role === 'student' && studentId !== userId) {
+      throw new ForbiddenException('You can only view your own attendance');
+    }
+    if (role === 'parent') {
+      const parentChild = await this.prisma.family.findFirst({
+        where: {
+          OR: [{ fatherId: userId }, { motherId: userId }],
+          children: { some: { id: studentId } },
+        },
+      });
+      if (!parentChild) {
+        throw new ForbiddenException('You can only view your own children');
+      }
+    }
+
+    const totalSessions = await this.prisma.attendance.groupBy({
+      by: ['date'],
+      where: { classId },
+    });
+
+    const attendedSessions = await this.prisma.attendance.count({
+      where: { classId, userId: studentId, status: 'present' },
+    });
+
+    const total = totalSessions.length;
+    const percentage = total > 0 ? (attendedSessions / total) * 100 : 0;
+
+    return { attended: attendedSessions, total, percentage: Math.round(percentage) };
   }
 
   async getReports(classId: string, userId: string, role: string) {
@@ -128,7 +194,9 @@ export class AttendanceService {
     }
 
     if (role === 'instructor') {
-      const classRecord = await this.prisma.class.findUnique({ where: { id: classId } });
+      const classRecord = await this.prisma.class.findUnique({
+        where: { id: classId },
+      });
       if (!classRecord || classRecord.createdBy !== userId) {
         throw new ForbiddenException('You do not own this class');
       }
@@ -136,8 +204,10 @@ export class AttendanceService {
 
     return this.prisma.attendance.findMany({
       where: { classId },
-      include: { student: { select: { id: true, firstName: true, lastName: true } } },
-      orderBy: { date: 'desc' }
+      include: {
+        student: { select: { id: true, firstName: true, lastName: true } },
+      },
+      orderBy: { date: 'desc' },
     });
   }
 }

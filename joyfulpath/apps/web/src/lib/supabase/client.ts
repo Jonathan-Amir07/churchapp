@@ -1,19 +1,19 @@
-import { createBrowserClient } from '@supabase/ssr';
-import { isMockMode, createMockSupabase } from './mockClient';
-
-let mockClientInstance: any = null;
-
+// Dummy client since we moved to NestJS + Prisma
 export const createClient = () => {
-  if (isMockMode()) {
-    if (!mockClientInstance) {
-      mockClientInstance = createMockSupabase();
-    }
-    return mockClientInstance;
-  }
-
-  return createBrowserClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-  );
+  return {
+    storage: {
+      from: (bucket: string) => ({
+        upload: async (path: string, file: any, options?: any) => ({ data: { path }, error: null }),
+        getPublicUrl: (path: string) => ({ data: { publicUrl: `https://storage.joyfulpath.local/${bucket}/${path}` } }),
+        remove: async (paths: string[]) => ({ data: paths, error: null }),
+      })
+    },
+    auth: {
+      getSession: async () => ({ data: { session: null }, error: null as any }),
+      signOut: async () => ({ error: null as any }),
+      updateUser: async (attributes: any) => ({ data: {}, error: null as any }),
+    },
+    from: (table: string) => ({} as any)
+  };
 };
 
