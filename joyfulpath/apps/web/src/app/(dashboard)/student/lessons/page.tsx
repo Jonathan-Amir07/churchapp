@@ -135,7 +135,6 @@ export default function StudentLessons() {
   const tCommon = useTranslations('common');
   const tGamification = useTranslations('gamification');
   const addToast = useNotificationStore(s => s.addToast);
-  const supabase = createClient();
   const [lessons, setLessons] = useState<Lesson[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [filter, setFilter] = useState<'all' | 'completed' | 'in-progress' | 'not-started'>('all');
@@ -156,10 +155,11 @@ export default function StudentLessons() {
         }
         
         const data = await res.json();
-        const lessonsData = data.lessons || [];
+        let lessonsData = Array.isArray(data) ? data : data.lessons || [];
+        if (!Array.isArray(lessonsData)) lessonsData = [];
 
         const mappedLessons: Lesson[] = lessonsData.map((l: any) => {
-          const lessonAtts = (l.attachments || []).map((a: any) => ({
+          const lessonAtts = (l.attachments || [])?.map((a: any) => ({
             name: a.fileName,
             type: a.fileType as any,
             size: `${Math.round(a.fileSize / 1024)} KB`,
@@ -194,7 +194,7 @@ export default function StudentLessons() {
     fetchLessons();
   }, []);
 
-  const filteredLessons = lessons.filter((lesson) => {
+  const filteredLessons = lessons?.filter((lesson) => {
     const title = (lesson.titleEn + ' ' + lesson.titleAr).toLowerCase();
     const matchesSearch = title.includes(searchQuery.toLowerCase());
     
@@ -205,19 +205,35 @@ export default function StudentLessons() {
     return matchesSearch;
   });
 
-  const handleStart = (lesson: Lesson) => {
-    setLessons(prev =>
-      prev.map(l => (l.id === lesson.id && l.status === 'not-started' ? { ...l, status: 'in-progress' } : l))
-    );
-    setSelectedLesson({ ...lesson, status: 'in-progress' });
+  const handleStart = async (lesson: Lesson) => {
+    try {
+      const res = await fetch(`/api/lessons/${lesson.id}/start`, { method: 'POST' });
+      if (!res.ok) throw new Error('Failed to start lesson');
+      
+      setLessons(prev =>
+        prev?.map(l => (l.id === lesson.id && l.status === 'not-started' ? { ...l, status: 'in-progress' } : l))
+      );
+      setSelectedLesson({ ...lesson, status: 'in-progress' });
+    } catch (err) {
+      console.error(err);
+      addToast('Failed to start lesson', 'error');
+    }
   };
 
-  const handleComplete = (lesson: Lesson) => {
-    setLessons(prev =>
-      prev.map(l => (l.id === lesson.id ? { ...l, status: 'completed' } : l))
-    );
-    setSelectedLesson(null);
-    addToast(tLessons('completeSuccess', { xp: lesson.xp, points: lesson.points }), 'success');
+  const handleComplete = async (lesson: Lesson) => {
+    try {
+      const res = await fetch(`/api/lessons/${lesson.id}/complete`, { method: 'POST' });
+      if (!res.ok) throw new Error('Failed to complete lesson');
+      
+      setLessons(prev =>
+        prev?.map(l => (l.id === lesson.id ? { ...l, status: 'completed' } : l))
+      );
+      setSelectedLesson(null);
+      addToast(tLessons('completeSuccess', { xp: lesson.xp, points: lesson.points }), 'success');
+    } catch (err) {
+      console.error(err);
+      addToast('Failed to complete lesson', 'error');
+    }
   };
 
   const handleDownload = (fileName: string) => {
@@ -249,14 +265,14 @@ export default function StudentLessons() {
             onChange={(e) => setSearchQuery(e.target.value)}
             className="w-full h-10 ps-10 pe-4 rounded-xl border border-outline-variant bg-surface-container-low text-on-surface placeholder:text-on-surface-variant/60 focus:outline-none focus:border-primary text-sm font-medium"
           />
-          <span className="material-symbols-outlined absolute left-3 top-2.5 text-on-surface-variant/60 text-[20px]">
+          <span className="material-symbols-outlined absolute start-3 top-2.5 text-on-surface-variant/60 text-[20px]">
             search
           </span>
         </div>
 
         {/* Custom Tabs */}
         <div className="flex gap-1 bg-surface-container-low p-1.5 rounded-xl w-full sm:w-auto overflow-x-auto">
-          {(['all', 'completed', 'in-progress', 'not-started'] as const).map((tab) => (
+          {(['all', 'completed', 'in-progress', 'not-started'] as const)?.map((tab) => (
             <button
               key={tab}
               onClick={() => setFilter(tab)}
@@ -274,7 +290,7 @@ export default function StudentLessons() {
 
       {/* Grid of Lessons */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {filteredLessons.map((lesson) => {
+        {filteredLessons?.map((lesson) => {
           const title = isAr ? lesson.titleAr : lesson.titleEn;
           const category = isAr ? lesson.categoryAr : lesson.categoryEn;
 
@@ -390,7 +406,7 @@ export default function StudentLessons() {
                 {isAr ? 'أهداف الدرس' : 'Lesson Objectives'}
               </h4>
               <ul className="space-y-1.5">
-                {(isAr ? selectedLesson.objectivesAr : selectedLesson.objectives).map((obj, idx) => (
+                {(isAr ? selectedLesson.objectivesAr : selectedLesson.objectives)?.map((obj, idx) => (
                   <li key={idx} className="flex items-start gap-2 text-sm text-on-surface">
                     <span className="material-symbols-outlined text-[16px] text-tertiary mt-0.5" style={{ fontVariationSettings: "'FILL' 1" }}>
                       check_circle
@@ -419,7 +435,7 @@ export default function StudentLessons() {
                   {isAr ? 'المرفقات' : 'Attachments'}
                 </h4>
                 <div className="space-y-2">
-                  {selectedLesson.attachments.map((file, idx) => {
+                  {selectedLesson.attachments?.map((file, idx) => {
                     const fileStyle = FILE_ICONS[file.type] || FILE_ICONS.pdf;
                     const isDownloading = downloadingFile === file.name;
                     return (

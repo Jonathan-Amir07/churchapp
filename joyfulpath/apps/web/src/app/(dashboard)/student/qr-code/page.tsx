@@ -109,7 +109,7 @@ export default function StudentQRCodePage() {
           { icon: 'brightness_high', text: 'Increase your screen brightness for easier scanning.' },
           { icon: 'lock', text: 'Your QR code is unique to you — do not share it.' },
           { icon: 'star', text: 'Each check-in earns you +50 XP and continues your streak!' },
-        ].map(({ icon, text }) => (
+        ]?.map(({ icon, text }) => (
           <div key={icon} className="flex items-start gap-3 p-3 rounded-xl bg-surface-container-low border border-outline-variant/40 text-xs text-on-surface-variant font-medium">
             <span className="material-symbols-outlined text-[18px] text-primary mt-0.5 shrink-0">{icon}</span>
             {text}

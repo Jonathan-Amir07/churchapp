@@ -48,7 +48,7 @@ export function AdminSidebar() {
           </svg>
         </div>
         <span className="text-base font-bold tracking-tight text-on-surface">
-          {tCommon('appName')} <span className="text-xs text-primary ml-1">{role === 'admin' ? 'Admin' : 'Instructor'}</span>
+          {tCommon('appName')} <span className="text-xs text-primary ms-1">{role === 'admin' ? 'Admin' : 'Instructor'}</span>
         </span>
       </div>
 
@@ -62,7 +62,7 @@ export function AdminSidebar() {
 
       {/* Navigation menu list */}
       <nav className="flex-1 px-3 py-2 space-y-0.5 overflow-y-auto custom-scrollbar">
-        {items.map((item) => {
+        {items?.map((item) => {
           const active = isActive(item.href);
           return (
             <Link

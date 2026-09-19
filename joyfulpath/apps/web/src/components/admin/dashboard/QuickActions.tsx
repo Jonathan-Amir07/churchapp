@@ -19,7 +19,7 @@ export function QuickActions() {
           إجراءات سريعة
         </h3>
         <div className="grid grid-cols-2 gap-3">
-          {actions.map((action, i) => (
+          {actions?.map((action, i) => (
             <Link key={i} href={action.href} className={`flex items-center gap-2 p-2 rounded-md border transition-all hover:scale-[1.02] hover:shadow-sm ${action.color}`}>
               <span className="material-symbols-outlined text-[20px]">{action.icon}</span>
               <span className="text-xs font-bold">{action.label}</span>

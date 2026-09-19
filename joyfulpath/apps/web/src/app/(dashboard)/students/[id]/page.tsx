@@ -45,7 +45,7 @@ export default function StudentProfilePage() {
         <div className="w-24 h-24 rounded-full bg-primary/20 flex items-center justify-center text-primary text-3xl font-bold">
           {student.firstName?.[0]}{student.lastName?.[0]}
         </div>
-        <div className="flex-1 text-center md:text-left">
+        <div className="flex-1 text-center md:text-start">
           <h1 className="text-3xl font-bold text-on-surface">{student.displayName || `${student.firstName} ${student.lastName}`}</h1>
           <p className="text-on-surface-variant">@{student.username} • {student.role}</p>
           <div className="mt-4 flex flex-wrap gap-4 justify-center md:justify-start">
@@ -108,7 +108,7 @@ export default function StudentProfilePage() {
                 <p className="text-sm text-on-surface-variant">No siblings found in system.</p>
               ) : (
                 <div className="flex flex-col gap-2">
-                  {siblings.map(sib => (
+                  {siblings?.map(sib => (
                     <a key={sib.id} href={`/students/${sib.id}`} className="text-sm text-blue-600 hover:underline">
                       {sib.firstName} {sib.lastName}
                     </a>

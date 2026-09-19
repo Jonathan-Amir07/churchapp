@@ -49,6 +49,7 @@ export default async function RootLayout({
       lang={locale}
       dir={dir}
       className={`${cairo.variable} ${inter.variable} h-full`}
+      data-scroll-behavior="smooth"
     >
       <head>
         <link

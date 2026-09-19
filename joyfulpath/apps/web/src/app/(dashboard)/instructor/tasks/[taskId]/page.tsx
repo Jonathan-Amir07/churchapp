@@ -27,7 +27,7 @@ export default function ReviewTaskPage() {
         {[
           { id: '1', student: 'Jonathan Amir', status: 'Needs Review', submittedAt: '2 hours ago', content: 'Here is my summary of Genesis chapter 1...' },
           { id: '2', student: 'Mark Safwat', status: 'Graded', submittedAt: '1 day ago', content: 'God created the heavens and the earth...' },
-        ].map((sub) => (
+        ]?.map((sub) => (
           <Card key={sub.id} className="border border-outline-variant bg-surface-container-lowest shadow-sm">
             <CardContent className="p-6 space-y-4">
               <div className="flex justify-between items-center border-b border-outline-variant/50 pb-3">

@@ -12,20 +12,31 @@ export class UsersService {
   }
 
   async findAll(currentUser: any, query: any) {
-    const { name, phone, school, address, page = 1, limit = 10, sortBy = 'createdAt', sortDesc = 'true' } = query;
+    const {
+      name,
+      username,
+      phone,
+      school,
+      address,
+      page = 1,
+      limit = 10,
+      sortBy = 'createdAt',
+      sortDesc = 'true',
+    } = query;
     const where: Prisma.UserWhereInput = {};
 
     // Advanced search filters
     if (name) {
       where.OR = [
-        { firstName: { contains: name, mode: 'insensitive' } },
-        { lastName: { contains: name, mode: 'insensitive' } },
-        { displayName: { contains: name, mode: 'insensitive' } },
+        { firstName: { contains: name } },
+        { lastName: { contains: name } },
+        { displayName: { contains: name } },
       ];
     }
+    if (username) where.username = { contains: username };
     if (phone) where.phone = { contains: phone };
-    if (school) where.school = { contains: school, mode: 'insensitive' };
-    if (address) where.address = { contains: address, mode: 'insensitive' };
+    if (school) where.school = { contains: school };
+    if (address) where.address = { contains: address };
 
     // Role-based visibility
     if (currentUser.role === 'student') {
@@ -71,7 +82,10 @@ export class UsersService {
     });
   }
 
-  async getSiblings(id: string): Promise<User[]> {
+  async getSiblings(id: string, currentUser?: any): Promise<User[]> {
+    if (currentUser) {
+      await this.verifyUserAccess(id, currentUser);
+    }
     const user = await this.prisma.user.findUnique({ where: { id } });
     if (!user || !user.familyId) return [];
 
@@ -84,8 +98,58 @@ export class UsersService {
     });
   }
 
-  async findOne(id: string): Promise<User | null> {
-    return this.prisma.user.findUnique({ where: { id } });
+  async findOne(id: string, currentUser?: any): Promise<User | null> {
+    const user = await this.prisma.user.findUnique({ where: { id } });
+    if (!user || !currentUser) return user;
+
+    await this.verifyUserAccess(id, currentUser, user);
+    return user;
+  }
+
+  async findMe(id: string) {
+    const user = await this.prisma.user.findUnique({ where: { id } });
+    if (!user) throw new Error('Not found');
+
+    delete (user as any).passwordHash;
+    delete (user as any).pinHash;
+    return user;
+  }
+
+  private async verifyUserAccess(
+    id: string,
+    currentUser: any,
+    userObj?: User | null,
+  ) {
+    if (['admin', 'priest'].includes(currentUser.role)) return;
+    if (currentUser.userId === id) return;
+
+    const user =
+      userObj || (await this.prisma.user.findUnique({ where: { id } }));
+    if (!user) throw new Error('Not found');
+
+    if (currentUser.role === 'parent') {
+      const parent = await this.prisma.user.findUnique({
+        where: { id: currentUser.userId },
+      });
+      if (parent?.familyId === user.familyId) return;
+      throw new Error("Forbidden: Cannot access another family's data");
+    }
+
+    if (currentUser.role === 'instructor') {
+      const classes = await this.prisma.class.findMany({
+        where: { createdBy: currentUser.userId },
+      });
+      const classIds = classes.map((c) => c.id);
+      const isMember = await this.prisma.classMember.findFirst({
+        where: { userId: id, classId: { in: classIds } },
+      });
+      if (isMember) return;
+      throw new Error(
+        'Forbidden: Cannot access a student outside your assigned classes',
+      );
+    }
+
+    throw new Error('Forbidden');
   }
 
   async findByUsernameOrEmail(identifier: string): Promise<User | null> {
@@ -96,7 +160,37 @@ export class UsersService {
     });
   }
 
-  async update(id: string, data: Prisma.UserUpdateInput): Promise<User> {
+  async update(
+    id: string,
+    data: Prisma.UserUpdateInput,
+    currentUser?: any,
+  ): Promise<User> {
+    if (currentUser) {
+      if (currentUser.role === 'instructor') {
+        throw new Error('Forbidden: Instructors cannot modify users');
+      }
+      if (currentUser.role === 'parent') {
+        const parent = await this.prisma.user.findUnique({
+          where: { id: currentUser.userId },
+        });
+        const target = await this.prisma.user.findUnique({ where: { id } });
+        if (parent?.familyId !== target?.familyId) {
+          throw new Error("Forbidden: Cannot modify another family's data");
+        }
+      }
+      if (currentUser.role === 'student' && currentUser.userId !== id) {
+        throw new Error(
+          'Forbidden: Students can only modify their own profile',
+        );
+      }
+      // Security: Students cannot modify restricted fields
+      if (currentUser.role === 'student') {
+        delete data.role;
+        delete data.isActive;
+        delete data.totalXp;
+        delete data.totalPoints;
+      }
+    }
     return this.prisma.user.update({ where: { id }, data });
   }
 
@@ -108,7 +202,10 @@ export class UsersService {
     });
   }
 
-  async remove(id: string): Promise<User> {
+  async remove(id: string, currentUser?: any): Promise<User> {
+    if (currentUser && !['admin', 'priest'].includes(currentUser.role)) {
+      throw new Error('Forbidden: Only admin/priest can remove users');
+    }
     // Soft delete
     return this.prisma.user.update({
       where: { id },
@@ -118,77 +215,5 @@ export class UsersService {
         deletedAt: new Date(),
       },
     });
-  }
-
-  async importExcel(fileBuffer: Buffer): Promise<any> {
-    const xlsx = await import('xlsx');
-    const workbook = xlsx.read(fileBuffer, { type: 'buffer' });
-    const sheetName = workbook.SheetNames[0];
-    const sheet = workbook.Sheets[sheetName];
-    const rows = xlsx.utils.sheet_to_json<any>(sheet);
-
-    if (rows.length === 0) throw new Error('Excel file is empty or missing data');
-
-    const results = { created: 0, duplicate: 0, invalid: 0, failed: 0, reasons: [] as string[] };
-
-    await this.prisma.$transaction(async (tx) => {
-      for (let i = 0; i < rows.length; i++) {
-        const row = rows[i];
-        try {
-          if (!row.firstName || !row.lastName) {
-            results.invalid++;
-            results.reasons.push(`Row ${i + 2}: Missing firstName or lastName`);
-            continue;
-          }
-
-          let username = row.username;
-          if (!username) {
-            const baseUsername = `${row.firstName}.${row.lastName}`.toLowerCase().replace(/[^a-z0-9]/g, '');
-            const randomSuffix = Math.floor(Math.random() * 10000).toString().padStart(4, '0');
-            username = `${baseUsername}${randomSuffix}`;
-          }
-
-          // Check duplicate
-          const existing = await tx.user.findFirst({
-            where: {
-              OR: [
-                { username: username },
-                ...(row.email ? [{ email: row.email }] : []),
-              ]
-            }
-          });
-
-          if (existing) {
-            results.duplicate++;
-            results.reasons.push(`Row ${i + 2}: Duplicate username or email`);
-            continue;
-          }
-
-          const passwordHash = await bcrypt.hash(row.password || 'Welcome123!', 10);
-
-          await tx.user.create({
-            data: {
-              firstName: row.firstName,
-              lastName: row.lastName,
-              displayName: row.displayName || `${row.firstName} ${row.lastName}`,
-              username: username,
-              email: row.email || null,
-              passwordHash,
-              role: row.role || 'student',
-              churchId: row.churchId || null,
-              branchId: row.branchId || null,
-              forcePasswordChange: true,
-            },
-          });
-          results.created++;
-        } catch (err: any) {
-          results.failed++;
-          results.reasons.push(`Row ${i + 2}: ${err.message}`);
-          throw new Error('Transaction rolled back due to error'); // Will rollback transaction
-        }
-      }
-    });
-
-    return results;
   }
 }

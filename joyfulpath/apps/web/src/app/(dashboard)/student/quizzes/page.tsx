@@ -11,14 +11,52 @@ export default function StudentQuizzes() {
   const tQuizzes = useTranslations('quizzes');
   const tCommon = useTranslations('common');
   const tGamification = useTranslations('gamification');
-  const { quizzes, addXP, addPoints } = useAppStore();
+  const { addXP, addPoints } = useAppStore();
   const locale = useLocale();
 
-  const [localQuizzes, setLocalQuizzes] = useState(quizzes);
+  const [localQuizzes, setLocalQuizzes] = useState<any[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
   
   useEffect(() => {
-    setLocalQuizzes(quizzes);
-  }, [quizzes]);
+    async function fetchQuizzes() {
+      try {
+        const res = await fetch('/api/quizzes');
+        if (!res.ok) {
+          setIsLoading(false);
+          return;
+        }
+        const data = await res.json();
+        
+        const mapped = data?.map((q: any) => ({
+          id: q.id,
+          titleEn: q.title || 'Quiz',
+          titleAr: q.title || 'اختبار',
+          descriptionEn: q.description || '',
+          descriptionAr: q.description || '',
+          passingScore: q.passingScore || 70,
+          xp: q.xpReward || 50,
+          points: q.pointsReward || 10,
+          status: q.attempts && q.attempts.length > 0 ? (q.attempts[0].score >= q.passingScore ? 'passed' : 'failed') : 'not-started',
+          questions: q.questions?.map((question: any) => ({
+            id: question.id,
+            textEn: question.questionText,
+            textAr: question.questionText,
+            optionsEn: question.answers?.map((a: any) => a.answerText) || [],
+            optionsAr: question.answers?.map((a: any) => a.answerText) || [],
+            correctIndex: question.answers?.findIndex((a: any) => a.isCorrect) ?? 0,
+            answers: question.answers,
+          })) || []
+        }));
+        
+        setLocalQuizzes(mapped || []);
+      } catch (e) {
+        console.error(e);
+      } finally {
+        setIsLoading(false);
+      }
+    }
+    fetchQuizzes();
+  }, []);
   
   // Quiz Player State
   const [activeQuiz, setActiveQuiz] = useState<any | null>(null);
@@ -45,45 +83,62 @@ export default function StudentQuizzes() {
     }));
   };
 
-  const handleNext = () => {
+  const handleNext = async () => {
     if (!activeQuiz) return;
     if (currentQuestionIndex < activeQuiz.questions.length - 1) {
       setCurrentQuestionIndex((prev) => prev + 1);
     } else {
-      // Calculate score
-      let correctCount = 0;
-      activeQuiz.questions.forEach((q: any, idx: number) => {
-        if (selectedAnswers[idx] === q.correctIndex) {
-          correctCount++;
+      // Finished quiz, submit to backend
+      const attemptAnswers = activeQuiz.questions.map((q: any, idx: number) => ({
+        questionId: q.id,
+        answerId: q.answers?.[selectedAnswers[idx]]?.id,
+      })).filter((a: any) => a.answerId);
+
+      try {
+        // Start Attempt
+        const startRes = await fetch(`/api/quizzes/${activeQuiz.id}/start`, { method: 'POST' });
+        if (!startRes.ok) throw new Error('Failed to start quiz attempt');
+        const { id: attemptId } = await startRes.json();
+
+        // Submit Attempt
+        const res = await fetch(`/api/quizzes/attempts/${attemptId}/submit`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ answers: attemptAnswers }),
+        });
+        
+        if (!res.ok) throw new Error('Failed to submit quiz');
+        
+        const resultData = await res.json();
+        
+        // Use resultData to calculate score and status
+        const isPassed = resultData.passed || resultData.score >= activeQuiz.passingScore;
+        const xpEarned = isPassed ? activeQuiz.xp : 0;
+        const pointsEarned = isPassed ? activeQuiz.points : 0;
+
+        // Update quiz list status
+        setLocalQuizzes((prev) =>
+          prev?.map((q) =>
+            q.id === activeQuiz.id
+              ? { ...q, status: isPassed ? 'passed' : 'failed' }
+              : q
+          )
+        );
+
+        if (isPassed) {
+          addXP(xpEarned);
+          addPoints(pointsEarned);
         }
-      });
 
-      const scorePct = Math.round((correctCount / activeQuiz.questions.length) * 100);
-      const isPassed = scorePct >= activeQuiz.passingScore;
-
-      const xpEarned = isPassed ? activeQuiz.xp : 0;
-      const pointsEarned = isPassed ? activeQuiz.points : 0;
-
-      // Update quiz list status
-      setLocalQuizzes((prev) =>
-        prev.map((q) =>
-          q.id === activeQuiz.id
-            ? { ...q, status: isPassed ? 'passed' : 'failed' }
-            : q
-        )
-      );
-
-      if (isPassed) {
-        addXP(xpEarned);
-        addPoints(pointsEarned);
+        setQuizResult({
+          score: resultData.score || 0,
+          passed: isPassed,
+          xp: xpEarned,
+          points: pointsEarned,
+        });
+      } catch (err) {
+        console.error(err);
       }
-
-      setQuizResult({
-        score: scorePct,
-        passed: isPassed,
-        xp: xpEarned,
-        points: pointsEarned,
-      });
     }
   };
 
@@ -105,7 +160,7 @@ export default function StudentQuizzes() {
       />
 
       <StaggerContainer className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {localQuizzes.map((quiz) => {
+        {localQuizzes?.map((quiz) => {
           const isAr = locale === 'ar';
           const title = isAr ? quiz.titleAr : quiz.titleEn;
           const description = isAr ? quiz.descriptionAr : quiz.descriptionEn;
@@ -203,7 +258,7 @@ export default function StudentQuizzes() {
                   </h3>
 
                   <div className="space-y-2">
-                    {activeQuiz.questions[currentQuestionIndex].optionsEn.map((opt: string, idx: number) => {
+                    {activeQuiz.questions[currentQuestionIndex].optionsEn?.map((opt: string, idx: number) => {
                       const isSelected = selectedAnswers[currentQuestionIndex] === idx;
                       const optText =
                         tCommon('appName') !== 'newsl w nwasl ll sama'

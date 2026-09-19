@@ -38,14 +38,19 @@ export class UsersController {
     return this.usersService.findAll(req.user, query);
   }
 
+  @Get('me')
+  findMe(@Req() req: any) {
+    return this.usersService.findMe(req.user.userId);
+  }
+
   @Patch('complete-profile')
   completeProfile(@Req() req: any, @Body() data: any) {
     return this.usersService.completeProfile(req.user.userId, data);
   }
 
   @Get(':id/siblings')
-  getSiblings(@Param('id') id: string) {
-    return this.usersService.getSiblings(id);
+  getSiblings(@Param('id') id: string, @Req() req: any) {
+    return this.usersService.getSiblings(id, req.user);
   }
 
   @Roles('admin', 'priest')
@@ -62,14 +67,6 @@ export class UsersController {
   }
 
   @Roles('admin', 'priest')
-  @Post('import')
-  @UseInterceptors(FileInterceptor('file'))
-  importUsers(@UploadedFile() file: Express.Multer.File) {
-    if (!file) throw new Error('No file provided');
-    return this.usersService.importExcel(file.buffer);
-  }
-
-  @Roles('admin', 'priest')
   @Post(':id/reset-password')
   resetPassword(@Param('id') id: string, @Body('password') newPass: string) {
     return this.usersService.resetPassword(id, newPass);
@@ -77,29 +74,33 @@ export class UsersController {
 
   @Roles('admin', 'priest')
   @Patch(':id/toggle-status')
-  toggleStatus(@Param('id') id: string, @Body('isActive') isActive: boolean) {
-    return this.usersService.update(id, { isActive });
+  toggleStatus(
+    @Param('id') id: string,
+    @Body('isActive') isActive: boolean,
+    @Req() req: any,
+  ) {
+    return this.usersService.update(id, { isActive }, req.user);
   }
 
-  // Everyone should be able to view a profile, though we could add visibility checks here too
   @UseGuards(OwnershipGuard)
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.usersService.findOne(id);
+  findOne(@Param('id') id: string, @Req() req: any) {
+    return this.usersService.findOne(id, req.user);
   }
 
-  @Roles('admin', 'priest')
+  @Roles('admin', 'priest', 'instructor', 'student', 'parent')
   @Patch(':id')
   update(
     @Param('id') id: string,
     @Body() updateUserDto: Prisma.UserUpdateInput,
+    @Req() req: any,
   ) {
-    return this.usersService.update(id, updateUserDto);
+    return this.usersService.update(id, updateUserDto, req.user);
   }
 
   @Roles('admin', 'priest')
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.usersService.remove(id); // Using soft delete or changing status to 'archived' in service
+  remove(@Param('id') id: string, @Req() req: any) {
+    return this.usersService.remove(id, req.user); // Using soft delete or changing status to 'archived' in service
   }
 }

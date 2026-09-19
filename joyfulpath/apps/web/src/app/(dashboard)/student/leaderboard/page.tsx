@@ -30,7 +30,7 @@ export default function StudentLeaderboardPage() {
           </div>
 
           <div className="divide-y divide-outline-variant/50">
-            {students.map(s => (
+            {students?.map(s => (
               <div key={s.rank} className={`flex justify-between items-center py-4 px-6 transition stagger-item ${s.isMe ? 'bg-primary/5' : 'hover:bg-surface-container/30'}`}>
                 <div className="w-16 flex justify-center">
                   {s.rank <= 3 ? (

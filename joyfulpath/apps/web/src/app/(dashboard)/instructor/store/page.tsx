@@ -38,15 +38,17 @@ export default function InstructorStorePage() {
   const fetchData = useCallback(async () => {
     try {
       const [resRewards, resReds] = await Promise.all([
-        fetch('/api/rewards'),
-        fetch('/api/rewards/redemptions')
+        fetch('/api/store/rewards'),
+        fetch('/api/store/redemptions/pending')
       ]);
       
       if (resRewards.ok) {
-        setRewards(await resRewards.json());
+        const data = await resRewards.json();
+        setRewards(Array.isArray(data) ? data : data.data || []);
       }
       if (resReds.ok) {
-        setRedemptions(await resReds.json());
+        const data = await resReds.json();
+        setRedemptions(Array.isArray(data) ? data : data.data || []);
       }
     } catch (e) {
       console.error(e);
@@ -64,7 +66,7 @@ export default function InstructorStorePage() {
   const filteredRewards = useMemo(() => {
     if (!searchQuery) return rewards;
     const q = searchQuery.toLowerCase();
-    return rewards.filter(
+    return rewards?.filter(
       (item) =>
         item.title.toLowerCase().includes(q) ||
         (item.titleAr && item.titleAr.toLowerCase().includes(q)) ||
@@ -75,7 +77,7 @@ export default function InstructorStorePage() {
   const filteredRedemptions = useMemo(() => {
     if (!searchQuery) return redemptions;
     const q = searchQuery.toLowerCase();
-    return redemptions.filter(
+    return redemptions?.filter(
       (r) =>
         r.studentName.toLowerCase().includes(q) ||
         r.itemTitle.toLowerCase().includes(q) ||
@@ -91,7 +93,7 @@ export default function InstructorStorePage() {
     }
 
     try {
-      const res = await fetch('/api/rewards', {
+      const res = await fetch('/api/store/rewards', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -127,10 +129,11 @@ export default function InstructorStorePage() {
     if (!selectedRedId) return;
 
     try {
-      const res = await fetch(`/api/rewards/redemptions/${selectedRedId}`, {
-        method: 'PUT',
+      const action = processStatus === 'approved' ? 'fulfill' : 'reject';
+      const res = await fetch(`/api/store/redemptions/${selectedRedId}/${action}`, {
+        method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ status: processStatus, feedback })
+        body: JSON.stringify({ feedback })
       });
 
       if (res.ok) {
@@ -207,7 +210,7 @@ export default function InstructorStorePage() {
       {/* ── TAB: CATALOG ──────────────────────────────────────────────────────── */}
       {activeTab === 'catalog' && (
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {filteredRewards.map((item) => (
+          {filteredRewards?.map((item) => (
             <Card key={item.id} className="border border-outline-variant bg-surface-container-lowest shadow-sm flex flex-col justify-between">
               <CardContent className="p-6 space-y-4">
                 <div className="flex justify-between items-start gap-4">
@@ -243,7 +246,7 @@ export default function InstructorStorePage() {
       {/* ── TAB: REDEMPTION QUEUE ───────────────────────────────────────────── */}
       {activeTab === 'queue' && (
         <div className="grid grid-cols-1 gap-4">
-          {filteredRedemptions.map((red) => (
+          {filteredRedemptions?.map((red) => (
             <Card key={red.id} className="border border-outline-variant bg-surface-container-lowest shadow-sm">
               <CardContent className="p-6 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
                 <div className="space-y-1">

@@ -63,69 +63,75 @@ export class GamificationService {
   ) {
     if (xpAwarded <= 0 && pointsAwarded <= 0) return;
 
-    return this.prisma.$transaction(async (tx) => {
-      // Find if we already awarded XP for this exact source+sourceId
-      const existingEntry = await tx.xpEntry.findFirst({
-        where: { userId, source, sourceId },
-      });
+    try {
+      await this.prisma.$transaction(async (tx) => {
+        // Find if we already awarded XP for this exact source+sourceId
+        const existingEntry = await tx.xpEntry.findFirst({
+          where: { userId, source, sourceId },
+        });
 
-      let netXpToAward = xpAwarded;
-      let netPointsToAward = pointsAwarded;
+        let netXpToAward = xpAwarded;
+        let netPointsToAward = pointsAwarded;
 
-      if (existingEntry) {
-        // Idempotent: If it's a quiz, maybe they got a higher score.
-        // We only award the difference if the new XP is higher.
-        if (xpAwarded > existingEntry.xpAmount) {
-          netXpToAward = xpAwarded - existingEntry.xpAmount;
-          // For points, we'll assume a similar ratio or just skip differential points if we don't track points strictly per entry.
-          // Since XpEntry doesn't track points, we'll just award the difference in XP and no additional points to prevent double-dipping complex math, 
-          // or we can update XpEntry to also store points. But XpEntry schema only has xpAmount.
-          // Let's just update the XpEntry and grant the diff.
-          netPointsToAward = 0; 
-          
-          await tx.xpEntry.update({
-            where: { id: existingEntry.id },
-            data: { xpAmount: xpAwarded },
-          });
+        if (existingEntry) {
+          // Idempotent: If it's a quiz, maybe they got a higher score.
+          // We only award the difference if the new XP is higher.
+          if (xpAwarded > existingEntry.xpAmount) {
+            netXpToAward = xpAwarded - existingEntry.xpAmount;
+            netPointsToAward = 0;
+
+            await tx.xpEntry.update({
+              where: { id: existingEntry.id },
+              data: { xpAmount: xpAwarded },
+            });
+          } else {
+            // Already awarded this amount or more, do nothing
+            return;
+          }
         } else {
-          // Already awarded this amount or more, do nothing
-          return;
-        }
-      } else {
-        // Create new entry
-        await tx.xpEntry.create({
-          data: {
-            userId,
-            source,
-            sourceId,
-            xpAmount: netXpToAward,
-          },
-        });
-      }
-
-      if (netXpToAward > 0 || netPointsToAward > 0) {
-        await tx.user.update({
-          where: { id: userId },
-          data: {
-            totalXp: { increment: netXpToAward },
-            totalPoints: { increment: netPointsToAward },
-          },
-        });
-
-        if (netPointsToAward > 0) {
-          await tx.pointsTransaction.create({
+          // Create new entry
+          await tx.xpEntry.create({
             data: {
               userId,
-              amount: netPointsToAward,
-              type: 'earned',
               source,
               sourceId,
-              description: `Earned from ${source}`,
-            }
+              xpAmount: netXpToAward,
+            },
           });
         }
+
+        if (netXpToAward > 0 || netPointsToAward > 0) {
+          await tx.user.update({
+            where: { id: userId },
+            data: {
+              totalXp: { increment: netXpToAward },
+              totalPoints: { increment: netPointsToAward },
+            },
+          });
+
+          if (netPointsToAward > 0) {
+            await tx.pointsTransaction.create({
+              data: {
+                userId,
+                amount: netPointsToAward,
+                type: 'earned',
+                source,
+                sourceId,
+                description: `Earned from ${source}`,
+              },
+            });
+          }
+        }
+      });
+    } catch (error) {
+      if (error.code === 'P2002') {
+        this.logger.warn(
+          `Duplicate XP grant prevented for user ${userId}, source: ${source}, sourceId: ${sourceId}`,
+        );
+        return;
       }
-    });
+      throw error;
+    }
 
     // Process streak on any valid activity
     await this.processStreak(userId);
@@ -139,7 +145,7 @@ export class GamificationService {
 
     const now = new Date();
     const lastActive = user.lastActiveAt;
-    
+
     let newCurrentStreak = user.currentStreak;
     let newLongestStreak = user.longestStreak;
 
@@ -148,8 +154,12 @@ export class GamificationService {
       newLongestStreak = Math.max(1, user.longestStreak);
     } else {
       const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-      const lastActiveDate = new Date(lastActive.getFullYear(), lastActive.getMonth(), lastActive.getDate());
-      
+      const lastActiveDate = new Date(
+        lastActive.getFullYear(),
+        lastActive.getMonth(),
+        lastActive.getDate(),
+      );
+
       const diffTime = Math.abs(today.getTime() - lastActiveDate.getTime());
       const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
 
@@ -170,7 +180,7 @@ export class GamificationService {
         currentStreak: newCurrentStreak,
         longestStreak: newLongestStreak,
         lastActiveAt: now,
-      }
+      },
     });
   }
 
@@ -178,20 +188,21 @@ export class GamificationService {
     const user = await this.prisma.user.findUnique({ where: { id: userId } });
     if (!user) return;
 
-    // A real implementation would parse achievement.criteria (JSON) 
+    // A real implementation would parse achievement.criteria (JSON)
     // and compare with user stats (XP, Points, Streaks, etc.)
-    // For this engine implementation, we will query all achievements and 
+    // For this engine implementation, we will query all achievements and
     // mock the evaluation for demonstration, ensuring idempotency.
-    
+
     const achievements = await this.prisma.achievement.findMany();
-    
+
     for (const achievement of achievements) {
       // Evaluate basic criteria dynamically (e.g. min XP)
       let earned = false;
       try {
         const criteria = JSON.parse(achievement.criteria || '{}');
         if (criteria.minXp && user.totalXp >= criteria.minXp) earned = true;
-        if (criteria.minStreak && user.currentStreak >= criteria.minStreak) earned = true;
+        if (criteria.minStreak && user.currentStreak >= criteria.minStreak)
+          earned = true;
       } catch (e) {
         // Ignore JSON parse errors
       }
@@ -203,8 +214,8 @@ export class GamificationService {
             userId_achievementId: {
               userId,
               achievementId: achievement.id,
-            }
-          }
+            },
+          },
         });
 
         if (!existing) {
@@ -213,7 +224,7 @@ export class GamificationService {
               userId,
               achievementId: achievement.id,
               earnedAt: new Date(),
-            }
+            },
           });
 
           await this.prisma.notification.create({
@@ -224,9 +235,9 @@ export class GamificationService {
               payload: JSON.stringify({
                 title: 'Achievement Unlocked!',
                 message: `You earned the achievement: ${achievement.title}`,
-                achievementId: achievement.id
-              })
-            }
+                achievementId: achievement.id,
+              }),
+            },
           });
         }
       }
@@ -234,8 +245,13 @@ export class GamificationService {
   }
 
   async getLeaderboard(type: 'xp' | 'points' | 'streak', limit: number = 50) {
-    const orderBy = type === 'xp' ? { totalXp: 'desc' } : type === 'points' ? { totalPoints: 'desc' } : { currentStreak: 'desc' };
-    
+    const orderBy =
+      type === 'xp'
+        ? { totalXp: 'desc' }
+        : type === 'points'
+          ? { totalPoints: 'desc' }
+          : { currentStreak: 'desc' };
+
     const users = await this.prisma.user.findMany({
       where: { role: 'student', isActive: true },
       orderBy: orderBy as any,
@@ -248,7 +264,7 @@ export class GamificationService {
         totalXp: true,
         totalPoints: true,
         currentStreak: true,
-      }
+      },
     });
 
     return users.map((u, index) => ({

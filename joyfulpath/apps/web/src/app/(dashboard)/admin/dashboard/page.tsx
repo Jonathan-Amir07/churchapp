@@ -22,9 +22,9 @@ export default function AdminDashboard() {
         {/* Quick Filters & Search */}
         <div className="flex items-center gap-3 w-full md:w-auto">
           <div className="relative w-full md:w-64">
-            <span className="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 text-outline">search</span>
+            <span className="material-symbols-outlined absolute end-3 top-1/2 -translate-y-1/2 text-outline">search</span>
             <input 
-              className="w-full pr-10 pl-4 py-2 bg-surface-container-low border border-outline-variant rounded-full text-base focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all" 
+              className="w-full pe-10 ps-4 py-2 bg-surface-container-low border border-outline-variant rounded-full text-base focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all" 
               placeholder="بحث..." 
               type="text"
             />
@@ -92,17 +92,17 @@ export default function AdminDashboard() {
         <div className="lg:col-span-2 bg-surface rounded-xl border border-surface-variant shadow-[0_4px_20px_rgba(33,79,199,0.04)] p-6 flex flex-col">
           <h3 className="text-xl font-bold text-on-surface mb-6">تحليلات نمو الطلاب</h3>
           <div className="relative w-full h-64 mt-auto rounded-lg overflow-hidden bg-surface-container-lowest border border-outline-variant flex items-end px-4 pt-8 pb-4">
-            <div className="absolute right-0 top-0 bottom-0 w-12 flex flex-col justify-between text-xs text-outline-variant pr-2 py-4 items-end">
+            <div className="absolute end-0 top-0 bottom-0 w-12 flex flex-col justify-between text-xs text-outline-variant pe-2 py-4 items-end">
               <span>100</span><span>75</span><span>50</span><span>25</span><span>0</span>
             </div>
-            <div className="absolute inset-0 right-12 flex flex-col justify-between py-4 pointer-events-none">
+            <div className="absolute inset-0 end-12 flex flex-col justify-between py-4 pointer-events-none">
               <div className="w-full h-px bg-surface-variant"></div>
               <div className="w-full h-px bg-surface-variant"></div>
               <div className="w-full h-px bg-surface-variant"></div>
               <div className="w-full h-px bg-surface-variant"></div>
               <div className="w-full h-px bg-surface-variant"></div>
             </div>
-            <div className="relative flex-grow flex justify-around items-end h-full z-10 mr-12">
+            <div className="relative flex-grow flex justify-around items-end h-full z-10 me-12">
               <div className="w-12 bg-primary-container/30 hover:bg-primary-container rounded-t-md h-[40%] transition-colors relative group cursor-pointer">
                 <div className="absolute -top-8 left-1/2 -translate-x-1/2 bg-inverse-surface text-inverse-on-surface text-xs py-1 px-2 rounded opacity-0 group-hover:opacity-100 transition-opacity">40%</div>
               </div>
@@ -120,7 +120,7 @@ export default function AdminDashboard() {
               </div>
             </div>
           </div>
-          <div className="flex justify-around items-center w-full pr-12 mt-2 text-xs text-outline-variant">
+          <div className="flex justify-around items-center w-full pe-12 mt-2 text-xs text-outline-variant">
             <span>يناير</span><span>فبراير</span><span>مارس</span><span>أبريل</span><span>مايو</span>
           </div>
         </div>
@@ -128,27 +128,27 @@ export default function AdminDashboard() {
         {/* Activity Timeline */}
         <div className="bg-surface rounded-xl border border-surface-variant shadow-[0_4px_20px_rgba(33,79,199,0.04)] p-6">
           <h3 className="text-xl font-bold text-on-surface mb-6">الجدول الزمني للنشاط</h3>
-          <div className="relative border-r-2 border-surface-variant pr-6 flex flex-col gap-6">
+          <div className="relative border-e-2 border-surface-variant pe-6 flex flex-col gap-6">
             <div className="relative">
-              <div className="absolute -right-[31px] top-1 w-4 h-4 rounded-full bg-tertiary border-2 border-surface"></div>
+              <div className="absolute -end-[31px] top-1 w-4 h-4 rounded-full bg-tertiary border-2 border-surface"></div>
               <p className="text-xs text-outline-variant uppercase tracking-widest font-bold mb-1">منذ 10 دقائق</p>
               <p className="text-on-surface text-sm font-bold">أكمل صموئيل اختبار &quot;تاريخ الكنيسة&quot;</p>
               <p className="text-xs text-on-surface-variant mt-1">حصل على 95% - مستوى متقدم.</p>
             </div>
             <div className="relative">
-              <div className="absolute -right-[31px] top-1 w-4 h-4 rounded-full bg-primary border-2 border-surface"></div>
+              <div className="absolute -end-[31px] top-1 w-4 h-4 rounded-full bg-primary border-2 border-surface"></div>
               <p className="text-xs text-outline-variant uppercase tracking-widest font-bold mb-1">منذ ساعتين</p>
               <p className="text-on-surface text-sm font-bold">تمت إضافة درس جديد: &quot;أسرار الكنيسة السبعة&quot;</p>
               <p className="text-xs text-on-surface-variant mt-1">بواسطة الأب يوحنا.</p>
             </div>
             <div className="relative">
-              <div className="absolute -right-[31px] top-1 w-4 h-4 rounded-full bg-secondary-container border-2 border-surface"></div>
+              <div className="absolute -end-[31px] top-1 w-4 h-4 rounded-full bg-secondary-container border-2 border-surface"></div>
               <p className="text-xs text-outline-variant uppercase tracking-widest font-bold mb-1">أمس</p>
               <p className="text-on-surface text-sm font-bold">انضم 5 طلاب جدد إلى صف الأحد</p>
               <p className="text-xs text-on-surface-variant mt-1">تم إرسال رسائل الترحيب التلقائية.</p>
             </div>
             <div className="relative">
-              <div className="absolute -right-[31px] top-1 w-4 h-4 rounded-full bg-error border-2 border-surface"></div>
+              <div className="absolute -end-[31px] top-1 w-4 h-4 rounded-full bg-error border-2 border-surface"></div>
               <p className="text-xs text-outline-variant uppercase tracking-widest font-bold mb-1">22 مايو 2024</p>
               <p className="text-on-surface text-sm font-bold">تنبيه نظام: النسخ الاحتياطي تأخر</p>
               <p className="text-xs text-on-surface-variant mt-1">يرجى مراجعة إعدادات الخادم.</p>
@@ -164,7 +164,7 @@ export default function AdminDashboard() {
           <button className="text-primary text-xs font-bold tracking-widest uppercase hover:underline">عرض الكل</button>
         </div>
         <div className="overflow-x-auto">
-          <table className="w-full text-right border-collapse">
+          <table className="w-full text-end border-collapse">
             <thead>
               <tr className="bg-surface-container-low border-b border-surface-variant text-on-surface-variant text-xs font-bold tracking-widest uppercase">
                 <th className="p-4 py-3">الطالب</th>

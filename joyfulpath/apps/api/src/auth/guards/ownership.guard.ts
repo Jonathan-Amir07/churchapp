@@ -1,4 +1,9 @@
-import { CanActivate, ExecutionContext, Injectable, ForbiddenException } from '@nestjs/common';
+import {
+  CanActivate,
+  ExecutionContext,
+  Injectable,
+  ForbiddenException,
+} from '@nestjs/common';
 
 @Injectable()
 export class OwnershipGuard implements CanActivate {
@@ -30,7 +35,7 @@ export class OwnershipGuard implements CanActivate {
     // which are currently handled in `findAll` but not `findOne`.
     // For now, allow instructor/parent to proceed to service (where we should add checks),
     // but block student immediately.
-    
+
     return true;
   }
 }

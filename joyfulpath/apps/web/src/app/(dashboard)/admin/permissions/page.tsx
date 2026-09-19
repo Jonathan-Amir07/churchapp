@@ -55,7 +55,7 @@ export default function AdminPermissionsPage() {
 
       <Card className="border border-outline-variant bg-surface-container-lowest shadow-sm">
         <CardContent className="p-0">
-          <table className="w-full text-left border-collapse">
+          <table className="w-full text-start border-collapse">
             <thead>
               <tr className="border-b border-outline-variant/60 bg-surface-container-low text-xs uppercase tracking-wider text-on-surface-variant">
                 <th className="p-4 font-bold">{tPerms('moduleFeature')}</th>
@@ -65,7 +65,7 @@ export default function AdminPermissionsPage() {
               </tr>
             </thead>
             <tbody className="divide-y divide-outline-variant/40 text-sm font-bold text-on-surface">
-              {permissions.map((perm, i) => (
+              {permissions?.map((perm, i) => (
                 <tr key={i} className="hover:bg-surface-container/30 transition-colors">
                   <td className="p-4">{perm.module}</td>
                   <td className="p-4 text-center">

@@ -19,10 +19,15 @@ export class EventsService {
     });
   }
 
-  async findAll() {
+  async findAll(role: string) {
+    const whereClause: any = { date: { gte: new Date() } }; // Upcoming events only
+    if (role === 'student' || role === 'parent') {
+      whereClause.isPublic = true;
+    }
+
     return this.prisma.event.findMany({
       orderBy: { date: 'asc' },
-      where: { date: { gte: new Date() } }, // Only upcoming events
+      where: whereClause,
     });
   }
 
@@ -56,10 +61,10 @@ export class EventsService {
       }
 
       // We just increment currentRsvp for now, realistically we should have an EventRsvp model to prevent double RSVP.
-      // But based on schema, Event has `currentRsvp` and `maxCapacity` only. 
+      // But based on schema, Event has `currentRsvp` and `maxCapacity` only.
       return tx.event.update({
         where: { id: eventId },
-        data: { currentRsvp: { increment: 1 } }
+        data: { currentRsvp: { increment: 1 } },
       });
     });
   }

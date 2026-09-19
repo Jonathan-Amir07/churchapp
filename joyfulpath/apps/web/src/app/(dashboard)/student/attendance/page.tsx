@@ -68,7 +68,7 @@ export default function StudentAttendancePage() {
             <CardContent className="p-6">
               <h3 className="font-bold text-on-surface mb-4">Recent Attendance</h3>
               <div className="space-y-3">
-                {[1, 2, 3].map(i => (
+                {[1, 2, 3]?.map(i => (
                   <div key={i} className="flex justify-between items-center p-3 border border-outline-variant/50 rounded-lg bg-surface-container/50">
                     <div className="flex items-center gap-3">
                       <div className="w-10 h-10 bg-success/10 text-success rounded flex items-center justify-center">

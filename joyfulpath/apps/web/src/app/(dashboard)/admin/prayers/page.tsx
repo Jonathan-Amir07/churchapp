@@ -22,7 +22,7 @@ export default function InstructorPrayers() {
 
   // Filter logic
   const filteredPrayers = useMemo(() => {
-    return prayers.filter((p) => {
+    return prayers?.filter((p) => {
       if (activeTab === 'pending' && p.response) return false;
       if (activeTab === 'private' && !p.isPrivate) return false;
 
@@ -113,7 +113,7 @@ export default function InstructorPrayers() {
 
       {/* Prayer List */}
       <div className="grid grid-cols-1 gap-4">
-        {filteredPrayers.map((prayer) => (
+        {filteredPrayers?.map((prayer) => (
           <Card key={prayer.id} className="border border-outline-variant bg-surface-container-lowest shadow-sm">
             <CardContent className="p-6 space-y-4">
               <div className="flex flex-col sm:flex-row justify-between sm:items-center gap-2">
@@ -149,7 +149,7 @@ export default function InstructorPrayers() {
 
               {/* Response Section */}
               {prayer.response ? (
-                <div className="space-y-1.5 pl-4 border-l-2 border-primary">
+                <div className="space-y-1.5 ps-4 border-s-2 border-primary">
                   <p className="text-xs font-bold text-primary">Servant Response:</p>
                   <p className="text-xs text-on-surface-variant italic">{prayer.response}</p>
                 </div>

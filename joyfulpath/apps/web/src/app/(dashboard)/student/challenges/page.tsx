@@ -38,7 +38,7 @@ export default function StudentChallenges() {
           </h2>
           
           <div className="space-y-4">
-            {challenges.filter((c) => c.type === 'daily').map((c) => {
+            {challenges?.filter((c) => c.type === 'daily')?.map((c) => {
               const progressPct = Math.min(100, Math.max(0, (c.current / c.target) * 100));
               return (
                 <Card key={c.id} className="border border-outline-variant bg-surface-container-lowest shadow-sm hover:shadow-md transition-all">
@@ -101,7 +101,7 @@ export default function StudentChallenges() {
           </h2>
 
           <div className="space-y-4">
-            {challenges.filter((c) => c.type === 'weekly').map((c) => {
+            {challenges?.filter((c) => c.type === 'weekly')?.map((c) => {
               const progressPct = Math.min(100, Math.max(0, (c.current / c.target) * 100));
               return (
                 <Card key={c.id} className="border border-outline-variant bg-surface-container-lowest shadow-sm hover:shadow-md transition-all">
@@ -164,7 +164,7 @@ export default function StudentChallenges() {
           </h2>
 
           <div className="space-y-4">
-            {challenges.filter((c) => c.type === 'seasonal').map((c) => {
+            {challenges?.filter((c) => c.type === 'seasonal')?.map((c) => {
               const progressPct = Math.min(100, Math.max(0, (c.current / c.target) * 100));
               return (
                 <Card key={c.id} className="border border-outline-variant bg-surface-container-lowest shadow-sm hover:shadow-md transition-all">

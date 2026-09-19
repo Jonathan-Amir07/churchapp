@@ -65,37 +65,64 @@ export const useNotificationStore = create<NotificationStore>()(
         if (duration > 0) {
           setTimeout(() => {
             set((state) => ({
-              toasts: state.toasts.filter((t) => t.id !== id),
+              toasts: state.toasts?.filter((t) => t.id !== id),
             }));
           }, duration);
         }
       },
       removeToast: (id) =>
         set((state) => ({
-          toasts: state.toasts.filter((t) => t.id !== id),
+          toasts: state.toasts?.filter((t) => t.id !== id),
         })),
 
       // === APP NOTIFICATIONS ===
       notifications: [],
       fetchNotifications: async () => {
         try {
-          const res = await fetch('/api/notifications');
+          const res = await fetch('/api/notifications', {
+            credentials: 'include'
+          });
           if (res.ok) {
-            const data = await res.json();
-            // Maps backend Notification model to AppNotification
-            const mapped = data.notifications.map((n: any) => ({
-              id: n.id,
-              type: n.type,
-              titleEn: n.titleEn,
-              titleAr: n.titleAr || n.titleEn,
-              messageEn: n.messageEn,
-              messageAr: n.messageAr || n.messageEn,
-              isRead: n.isRead,
-              createdAt: n.createdAt,
-              link: n.actionUrl,
-              icon: NOTIFICATION_ICONS[n.type as AppNotificationType] || 'notifications'
-            }));
-            set({ notifications: mapped });
+            const result = await res.json();
+            
+            let rawList: any[] = [];
+            if (Array.isArray(result)) {
+              rawList = result;
+            } else if (result && Array.isArray(result.data)) {
+              rawList = result.data;
+            } else if (result && Array.isArray(result.notifications)) {
+              rawList = result.notifications;
+            }
+            
+            const mapped = rawList?.map((n: any) => {
+              let payload: any = {};
+              try {
+                if (typeof n.payload === 'string') {
+                  payload = JSON.parse(n.payload);
+                } else if (n.payload && typeof n.payload === 'object') {
+                  payload = n.payload;
+                }
+              } catch (e) {
+                // ignore parsing error
+              }
+
+              return {
+                id: n.id,
+                type: n.type,
+                titleEn: payload.titleEn || payload.title || n.titleEn || n.title || 'Notification',
+                titleAr: payload.titleAr || payload.title || n.titleAr || n.title || 'إشعار',
+                messageEn: payload.messageEn || payload.message || n.messageEn || n.message || '',
+                messageAr: payload.messageAr || payload.message || n.messageAr || n.message || '',
+                isRead: !!n.readAt || n.isRead || false,
+                createdAt: n.createdAt || new Date().toISOString(),
+                link: payload.actionUrl || payload.link || n.link || n.actionUrl,
+                icon: NOTIFICATION_ICONS[n.type as AppNotificationType] || 'notifications'
+              };
+            });
+            set({ notifications: mapped || [] });
+          } else if (res.status === 401 || res.status === 403) {
+            // Handle unauthorized by clearing notifications instead of crashing
+            set({ notifications: [] });
           }
         } catch (e) {
           console.error('Failed to fetch notifications', e);
@@ -103,20 +130,40 @@ export const useNotificationStore = create<NotificationStore>()(
       },
 
       unreadCount: () => {
-        return get().notifications.filter((n) => !n.isRead).length;
+        return (get().notifications || [])?.filter((n) => !n.isRead).length;
       },
 
-      markAsRead: (id) =>
-        set((state) => ({
-          notifications: state.notifications.map((n) =>
-            n.id === id ? { ...n, isRead: true } : n
-          ),
-        })),
+      markAsRead: async (id) => {
+        try {
+          await fetch(`/api/notifications/${id}/read`, {
+            method: 'PATCH',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ isRead: true }),
+            credentials: 'include'
+          });
+          set((state) => ({
+            notifications: (state.notifications || [])?.map((n) =>
+              n.id === id ? { ...n, isRead: true } : n
+            ),
+          }));
+        } catch (e) {
+          console.error('Failed to mark as read', e);
+        }
+      },
 
-      markAllAsRead: () =>
-        set((state) => ({
-          notifications: state.notifications.map((n) => ({ ...n, isRead: true })),
-        })),
+      markAllAsRead: async () => {
+        try {
+          await fetch(`/api/notifications/mark-all-read`, {
+            method: 'PATCH',
+            credentials: 'include'
+          });
+          set((state) => ({
+            notifications: (state.notifications || [])?.map((n) => ({ ...n, isRead: true })),
+          }));
+        } catch (e) {
+          console.error('Failed to mark all as read', e);
+        }
+      },
 
       addNotification: (notification) =>
         set((state) => ({
@@ -128,7 +175,7 @@ export const useNotificationStore = create<NotificationStore>()(
               isRead: false,
               icon: NOTIFICATION_ICONS[notification.type] || 'notifications',
             },
-            ...state.notifications,
+            ... (state.notifications || []),
           ],
         })),
 

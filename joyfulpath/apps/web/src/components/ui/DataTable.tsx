@@ -18,6 +18,10 @@ interface DataTableProps<T> {
   bulkActionLabel?: string;
   onExportPdf?: () => void;
   onExportExcel?: () => void;
+  // Pagination
+  page?: number;
+  totalPages?: number;
+  onPageChange?: (page: number) => void;
 }
 
 export function DataTable<T extends { id: string }>({
@@ -27,12 +31,15 @@ export function DataTable<T extends { id: string }>({
   onBulkAction,
   bulkActionLabel = 'إجراء جماعي',
   onExportPdf,
-  onExportExcel
+  onExportExcel,
+  page,
+  totalPages,
+  onPageChange
 }: DataTableProps<T>) {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
 
-  const filteredData = data.filter((item) =>
+  const filteredData = data?.filter((item) =>
     Object.values(item).some(
       (val) => typeof val === 'string' && val.toLowerCase().includes(searchTerm.toLowerCase())
     )
@@ -42,7 +49,7 @@ export function DataTable<T extends { id: string }>({
     if (selectedIds.size === filteredData.length) {
       setSelectedIds(new Set());
     } else {
-      setSelectedIds(new Set(filteredData.map((item) => item.id)));
+      setSelectedIds(new Set(filteredData?.map((item) => item.id)));
     }
   };
 
@@ -61,11 +68,11 @@ export function DataTable<T extends { id: string }>({
       {/* Toolbar */}
       <div className="flex flex-col sm:flex-row justify-between items-center gap-4">
         <div className="relative w-full sm:w-72">
-          <span className="absolute right-3 top-1/2 -translate-y-1/2 material-symbols-outlined text-outline">
+          <span className="absolute end-3 top-1/2 -translate-y-1/2 material-symbols-outlined text-outline">
             search
           </span>
           <Input
-            className="pl-3 pr-10 bg-surface-container-lowest"
+            className="ps-3 pe-10 bg-surface-container-lowest"
             placeholder={searchPlaceholder}
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
@@ -97,7 +104,7 @@ export function DataTable<T extends { id: string }>({
 
       {/* Table */}
       <div className="overflow-x-auto border border-outline-variant/40 rounded-xl bg-surface-container-lowest shadow-sm">
-        <table className="w-full text-sm text-right">
+        <table className="w-full text-sm text-end">
           <thead className="text-xs text-on-surface-variant bg-surface-container uppercase border-b border-outline-variant/40">
             <tr>
               <th className="p-4 w-12">
@@ -108,7 +115,7 @@ export function DataTable<T extends { id: string }>({
                   onChange={toggleSelectAll}
                 />
               </th>
-              {columns.map((col, i) => (
+              {columns?.map((col, i) => (
                 <th key={i} className="p-4 font-bold whitespace-nowrap">
                   {col.header}
                 </th>
@@ -123,7 +130,7 @@ export function DataTable<T extends { id: string }>({
                 </td>
               </tr>
             ) : (
-              filteredData.map((item) => (
+              filteredData?.map((item) => (
                 <tr key={item.id} className="border-b border-outline-variant/20 hover:bg-surface-container-lowest/50 transition-colors">
                   <td className="p-4">
                     <input
@@ -133,7 +140,7 @@ export function DataTable<T extends { id: string }>({
                       onChange={() => toggleSelect(item.id)}
                     />
                   </td>
-                  {columns.map((col, i) => (
+                  {columns?.map((col, i) => (
                     <td key={i} className="p-4 text-on-surface font-medium whitespace-nowrap">
                       {col.cell ? col.cell(item) : String(item[col.key as keyof T])}
                     </td>
@@ -144,6 +151,33 @@ export function DataTable<T extends { id: string }>({
           </tbody>
         </table>
       </div>
+
+      {/* Pagination Controls */}
+      {totalPages !== undefined && totalPages > 1 && onPageChange && page !== undefined && (
+        <div className="flex items-center justify-between pt-4">
+          <span className="text-xs text-on-surface-variant font-medium">
+            صفحة {page} من {totalPages}
+          </span>
+          <div className="flex items-center gap-2">
+            <Button
+              variant="outline"
+              size="sm"
+              disabled={page <= 1}
+              onClick={() => onPageChange(page - 1)}
+            >
+              السابق
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              disabled={page >= totalPages}
+              onClick={() => onPageChange(page + 1)}
+            >
+              التالي
+            </Button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

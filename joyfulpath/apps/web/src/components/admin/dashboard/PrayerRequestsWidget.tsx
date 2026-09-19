@@ -18,7 +18,7 @@ export function PrayerRequestsWidget() {
       </CardHeader>
       <CardContent className="pt-4">
         <div className="space-y-4">
-          {requests.map((req, i) => (
+          {requests?.map((req, i) => (
             <div key={i} className="bg-surface-container-low p-3 rounded-lg border border-outline-variant/40">
               <p className="text-sm text-on-surface font-medium leading-relaxed">&quot;{req.text}&quot;</p>
               <div className="flex justify-between items-center mt-2">

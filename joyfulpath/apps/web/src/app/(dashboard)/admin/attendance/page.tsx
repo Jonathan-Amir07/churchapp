@@ -5,20 +5,6 @@ import { useTranslations } from 'next-intl';
 import { Card, CardContent, Button, BadgeTag, QRScanner, SearchBar, type ScanResult } from '@/components/ui';
 import { useNotificationStore } from '@/stores/notifications.store';
 
-interface Student {
-  id: string;
-  name: string;
-  streak: number;
-}
-
-const MOCK_STUDENTS: Student[] = [
-  { id: 'mock-student-id',  name: 'Jonathan Junior', streak: 5 },
-  { id: 'mock-student2-id', name: 'Mary Grace',      streak: 2 },
-  { id: '3',                name: 'David Shepherd',  streak: 8 },
-  { id: '4',                name: 'Noah Ark',         streak: 4 },
-  { id: '5',                name: 'Sarah Joy',        streak: 0 },
-];
-
 type AttendanceStatus = 'present' | 'absent' | 'late' | 'excused';
 
 type Tab = 'roster' | 'scanner';
@@ -31,7 +17,7 @@ interface CheckInRecord {
   streak: number;
 }
 
-export default function InstructorAttendance() {
+export default function AdminAttendancePage() {
   const tNav        = useTranslations('nav');
   const tAttendance = useTranslations('attendance');
   const tCommon     = useTranslations('common');
@@ -39,16 +25,58 @@ export default function InstructorAttendance() {
 
   const [activeTab, setActiveTab] = useState<Tab>('roster');
   const [date, setDate] = useState('');
-  const [selectedClass, setSelectedClass] = useState('c1');
+  const [classes, setClasses] = useState<any[]>([]);
+  const [selectedClassId, setSelectedClassId] = useState('');
   const [searchQuery, setSearchQuery] = useState('');
+
+  const [students, setStudents] = useState<any[]>([]);
+  const [attendance, setAttendance] = useState<Record<string, AttendanceStatus>>({});
+  const [loading, setLoading] = useState(true);
+  const [isSaving, setIsSaving] = useState(false);
 
   useEffect(() => {
     setDate(new Date().toISOString().split('T')[0]);
+    async function loadClasses() {
+      try {
+        const res = await fetch('/api/classes');
+        if (res.ok) {
+          const data = await res.json();
+          const arr = Array.isArray(data) ? data : data.data || [];
+          setClasses(arr);
+          if (arr.length > 0) setSelectedClassId(arr[0].id);
+        }
+      } catch (err) {
+        console.error(err);
+      }
+    }
+    loadClasses();
   }, []);
 
-  const [attendance, setAttendance] = useState<Record<string, AttendanceStatus>>(
-    MOCK_STUDENTS.reduce((acc, s) => ({ ...acc, [s.id]: 'present' }), {})
-  );
+  useEffect(() => {
+    if (!selectedClassId) return;
+    async function loadData() {
+      setLoading(true);
+      try {
+        // Load students
+        const res = await fetch(`/api/students?classId=${selectedClassId}`);
+        if (res.ok) {
+          const data = await res.json();
+          const arr = Array.isArray(data) ? data : data.data || [];
+          setStudents(arr);
+          
+          // Pre-populate attendance state with 'present' for easy marking
+          const initialAtt: Record<string, AttendanceStatus> = {};
+          arr.forEach((s: any) => initialAtt[s.id] = 'present');
+          setAttendance(initialAtt);
+        }
+      } catch (err) {
+        console.error(err);
+      } finally {
+        setLoading(false);
+      }
+    }
+    loadData();
+  }, [selectedClassId]);
 
   // QR scanner state
   const [checkIns, setCheckIns] = useState<CheckInRecord[]>([]);
@@ -59,22 +87,43 @@ export default function InstructorAttendance() {
   }, []);
 
   const filteredStudents = useMemo(() => {
-    if (!searchQuery) return MOCK_STUDENTS;
+    if (!searchQuery) return students;
     const q = searchQuery.toLowerCase();
-    return MOCK_STUDENTS.filter((s) => s.name.toLowerCase().includes(q));
-  }, [searchQuery]);
+    return students?.filter((s) => (s.displayName || s.firstName + ' ' + s.lastName).toLowerCase().includes(q));
+  }, [searchQuery, students]);
 
   const handleStatusChange = useCallback((studentId: string, status: AttendanceStatus) => {
     setAttendance((prev) => ({ ...prev, [studentId]: status }));
   }, []);
 
-  const handleSave = useCallback(() => {
-    addToast(tAttendance('saveSuccess'), 'success');
-  }, [addToast, tAttendance]);
+  const handleSave = async () => {
+    if (!selectedClassId) return;
+    setIsSaving(true);
+    try {
+      const records = Object.entries(attendance).map(([studentId, status]) => ({ studentId, status }));
+      const res = await fetch('/api/attendance/manual', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ classId: selectedClassId, records })
+      });
+      const data = await res.json();
+      if (res.ok) {
+        addToast(tAttendance('saveSuccess'), 'success');
+      } else {
+        addToast(data.message || 'Failed to save attendance', 'error');
+      }
+    } catch (err) {
+      addToast('An error occurred', 'error');
+    } finally {
+      setIsSaving(false);
+    }
+  };
 
   // Called by QRScanner on each decoded result
-  const handleScanResult = useCallback((result: ScanResult, rawCode: string) => {
+  const handleScanResult = useCallback(async (result: ScanResult, rawCode: string) => {
     if (result.success) {
+      // In Admin view we might also just submit it manually here if we want real-time server check-in
+      // For now we just log it and mark present
       setCheckIns((prev) => [
         {
           studentName: result.studentName,
@@ -87,7 +136,6 @@ export default function InstructorAttendance() {
       ]);
       setLastScanError(null);
 
-      // Also mark as present in the roster
       setAttendance((prev) => ({ ...prev, [rawCode]: 'present' }));
     } else {
       setLastScanError(result.error);
@@ -100,7 +148,7 @@ export default function InstructorAttendance() {
   ], []);
 
   return (
-    <div className="space-y-6 animate-[slide-up_0.4s_ease-out]">
+    <div className="space-y-6 animate-[slide-up_0.4s_ease-out] pb-12">
       {/* Page Header */}
       <div className="flex flex-col gap-2">
         <h1 className="text-3xl font-extrabold tracking-tight text-on-surface">
@@ -113,7 +161,7 @@ export default function InstructorAttendance() {
 
       {/* Tab Switcher */}
       <div className="flex gap-2 p-1 bg-surface-container-low rounded-2xl border border-outline-variant/50 w-fit">
-        {tabs.map((tab) => (
+        {tabs?.map((tab) => (
           <button
             key={tab.id}
             onClick={() => setActiveTab(tab.id)}
@@ -140,12 +188,12 @@ export default function InstructorAttendance() {
                   {tAttendance('selectClass')}
                 </label>
                 <select
-                  value={selectedClass}
-                  onChange={(e) => setSelectedClass(e.target.value)}
+                  value={selectedClassId}
+                  onChange={(e) => setSelectedClassId(e.target.value)}
                   className="h-10 px-3 rounded-xl border border-outline-variant bg-surface-container-low text-on-surface focus:outline-none focus:border-primary text-sm font-medium"
                 >
-                  <option value="c1">Class A (Level 1–3)</option>
-                  <option value="c2">Class B (Level 4–7)</option>
+                  <option value="">-- Select Class --</option>
+                  {classes.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
                 </select>
               </div>
 
@@ -169,12 +217,12 @@ export default function InstructorAttendance() {
                   onSearch={handleSearch}
                   placeholder={tCommon('search')}
                   resultCount={filteredStudents.length}
-                  totalCount={MOCK_STUDENTS.length}
+                  totalCount={students.length}
                 />
               </div>
             </div>
 
-            <Button variant="primary" size="sm" onClick={handleSave} className="w-full sm:w-auto mt-4 sm:mt-0 self-end">
+            <Button variant="primary" size="sm" onClick={handleSave} loading={isSaving} disabled={!selectedClassId || loading} className="w-full sm:w-auto mt-4 sm:mt-0 self-end">
               {tCommon('save')}
             </Button>
           </div>
@@ -192,56 +240,70 @@ export default function InstructorAttendance() {
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-outline-variant/40">
-                    {filteredStudents.map((student) => (
-                      <tr key={student.id} className="hover:bg-surface-container-low/40 transition duration-150">
-                        <td className="px-6 py-4">
-                          <div className="flex items-center gap-3">
-                            <div className="w-9 h-9 rounded-full bg-primary/10 flex items-center justify-center font-bold text-primary">
-                              {student.name[0]}
-                            </div>
-                            <span className="font-extrabold text-on-surface">{student.name}</span>
-                          </div>
-                        </td>
-                        <td className="px-6 py-4">
-                          <div className="flex items-center gap-1 text-xs font-black text-orange-600">
-                            <span
-                              className="material-symbols-outlined text-[16px]"
-                              style={{ fontVariationSettings: "'FILL' 1" }}
-                            >
-                              local_fire_department
-                            </span>
-                            <span>{tAttendance('streakInfo', { streak: student.streak })}</span>
-                          </div>
-                        </td>
-                        <td className="px-6 py-4 text-end">
-                          <div className="inline-flex gap-1.5 p-1 bg-surface-container-low rounded-xl border border-outline-variant/40 flex-wrap justify-end">
-                            {(['present', 'absent', 'late', 'excused'] as const).map((status) => {
-                              const isActive = attendance[student.id] === status;
-                              return (
-                                <button
-                                  key={status}
-                                  type="button"
-                                  onClick={() => handleStatusChange(student.id, status)}
-                                  className={`px-3 py-1.5 rounded-lg text-xs font-black transition-all duration-150 ${
-                                    isActive
-                                      ? status === 'present'
-                                        ? 'bg-tertiary text-on-tertiary shadow-sm'
-                                        : status === 'absent'
-                                        ? 'bg-error text-on-error shadow-sm'
-                                        : status === 'late'
-                                        ? 'bg-secondary text-on-secondary shadow-sm'
-                                        : 'bg-outline text-white shadow-sm'
-                                      : 'text-on-surface-variant hover:text-on-surface'
-                                  }`}
-                                >
-                                  {tAttendance(status)}
-                                </button>
-                              );
-                            })}
-                          </div>
-                        </td>
+                    {loading ? (
+                      <tr>
+                         <td colSpan={3} className="px-6 py-8 text-center text-on-surface-variant">
+                            Loading students...
+                         </td>
                       </tr>
-                    ))}
+                    ) : filteredStudents.length === 0 ? (
+                      <tr>
+                         <td colSpan={3} className="px-6 py-8 text-center text-on-surface-variant">
+                            No students found.
+                         </td>
+                      </tr>
+                    ) : (
+                      filteredStudents?.map((student) => (
+                        <tr key={student.id} className="hover:bg-surface-container-low/40 transition duration-150">
+                          <td className="px-6 py-4">
+                            <div className="flex items-center gap-3">
+                              <div className="w-9 h-9 rounded-full bg-primary/10 flex items-center justify-center font-bold text-primary">
+                                {(student.displayName || student.firstName)?.[0]}
+                              </div>
+                              <span className="font-extrabold text-on-surface">{student.displayName || student.firstName + ' ' + student.lastName}</span>
+                            </div>
+                          </td>
+                          <td className="px-6 py-4">
+                            <div className="flex items-center gap-1 text-xs font-black text-orange-600">
+                              <span
+                                className="material-symbols-outlined text-[16px]"
+                                style={{ fontVariationSettings: "'FILL' 1" }}
+                              >
+                                local_fire_department
+                              </span>
+                              <span>{tAttendance('streakInfo', { streak: student.currentStreak || 0 })}</span>
+                            </div>
+                          </td>
+                          <td className="px-6 py-4 text-end">
+                            <div className="inline-flex gap-1.5 p-1 bg-surface-container-low rounded-xl border border-outline-variant/40 flex-wrap justify-end">
+                              {(['present', 'absent', 'late', 'excused'] as const)?.map((status) => {
+                                const isActive = attendance[student.id] === status;
+                                return (
+                                  <button
+                                    key={status}
+                                    type="button"
+                                    onClick={() => handleStatusChange(student.id, status)}
+                                    className={`px-3 py-1.5 rounded-lg text-xs font-black transition-all duration-150 ${
+                                      isActive
+                                        ? status === 'present'
+                                          ? 'bg-tertiary text-on-tertiary shadow-sm'
+                                          : status === 'absent'
+                                          ? 'bg-error text-on-error shadow-sm'
+                                          : status === 'late'
+                                          ? 'bg-secondary text-on-secondary shadow-sm'
+                                          : 'bg-outline text-white shadow-sm'
+                                        : 'text-on-surface-variant hover:text-on-surface'
+                                    }`}
+                                  >
+                                    {tAttendance(status)}
+                                  </button>
+                                );
+                              })}
+                            </div>
+                          </td>
+                        </tr>
+                      ))
+                    )}
                   </tbody>
                 </table>
               </div>
@@ -312,7 +374,7 @@ export default function InstructorAttendance() {
                   </div>
                 ) : (
                   <div className="divide-y divide-outline-variant/40">
-                    {checkIns.map((c, idx) => (
+                    {checkIns?.map((c, idx) => (
                       <div key={idx} className="px-5 py-3.5 flex items-center justify-between gap-4">
                         <div className="flex items-center gap-3">
                           <div className="w-9 h-9 rounded-full bg-success/10 flex items-center justify-center">

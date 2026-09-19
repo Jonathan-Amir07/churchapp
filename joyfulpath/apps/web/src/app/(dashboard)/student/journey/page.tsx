@@ -13,9 +13,9 @@ export default function MyJourneyPage() {
   const { xp, level, points, streak, readingPlans, memorizedVerses } = useAppStore();
 
   const totalChapters = readingPlans.reduce((acc: number, p: { chapters: any[] }) => acc + p.chapters.length, 0);
-  const readChapters = readingPlans.reduce((acc: number, p: { chapters: { read: boolean }[] }) => acc + p.chapters.filter(c => c.read).length, 0);
+  const readChapters = readingPlans.reduce((acc: number, p: { chapters: { read: boolean }[] }) => acc + p.chapters?.filter(c => c.read).length, 0);
   const readingProgress = totalChapters > 0 ? Math.round((readChapters / totalChapters) * 100) : 0;
-  const masteredVerses = memorizedVerses.filter((v: { isMastered: boolean }) => v.isMastered).length;
+  const masteredVerses = memorizedVerses?.filter((v: { isMastered: boolean }) => v.isMastered).length;
 
   const mapNodes = [
     { id: 1, titleEn: 'Day 1: Genesis 1', titleAr: 'اليوم ١: سفر التكوين ١', status: 'completed', top: '82%', right: '15%' },
@@ -80,7 +80,7 @@ export default function MyJourneyPage() {
         </svg>
 
         {/* Checkpoint Nodes */}
-        {mapNodes.map((node) => {
+        {mapNodes?.map((node) => {
           if (node.status === 'destination') {
             return (
               <div key={node.id} className="absolute z-20 flex flex-col items-center gap-2" style={{ top: node.top, right: node.right }}>

@@ -47,7 +47,7 @@ export default function QuizBuilderPage() {
             No questions added yet. Start building your quiz!
           </div>
         )}
-        {questions.map((q, idx) => (
+        {questions?.map((q, idx) => (
           <Card key={idx} className="border border-outline-variant bg-surface-container-lowest">
             <CardContent className="p-4 space-y-3">
               <div className="flex justify-between">
@@ -57,8 +57,8 @@ export default function QuizBuilderPage() {
               <input type="text" className="w-full p-2 border border-outline-variant rounded text-sm" placeholder="Question text..." />
               
               {q.type === 'MCQ' && (
-                <div className="space-y-2 pl-4 border-l-2 border-outline-variant">
-                  {q.options.map((_: any, oIdx: number) => (
+                <div className="space-y-2 ps-4 border-s-2 border-outline-variant">
+                  {q.options?.map((_: any, oIdx: number) => (
                     <div key={oIdx} className="flex items-center gap-2">
                       <input type="radio" name={`q${idx}`} />
                       <input type="text" className="w-full p-1.5 border border-outline-variant rounded text-sm" placeholder={`Option ${oIdx + 1}`} />
@@ -69,7 +69,7 @@ export default function QuizBuilderPage() {
               )}
 
               {q.type === 'TF' && (
-                <div className="flex gap-4 pl-4">
+                <div className="flex gap-4 ps-4">
                   <label className="flex items-center gap-1 text-sm"><input type="radio" name={`q${idx}`} /> True</label>
                   <label className="flex items-center gap-1 text-sm"><input type="radio" name={`q${idx}`} /> False</label>
                 </div>

@@ -19,6 +19,22 @@ export class LessonsService {
     private notificationsService: NotificationsService,
   ) {}
 
+  private async verifyInstructorClassAccess(classId: string, userId: string) {
+    const cls = await this.prisma.class.findUnique({
+      where: { id: classId },
+      include: { members: true },
+    });
+    if (!cls) throw new NotFoundException('Class not found');
+    const isInstructor =
+      cls.createdBy === userId ||
+      cls.members.some((m) => m.userId === userId && m.role === 'instructor');
+    if (!isInstructor) {
+      throw new ForbiddenException(
+        'You do not have permission to manage this class',
+      );
+    }
+  }
+
   async create(createLessonDto: CreateLessonDto, userId: string, role: string) {
     // Only instructors/admins can create lessons
     if (role !== 'instructor' && role !== 'admin') {
@@ -29,14 +45,7 @@ export class LessonsService {
 
     // If instructor, verify they own the class
     if (role === 'instructor') {
-      const classRecord = await this.prisma.class.findUnique({
-        where: { id: createLessonDto.classId },
-      });
-      if (!classRecord || classRecord.createdBy !== userId) {
-        throw new ForbiddenException(
-          'You can only create lessons for your own classes',
-        );
-      }
+      await this.verifyInstructorClassAccess(createLessonDto.classId, userId);
     }
 
     const lesson = await this.prisma.lesson.create({
@@ -60,7 +69,7 @@ export class LessonsService {
           'lesson',
           'New Lesson Published',
           `A new lesson "${lesson.title}" has been published in your class!`,
-          { lessonId: lesson.id }
+          { lessonId: lesson.id },
         );
       }
     }
@@ -68,22 +77,56 @@ export class LessonsService {
     return lesson;
   }
 
+  async findAllForUser(userId: string, role: string) {
+    if (role === 'admin') {
+      return this.prisma.lesson.findMany({
+        where: { deletedAt: null },
+        orderBy: { orderIndex: 'asc' },
+        include: { attachments: true, progress: { where: { userId } } },
+      });
+    }
+
+    const classIds = (
+      await this.prisma.classMember.findMany({
+        where: { userId },
+        select: { classId: true },
+      })
+    ).map((m) => m.classId);
+
+    if (role === 'instructor') {
+      const createdClasses = (
+        await this.prisma.class.findMany({
+          where: { createdBy: userId },
+          select: { id: true },
+        })
+      ).map((c) => c.id);
+      classIds.push(...createdClasses);
+    }
+
+    return this.prisma.lesson.findMany({
+      where: { classId: { in: classIds }, deletedAt: null },
+      orderBy: { orderIndex: 'asc' },
+      include: { attachments: true, progress: { where: { userId } } },
+    });
+  }
+
   async findAllForClass(classId: string, userId: string, role: string) {
     // Ensure the user has access to this class's lessons
-    if (role === 'student') {
-      const membership = await this.prisma.classMember.findUnique({
-        where: { classId_userId: { classId, userId } },
-      });
-      if (!membership) {
-        throw new ForbiddenException('You are not a member of this class');
+    if (role === 'student' || role === 'parent') {
+      // Allow parents to view lessons for their children
+      // For simplicity here, just check if they are in members, wait parents aren't in members.
+      // Parents view lessons by looking at the class. But role === parent might not hit this directly.
+      // If we want parents to view it, we should check family. Let's just do student for now.
+      if (role === 'student') {
+        const membership = await this.prisma.classMember.findUnique({
+          where: { classId_userId: { classId, userId } },
+        });
+        if (!membership) {
+          throw new ForbiddenException('You are not a member of this class');
+        }
       }
     } else if (role === 'instructor') {
-      const classRecord = await this.prisma.class.findUnique({
-        where: { id: classId },
-      });
-      if (!classRecord || classRecord.createdBy !== userId) {
-        throw new ForbiddenException('You do not own this class');
-      }
+      await this.verifyInstructorClassAccess(classId, userId);
     }
 
     return this.prisma.lesson.findMany({
@@ -122,12 +165,14 @@ export class LessonsService {
     role: string,
   ) {
     if (role === 'student' || role === 'parent') {
-      throw new ForbiddenException('Only instructors or admins can edit lessons');
+      throw new ForbiddenException(
+        'Only instructors or admins can edit lessons',
+      );
     }
 
     const lesson = await this.findOne(id, userId, role);
-    if (role === 'instructor' && lesson.createdBy !== userId) {
-      throw new ForbiddenException('You can only edit your own lessons');
+    if (role === 'instructor') {
+      await this.verifyInstructorClassAccess(lesson.classId, userId);
     }
 
     return this.prisma.lesson.update({
@@ -139,12 +184,14 @@ export class LessonsService {
 
   async remove(id: string, userId: string, role: string) {
     if (role === 'student' || role === 'parent') {
-      throw new ForbiddenException('Only instructors or admins can delete lessons');
+      throw new ForbiddenException(
+        'Only instructors or admins can delete lessons',
+      );
     }
 
     const lesson = await this.findOne(id, userId, role);
-    if (role === 'instructor' && lesson.createdBy !== userId) {
-      throw new ForbiddenException('You can only delete your own lessons');
+    if (role === 'instructor') {
+      await this.verifyInstructorClassAccess(lesson.classId, userId);
     }
 
     return this.prisma.lesson.update({
@@ -160,14 +207,14 @@ export class LessonsService {
     role: string,
   ) {
     if (role === 'student' || role === 'parent') {
-      throw new ForbiddenException('Only instructors or admins can add attachments');
+      throw new ForbiddenException(
+        'Only instructors or admins can add attachments',
+      );
     }
 
     const lesson = await this.findOne(lessonId, userId, role);
-    if (role === 'instructor' && lesson.createdBy !== userId) {
-      throw new ForbiddenException(
-        'You can only add attachments to your own lessons',
-      );
+    if (role === 'instructor') {
+      await this.verifyInstructorClassAccess(lesson.classId, userId);
     }
 
     return this.prisma.lessonAttachment.create({
@@ -189,7 +236,11 @@ export class LessonsService {
       if (existingProgress.status === 'not_started') {
         return this.prisma.lessonProgress.update({
           where: { id: existingProgress.id },
-          data: { status: 'in_progress', startedAt: new Date(), progressPct: 10 },
+          data: {
+            status: 'in_progress',
+            startedAt: new Date(),
+            progressPct: 10,
+          },
         });
       }
       return existingProgress;

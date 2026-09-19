@@ -556,19 +556,19 @@ export const useAppStore = create<AppState>()(
       })),
       
       amenPrayer: (id) => set((state) => ({
-        prayers: state.prayers.map((p) => 
+        prayers: state.prayers?.map((p) => 
           p.id === id ? { ...p, prayedCount: p.prayedCount + 1 } : p
         )
       })),
       
       respondPrayer: (id, response) => set((state) => ({
-        prayers: state.prayers.map((p) => 
+        prayers: state.prayers?.map((p) => 
           p.id === id ? { ...p, response, respondedAt: new Date().toISOString(), isPrayedFor: true } : p
         )
       })),
       
       markPrayedFor: (id) => set((state) => ({
-        prayers: state.prayers.map((p) => 
+        prayers: state.prayers?.map((p) => 
           p.id === id ? { ...p, isPrayedFor: true } : p
         )
       })),
@@ -626,7 +626,7 @@ export const useAppStore = create<AppState>()(
           if (currentCount >= 2) return state;
           
           success = true;
-          const updatedRewards = state.rewards.map((r) => 
+          const updatedRewards = state.rewards?.map((r) => 
             r.id === itemId && r.type === 'physical' ? { ...r, stock: r.stock - 1 } : r
           );
           
@@ -665,7 +665,7 @@ export const useAppStore = create<AppState>()(
       },
       
       processRedemption: (id, status, feedback) => set((state) => ({
-        redemptions: state.redemptions.map((red) => 
+        redemptions: state.redemptions?.map((red) => 
           red.id === id ? { ...red, status, feedback, approvedAt: new Date().toISOString() } : red
         )
       })),
@@ -681,7 +681,7 @@ export const useAppStore = create<AppState>()(
       })),
       
       incrementChallenge: (type, amount) => set((state) => {
-        const updated = state.challenges.map((c) => {
+        const updated = state.challenges?.map((c) => {
           if (c.type === type && !c.isCompleted) {
             const current = Math.min(c.target, c.current + amount);
             const isCompleted = current >= c.target;
@@ -697,7 +697,7 @@ export const useAppStore = create<AppState>()(
         if (!c || !c.isCompleted || c.claimed) return state;
         
         // Add rewards and mark claimed
-        const updatedChallenges = state.challenges.map((ch) => 
+        const updatedChallenges = state.challenges?.map((ch) => 
           ch.id === id ? { ...ch, claimed: true } : ch
         );
         
@@ -738,12 +738,12 @@ export const useAppStore = create<AppState>()(
       })),
 
       toggleChapterRead: (planId, book, chapter) => set((state) => {
-        const plans = state.readingPlans.map((plan) => {
+        const plans = state.readingPlans?.map((plan) => {
           if (plan.id === planId) {
-            const chapters = plan.chapters.map((ch) => 
+            const chapters = plan.chapters?.map((ch) => 
               ch.book === book && ch.chapter === chapter ? { ...ch, read: !ch.read } : ch
             );
-            const completedCount = chapters.filter((c) => c.read).length;
+            const completedCount = chapters?.filter((c) => c.read).length;
             const completed = completedCount === chapters.length;
             
             // Check challenge increment for reading weeklies
@@ -763,7 +763,7 @@ export const useAppStore = create<AppState>()(
       }),
 
       updateVerseProgress: (id, progress) => set((state) => {
-        const verses = state.memorizedVerses.map((v) => {
+        const verses = state.memorizedVerses?.map((v) => {
           if (v.id === id) {
             const isMastered = progress === 100;
             return { ...v, progress, isMastered };

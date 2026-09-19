@@ -21,7 +21,7 @@ export function PriestSidebar() {
         Priest Portal
       </div>
       <nav className="flex-1 overflow-y-auto p-4 space-y-2">
-        {navItems.map((item) => {
+        {navItems?.map((item) => {
           const isActive = pathname === item.href || pathname.startsWith(`${item.href}/`);
           return (
             <Link

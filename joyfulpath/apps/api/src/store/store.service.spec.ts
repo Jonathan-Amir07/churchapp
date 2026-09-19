@@ -18,7 +18,11 @@ describe('StoreService', () => {
             reward: { findUnique: jest.fn(), update: jest.fn() },
             user: { findUnique: jest.fn(), update: jest.fn() },
             pointsTransaction: { create: jest.fn() },
-            rewardRedemption: { create: jest.fn(), update: jest.fn(), findUnique: jest.fn() },
+            rewardRedemption: {
+              create: jest.fn(),
+              update: jest.fn(),
+              findUnique: jest.fn(),
+            },
           },
         },
       ],
@@ -68,7 +72,9 @@ describe('StoreService', () => {
       totalPoints: 100,
     });
 
-    await expect(service.redeemReward('reward1', 'user1')).rejects.toThrow(BadRequestException);
+    await expect(service.redeemReward('reward1', 'user1')).rejects.toThrow(
+      BadRequestException,
+    );
   });
 
   it('should throw if out of stock', async () => {
@@ -83,6 +89,8 @@ describe('StoreService', () => {
       totalPoints: 100,
     });
 
-    await expect(service.redeemReward('reward1', 'user1')).rejects.toThrow(BadRequestException);
+    await expect(service.redeemReward('reward1', 'user1')).rejects.toThrow(
+      BadRequestException,
+    );
   });
 });

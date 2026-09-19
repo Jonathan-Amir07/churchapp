@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { Button } from '@/components/ui';
 import { useNotificationStore } from '@/stores/notifications.store';
 import { DataTable } from '@/components/ui/DataTable';
@@ -12,8 +12,17 @@ export default function ImportStudentsPage() {
   const [isUploading, setIsUploading] = useState(false);
   const [isExecuting, setIsExecuting] = useState(false);
   const [results, setResults] = useState<any>(null);
+  const [classes, setClasses] = useState<any[]>([]);
+  const [selectedClassId, setSelectedClassId] = useState('');
   const fileInputRef = useRef<HTMLInputElement>(null);
   const addToast = useNotificationStore(s => s.addToast);
+
+  useEffect(() => {
+    fetch('/api/classes')
+      .then(res => res.json())
+      .then(data => setClasses(Array.isArray(data) ? data : data.data || []))
+      .catch(err => console.error(err));
+  }, []);
 
   const handleDownloadTemplate = () => {
     const ws = xlsx.utils.json_to_sheet([{
@@ -57,25 +66,53 @@ export default function ImportStudentsPage() {
     formData.append('file', selectedFile);
 
     try {
-      const res = await fetch('/api/students/import', {
+      const res = await fetch('/api/students/import/preview', {
         method: 'POST',
         body: formData,
       });
 
       if (!res.ok) {
          const error = await res.json();
-         throw new Error(error.message || 'Failed to import file');
+         throw new Error(error.message || 'Failed to preview file');
       }
 
       const data = await res.json();
-      setResults(data);
-      addToast(`Import finished!`, 'success');
+      setPreviewData(data);
+      addToast(`Preview generated!`, 'success');
     } catch (err: any) {
       addToast(err.message, 'error');
     } finally {
       setIsUploading(false);
       setFile(null);
       if (fileInputRef.current) fileInputRef.current.value = '';
+    }
+  };
+
+  const executeImport = async () => {
+    if (!previewData || !previewData.validRows.length) return;
+    setIsExecuting(true);
+    try {
+      const res = await fetch('/api/students/import/execute', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          validRows: previewData.validRows,
+          classId: selectedClassId || undefined
+        }),
+      });
+
+      if (!res.ok) {
+        const error = await res.json();
+        throw new Error(error.message || 'Failed to execute import');
+      }
+
+      const data = await res.json();
+      setResults(data);
+      addToast(`Import completed!`, 'success');
+    } catch (err: any) {
+      addToast(err.message, 'error');
+    } finally {
+      setIsExecuting(false);
     }
   };
 
@@ -94,7 +131,7 @@ export default function ImportStudentsPage() {
         </div>
       </div>
 
-      {!results && (
+      {!previewData && !results && (
         <div className="bg-surface p-12 rounded-xl border-2 border-dashed border-outline-variant flex flex-col items-center justify-center gap-4">
            <span className="material-symbols-outlined text-4xl text-on-surface-variant/50">upload_file</span>
            <div className="text-center">
@@ -114,8 +151,60 @@ export default function ImportStudentsPage() {
               onClick={() => fileInputRef.current?.click()}
               disabled={isUploading}
            >
-              {isUploading ? 'Uploading & Importing...' : 'Browse & Import'}
+              {isUploading ? 'Previewing...' : 'Browse & Preview'}
            </Button>
+        </div>
+      )}
+
+      {previewData && !results && (
+        <div className="space-y-6">
+          <div className="bg-surface p-6 rounded-xl border border-outline-variant shadow-sm flex flex-col gap-4">
+            <h2 className="text-xl font-bold text-on-surface">Preview Import</h2>
+            <div className="flex gap-4 items-center flex-wrap">
+               <div className="bg-success/10 text-success px-4 py-2 rounded-lg font-bold">
+                  {previewData.validCount} Valid Rows
+               </div>
+               <div className="bg-error/10 text-error px-4 py-2 rounded-lg font-bold">
+                  {previewData.invalidCount} Invalid Rows
+               </div>
+            </div>
+
+            {previewData.invalidCount > 0 && (
+              <div className="bg-error/5 border border-error/20 rounded-lg p-4 mt-2">
+                <h3 className="font-bold text-error mb-2">Errors Found</h3>
+                <ul className="text-sm text-error space-y-1 list-disc ps-5">
+                  {previewData.invalidRows.map((r: any, i: number) => (
+                    <li key={i}>
+                      Row {r.index}: {r.errors.join(', ')}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+
+            <div className="border-t border-outline-variant pt-4 mt-2 flex flex-col gap-2">
+               <label className="text-sm font-bold text-on-surface-variant">Assign to Class (Optional)</label>
+               <select 
+                 className="p-2 border border-outline-variant rounded-lg max-w-sm"
+                 value={selectedClassId}
+                 onChange={e => setSelectedClassId(e.target.value)}
+               >
+                 <option value="">-- No Class --</option>
+                 {classes.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
+               </select>
+            </div>
+
+            <div className="flex gap-4 mt-4">
+               <Button variant="outline" onClick={() => setPreviewData(null)}>Cancel</Button>
+               <Button 
+                 variant="primary" 
+                 disabled={isExecuting || previewData.validCount === 0}
+                 onClick={executeImport}
+               >
+                 {isExecuting ? 'Importing...' : 'Execute Import'}
+               </Button>
+            </div>
+          </div>
         </div>
       )}
 
@@ -125,10 +214,10 @@ export default function ImportStudentsPage() {
               <span className="material-symbols-outlined text-5xl text-success">check_circle</span>
               <div className="text-center">
                  <h2 className="text-2xl font-bold text-on-surface">Import Completed!</h2>
-                 <p className="text-on-surface-variant">Created: {results.created} | Duplicates: {results.duplicate} | Invalid: {results.invalid} | Failed: {results.failed}</p>
-                 {results.reasons && results.reasons.length > 0 && (
-                    <div className="text-error text-sm mt-2 max-h-32 overflow-y-auto border p-2 text-left">
-                      {results.reasons.map((r: string, i: number) => <div key={i}>{r}</div>)}
+                 <p className="text-on-surface-variant">Created: {results.successful} | Failed: {results.failed}</p>
+                 {results.errors && results.errors.length > 0 && (
+                    <div className="text-error text-sm mt-2 max-h-32 overflow-y-auto border p-2 text-start">
+                      {results.errors?.map((r: any, i: number) => <div key={i}>{r.error}</div>)}
                     </div>
                  )}
               </div>

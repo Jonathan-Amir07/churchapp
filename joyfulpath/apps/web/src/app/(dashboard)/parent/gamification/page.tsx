@@ -24,7 +24,7 @@ export default function ParentGamificationPage() {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {childrenData.map((child, i) => (
+        {childrenData?.map((child, i) => (
           <Card key={i} className="border border-outline-variant bg-surface-container-lowest shadow-sm">
             <CardContent className="p-6 space-y-4">
               <div className="flex justify-between items-center pb-4 border-b border-outline-variant/60">

@@ -2,9 +2,27 @@
 
 import { useUser } from '@/hooks/useUser';
 import { PageTransition } from '@/components/ui';
+import { useState, useEffect } from 'react';
+import { apiClient } from '@/lib/apiClient';
 
 export default function PriestDashboard() {
   const { profile } = useUser();
+  const [data, setData] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    async function fetchAnalytics() {
+      try {
+        const result = await apiClient.get('/api/analytics/dashboard');
+        setData(result);
+      } catch (err) {
+        console.error('Failed to fetch analytics', err);
+      } finally {
+        setLoading(false);
+      }
+    }
+    fetchAnalytics();
+  }, []);
 
   return (
     <PageTransition className="space-y-8 animate-[slide-up_0.4s_ease-out] pb-20 md:pb-0">
@@ -28,52 +46,40 @@ export default function PriestDashboard() {
       <section className="grid grid-cols-1 md:grid-cols-3 gap-4">
         {/* KPI 1 */}
         <div className="bg-surface rounded-xl border border-outline-variant p-6 flex flex-col justify-between shadow-sm relative overflow-hidden group hover:border-primary/50 transition-colors">
-          <div className="absolute -right-4 -top-4 w-24 h-24 bg-primary/5 rounded-full blur-xl group-hover:bg-primary/10 transition-colors"></div>
+          <div className="absolute -end-4 -top-4 w-24 h-24 bg-primary/5 rounded-full blur-xl group-hover:bg-primary/10 transition-colors"></div>
           <div className="flex justify-between items-start mb-4">
-            <h3 className="text-xs font-bold tracking-widest uppercase text-on-surface-variant">نمو الكنيسة (عضوية)</h3>
-            <span className="material-symbols-outlined text-outline">trending_up</span>
+            <h3 className="text-xs font-bold tracking-widest uppercase text-on-surface-variant">الطلاب المسجلين</h3>
+            <span className="material-symbols-outlined text-outline">group</span>
           </div>
           <div className="flex items-end gap-3">
-            <span className="text-2xl font-bold text-primary">١٢,٤٥٠</span>
-            <span className="text-xs font-bold tracking-widest uppercase text-tertiary flex items-center mb-1">
-              <span className="material-symbols-outlined text-[14px]">arrow_upward</span>
-              ٤.٢٪
-            </span>
+            <span className="text-2xl font-bold text-primary">{loading ? '...' : data?.totalStudents || 0}</span>
           </div>
         </div>
 
         {/* KPI 2 */}
         <div className="bg-surface rounded-xl border border-outline-variant p-6 flex flex-col justify-between shadow-sm relative overflow-hidden group hover:border-primary/50 transition-colors">
-          <div className="absolute -right-4 -top-4 w-24 h-24 bg-tertiary/5 rounded-full blur-xl group-hover:bg-tertiary/10 transition-colors"></div>
+          <div className="absolute -end-4 -top-4 w-24 h-24 bg-tertiary/5 rounded-full blur-xl group-hover:bg-tertiary/10 transition-colors"></div>
           <div className="flex justify-between items-start mb-4">
-            <h3 className="text-xs font-bold tracking-widest uppercase text-on-surface-variant">حضور الطلاب (أسبوعي)</h3>
+            <h3 className="text-xs font-bold tracking-widest uppercase text-on-surface-variant">معدل الحضور</h3>
             <span className="material-symbols-outlined text-outline">school</span>
           </div>
           <div className="flex items-end gap-3">
-            <span className="text-2xl font-bold text-primary">٨,٢١٠</span>
-            <span className="text-xs font-bold tracking-widest uppercase text-tertiary flex items-center mb-1">
-              <span className="material-symbols-outlined text-[14px]">arrow_upward</span>
-              ١.٨٪
-            </span>
+            <span className="text-2xl font-bold text-primary">{loading ? '...' : `${data?.attendanceRate || 0}٪`}</span>
           </div>
           <div className="w-full h-1 bg-surface-container mt-4 rounded-full overflow-hidden">
-            <div className="h-full bg-tertiary w-4/5 rounded-full"></div>
+            <div className="h-full bg-tertiary rounded-full" style={{ width: `${data?.attendanceRate || 0}%` }}></div>
           </div>
         </div>
 
         {/* KPI 3 */}
         <div className="bg-surface rounded-xl border border-outline-variant p-6 flex flex-col justify-between shadow-sm relative overflow-hidden group hover:border-primary/50 transition-colors">
-          <div className="absolute -right-4 -top-4 w-24 h-24 bg-secondary/5 rounded-full blur-xl group-hover:bg-secondary/10 transition-colors"></div>
+          <div className="absolute -end-4 -top-4 w-24 h-24 bg-secondary/5 rounded-full blur-xl group-hover:bg-secondary/10 transition-colors"></div>
           <div className="flex justify-between items-start mb-4">
-            <h3 className="text-xs font-bold tracking-widest uppercase text-on-surface-variant">أداء الخدام (متوسط)</h3>
-            <span className="material-symbols-outlined text-outline">group</span>
+            <h3 className="text-xs font-bold tracking-widest uppercase text-on-surface-variant">الدروس الإجمالية</h3>
+            <span className="material-symbols-outlined text-outline">menu_book</span>
           </div>
           <div className="flex items-end gap-3">
-            <span className="text-2xl font-bold text-primary">٩٤٪</span>
-            <span className="text-xs font-bold tracking-widest uppercase text-error flex items-center mb-1">
-              <span className="material-symbols-outlined text-[14px]">arrow_downward</span>
-              ٠.٥٪
-            </span>
+            <span className="text-2xl font-bold text-primary">{loading ? '...' : data?.totalLessons || 0}</span>
           </div>
         </div>
       </section>
@@ -109,7 +115,6 @@ export default function PriestDashboard() {
         <div className="lg:col-span-4 bg-surface rounded-xl border border-outline-variant p-6 flex flex-col shadow-sm">
           <div className="flex justify-between items-center mb-6">
             <h3 className="text-xl font-bold text-on-background">الفعاليات القادمة</h3>
-            <a className="text-xs font-bold tracking-widest uppercase text-primary hover:underline" href="#">عرض الكل</a>
           </div>
           <div className="flex flex-col gap-4 flex-1">
             <div className="flex gap-4 items-start group">
@@ -160,7 +165,7 @@ export default function PriestDashboard() {
           <h3 className="text-xl font-bold text-on-background">سجل النشاط الحديث</h3>
         </div>
         <div className="w-full overflow-x-auto">
-          <table className="w-full text-right border-collapse">
+          <table className="w-full text-end border-collapse">
             <thead>
               <tr className="bg-surface-container-low border-b border-outline-variant">
                 <th className="py-3 px-6 text-xs font-bold tracking-widest uppercase text-on-surface-variant font-medium">الوقت</th>

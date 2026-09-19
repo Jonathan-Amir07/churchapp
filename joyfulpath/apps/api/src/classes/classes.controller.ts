@@ -1,4 +1,16 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Req, Query } from '@nestjs/common';
+/* eslint-disable @typescript-eslint/no-unsafe-argument */
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  UseGuards,
+  Req,
+  Query,
+} from '@nestjs/common';
 import { ClassesService } from './classes.service';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
@@ -10,7 +22,7 @@ import { Prisma } from '@joyfulpath/database';
 export class ClassesController {
   constructor(private readonly classesService: ClassesService) {}
 
-  @Roles('admin', 'priest', 'instructor')
+  @Roles('admin', 'instructor')
   @Post()
   create(@Req() req: any, @Body() data: any) {
     data.createdBy = req.user.userId;
@@ -23,31 +35,43 @@ export class ClassesController {
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.classesService.findOne(id);
+  findOne(@Param('id') id: string, @Req() req: any) {
+    return this.classesService.findOne(id, req.user);
   }
 
-  @Roles('admin', 'priest', 'instructor')
+  @Roles('admin', 'instructor')
   @Patch(':id')
-  update(@Req() req: any, @Param('id') id: string, @Body() data: Prisma.ClassUpdateInput) {
+  update(
+    @Req() req: any,
+    @Param('id') id: string,
+    @Body() data: Prisma.ClassUpdateInput,
+  ) {
     return this.classesService.update(id, data, req.user);
   }
 
-  @Roles('admin', 'priest', 'instructor')
+  @Roles('admin', 'instructor')
   @Delete(':id')
   remove(@Req() req: any, @Param('id') id: string) {
     return this.classesService.remove(id, req.user);
   }
 
-  @Roles('admin', 'priest', 'instructor')
+  @Roles('admin', 'instructor')
   @Post(':id/students/:studentId')
-  addStudent(@Param('id') classId: string, @Param('studentId') studentId: string) {
-    return this.classesService.addStudent(classId, studentId);
+  addStudent(
+    @Req() req: any,
+    @Param('id') classId: string,
+    @Param('studentId') studentId: string,
+  ) {
+    return this.classesService.addStudent(classId, studentId, req.user);
   }
 
-  @Roles('admin', 'priest', 'instructor')
+  @Roles('admin', 'instructor')
   @Delete(':id/students/:studentId')
-  removeStudent(@Param('id') classId: string, @Param('studentId') studentId: string) {
-    return this.classesService.removeStudent(classId, studentId);
+  removeStudent(
+    @Req() req: any,
+    @Param('id') classId: string,
+    @Param('studentId') studentId: string,
+  ) {
+    return this.classesService.removeStudent(classId, studentId, req.user);
   }
 }

@@ -33,7 +33,7 @@ export default function InstructorQuizzes() {
       const res = await fetch('/api/quizzes');
       if (res.ok) {
         const data = await res.json();
-        setQuizzes(data);
+        setQuizzes(Array.isArray([]) ? [] : (Array.isArray(data) ? data : data?.data || []));
       }
     } catch (e) {
       console.error(e);
@@ -47,7 +47,7 @@ export default function InstructorQuizzes() {
         const res = await fetch('/api/classes');
         if (res.ok) {
           const data = await res.json();
-          setClasses(data);
+          setClasses(Array.isArray([]) ? [] : (Array.isArray(data) ? data : data?.data || []));
           if (data.length > 0) setClassId(data[0].id);
         }
       } catch (e) {}
@@ -62,7 +62,7 @@ export default function InstructorQuizzes() {
   const filteredQuizzes = useMemo(() => {
     if (!searchQuery) return quizzes;
     const q = searchQuery.toLowerCase();
-    return quizzes.filter(
+    return quizzes?.filter(
       (quiz) =>
         quiz.titleEn.toLowerCase().includes(q) ||
         quiz.titleAr.toLowerCase().includes(q)
@@ -135,7 +135,7 @@ export default function InstructorQuizzes() {
 
       {/* List of quizzes */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {filteredQuizzes.map((quiz) => {
+        {filteredQuizzes?.map((quiz) => {
           const title = isAr ? quiz.titleAr : quiz.titleEn;
 
           return (
@@ -193,7 +193,7 @@ export default function InstructorQuizzes() {
                 onChange={(e) => setClassId(e.target.value)}
                 className="w-full p-3 rounded-xl border border-outline-variant bg-surface-container-low text-sm font-medium focus:outline-none focus:border-primary"
               >
-                {classes.map(c => (
+                {classes?.map(c => (
                   <option key={c.id} value={c.id}>{c.nameEn}</option>
                 ))}
               </select>

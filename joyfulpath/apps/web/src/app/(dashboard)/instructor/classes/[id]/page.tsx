@@ -1,27 +1,17 @@
 'use client';
 
-import { useState, useEffect } from 'react';
 import { useParams } from 'next/navigation';
 import { Card, CardContent, Button } from '@/components/ui';
 import Link from 'next/link';
+import useSWR from 'swr';
+import { apiClient } from '@/lib/apiClient';
 
 export default function InstructorClassHub() {
   const params = useParams();
   const classId = params.id as string;
-  const [lessons, setLessons] = useState<any[]>([]);
-  const [tasks, setTasks] = useState<any[]>([]);
-
-  useEffect(() => {
-    // In a real app, fetch from API. We use mock data here for demonstration.
-    setLessons([
-      { id: '1', title: 'The Creation', category: 'Old Testament', status: 'published' },
-      { id: '2', title: 'The Exodus', category: 'Old Testament', status: 'draft' }
-    ]);
-    setTasks([
-      { id: '1', title: 'Genesis Quiz', dueDate: 'Next Sunday', status: 'active', submissions: 12 },
-      { id: '2', title: 'Memorize Psalm 23', dueDate: 'In 2 weeks', status: 'draft', submissions: 0 }
-    ]);
-  }, [classId]);
+  
+  const { data: lessons = [] } = useSWR(`/lessons/class/${classId}`, (url) => apiClient.get(url));
+  const { data: tasks = [] } = useSWR(`/tasks/class/${classId}`, (url) => apiClient.get(url));
 
   return (
     <div className="space-y-6 animate-[slide-up_0.4s_ease-out]">
@@ -40,7 +30,7 @@ export default function InstructorClassHub() {
               </Link>
             </div>
             <div className="space-y-3">
-              {lessons.map(lesson => (
+              {lessons?.map((lesson: any) => (
                 <div key={lesson.id} className="flex justify-between items-center p-3 rounded-lg border border-outline-variant hover:bg-surface-container transition">
                   <div>
                     <p className="font-bold text-sm">{lesson.title}</p>
@@ -62,7 +52,7 @@ export default function InstructorClassHub() {
               </Link>
             </div>
             <div className="space-y-3">
-              {tasks.map(task => (
+              {tasks?.map((task: any) => (
                 <div key={task.id} className="flex justify-between items-center p-3 rounded-lg border border-outline-variant hover:bg-surface-container transition">
                   <div>
                     <p className="font-bold text-sm">{task.title}</p>

@@ -17,20 +17,22 @@ export default function ParentDashboard() {
   useEffect(() => {
     async function loadChildren() {
       try {
-        const res = await fetch('/api/parent/children');
+        const res = await fetch('/api/users');
         if (res.ok) {
-          const childrenProfiles = await res.json();
+          const result = await res.json();
+          const childrenProfiles = Array.isArray(result) ? result : result.data;
+          
           if (childrenProfiles && childrenProfiles.length > 0) {
             setChildren(childrenProfiles);
           } else {
             setChildren([
               {
                 id: 'demo-student-1',
-                display_name: 'يوسف ميخائيل',
-                total_xp: 2450,
-                total_points: 120,
-                current_streak: 5,
-                avatar_url: null,
+                displayName: 'يوسف ميخائيل',
+                totalXp: 2450,
+                totalPoints: 120,
+                currentStreak: 5,
+                avatarUrl: null,
                 role: 'student'
               }
             ]);
@@ -59,25 +61,25 @@ export default function ParentDashboard() {
         </div>
       ) : (
         <div className="flex flex-col gap-8">
-          {children.map((child) => {
-            const levelNum = Math.floor(child.total_xp / 300) + 1;
+          {children?.map((child) => {
+            const levelNum = child.currentLevel?.levelNumber || Math.floor(child.totalXp / 300) + 1;
             const xpForNextLevel = levelNum * 300;
-            const xpProgress = (child.total_xp % 300) / 300 * 100;
-            const xpRemaining = xpForNextLevel - child.total_xp;
+            const xpProgress = (child.totalXp % 300) / 300 * 100;
+            const xpRemaining = xpForNextLevel - child.totalXp;
 
             return (
               <div key={child.id} className="grid grid-cols-1 lg:grid-cols-12 gap-6">
                 {/* Child Overview Card (Span 8) */}
                 <div className="lg:col-span-8 bg-surface rounded-xl p-6 flex flex-col sm:flex-row items-center gap-6 relative overflow-hidden border border-outline-variant/30 shadow-[0px_4px_20px_rgba(33,79,199,0.04)]">
                   <div className="relative shrink-0">
-                    {child.avatar_url ? (
-                      <img alt="Child Portrait" src={child.avatar_url} className="w-32 h-32 rounded-full border-4 border-surface shadow-md object-cover z-10 relative" />
+                    {child.avatarUrl ? (
+                      <img alt="Child Portrait" src={child.avatarUrl} className="w-32 h-32 rounded-full border-4 border-surface shadow-md object-cover z-10 relative" />
                     ) : (
                       <div className="w-32 h-32 rounded-full border-4 border-surface shadow-md bg-primary/10 flex items-center justify-center font-bold text-4xl text-primary z-10 relative">
-                        {child.display_name[0]}
+                        {child.displayName ? child.displayName[0] : 'S'}
                       </div>
                     )}
-                    <div className="absolute -bottom-2 -right-2 bg-secondary-container text-on-secondary-container text-xs font-bold tracking-widest uppercase px-3 py-1 rounded-full shadow-sm z-20">
+                    <div className="absolute -bottom-2 -end-2 bg-secondary-container text-on-secondary-container text-xs font-bold tracking-widest uppercase px-3 py-1 rounded-full shadow-sm z-20">
                       مستوى {levelNum}
                     </div>
                   </div>
@@ -85,17 +87,17 @@ export default function ParentDashboard() {
                   <div className="flex-grow w-full">
                     <div className="flex justify-between items-end mb-2">
                       <div>
-                        <h3 className="text-2xl font-bold text-on-surface mb-1">{child.display_name}</h3>
+                        <h3 className="text-2xl font-bold text-on-surface mb-1">{child.displayName}</h3>
                         <p className="text-base text-on-surface-variant">مستكشف الكتاب المقدس</p>
                       </div>
-                      <div className="text-right">
-                        <span className="text-3xl font-extrabold text-primary">{child.total_xp}</span>
-                        <span className="text-xs font-bold tracking-widest uppercase text-on-surface-variant ml-1">نقاط الخبرة (XP)</span>
+                      <div className="text-end">
+                        <span className="text-3xl font-extrabold text-primary">{child.totalXp}</span>
+                        <span className="text-xs font-bold tracking-widest uppercase text-on-surface-variant ms-1">نقاط الخبرة (XP)</span>
                       </div>
                     </div>
                     {/* XP Bar */}
                     <div className="w-full h-6 bg-surface-variant rounded-full mt-4 relative overflow-hidden border-2 border-surface shadow-inner">
-                      <div className="absolute top-0 right-0 h-full bg-[#FFD700] rounded-full transition-all duration-1000 ease-out" style={{ width: `${xpProgress}%` }}>
+                      <div className="absolute top-0 end-0 h-full bg-[#FFD700] rounded-full transition-all duration-1000 ease-out" style={{ width: `${xpProgress}%` }}>
                         <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/40 to-transparent w-full h-full animate-[shimmer_3s_infinite_linear]"></div>
                       </div>
                     </div>

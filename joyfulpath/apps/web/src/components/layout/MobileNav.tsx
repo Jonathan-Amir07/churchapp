@@ -38,17 +38,17 @@ export function MobileNav() {
   let sheetItems: NavItem[] = [];
 
   if (role === 'student') {
-    bottomBarItems = allItems.filter(item => 
+    bottomBarItems = allItems?.filter(item => 
       ['dashboard', 'lessons', 'tasks', 'games'].includes(item.key)
     );
-    sheetItems = allItems.filter(item => 
+    sheetItems = allItems?.filter(item => 
       !['dashboard', 'lessons', 'tasks', 'games'].includes(item.key)
     );
   } else if (role === 'admin') {
-    bottomBarItems = allItems.filter(item => 
+    bottomBarItems = allItems?.filter(item => 
       ['dashboard', 'users', 'classes', 'analytics'].includes(item.key)
     );
-    sheetItems = allItems.filter(item => 
+    sheetItems = allItems?.filter(item => 
       !['dashboard', 'users', 'classes', 'analytics'].includes(item.key)
     );
   } else {
@@ -73,7 +73,7 @@ export function MobileNav() {
   return (
     <>
       <nav className="fixed bottom-0 start-0 end-0 bg-surface-container-lowest/95 backdrop-blur-md border-t border-outline-variant md:hidden flex justify-around items-center h-16 px-2 pb-safe z-30 shadow-card">
-        {bottomBarItems.map((item) => {
+        {bottomBarItems?.map((item) => {
           const active = isActive(item.href);
           return (
             <Link
@@ -122,7 +122,7 @@ export function MobileNav() {
               isMoreOpen || isSheetActive ? 'bg-primary/10 border border-secondary/30' : 'bg-transparent'
             )}>
               {/* Notification dot placeholder */}
-              <div className="absolute top-1 right-2 w-2 h-2 rounded-full bg-error animate-pulse border border-surface-container-lowest" />
+              <div className="absolute top-1 end-2 w-2 h-2 rounded-full bg-error animate-pulse border border-surface-container-lowest" />
               
               <span
                 className={cn(
@@ -171,7 +171,7 @@ export function MobileNav() {
 
             {/* Grid of Overflow Items */}
             <div className="grid grid-cols-3 gap-y-6 gap-x-4 py-2 overflow-y-auto">
-              {sheetItems.map((item) => {
+              {sheetItems?.map((item) => {
                 const active = isActive(item.href);
                 return (
                   <Link

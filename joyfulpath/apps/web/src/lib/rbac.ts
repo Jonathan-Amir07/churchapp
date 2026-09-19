@@ -231,7 +231,7 @@ export async function getInstructorClassIds(userId: string): Promise<string[]> {
     },
     select: { classId: true },
   });
-  return memberships.map((m: any) => m.classId);
+  return memberships?.map((m: any) => m.classId);
 }
 
 /**
@@ -242,5 +242,5 @@ export async function getParentChildIds(parentId: string): Promise<string[]> {
     where: { parentId },
     select: { childId: true },
   });
-  return links.map((l: any) => l.childId);
+  return links?.map((l: any) => l.childId);
 }

@@ -50,10 +50,25 @@ export default function LoginPage() {
         }),
       });
 
+      const contentType = res.headers.get('content-type');
+      const isJson = contentType && contentType.includes('application/json');
+
       if (!res.ok) {
-        const errorData = await res.json();
+        let errorData;
+        if (isJson) {
+          try {
+            errorData = await res.json();
+          } catch {
+            errorData = { message: currentLocale === 'en' ? 'An error occurred during login. Please try again.' : 'حدث خطأ أثناء تسجيل الدخول. حاول مرة أخرى.' };
+          }
+        } else {
+          errorData = { message: currentLocale === 'en' ? 'Server error occurred. Please try again.' : 'حدث خطأ في الخادم. حاول مرة أخرى.' };
+        }
         addToast(errorData.message || t('invalidCredentials'), 'error');
       } else {
+        if (!isJson) {
+          throw new Error('Server returned non-JSON response');
+        }
         const data = await res.json();
         addToast(tCommon('success'), 'success');
         
@@ -245,7 +260,7 @@ export default function LoginPage() {
                 { roleName: 'instructor', label: currentLocale === 'en' ? '📖 Instructor' : '📖 خادم', user: 'test_instructor' },
                 { roleName: 'admin', label: currentLocale === 'en' ? '⚙️ Admin' : '⚙️ أمين خدمة', user: 'test_admin' },
                 { roleName: 'priest', label: currentLocale === 'en' ? '⛪ Priest' : '⛪ كاهن', user: 'test_priest' },
-              ].map((acc) => (
+              ]?.map((acc) => (
                 <button
                   key={acc.roleName}
                   type="button"

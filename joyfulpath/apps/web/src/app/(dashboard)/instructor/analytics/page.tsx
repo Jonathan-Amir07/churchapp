@@ -49,7 +49,7 @@ export default function InstructorAnalyticsPage() {
                   { name: 'John Doe', xp: 4500, score: '98%' },
                   { name: 'Jane Smith', xp: 4200, score: '95%' },
                   { name: 'Michael Johnson', xp: 3950, score: '92%' }
-                ].map((s, i) => (
+                ]?.map((s, i) => (
                   <div key={i} className="flex justify-between items-center p-3 border border-outline-variant rounded-lg stagger-item">
                     <div className="flex items-center gap-3">
                       <div className="w-8 h-8 rounded-full bg-primary/20 text-primary flex items-center justify-center font-black">{i + 1}</div>

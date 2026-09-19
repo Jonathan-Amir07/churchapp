@@ -91,7 +91,7 @@ export default function StudentBadges() {
   const isAr = locale === 'ar';
   const [selectedBadge, setSelectedBadge] = useState<Badge | null>(null);
 
-  const unlockedCount = MOCK_BADGES.filter((b) => b.unlocked).length;
+  const unlockedCount = MOCK_BADGES?.filter((b) => b.unlocked).length;
 
   return (
     <div className="space-y-6 animate-[slide-up_0.4s_ease-out]">
@@ -111,7 +111,7 @@ export default function StudentBadges() {
 
       {/* Grid of Badges */}
       <div className="grid grid-cols-2 sm:grid-cols-3 gap-6">
-        {MOCK_BADGES.map((badge) => {
+        {MOCK_BADGES?.map((badge) => {
           const name = isAr ? badge.nameAr : badge.nameEn;
           const description = isAr ? badge.descriptionAr : badge.descriptionEn;
 

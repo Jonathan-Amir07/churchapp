@@ -59,7 +59,7 @@ export default function AdminEventsPage() {
     try {
       const res = await fetch('/api/events');
       if (res.ok) {
-        setEvents(await res.json());
+        setEvents((await res.json())?.data || await res.json() || []);
       }
     } catch (e) {
       console.error(e);
@@ -77,7 +77,7 @@ export default function AdminEventsPage() {
   const filteredEvents = useMemo(() => {
     if (!searchQuery) return events;
     const q = searchQuery.toLowerCase();
-    return events.filter(
+    return events?.filter(
       (e) =>
         e.title.toLowerCase().includes(q) ||
         (e.description && e.description.toLowerCase().includes(q)) ||
@@ -175,7 +175,7 @@ export default function AdminEventsPage() {
       {/* Toast */}
       {toast && (
         <div
-          className={`fixed top-4 right-4 z-50 px-5 py-3 rounded-2xl shadow-lg text-sm font-bold flex items-center gap-2 transition-all duration-300 ${
+          className={`fixed top-4 end-4 z-50 px-5 py-3 rounded-2xl shadow-lg text-sm font-bold flex items-center gap-2 transition-all duration-300 ${
             toast.type === 'success' ? 'bg-success text-white' : 'bg-error text-white'
           }`}
         >
@@ -210,10 +210,10 @@ export default function AdminEventsPage() {
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
         {[
           { label: 'Total Events',      value: events.length,                                          icon: 'event',        color: 'text-primary bg-primary/10' },
-          { label: 'Public Events',     value: events.filter((e) => e.is_public).length,               icon: 'public',       color: 'text-success bg-success/10' },
+          { label: 'Public Events',     value: events?.filter((e) => e.is_public).length,               icon: 'public',       color: 'text-success bg-success/10' },
           { label: 'Total Capacity',    value: events.reduce((s, e) => s + e.max_capacity, 0),          icon: 'group',        color: 'text-secondary bg-secondary/10' },
           { label: 'Total Registered',  value: events.reduce((s, e) => s + e.current_rsvp, 0),          icon: 'how_to_reg',   color: 'text-tertiary bg-tertiary/10' },
-        ].map(({ label, value, icon, color }) => (
+        ]?.map(({ label, value, icon, color }) => (
           <Card key={label} className="border border-outline-variant bg-surface-container-lowest shadow-sm">
             <CardContent className="p-4 flex items-center gap-3">
               <div className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 ${color}`}>
@@ -245,7 +245,7 @@ export default function AdminEventsPage() {
                 </tr>
               </thead>
               <tbody className="divide-y divide-outline-variant/40">
-                {filteredEvents.map((event) => {
+                {filteredEvents?.map((event) => {
                   const capacityPct = Math.round((event.current_rsvp / event.max_capacity) * 100);
                   const isFull = event.current_rsvp >= event.max_capacity;
                   return (

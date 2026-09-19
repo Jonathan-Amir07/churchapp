@@ -8,6 +8,8 @@ import { PrismaService } from '../prisma/prisma.service';
 import { QrGenerateDto, QrScanDto } from './dto/qr.dto';
 import { ManualAttendanceDto } from './dto/manual-attendance.dto';
 
+import { GamificationService } from '../gamification/gamification.service';
+
 // In a real application, you'd use a Redis cache or signed JWTs for QR tokens.
 // For this prototype, we'll store active QR tokens in memory.
 const activeQrTokens = new Map<
@@ -17,20 +19,20 @@ const activeQrTokens = new Map<
 
 @Injectable()
 export class AttendanceService {
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    private prisma: PrismaService,
+    private gamificationService: GamificationService,
+  ) {}
 
   async generateQr(dto: QrGenerateDto, userId: string, role: string) {
-    if (role !== 'instructor' && role !== 'admin') {
-      throw new ForbiddenException('Only instructors can generate QR codes');
+    if (role !== 'instructor' && role !== 'admin' && role !== 'priest') {
+      throw new ForbiddenException(
+        'Only instructors or admins can generate QR codes',
+      );
     }
 
     if (role === 'instructor') {
-      const classRecord = await this.prisma.class.findUnique({
-        where: { id: dto.classId },
-      });
-      if (!classRecord || classRecord.createdBy !== userId) {
-        throw new ForbiddenException('You do not own this class');
-      }
+      await this.verifyInstructorClassAccess(dto.classId, userId, role);
     }
 
     const token = Math.random().toString(36).substring(2, 10).toUpperCase();
@@ -38,6 +40,29 @@ export class AttendanceService {
     activeQrTokens.set(token, { classId: dto.classId, expiresAt });
 
     return { token, expiresAt };
+  }
+
+  private async verifyInstructorClassAccess(
+    classId: string,
+    userId: string,
+    role: string,
+  ) {
+    const classRecord = await this.prisma.class.findUnique({
+      where: { id: classId },
+      include: { members: true },
+    });
+    if (!classRecord) {
+      throw new NotFoundException('Class not found');
+    }
+    const isInstructor =
+      classRecord.createdBy === userId ||
+      classRecord.members.some(
+        (m) => m.userId === userId && m.role === 'instructor',
+      );
+    // Admins and Priests have implicit access to all classes
+    if (!isInstructor && role !== 'admin' && role !== 'priest') {
+      throw new ForbiddenException('You do not own this class');
+    }
   }
 
   async scanQr(dto: QrScanDto, userId: string) {
@@ -58,15 +83,23 @@ export class AttendanceService {
       throw new ForbiddenException('You are not a member of this class');
     }
 
-    // Check if already checked in today
     const today = new Date();
-    today.setHours(0, 0, 0, 0);
+    const startOfDay = new Date(
+      today.getFullYear(),
+      today.getMonth(),
+      today.getDate(),
+    );
+    const endOfDay = new Date(
+      today.getFullYear(),
+      today.getMonth(),
+      today.getDate() + 1,
+    );
 
     const existing = await this.prisma.attendance.findFirst({
       where: {
         classId: session.classId,
         userId: userId,
-        date: { gte: today },
+        date: { gte: startOfDay, lt: endOfDay },
       },
     });
 
@@ -76,12 +109,6 @@ export class AttendanceService {
         record: existing,
       };
     }
-
-    // Award 20 XP for attending
-    await this.prisma.user.update({
-      where: { id: userId },
-      data: { totalXp: { increment: 20 } },
-    });
 
     const record = await this.prisma.attendance.create({
       data: {
@@ -94,25 +121,38 @@ export class AttendanceService {
       },
     });
 
+    await this.gamificationService.awardActivity(
+      userId,
+      'attendance',
+      record.id,
+      20,
+      0,
+    );
+    await this.gamificationService.processXpGain(userId);
+
     return { message: 'Attendance recorded successfully. +20 XP!', record };
   }
 
   async submitManual(dto: ManualAttendanceDto, userId: string, role: string) {
-    if (role !== 'instructor' && role !== 'admin') {
-      throw new ForbiddenException('Only instructors can submit attendance');
+    if (role !== 'instructor' && role !== 'admin' && role !== 'priest') {
+      throw new ForbiddenException('Access denied to submit attendance');
     }
 
     if (role === 'instructor') {
-      const classRecord = await this.prisma.class.findUnique({
-        where: { id: dto.classId },
-      });
-      if (!classRecord || classRecord.createdBy !== userId) {
-        throw new ForbiddenException('You do not own this class');
-      }
+      await this.verifyInstructorClassAccess(dto.classId, userId, role);
     }
 
     const today = new Date();
-    today.setHours(0, 0, 0, 0);
+    const startOfDay = new Date(
+      today.getFullYear(),
+      today.getMonth(),
+      today.getDate(),
+    );
+    const endOfDay = new Date(
+      today.getFullYear(),
+      today.getMonth(),
+      today.getDate() + 1,
+    );
 
     const records = await this.prisma.$transaction(async (tx) => {
       const results = [];
@@ -122,7 +162,7 @@ export class AttendanceService {
           where: {
             classId: dto.classId,
             userId: r.studentId,
-            date: { gte: today },
+            date: { gte: startOfDay, lt: endOfDay },
           },
         });
 
@@ -132,13 +172,7 @@ export class AttendanceService {
         }
 
         const points = r.status === 'present' ? 20 : 0;
-        if (points > 0) {
-          await tx.user.update({
-            where: { id: r.studentId },
-            data: { totalXp: { increment: points } },
-          });
-        }
-        
+
         const newRecord = await tx.attendance.create({
           data: {
             classId: dto.classId,
@@ -150,14 +184,74 @@ export class AttendanceService {
           },
         });
         results.push(newRecord);
+
+        // Notify parents if absent
+        if (r.status === 'absent') {
+          const student = await tx.user.findUnique({
+            where: { id: r.studentId },
+            include: { family: true },
+          });
+          const classRecord = await tx.class.findUnique({
+            where: { id: dto.classId },
+          });
+
+          if (student?.family) {
+            const payload = JSON.stringify({
+              title: 'إشعار غياب',
+              message: `تغيب ${student.displayName} عن درس ${classRecord?.name || 'مدارس الأحد'} اليوم.`,
+              studentId: r.studentId,
+              classId: dto.classId,
+            });
+
+            if (student.family.fatherId) {
+              await tx.notification.create({
+                data: {
+                  userId: student.family.fatherId,
+                  channel: 'in-app',
+                  type: 'absence',
+                  payload,
+                },
+              });
+            }
+            if (student.family.motherId) {
+              await tx.notification.create({
+                data: {
+                  userId: student.family.motherId,
+                  channel: 'in-app',
+                  type: 'absence',
+                  payload,
+                },
+              });
+            }
+          }
+        }
       }
       return results;
     });
 
+    // Process gamification idempotently after transaction
+    for (const record of records) {
+      if (record.xpAwarded > 0) {
+        await this.gamificationService.awardActivity(
+          record.userId,
+          'attendance',
+          record.id,
+          record.xpAwarded,
+          0,
+        );
+        await this.gamificationService.processXpGain(record.userId);
+      }
+    }
+
     return { message: 'Attendance submitted successfully', records };
   }
 
-  async getStudentAttendancePercentage(studentId: string, classId: string, userId: string, role: string) {
+  async getStudentAttendancePercentage(
+    studentId: string,
+    classId: string,
+    userId: string,
+    role: string,
+  ) {
     if (role === 'student' && studentId !== userId) {
       throw new ForbiddenException('You can only view your own attendance');
     }
@@ -185,21 +279,20 @@ export class AttendanceService {
     const total = totalSessions.length;
     const percentage = total > 0 ? (attendedSessions / total) * 100 : 0;
 
-    return { attended: attendedSessions, total, percentage: Math.round(percentage) };
+    return {
+      attended: attendedSessions,
+      total,
+      percentage: Math.round(percentage),
+    };
   }
 
   async getReports(classId: string, userId: string, role: string) {
-    if (role !== 'instructor' && role !== 'admin') {
+    if (role !== 'instructor' && role !== 'admin' && role !== 'priest') {
       throw new ForbiddenException('Access denied');
     }
 
     if (role === 'instructor') {
-      const classRecord = await this.prisma.class.findUnique({
-        where: { id: classId },
-      });
-      if (!classRecord || classRecord.createdBy !== userId) {
-        throw new ForbiddenException('You do not own this class');
-      }
+      await this.verifyInstructorClassAccess(classId, userId, role);
     }
 
     return this.prisma.attendance.findMany({

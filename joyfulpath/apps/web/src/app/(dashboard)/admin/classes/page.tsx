@@ -41,7 +41,7 @@ export default function AdminClasses() {
       const res = await fetch('/api/classes');
       if (res.ok) {
         const data = await res.json();
-        setClasses(data);
+        setClasses(Array.isArray([]) ? [] : (Array.isArray(data) ? data : data?.data || []));
       }
     } catch (e) {
       console.error(e);
@@ -61,7 +61,7 @@ export default function AdminClasses() {
   const filteredClasses = useMemo(() => {
     if (!searchQuery) return classes;
     const q = searchQuery.toLowerCase();
-    return classes.filter(
+    return classes?.filter(
       (c) =>
         c.nameEn.toLowerCase().includes(q) ||
         c.nameAr.toLowerCase().includes(q) ||
@@ -126,7 +126,7 @@ export default function AdminClasses() {
 
       {/* List of classes */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {filteredClasses.map((c) => {
+        {filteredClasses?.map((c) => {
           const name = isAr ? c.nameAr : c.nameEn;
 
           return (

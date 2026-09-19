@@ -54,7 +54,7 @@ export function Sidebar() {
 
       {/* Navigation menu list */}
       <nav className="flex-1 p-4 space-y-1.5 overflow-y-auto">
-        {items.map((item) => {
+        {items?.map((item) => {
           const active = isActive(item.href);
           return (
             <Link

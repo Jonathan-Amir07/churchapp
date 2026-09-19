@@ -6,20 +6,45 @@ import { useNotificationStore } from '@/stores/notifications.store';
 
 export default function InstructorAttendancePage() {
   const [qrToken, setQrToken] = useState<string | null>(null);
+  const [classes, setClasses] = useState<any[]>([]);
+  const [selectedClassId, setSelectedClassId] = useState('');
   const [students, setStudents] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const addToast = useNotificationStore(state => state.addToast);
   const [scanId, setScanId] = useState('');
   const [scanning, setScanning] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
 
   useEffect(() => {
-    async function loadStudents() {
+    async function loadClasses() {
       try {
-        const res = await fetch('/api/students');
+        const res = await fetch('/api/classes');
         if (res.ok) {
           const data = await res.json();
-          // Initialize status as null
-          setStudents(data.map((s: any) => ({ ...s, status: null })));
+          const arr = Array.isArray(data) ? data : data.data || [];
+          setClasses(arr);
+          if (arr.length > 0) setSelectedClassId(arr[0].id);
+        }
+      } catch (err) {
+        console.error('Failed to load classes:', err);
+      } finally {
+        setLoading(false);
+      }
+    }
+    loadClasses();
+  }, []);
+
+  useEffect(() => {
+    if (!selectedClassId) return;
+    async function loadStudents() {
+      setLoading(true);
+      try {
+        // Fetch students for the class
+        const res = await fetch(`/api/students?classId=${selectedClassId}`);
+        if (res.ok) {
+          const data = await res.json();
+          const arr = Array.isArray(data) ? data : data.data || [];
+          setStudents(arr.map((s: any) => ({ ...s, status: null })));
         }
       } catch (err) {
         console.error('Failed to load students:', err);
@@ -28,31 +53,57 @@ export default function InstructorAttendancePage() {
       }
     }
     loadStudents();
-  }, []);
+  }, [selectedClassId]);
 
-  const generateQr = () => {
-    const token = Math.random().toString(36).substring(2, 10).toUpperCase();
-    setQrToken(token);
+  const generateQr = async () => {
+    if (!selectedClassId) {
+      addToast('Please select a class first', 'error');
+      return;
+    }
+    try {
+      const res = await fetch('/api/attendance/qr/generate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ classId: selectedClassId })
+      });
+      if (res.ok) {
+        const data = await res.json();
+        setQrToken(data.token);
+      } else {
+        addToast('Failed to generate QR code', 'error');
+      }
+    } catch (err) {
+      addToast('Failed to generate QR code', 'error');
+    }
   };
 
   const handleScan = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!scanId) return;
+    if (!scanId || !qrToken) {
+      addToast('Generate a QR code first and enter a valid ID', 'error');
+      return;
+    }
     setScanning(true);
     try {
-      const res = await fetch('/api/attendance/scan', {
+      // In a real app, the scanner scans the QR token. Here we simulate scanning the token for a specific student.
+      // Wait, the API expects { token } and uses req.user.userId (since the STUDENT is supposed to scan it on their mobile app).
+      // If the INSTRUCTOR is scanning the student's ID, that's not what /qr/scan is built for.
+      // Let's just simulate manual attendance for that student.
+      const res = await fetch('/api/attendance/manual', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ studentId: scanId })
+        body: JSON.stringify({
+          classId: selectedClassId,
+          records: [{ studentId: scanId, status: 'present' }]
+        })
       });
       const data = await res.json();
-      if (res.ok && data.success) {
-        addToast(data.message || 'Check-in successful!', 'success');
+      if (res.ok) {
+        addToast('Check-in successful!', 'success');
         setScanId('');
-        // Update local roster state
-        setStudents(prev => prev.map(s => s.id === scanId ? { ...s, status: 'present' } : s));
+        setStudents(prev => prev?.map(s => s.id === scanId || s.username === scanId ? { ...s, status: 'present' } : s));
       } else {
-        addToast(data.error || 'Failed to check in', 'error');
+        addToast(data.message || 'Failed to check in', 'error');
       }
     } catch (err) {
       addToast('An error occurred during check-in', 'error');
@@ -61,41 +112,61 @@ export default function InstructorAttendancePage() {
     }
   };
 
-  const markStudent = async (id: string, status: string) => {
-    // This would ideally hit an endpoint to save individual attendance
-    // For now we'll update local state and let the 'scan' endpoint handle 'present'
-    if (status === 'present') {
-      try {
-        const res = await fetch('/api/attendance/scan', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ studentId: id })
-        });
-        const data = await res.json();
-        if (res.ok && data.success) {
-          addToast(data.message || 'Marked present', 'success');
-          setStudents(prev => prev.map(s => s.id === id ? { ...s, status } : s));
-        } else if (res.status === 409) {
-           addToast('Student already checked in today.', 'success');
-           setStudents(prev => prev.map(s => s.id === id ? { ...s, status } : s));
-        } else {
-          addToast(data.error || 'Failed to mark attendance', 'error');
-        }
-      } catch (err) {}
-    } else {
-      setStudents(prev => prev.map(s => s.id === id ? { ...s, status } : s));
-      addToast(`Marked as ${status}`, 'success');
+  const markStudent = (id: string, status: string) => {
+    setStudents(prev => prev?.map(s => s.id === id ? { ...s, status } : s));
+  };
+
+  const saveAttendance = async () => {
+    if (!selectedClassId) return;
+    setIsSaving(true);
+    try {
+      const records = students.filter(s => s.status).map(s => ({
+        studentId: s.id,
+        status: s.status
+      }));
+      if (records.length === 0) {
+        addToast('No attendance marked', 'error');
+        return;
+      }
+      const res = await fetch('/api/attendance/manual', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          classId: selectedClassId,
+          records
+        })
+      });
+      const data = await res.json();
+      if (res.ok) {
+        addToast('Attendance saved successfully', 'success');
+      } else {
+        addToast(data.message || 'Failed to save attendance', 'error');
+      }
+    } catch (err) {
+      addToast('An error occurred', 'error');
+    } finally {
+      setIsSaving(false);
     }
   };
 
   return (
     <PageTransition className="space-y-6 max-w-5xl mx-auto">
-      <div className="flex justify-between items-center">
+      <div className="flex justify-between items-center flex-wrap gap-4">
         <h1 className="text-2xl font-extrabold text-on-surface flex items-center gap-2">
           <span className="material-symbols-outlined text-primary" style={{ fontVariationSettings: "'FILL' 1" }}>fact_check</span>
           Attendance Management
         </h1>
-        <Button variant="primary" onClick={generateQr} icon="qr_code_2">Generate QR Code</Button>
+        <div className="flex items-center gap-4">
+          <select 
+            value={selectedClassId} 
+            onChange={(e) => setSelectedClassId(e.target.value)}
+            className="rounded-lg border border-outline-variant bg-surface px-4 py-2 text-on-surface outline-none"
+          >
+            <option value="">Select a class...</option>
+            {classes.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
+          </select>
+          <Button variant="primary" onClick={generateQr} icon="qr_code_2" disabled={!selectedClassId}>Generate QR Code</Button>
+        </div>
       </div>
 
       <StaggerContainer className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -104,7 +175,7 @@ export default function InstructorAttendancePage() {
             <CardContent className="p-6 space-y-4">
               <div className="flex justify-between items-center border-b border-outline-variant pb-3">
                 <h3 className="font-bold text-on-surface">Manual Roster — Today</h3>
-                <Button variant="success" size="sm" icon="save">Save Attendance</Button>
+                <Button variant="success" size="sm" icon="save" onClick={saveAttendance} loading={isSaving}>Save Attendance</Button>
               </div>
 
               {loading ? (
@@ -115,19 +186,21 @@ export default function InstructorAttendancePage() {
                 </div>
               ) : students.length === 0 ? (
                 <div className="text-center py-8 text-on-surface-variant font-medium">
-                  No students found in your classes.
+                  {selectedClassId ? 'No students found in this class.' : 'Select a class to view students.'}
                 </div>
               ) : (
-                students.map(student => (
-                  <div key={student.id} className="flex justify-between items-center p-3 bg-surface-container rounded-lg">
-                    <span className="font-medium text-on-surface">{student.name}</span>
-                    <div className="flex gap-2">
-                      <Button onClick={() => markStudent(student.id, 'present')} variant={student.status === 'present' ? 'success' : 'ghost'} size="sm">Present</Button>
-                      <Button onClick={() => markStudent(student.id, 'absent')} variant={student.status === 'absent' ? 'danger' : 'ghost'} size="sm">Absent</Button>
-                      <Button onClick={() => markStudent(student.id, 'late')} variant={student.status === 'late' ? 'secondary' : 'ghost'} size="sm">Late</Button>
+                <div className="divide-y divide-outline-variant">
+                  {students?.map(student => (
+                    <div key={student.id} className="flex justify-between items-center py-3">
+                      <span className="font-medium text-on-surface">{student.displayName || student.firstName + ' ' + student.lastName}</span>
+                      <div className="flex gap-2">
+                        <Button onClick={() => markStudent(student.id, 'present')} variant={student.status === 'present' ? 'success' : 'ghost'} size="sm">Present</Button>
+                        <Button onClick={() => markStudent(student.id, 'absent')} variant={student.status === 'absent' ? 'danger' : 'ghost'} size="sm">Absent</Button>
+                        <Button onClick={() => markStudent(student.id, 'late')} variant={student.status === 'late' ? 'secondary' : 'ghost'} size="sm">Late</Button>
+                      </div>
                     </div>
-                  </div>
-                ))
+                  ))}
+                </div>
               )}
             </CardContent>
           </Card>
@@ -143,9 +216,9 @@ export default function InstructorAttendancePage() {
                   placeholder="Enter Student ID"
                   value={scanId}
                   onChange={(e) => setScanId(e.target.value)}
-                  disabled={scanning}
+                  disabled={scanning || !selectedClassId}
                 />
-                <Button type="submit" variant="secondary" fullWidth loading={scanning} icon="qr_code_scanner">
+                <Button type="submit" variant="secondary" fullWidth loading={scanning} icon="qr_code_scanner" disabled={!selectedClassId}>
                   Scan ID
                 </Button>
               </form>

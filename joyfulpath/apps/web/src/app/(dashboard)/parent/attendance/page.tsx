@@ -83,7 +83,7 @@ export default function ParentAttendance() {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-outline-variant/40">
-                  {attendance.map((record) => (
+                  {attendance?.map((record) => (
                     <tr key={record.id} className="hover:bg-surface-container-low/40 transition duration-150">
                       <td className="px-6 py-4 font-bold text-on-surface">{record.date}</td>
                       <td className="px-6 py-4">

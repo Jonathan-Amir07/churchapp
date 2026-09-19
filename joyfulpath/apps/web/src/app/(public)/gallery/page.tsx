@@ -27,7 +27,7 @@ export default function GalleryPage() {
       </section>
 
       <div className="max-w-7xl mx-auto px-4 md:px-8 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-        {galleryItems.map((item, i) => (
+        {galleryItems?.map((item, i) => (
           <Card key={i} className="border border-outline-variant bg-surface-container-lowest shadow-sm overflow-hidden group cursor-pointer">
             <div className="relative h-64 overflow-hidden">
               <Image src={item.img} alt={en ? item.title : item.titleAr} fill className="object-cover transition-transform duration-500 group-hover:scale-110" sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw" />

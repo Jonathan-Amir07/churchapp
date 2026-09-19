@@ -89,7 +89,7 @@ export default function ParentReports() {
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
-              {lessonsProgress.map((p) => (
+              {lessonsProgress?.map((p) => (
                 <div key={p.id} className="space-y-2">
                   <div className="flex justify-between text-xs font-bold text-on-surface-variant">
                     <span>{p.lessons?.title || 'Bible Study'}</span>
@@ -110,7 +110,7 @@ export default function ParentReports() {
             </CardHeader>
             <CardContent className="p-0">
               <div className="divide-y divide-outline-variant/40">
-                {quizAttempts.map((attempt) => (
+                {quizAttempts?.map((attempt) => (
                   <div key={attempt.id} className="p-4 flex items-center justify-between">
                     <div>
                       <h4 className="text-sm font-bold text-on-surface">{attempt.quizzes?.title || 'Quiz'}</h4>

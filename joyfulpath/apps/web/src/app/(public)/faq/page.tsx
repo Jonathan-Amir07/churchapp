@@ -28,7 +28,7 @@ export default function FAQPage() {
       </section>
 
       <div className="max-w-3xl mx-auto px-4 md:px-8 space-y-3">
-        {faqs.map((faq, i) => (
+        {faqs?.map((faq, i) => (
           <Card key={i} className="border border-outline-variant bg-surface-container-lowest shadow-sm overflow-hidden">
             <button
               onClick={() => setOpenIdx(openIdx === i ? null : i)}

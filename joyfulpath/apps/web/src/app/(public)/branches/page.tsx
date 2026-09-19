@@ -24,7 +24,7 @@ export default function BranchesPage() {
       </section>
 
       <div className="max-w-5xl mx-auto px-4 md:px-8 grid grid-cols-1 md:grid-cols-2 gap-6">
-        {branches.map((b, i) => (
+        {branches?.map((b, i) => (
           <Card key={i} className="border border-outline-variant bg-surface-container-lowest shadow-sm">
             <CardContent className="p-6 space-y-3">
               <div className="flex items-center gap-3">

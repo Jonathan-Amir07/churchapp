@@ -5,9 +5,11 @@ export default function AdminRedemptions() {
   const [items, setItems] = useState<any[]>([]);
 
   async function load() {
-    const res = await fetch('/api/rewards/redemptions');
-    const data = await res.json();
-    setItems(data || []);
+    const res = await fetch('/api/store/redemptions/pending');
+    if (res.ok) {
+      const data = await res.json();
+      setItems(Array.isArray(data) ? data : data.data || []);
+    }
   }
 
   useEffect(() => {
@@ -15,17 +17,17 @@ export default function AdminRedemptions() {
   }, []);
 
   async function approve(id: string) {
-    await fetch(`/api/rewards/redemptions/${id}/approve`, { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ reviewerId: 'system' }) });
+    await fetch(`/api/store/redemptions/${id}/fulfill`, { method: 'PATCH', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ reviewerId: 'system' }) });
     load();
   }
 
   async function reject(id: string) {
-    await fetch(`/api/rewards/redemptions/${id}/reject`, { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ reviewerId: 'system', notes: 'Rejected by admin' }) });
+    await fetch(`/api/store/redemptions/${id}/reject`, { method: 'PATCH', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ reviewerId: 'system', notes: 'Rejected by admin' }) });
     load();
   }
 
   async function fulfill(id: string) {
-    await fetch(`/api/rewards/redemptions/${id}/fulfill`, { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ fulfillerId: 'system' }) });
+    await fetch(`/api/store/redemptions/${id}/fulfill`, { method: 'PATCH', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ fulfillerId: 'system' }) });
     load();
   }
 
@@ -33,7 +35,7 @@ export default function AdminRedemptions() {
     <div>
       <h2>Redemptions</h2>
       <div style={{ display: 'grid', gap: 8 }}>
-        {items.map((r) => (
+        {items?.map((r) => (
           <div key={r.id} style={{ border: '1px solid #ddd', padding: 8 }}>
             <div><strong>{r.rewardId}</strong> — {r.status}</div>
             <div>User: {r.userId}</div>
@@ -47,7 +49,7 @@ export default function AdminRedemptions() {
         ))}
       </div>
       <div style={{ marginTop: 12 }}>
-        <a href="/api/rewards/redemptions/export">Export Pending CSV</a>
+        <a href="/api/store/redemptions/export">Export Pending CSV</a>
       </div>
     </div>
   );

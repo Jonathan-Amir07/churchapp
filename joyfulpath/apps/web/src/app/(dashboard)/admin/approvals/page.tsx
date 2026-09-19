@@ -46,7 +46,7 @@ export default function AdminApprovalsPage() {
       });
       if (res.ok) {
         addToast(`User ${action}d successfully`, 'success');
-        setUsers((prev: any) => prev.filter((u: any) => u.id !== userId));
+        setUsers((prev: any) => prev?.filter((u: any) => u.id !== userId));
       } else {
         addToast(`Failed to ${action} user`, 'error');
       }
@@ -87,7 +87,7 @@ export default function AdminApprovalsPage() {
         </Card>
       ) : (
         <div className="space-y-4">
-          {users.map((user) => (
+          {users?.map((user) => (
             <Card key={user.id} className="border border-outline-variant bg-surface-container-lowest shadow-sm">
               <CardContent className="p-5 flex flex-col md:flex-row md:items-center justify-between gap-4">
                 <div className="flex items-center gap-4">

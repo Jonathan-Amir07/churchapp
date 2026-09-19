@@ -41,17 +41,24 @@ export default function InstructorStudents() {
     address: ''
   });
 
+  const [page, setPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const limit = 10;
+
   const fetchStudents = useCallback(async () => {
     setLoading(true);
     try {
-      const queryParams = new URLSearchParams(filters).toString();
-      // Using the NestJS endpoint. In a real app we'd proxy this or hit it directly.
+      const queryParams = new URLSearchParams({ ...filters, page: page.toString(), limit: limit.toString() }).toString();
       const res = await fetch(`/api/users?${queryParams}`);
       if (!res.ok) throw new Error('Failed to fetch');
-      const data = await res.json();
+      const json = await res.json();
       
+      const items = Array.isArray(json) ? json : json.data;
+      const totalCount = json.total || items.length;
+      setTotalPages(Math.ceil(totalCount / limit) || 1);
+
       // Map API data to component data
-      const mapped = data.map((u: any) => ({
+      const mapped = items?.map((u: any) => ({
         id: u.id,
         name: u.displayName || `${u.firstName} ${u.lastName}`,
         username: u.username,
@@ -70,7 +77,7 @@ export default function InstructorStudents() {
     } finally {
       setLoading(false);
     }
-  }, [filters, addToast]);
+  }, [filters, page, addToast]);
 
   useEffect(() => {
     fetchStudents();
@@ -86,7 +93,7 @@ export default function InstructorStudents() {
     e.preventDefault();
     if (!selectedStudent) return;
     setStudents((prev) =>
-      prev.map((s) =>
+      prev?.map((s) =>
         s.id === selectedStudent.id
           ? { ...s, totalXp: s.totalXp + xpToAdd, totalPoints: s.totalPoints + pointsToAdd }
           : s
@@ -106,7 +113,7 @@ export default function InstructorStudents() {
       header: 'Name',
       cell: (item: Student) => (
         <div className="flex flex-col">
-          <Link href={`/students/${item.id}`} className="font-bold text-primary hover:underline">
+          <Link href={`/admin/students/${item.id}`} className="font-bold text-primary hover:underline">
             {item.name}
           </Link>
           <span className="text-xs text-on-surface-variant">@{item.username}</span>
@@ -135,6 +142,12 @@ export default function InstructorStudents() {
           <p className="text-on-surface-variant text-sm max-w-2xl">Search and manage all members in the system.</p>
         </div>
         <div className="flex gap-3">
+          <Link href="/admin/students/new">
+            <Button variant="primary" className="flex items-center gap-2">
+              <span className="material-symbols-outlined text-[18px]">person_add</span>
+              Add Student
+            </Button>
+          </Link>
           <Link href="/admin/students/import">
             <Button variant="outline" className="flex items-center gap-2">
               <span className="material-symbols-outlined text-[18px]">upload_file</span>
@@ -167,6 +180,9 @@ export default function InstructorStudents() {
       <DataTable 
         data={students} 
         columns={columns} 
+        page={page}
+        totalPages={totalPages}
+        onPageChange={setPage}
       />
 
       {selectedStudent && (

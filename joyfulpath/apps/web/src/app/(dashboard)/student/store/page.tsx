@@ -1,6 +1,7 @@
 'use client';
 
 import { Card, CardContent, Button, PageTransition, HeroBanner, StaggerContainer, StaggerItem } from '@/components/ui';
+import { useNotificationStore } from '@/stores/notifications.store';
 
 import { useState, useEffect } from 'react';
 import { useTranslations, useLocale } from 'next-intl';
@@ -10,15 +11,19 @@ export default function StudentStorePage() {
   const locale = useLocale();
   const [rewards, setRewards] = useState<any[]>([]);
   const [points, setPoints] = useState(0);
+  const addToast = useNotificationStore(s => s.addToast);
 
   useEffect(() => {
     async function loadData() {
       try {
         const [rewRes, userRes] = await Promise.all([
-          fetch('/api/rewards'),
+          fetch('/api/store/rewards'),
           fetch('/api/users/me')
         ]);
-        if (rewRes.ok) setRewards(await rewRes.json());
+        if (rewRes.ok) {
+          const data = await rewRes.json();
+          setRewards(Array.isArray(data) ? data : data.data || []);
+        }
         if (userRes.ok) {
           const u = await userRes.json();
           setPoints(u.totalPoints || 0);
@@ -29,6 +34,27 @@ export default function StudentStorePage() {
     }
     loadData();
   }, []);
+
+  const handleRedeem = async (rewardId: string) => {
+    try {
+      const res = await fetch(`/api/store/redeem/${rewardId}`, { method: 'POST' });
+      if (res.ok) {
+        addToast('Reward redeemed successfully! It will be reviewed by an instructor.', 'success');
+        // Refresh points
+        const userRes = await fetch('/api/users/me');
+        if (userRes.ok) {
+          const u = await userRes.json();
+          setPoints(u.totalPoints || 0);
+        }
+      } else {
+        const data = await res.json();
+        addToast(data.message || 'Failed to redeem reward', 'error');
+      }
+    } catch (e) {
+      console.error(e);
+      addToast('Error occurred', 'error');
+    }
+  };
 
   return (
     <PageTransition className="space-y-6 max-w-5xl mx-auto">
@@ -49,7 +75,7 @@ export default function StudentStorePage() {
       </HeroBanner>
 
       <StaggerContainer className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        {rewards.map(reward => (
+        {rewards?.map(reward => (
           <StaggerItem key={reward.id}>
             <Card variant="interactive" className="border border-outline-variant bg-surface-container-lowest h-full">
               <CardContent className="p-6 text-center space-y-4">
@@ -71,7 +97,14 @@ export default function StudentStorePage() {
                   {reward.pointsCost || reward.points}
                 </div>
 
-                <Button fullWidth variant="primary">{t('redeemBtn')}</Button>
+                <Button 
+                  fullWidth 
+                  variant="primary" 
+                  disabled={points < (reward.pointsCost || reward.points)}
+                  onClick={() => handleRedeem(reward.id)}
+                >
+                  {t('redeemBtn')}
+                </Button>
               </CardContent>
             </Card>
           </StaggerItem>

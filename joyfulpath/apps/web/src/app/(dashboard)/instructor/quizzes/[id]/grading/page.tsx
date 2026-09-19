@@ -33,7 +33,7 @@ export default function QuizGradingPage() {
 
       <h2 className="text-lg font-bold mt-8 mb-4">Pending Manual Grading (Short Answers)</h2>
       <div className="space-y-4">
-        {[1, 2, 3].map(i => (
+        {[1, 2, 3]?.map(i => (
           <Card key={i} className="border border-outline-variant bg-surface-container-lowest">
             <CardContent className="p-4 space-y-3">
               <div className="flex justify-between items-center border-b border-outline-variant/50 pb-2">

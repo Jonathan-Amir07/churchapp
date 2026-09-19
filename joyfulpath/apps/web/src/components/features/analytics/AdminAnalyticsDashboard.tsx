@@ -75,7 +75,8 @@ export function AdminAnalyticsDashboard({ classId }: { classId?: string }) {
 
       const res = await fetch(`/api/analytics?${params}`);
       if (res.ok) {
-        setData(await res.json());
+        const data = await res.json();
+        setData(Array.isArray(data) ? data : data.data || []);
       }
     } catch (error) {
       console.error('Failed to fetch analytics:', error);
@@ -202,7 +203,7 @@ export function AdminAnalyticsDashboard({ classId }: { classId?: string }) {
       <Card className="p-6">
         <h2 className="text-lg font-bold text-on-surface mb-4">Top Students</h2>
         <div className="space-y-2 max-h-96 overflow-y-auto">
-          {data.topStudents.map((student, idx) => (
+          {data.topStudents?.map((student, idx) => (
             <div key={student.id} className="flex items-center justify-between p-3 bg-surface-container-lowest rounded-lg">
               <div className="flex items-center gap-3 flex-1">
                 <span className="font-bold text-lg text-secondary w-6">#{idx + 1}</span>
@@ -213,7 +214,7 @@ export function AdminAnalyticsDashboard({ classId }: { classId?: string }) {
                   </p>
                 </div>
               </div>
-              <div className="text-right">
+              <div className="text-end">
                 <p className="font-bold text-primary">{student.xp} XP</p>
                 <p className="text-sm text-on-surface-variant">{student.points} Points</p>
               </div>

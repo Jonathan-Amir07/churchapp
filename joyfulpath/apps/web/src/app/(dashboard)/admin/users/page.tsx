@@ -48,7 +48,7 @@ export default function AdminUsers() {
       const res = await fetch('/api/users');
       if (res.ok) {
         const data = await res.json();
-        setUsers(data);
+        setUsers(Array.isArray(data) ? data : (data?.data || []));
       }
     } catch (e) {
       console.error(e);
@@ -66,7 +66,7 @@ export default function AdminUsers() {
   }, []);
 
   const filteredUsers = useMemo(() => {
-    return users.filter((user) => {
+    return users?.filter((user) => {
       if (filter !== 'all' && user.role !== filter) return false;
 
       if (searchQuery) {
@@ -129,7 +129,7 @@ export default function AdminUsers() {
       });
       if (!res.ok) throw new Error();
       
-      setUsers(prev => prev.map(u => u.id === editingUserId ? { ...u, name, usernameOrEmail, role } : u));
+      setUsers(prev => prev?.map(u => u.id === editingUserId ? { ...u, name, usernameOrEmail, role } : u));
       setIsOpenEdit(false);
       addToast('User updated successfully', 'success');
     } catch (e) {
@@ -146,7 +146,7 @@ export default function AdminUsers() {
       });
       if (!res.ok) throw new Error();
       
-      setUsers(prev => prev.map(u => u.id === id ? { ...u, isActive: !currentStatus } : u));
+      setUsers(prev => prev?.map(u => u.id === id ? { ...u, isActive: !currentStatus } : u));
       addToast(`User ${!currentStatus ? 'activated' : 'deactivated'} successfully`, 'success');
     } catch (e) {
       addToast('Failed to change status', 'error');
@@ -182,7 +182,7 @@ export default function AdminUsers() {
       try {
         const res = await fetch(`/api/users/${id}`, { method: 'DELETE' });
         if (!res.ok) throw new Error();
-        setUsers((prev) => prev.filter((u) => u.id !== id));
+        setUsers((prev) => prev?.filter((u) => u.id !== id));
         addToast(tCommon('success') || 'User deleted successfully', 'success');
       } catch (e) {
         addToast('Failed to delete user', 'error');
@@ -263,7 +263,7 @@ export default function AdminUsers() {
       {/* Filters & Search Bar */}
       <div className="flex flex-col sm:flex-row gap-4 items-center justify-between">
         <div className="flex gap-2 p-1 bg-surface-container-low rounded-2xl border border-outline-variant/50 w-fit">
-          {(['all', 'admin', 'instructor', 'student', 'parent'] as const).map((r) => (
+          {(['all', 'admin', 'instructor', 'student', 'parent'] as const)?.map((r) => (
             <button
               key={r}
               onClick={() => setFilter(r)}
@@ -315,7 +315,7 @@ export default function AdminUsers() {
                     </td>
                   </tr>
                 ) : (
-                  filteredUsers.map((user) => (
+                  filteredUsers?.map((user) => (
                     <tr key={user.id} className="hover:bg-surface-container-low/40 transition duration-150">
                       <td className="px-6 py-4 font-black text-on-surface">{user.name}</td>
                       <td className="px-6 py-4 text-on-surface-variant">{user.usernameOrEmail}</td>
@@ -501,8 +501,8 @@ export default function AdminUsers() {
                 {importSummary.errors.length > 0 && (
                   <div className="bg-surface-container-lowest border border-error/20 p-4 rounded-xl max-h-40 overflow-y-auto">
                     <h5 className="text-xs font-bold text-error mb-2">Errors:</h5>
-                    <ul className="text-xs text-on-surface-variant space-y-1 list-disc pl-4">
-                      {importSummary.errors.map((err, i) => <li key={i}>{err}</li>)}
+                    <ul className="text-xs text-on-surface-variant space-y-1 list-disc ps-4">
+                      {importSummary.errors?.map((err, i) => <li key={i}>{err}</li>)}
                     </ul>
                   </div>
                 )}
@@ -523,7 +523,7 @@ export default function AdminUsers() {
         <div className="p-8">
           <h1 className="text-2xl font-bold mb-6 text-center text-black">Student Login Cards</h1>
           <div className="grid grid-cols-2 gap-8">
-            {filteredUsers.filter(u => u.role === 'student').map((user) => (
+            {filteredUsers?.filter(u => u.role === 'student')?.map((user) => (
               <div key={user.id} className="border-2 border-black rounded-xl p-6 break-inside-avoid shadow-none">
                 <div className="flex items-center gap-2 mb-4 border-b border-black pb-4">
                   <span className="material-symbols-outlined text-3xl">church</span>
@@ -546,7 +546,7 @@ export default function AdminUsers() {
               </div>
             ))}
           </div>
-          {filteredUsers.filter(u => u.role === 'student').length === 0 && (
+          {filteredUsers?.filter(u => u.role === 'student').length === 0 && (
             <p className="text-center text-gray-500 mt-10">No student users found to print.</p>
           )}
         </div>

@@ -53,7 +53,7 @@ export default function TakeQuizPage() {
       </div>
 
       <div className="flex gap-2">
-        {questions.map((_, idx) => (
+        {questions?.map((_, idx) => (
           <div key={idx} className={`flex-1 h-2 rounded-full ${idx <= currentQuestion ? 'bg-primary' : 'bg-surface-container-high'}`} />
         ))}
       </div>

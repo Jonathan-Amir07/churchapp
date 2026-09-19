@@ -40,13 +40,12 @@ export function Topbar() {
   };
 
   const handleLogout = async () => {
-    try {
-      await fetch('/api/auth/logout', { method: 'POST' });
-    } catch(e) {}
+    // We use stateless JWTs, so we just clear the client-side session
     
-    // Clear storage
+    // Clear storage and cookies
     localStorage.clear();
     sessionStorage.clear();
+    document.cookie = 'ACCESS_TOKEN=; path=/; max-age=0; expires=Thu, 01 Jan 1970 00:00:00 GMT';
     
     window.location.replace('/login');
   };
@@ -165,7 +164,7 @@ export function Topbar() {
       {/* Mobile Verse Ticker (visible only on mobile) */}
       <div className="md:hidden bg-secondary/10 border-b border-secondary/20 py-1.5 px-4 overflow-hidden whitespace-nowrap text-[10px] font-bold text-secondary-container">
         <div className="inline-block animate-[shimmer_15s_linear_infinite] w-full text-center">
-          <span className="material-symbols-outlined text-[10px] align-middle mr-1">auto_awesome</span>
+          <span className="material-symbols-outlined text-[10px] align-middle me-1">auto_awesome</span>
           آية اليوم: &quot;فَرَحًا أَفْرَحُ بِالرَّبِّ، تَبْتَهِجُ نَفْسِي بِإِلهِي...&quot; (إشعياء 61: 10)
 
         </div>

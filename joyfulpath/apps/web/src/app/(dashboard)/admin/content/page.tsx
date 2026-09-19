@@ -15,7 +15,7 @@ export default function AdminContentManagement() {
     try {
       const res = await fetch('/api/reading-plans');
       if (res.ok) {
-        setReadingPlans(await res.json());
+        setReadingPlans((await res.json())?.data || await res.json() || []);
       }
     } catch (e) {
       console.error(e);
@@ -118,7 +118,7 @@ export default function AdminContentManagement() {
             </div>
 
             <div className="p-6 overflow-y-auto space-y-4 flex-1">
-              {readingPlans.map(plan => (
+              {readingPlans?.map(plan => (
                 <div key={plan.id} className="flex justify-between items-center p-4 border border-outline-variant rounded-xl">
                   <div>
                     <h3 className="font-bold">{plan.title}</h3>

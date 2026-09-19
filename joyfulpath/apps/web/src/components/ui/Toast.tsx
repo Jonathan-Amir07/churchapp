@@ -10,7 +10,7 @@ export function ToastContainer() {
   return (
     <div className="fixed bottom-5 end-5 z-[100] flex flex-col gap-3 max-w-sm w-full pointer-events-none p-4 md:p-0">
       <AnimatePresence>
-        {toasts.map((toast) => (
+        {toasts?.map((toast) => (
           <ToastCard key={toast.id} toast={toast} onClose={() => removeToast(toast.id)} />
         ))}
       </AnimatePresence>

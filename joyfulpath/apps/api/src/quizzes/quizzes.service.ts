@@ -17,6 +17,22 @@ export class QuizzesService {
     private gamificationService: GamificationService,
   ) {}
 
+  private async verifyInstructorClassAccess(classId: string, userId: string) {
+    const cls = await this.prisma.class.findUnique({
+      where: { id: classId },
+      include: { members: true },
+    });
+    if (!cls) throw new NotFoundException('Class not found');
+    const isInstructor =
+      cls.createdBy === userId ||
+      cls.members.some((m) => m.userId === userId && m.role === 'instructor');
+    if (!isInstructor) {
+      throw new ForbiddenException(
+        'You do not have permission to manage this class',
+      );
+    }
+  }
+
   async createQuiz(createQuizDto: CreateQuizDto, userId: string, role: string) {
     if (role !== 'instructor' && role !== 'admin') {
       throw new ForbiddenException(
@@ -25,14 +41,7 @@ export class QuizzesService {
     }
 
     if (role === 'instructor') {
-      const classRecord = await this.prisma.class.findUnique({
-        where: { id: createQuizDto.classId },
-      });
-      if (!classRecord || classRecord.createdBy !== userId) {
-        throw new ForbiddenException(
-          'You can only create quizzes for your own classes',
-        );
-      }
+      await this.verifyInstructorClassAccess(createQuizDto.classId, userId);
     }
 
     return this.prisma.quiz.create({
@@ -52,8 +61,8 @@ export class QuizzesService {
     const quiz = await this.prisma.quiz.findUnique({ where: { id: quizId } });
     if (!quiz) throw new NotFoundException('Quiz not found');
 
-    if (role === 'instructor' && quiz.createdBy !== userId) {
-      throw new ForbiddenException('You can only modify your own quizzes');
+    if (role === 'instructor') {
+      await this.verifyInstructorClassAccess(quiz.classId, userId);
     }
 
     return this.prisma.question.create({
@@ -75,6 +84,55 @@ export class QuizzesService {
     });
   }
 
+  async findAllForUser(userId: string, role: string) {
+    if (role === 'admin') {
+      return this.prisma.quiz.findMany({
+        where: { deletedAt: null },
+        include: {
+          questions: { include: { answers: true } },
+          attempts: true,
+        },
+      });
+    }
+
+    const classIds = (
+      await this.prisma.classMember.findMany({
+        where: { userId },
+        select: { classId: true },
+      })
+    ).map((m) => m.classId);
+
+    if (role === 'instructor') {
+      const createdClasses = (
+        await this.prisma.class.findMany({
+          where: { createdBy: userId },
+          select: { id: true },
+        })
+      ).map((c) => c.id);
+      classIds.push(...createdClasses);
+    }
+
+    const quizzes = await this.prisma.quiz.findMany({
+      where: { classId: { in: classIds }, deletedAt: null },
+      include: {
+        questions: { include: { answers: true } },
+        attempts: role === 'student' ? { where: { studentId: userId } } : true,
+      },
+    });
+
+    if (role === 'student') {
+      quizzes.forEach((quiz) => {
+        quiz.questions.forEach((q) => {
+          q.answers.forEach((a: any) => {
+            delete a.isCorrect;
+          });
+        });
+      });
+    }
+
+    return quizzes;
+  }
+
   async findAllForClass(classId: string, userId: string, role: string) {
     if (role === 'student') {
       const membership = await this.prisma.classMember.findUnique({
@@ -83,12 +141,7 @@ export class QuizzesService {
       if (!membership)
         throw new ForbiddenException('You are not a member of this class');
     } else if (role === 'instructor') {
-      const classRecord = await this.prisma.class.findUnique({
-        where: { id: classId },
-      });
-      if (!classRecord || classRecord.createdBy !== userId) {
-        throw new ForbiddenException('You do not own this class');
-      }
+      await this.verifyInstructorClassAccess(classId, userId);
     }
 
     const quizzes = await this.prisma.quiz.findMany({
@@ -164,65 +217,69 @@ export class QuizzesService {
     submitDto: SubmitAttemptDto,
     userId: string,
   ) {
-    const { updatedAttempt, attempt, xpAwarded, pointsAwarded } = await this.prisma.$transaction(async (tx) => {
-      const attempt = await tx.quizAttempt.findUnique({
-        where: { id: attemptId },
-        include: {
-          quiz: { include: { questions: { include: { answers: true } } } },
-        },
-      });
+    const { updatedAttempt, attempt, xpAwarded, pointsAwarded } =
+      await this.prisma.$transaction(async (tx) => {
+        const attempt = await tx.quizAttempt.findUnique({
+          where: { id: attemptId },
+          include: {
+            quiz: { include: { questions: { include: { answers: true } } } },
+          },
+        });
 
-      if (!attempt || attempt.studentId !== userId) {
-        throw new NotFoundException('Attempt not found');
-      }
+        if (!attempt || attempt.studentId !== userId) {
+          throw new NotFoundException('Attempt not found');
+        }
 
-      if (attempt.answersSnapshot !== '{}') {
-        throw new BadRequestException('Attempt already submitted');
-      }
+        if (attempt.answersSnapshot !== '{}') {
+          throw new BadRequestException('Attempt already submitted');
+        }
 
-      let score = 0;
-      let totalPossible = 0;
-      const { questions } = attempt.quiz;
+        let score = 0;
+        let totalPossible = 0;
+        const { questions } = attempt.quiz;
 
-      questions.forEach((question) => {
-        totalPossible += question.pointsValue;
-        const studentAnswer = submitDto.answers.find(
-          (a) => a.questionId === question.id,
+        questions.forEach((question) => {
+          totalPossible += question.pointsValue;
+          const studentAnswer = submitDto.answers.find(
+            (a) => a.questionId === question.id,
+          );
+
+          if (studentAnswer && question.questionType !== 'SHORT') {
+            const correctAns = question.answers.find((a) => a.isCorrect);
+            if (correctAns && correctAns.id === studentAnswer.answer) {
+              score += question.pointsValue;
+            }
+          }
+        });
+
+        const percentage =
+          totalPossible > 0 ? (score / totalPossible) * 100 : 0;
+        const passed = percentage >= attempt.quiz.passingScore;
+
+        // Scale XP and Points based on percentage
+        const xpAwarded = Math.round(
+          (percentage / 100) * attempt.quiz.xpReward,
+        );
+        const pointsAwarded = Math.round(
+          (percentage / 100) * attempt.quiz.pointsReward,
         );
 
-        if (studentAnswer && question.questionType !== 'SHORT') {
-          const correctAns = question.answers.find((a) => a.isCorrect);
-          if (correctAns && correctAns.id === studentAnswer.answer) {
-            score += question.pointsValue;
-          }
-        }
+        const updatedAttempt = await tx.quizAttempt.update({
+          where: { id: attemptId },
+          data: {
+            score,
+            totalPossible,
+            percentage,
+            passed,
+            answersSnapshot: JSON.stringify(submitDto.answers),
+            xpAwarded,
+            pointsAwarded,
+            completedAt: new Date(),
+          },
+        });
+
+        return { updatedAttempt, attempt, xpAwarded, pointsAwarded };
       });
-
-      const percentage = totalPossible > 0 ? (score / totalPossible) * 100 : 0;
-      const passed = percentage >= attempt.quiz.passingScore;
-
-      // Scale XP and Points based on percentage
-      const xpAwarded = Math.round((percentage / 100) * attempt.quiz.xpReward);
-      const pointsAwarded = Math.round(
-        (percentage / 100) * attempt.quiz.pointsReward,
-      );
-
-      const updatedAttempt = await tx.quizAttempt.update({
-        where: { id: attemptId },
-        data: {
-          score,
-          totalPossible,
-          percentage,
-          passed,
-          answersSnapshot: JSON.stringify(submitDto.answers),
-          xpAwarded,
-          pointsAwarded,
-          completedAt: new Date(),
-        },
-      });
-
-      return { updatedAttempt, attempt, xpAwarded, pointsAwarded };
-    });
 
     await this.gamificationService.awardActivity(
       userId,

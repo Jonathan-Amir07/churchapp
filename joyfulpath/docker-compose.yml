@@ -1,0 +1,24 @@
+version: '3.8'
+services:
+  db:
+    image: postgres:14-alpine
+    container_name: joyfulpath-postgres
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: joyfulpath
+    ports:
+      - '5432:5432'
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    restart: unless-stopped
+
+  redis:
+    image: redis:7-alpine
+    container_name: joyfulpath-redis
+    ports:
+      - '6379:6379'
+    restart: unless-stopped
+
+volumes:
+  postgres-data:

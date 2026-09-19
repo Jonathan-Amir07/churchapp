@@ -17,8 +17,8 @@ export default function StudentPrayers() {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   // Filter lists
-  const publicPrayers = prayers.filter((p) => !p.isPrivate);
-  const myPrayers = prayers.filter((p) => p.studentName === 'Jonathan'); // Jonathan is the mock student user
+  const publicPrayers = prayers?.filter((p) => !p.isPrivate);
+  const myPrayers = prayers?.filter((p) => p.studentName === 'Jonathan'); // Jonathan is the mock student user
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -168,14 +168,14 @@ export default function StudentPrayers() {
           </div>
 
           {/* List display */}
-          <div className="space-y-4 max-h-[600px] overflow-y-auto pr-1">
+          <div className="space-y-4 max-h-[600px] overflow-y-auto pe-1">
             {(activeTab === 'all' ? publicPrayers : myPrayers).length === 0 ? (
               <div className="p-8 text-center bg-surface-container-lowest border border-outline-variant rounded-2xl">
                 <span className="material-symbols-outlined text-[48px] text-outline mb-2">sentiment_satisfied</span>
                 <p className="text-sm font-bold text-on-surface-variant">No request matching this category yet.</p>
               </div>
             ) : (
-              (activeTab === 'all' ? publicPrayers : myPrayers).map((p) => (
+              (activeTab === 'all' ? publicPrayers : myPrayers)?.map((p) => (
                 <Card key={p.id} className="border border-outline-variant bg-surface-container-lowest shadow-sm hover:shadow-md transition-all">
                   <CardContent className="p-5 space-y-4">
                     <div className="flex justify-between items-start gap-4">
@@ -187,7 +187,7 @@ export default function StudentPrayers() {
                         </div>
                         <div>
                           <h4 className="text-sm font-extrabold text-on-surface">
-                            {p.studentName} {p.isPrivate && <span className="text-[10px] bg-outline-variant text-outline px-1.5 py-0.5 rounded ml-1 font-normal">Private</span>}
+                            {p.studentName} {p.isPrivate && <span className="text-[10px] bg-outline-variant text-outline px-1.5 py-0.5 rounded ms-1 font-normal">Private</span>}
                           </h4>
                           <span className="text-[10px] text-on-surface-variant">
                             {new Date(p.createdAt).toLocaleDateString()}

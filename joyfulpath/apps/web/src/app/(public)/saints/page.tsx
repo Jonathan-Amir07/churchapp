@@ -28,7 +28,7 @@ export default function SaintsPage() {
       </section>
 
       <div className="max-w-6xl mx-auto px-4 md:px-8 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-        {saints.map((saint, i) => (
+        {saints?.map((saint, i) => (
           <Card key={i} className="border border-outline-variant bg-surface-container-lowest shadow-sm hover:translate-y-[-4px] transition-transform duration-200 cursor-pointer">
             <CardContent className="p-6 space-y-4 text-center">
               <div className={`w-16 h-16 mx-auto rounded-full ${saint.color} flex items-center justify-center`}>

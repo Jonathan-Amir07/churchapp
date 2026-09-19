@@ -17,6 +17,22 @@ export class TasksService {
     private gamificationService: GamificationService,
   ) {}
 
+  private async verifyInstructorClassAccess(classId: string, userId: string) {
+    const cls = await this.prisma.class.findUnique({
+      where: { id: classId },
+      include: { members: true },
+    });
+    if (!cls) throw new NotFoundException('Class not found');
+    const isInstructor =
+      cls.createdBy === userId ||
+      cls.members.some((m) => m.userId === userId && m.role === 'instructor');
+    if (!isInstructor) {
+      throw new ForbiddenException(
+        'You do not have permission to manage this class',
+      );
+    }
+  }
+
   async create(createTaskDto: CreateTaskDto, userId: string, role: string) {
     if (role !== 'instructor' && role !== 'admin') {
       throw new ForbiddenException(
@@ -25,14 +41,7 @@ export class TasksService {
     }
 
     if (role === 'instructor') {
-      const classRecord = await this.prisma.class.findUnique({
-        where: { id: createTaskDto.classId },
-      });
-      if (!classRecord || classRecord.createdBy !== userId) {
-        throw new ForbiddenException(
-          'You can only create tasks for your own classes',
-        );
-      }
+      await this.verifyInstructorClassAccess(createTaskDto.classId, userId);
     }
 
     // Auto-create a notification logic could go here
@@ -45,21 +54,167 @@ export class TasksService {
     });
   }
 
-  async findAllForClass(classId: string, userId: string, role: string) {
-    if (role === 'student') {
-      const membership = await this.prisma.classMember.findUnique({
-        where: { classId_userId: { classId, userId } },
+  async findAllForUser(userId: string, role: string) {
+    if (role === 'admin') {
+      return this.prisma.task.findMany({
+        where: { deletedAt: null },
+        orderBy: { dueDate: 'asc' },
+        include: {
+          lesson: { select: { title: true } },
+          submissions: true,
+        },
       });
-      if (!membership) {
-        throw new ForbiddenException('You are not a member of this class');
+    }
+
+    const classIds = (
+      await this.prisma.classMember.findMany({
+        where: { userId },
+        select: { classId: true },
+      })
+    ).map((m) => m.classId);
+
+    if (role === 'instructor') {
+      const createdClasses = (
+        await this.prisma.class.findMany({
+          where: { createdBy: userId },
+          select: { id: true },
+        })
+      ).map((c) => c.id);
+      classIds.push(...createdClasses);
+    }
+
+    let childrenIds: string[] = [];
+    if (role === 'parent') {
+      const parent = await this.prisma.user.findUnique({
+        where: { id: userId },
+      });
+      if (parent?.familyId) {
+        const children = await this.prisma.user.findMany({
+          where: { familyId: parent.familyId, role: 'student' },
+        });
+        childrenIds = children.map((c) => c.id);
+        const childClassMembers = await this.prisma.classMember.findMany({
+          where: { userId: { in: childrenIds } },
+        });
+        classIds.push(...childClassMembers.map((c) => c.classId));
+      }
+    }
+
+    return this.prisma.task.findMany({
+      where: { classId: { in: classIds }, deletedAt: null },
+      orderBy: { dueDate: 'asc' },
+      include: {
+        lesson: { select: { title: true } },
+        submissions:
+          role === 'student'
+            ? { where: { studentId: userId } }
+            : role === 'parent'
+              ? { where: { studentId: { in: childrenIds } } }
+              : true,
+      },
+    });
+  }
+
+  async findAllSubmissions(userId: string, role: string) {
+    if (role === 'admin') {
+      const submissions = await this.prisma.taskSubmission.findMany({
+        orderBy: { submittedAt: 'desc' },
+        include: {
+          task: { select: { title: true, pointsReward: true } },
+          student: { select: { firstName: true, lastName: true } },
+        },
+      });
+      return submissions.map((s) => ({
+        id: s.id,
+        taskId: s.taskId,
+        studentName: `${s.student.firstName} ${s.student.lastName}`,
+        taskTitleEn: s.task.title,
+        taskTitleAr: s.task.title,
+        submissionText: s.content || '',
+        submittedAt: s.submittedAt,
+        points: s.task.pointsReward || 30,
+        status: s.status,
+        feedbackEn: s.feedback,
+        feedbackAr: s.feedback,
+        attachmentUrl: s.attachmentUrl,
+      }));
+    }
+
+    const classIds = (
+      await this.prisma.classMember.findMany({
+        where: { userId },
+        select: { classId: true },
+      })
+    ).map((m) => m.classId);
+
+    if (role === 'instructor') {
+      const createdClasses = (
+        await this.prisma.class.findMany({
+          where: { createdBy: userId },
+          select: { id: true },
+        })
+      ).map((c) => c.id);
+      classIds.push(...createdClasses);
+    }
+
+    const submissions = await this.prisma.taskSubmission.findMany({
+      where: { task: { classId: { in: classIds } } },
+      orderBy: { submittedAt: 'desc' },
+      include: {
+        task: { select: { title: true, pointsReward: true } },
+        student: { select: { firstName: true, lastName: true } },
+      },
+    });
+
+    return submissions.map((s) => ({
+      id: s.id,
+      taskId: s.taskId,
+      studentName: `${s.student.firstName} ${s.student.lastName}`,
+      taskTitleEn: s.task.title,
+      taskTitleAr: s.task.title,
+      submissionText: s.content || '',
+      submittedAt: s.submittedAt,
+      points: s.task.pointsReward || 30,
+      status: s.status,
+      feedbackEn: s.feedback,
+      feedbackAr: s.feedback,
+      attachmentUrl: s.attachmentUrl,
+    }));
+  }
+
+  async findAllForClass(classId: string, userId: string, role: string) {
+    let childrenIds: string[] = [];
+    if (role === 'student' || role === 'parent') {
+      if (role === 'student') {
+        const membership = await this.prisma.classMember.findUnique({
+          where: { classId_userId: { classId, userId } },
+        });
+        if (!membership) {
+          throw new ForbiddenException('You are not a member of this class');
+        }
+      } else if (role === 'parent') {
+        const parent = await this.prisma.user.findUnique({
+          where: { id: userId },
+        });
+        if (parent?.familyId) {
+          const children = await this.prisma.user.findMany({
+            where: { familyId: parent.familyId, role: 'student' },
+          });
+          childrenIds = children.map((c) => c.id);
+          const childMemberships = await this.prisma.classMember.findMany({
+            where: { classId, userId: { in: childrenIds } },
+          });
+          if (childMemberships.length === 0) {
+            throw new ForbiddenException(
+              'Your children are not members of this class',
+            );
+          }
+        } else {
+          throw new ForbiddenException('No family associated');
+        }
       }
     } else if (role === 'instructor') {
-      const classRecord = await this.prisma.class.findUnique({
-        where: { id: classId },
-      });
-      if (!classRecord || classRecord.createdBy !== userId) {
-        throw new ForbiddenException('You do not own this class');
-      }
+      await this.verifyInstructorClassAccess(classId, userId);
     }
 
     return this.prisma.task.findMany({
@@ -68,7 +223,11 @@ export class TasksService {
       include: {
         lesson: { select: { title: true } },
         submissions:
-          role === 'student' ? { where: { studentId: userId } } : true,
+          role === 'student'
+            ? { where: { studentId: userId } }
+            : role === 'parent'
+              ? { where: { studentId: { in: childrenIds } } }
+              : true,
       },
     });
   }
@@ -101,9 +260,13 @@ export class TasksService {
     userId: string,
     role: string,
   ) {
+    if (role === 'student' || role === 'parent') {
+      throw new ForbiddenException('Only instructors or admins can edit tasks');
+    }
+
     const task = await this.findOne(id, userId, role);
-    if (role === 'instructor' && task.createdBy !== userId) {
-      throw new ForbiddenException('You can only edit your own tasks');
+    if (role === 'instructor') {
+      await this.verifyInstructorClassAccess(task.classId, userId);
     }
 
     return this.prisma.task.update({
@@ -113,9 +276,15 @@ export class TasksService {
   }
 
   async remove(id: string, userId: string, role: string) {
+    if (role === 'student' || role === 'parent') {
+      throw new ForbiddenException(
+        'Only instructors or admins can delete tasks',
+      );
+    }
+
     const task = await this.findOne(id, userId, role);
-    if (role === 'instructor' && task.createdBy !== userId) {
-      throw new ForbiddenException('You can only delete your own tasks');
+    if (role === 'instructor') {
+      await this.verifyInstructorClassAccess(task.classId, userId);
     }
 
     return this.prisma.task.update({
@@ -186,14 +355,7 @@ export class TasksService {
     if (!submission) throw new NotFoundException('Submission not found');
 
     if (role === 'instructor') {
-      const classRecord = await this.prisma.class.findUnique({
-        where: { id: submission.task.classId },
-      });
-      if (!classRecord || classRecord.createdBy !== userId) {
-        throw new ForbiddenException(
-          'You can only review tasks for your own class',
-        );
-      }
+      await this.verifyInstructorClassAccess(submission.task.classId, userId);
     }
 
     const updatedSubmission = await this.prisma.taskSubmission.update({
@@ -217,6 +379,61 @@ export class TasksService {
         reviewDto.pointsAwarded || 0,
       );
       await this.gamificationService.processXpGain(submission.studentId);
+    }
+
+    // Notifications
+    const student = await this.prisma.user.findUnique({
+      where: { id: submission.studentId },
+      include: { family: true },
+    });
+
+    if (student) {
+      const payload = JSON.stringify({
+        title: 'تقييم مهمة',
+        message: `تم تقييم مهمة ${submission.task.title} الخاصة بك. الحالة: ${reviewDto.status === 'accepted' ? 'مقبول' : 'مرفوض'}. ${reviewDto.pointsAwarded ? `حصلت على ${reviewDto.pointsAwarded} نقطة!` : ''}`,
+        taskId: submission.taskId,
+      });
+
+      // Notify student
+      await this.prisma.notification.create({
+        data: {
+          userId: student.id,
+          channel: 'in-app',
+          type: 'task_reviewed',
+          payload,
+        },
+      });
+
+      // Notify parents
+      if (student.family) {
+        const parentPayload = JSON.stringify({
+          title: 'تقييم مهمة',
+          message: `تم تقييم مهمة ${submission.task.title} الخاصة بـ ${student.displayName}.`,
+          taskId: submission.taskId,
+          studentId: student.id,
+        });
+
+        if (student.family.fatherId) {
+          await this.prisma.notification.create({
+            data: {
+              userId: student.family.fatherId,
+              channel: 'in-app',
+              type: 'task_reviewed',
+              payload: parentPayload,
+            },
+          });
+        }
+        if (student.family.motherId) {
+          await this.prisma.notification.create({
+            data: {
+              userId: student.family.motherId,
+              channel: 'in-app',
+              type: 'task_reviewed',
+              payload: parentPayload,
+            },
+          });
+        }
+      }
     }
 
     return updatedSubmission;

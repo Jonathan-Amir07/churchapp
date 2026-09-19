@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  BadRequestException,
+} from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { GamificationService } from '../gamification/gamification.service';
 
@@ -17,7 +21,7 @@ export class GamesService {
         startedAt: new Date(),
         status: 'active',
         state: '{}',
-      }
+      },
     });
 
     const progress = await this.prisma.gameProgress.create({
@@ -26,15 +30,20 @@ export class GamesService {
         userId,
         checkpoint: '{}',
         score: 0,
-      }
+      },
     });
 
     return { session, progress };
   }
 
-  async updateProgress(sessionId: string, userId: string, score: number, checkpoint: string) {
+  async updateProgress(
+    sessionId: string,
+    userId: string,
+    score: number,
+    checkpoint: string,
+  ) {
     const progress = await this.prisma.gameProgress.findFirst({
-      where: { sessionId, userId }
+      where: { sessionId, userId },
     });
 
     if (!progress) throw new NotFoundException('Game progress not found');
@@ -46,24 +55,29 @@ export class GamesService {
 
     return this.prisma.gameProgress.update({
       where: { id: progress.id },
-      data: { score, checkpoint }
+      data: { score, checkpoint },
     });
   }
 
   async endSession(sessionId: string, userId: string, finalScore: number) {
     const session = await this.prisma.gameSession.findUnique({
-      where: { id: sessionId }
+      where: { id: sessionId },
     });
-    
+
     if (!session || session.status !== 'active') {
       throw new NotFoundException('Active game session not found');
     }
 
-    const progress = await this.updateProgress(sessionId, userId, finalScore, '{}');
+    const progress = await this.updateProgress(
+      sessionId,
+      userId,
+      finalScore,
+      '{}',
+    );
 
     await this.prisma.gameSession.update({
       where: { id: sessionId },
-      data: { status: 'completed', endedAt: new Date(), score: finalScore }
+      data: { status: 'completed', endedAt: new Date(), score: finalScore },
     });
 
     // Award XP based on final score idempotently tied to the session

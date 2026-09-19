@@ -158,7 +158,7 @@ export default function LandingPage() {
       {/* Weekly Verse (آية الأسبوع) */}
       <section className="max-w-4xl mx-auto px-4 relative z-20 -mt-16">
         <div className="bg-surface-container-lowest rounded-3xl p-8 md:p-12 shadow-elevated border-2 border-secondary/30 relative overflow-hidden text-center">
-          <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-secondary to-transparent" />
+          <div className="absolute top-0 start-0 end-0 h-1 bg-gradient-to-r from-transparent via-secondary to-transparent" />
           <div className="absolute inset-0 bg-coptic-pattern opacity-5 pointer-events-none" />
           
           <h3 className="text-secondary-container font-black tracking-widest uppercase text-sm mb-6 flex items-center justify-center gap-2">
@@ -209,7 +209,7 @@ export default function LandingPage() {
         <div className="absolute inset-0 bg-coptic-pattern opacity-10 mix-blend-overlay pointer-events-none" />
         <div className="max-w-7xl mx-auto px-4 md:px-8 relative z-10">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
-            {statistics.map((stat, idx) => (
+            {statistics?.map((stat, idx) => (
               <div key={idx} className="flex flex-col items-center justify-center text-center space-y-2">
                 <span className="material-symbols-outlined text-[40px] text-secondary/80">{stat.icon}</span>
                 <span className="text-3xl md:text-5xl font-black">{stat.value}</span>
@@ -268,7 +268,7 @@ export default function LandingPage() {
             </h3>
             
             <div className="space-y-4">
-              {announcements.map((ann, idx) => (
+              {announcements?.map((ann, idx) => (
                 <div key={idx} className="bg-surface-container-lowest p-5 rounded-2xl border border-outline-variant shadow-sm flex gap-4 hover:border-primary/50 transition-colors">
                   <div className="flex flex-col items-center justify-center w-14 h-14 shrink-0 rounded-xl bg-surface-container-low border border-outline-variant/60">
                     <span className="text-xs font-black text-primary">{ann.date.split(' ')[0]}</span>
@@ -302,7 +302,7 @@ export default function LandingPage() {
           viewport={{ once: true }}
           className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
         >
-          {features.map((feat, idx) => (
+          {features?.map((feat, idx) => (
             <motion.div key={idx} variants={itemVariants}>
               <Card className="h-full border border-outline-variant bg-surface-container-lowest shadow-sm hover:shadow-md hover:border-primary/30 transition-all duration-200">
                 <CardContent className="p-8 text-start space-y-4">
@@ -333,9 +333,9 @@ export default function LandingPage() {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {upcomingEvents.map((ev, idx) => (
+            {upcomingEvents?.map((ev, idx) => (
               <Card key={idx} className="border border-outline-variant bg-surface-container-lowest shadow-sm overflow-hidden text-start relative group hover:-translate-y-1 transition-transform duration-300">
-                <div className="absolute top-0 left-0 right-0 h-1 bg-secondary group-hover:h-2 transition-all" />
+                <div className="absolute top-0 start-0 end-0 h-1 bg-secondary group-hover:h-2 transition-all" />
                 <CardContent className="p-6 pt-8 space-y-4">
                   <div className="flex justify-between items-center">
                     <span className="text-[10px] uppercase font-black px-2 py-0.5 rounded bg-primary/10 text-primary border border-primary/20">{ev.type}</span>
@@ -365,7 +365,7 @@ export default function LandingPage() {
         </div>
         
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
-          {galleryImages.map((img, idx) => (
+          {galleryImages?.map((img, idx) => (
             <div key={idx} className="aspect-square rounded-2xl overflow-hidden bg-surface-container-high relative group">
               <Image 
                 src={img.src} 
@@ -392,7 +392,7 @@ export default function LandingPage() {
         </h2>
         
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-          {testimonials.map((t, idx) => (
+          {testimonials?.map((t, idx) => (
             <div key={idx} className="bg-surface-container-lowest p-8 rounded-3xl shadow-sm border border-outline-variant text-start relative">
               <span className="material-symbols-outlined absolute top-4 end-4 text-[48px] text-primary/10">format_quote</span>
               <p className="text-base md:text-lg italic font-medium text-on-surface-variant leading-relaxed relative z-10 mb-6">
@@ -422,7 +422,7 @@ export default function LandingPage() {
           </div>
 
           <div className="space-y-4">
-            {faqs.map((faq, idx) => (
+            {faqs?.map((faq, idx) => (
               <div key={idx} className="bg-surface-container-lowest border border-outline-variant rounded-2xl overflow-hidden transition-all duration-200">
                 <button 
                   onClick={() => toggleFaq(idx)}

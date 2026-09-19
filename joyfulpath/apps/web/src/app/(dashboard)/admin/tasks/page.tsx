@@ -73,7 +73,7 @@ export default function InstructorTasks() {
         const res = await fetch('/api/classes');
         if (res.ok) {
           const data = await res.json();
-          setClasses(data);
+          setClasses(Array.isArray([]) ? [] : (Array.isArray(data) ? data : data?.data || []));
           if (data.length > 0) setNewTaskClassId(data[0].id);
         }
       } catch (e) {}
@@ -88,7 +88,7 @@ export default function InstructorTasks() {
   const filteredSubmissions = useMemo(() => {
     if (!searchQuery) return submissions;
     const q = searchQuery.toLowerCase();
-    return submissions.filter((sub) =>
+    return submissions?.filter((sub) =>
       sub.studentName.toLowerCase().includes(q) ||
       sub.taskTitleEn.toLowerCase().includes(q) ||
       sub.taskTitleAr.toLowerCase().includes(q) ||
@@ -104,7 +104,7 @@ export default function InstructorTasks() {
         body: JSON.stringify({ approved, feedback })
       });
       if (res.ok) {
-        setSubmissions((prev) => prev.filter((sub) => sub.id !== id));
+        setSubmissions((prev) => prev?.filter((sub) => sub.id !== id));
         setSelectedSub(null);
         setFeedback('');
         addToast(
@@ -176,7 +176,7 @@ export default function InstructorTasks() {
           onClick={() => setIsCreatingTask(true)}
           className="bg-primary text-on-primary px-6 h-11"
         >
-          <span className="material-symbols-outlined mr-2">add</span>
+          <span className="material-symbols-outlined me-2">add</span>
           {isAr ? 'إنشاء مهمة جديدة' : 'Create New Task'}
         </Button>
       </div>
@@ -214,14 +214,14 @@ export default function InstructorTasks() {
             <span className="material-symbols-outlined text-[22px] text-green-600" style={{ fontVariationSettings: "'FILL' 1" }}>groups</span>
           </div>
           <div>
-            <p className="text-2xl font-extrabold text-on-surface">{new Set(submissions.map(s => s.studentName)).size}</p>
+            <p className="text-2xl font-extrabold text-on-surface">{new Set(submissions?.map(s => s.studentName)).size}</p>
             <p className="text-[10px] uppercase font-bold text-on-surface-variant tracking-wider">{isAr ? 'طلاب' : 'Students'}</p>
           </div>
         </div>
       </div>
 
       <div className="grid grid-cols-1 gap-4">
-        {filteredSubmissions.map((sub) => {
+        {filteredSubmissions?.map((sub) => {
           const title = isAr ? sub.taskTitleAr : sub.taskTitleEn;
 
           return (
@@ -258,7 +258,7 @@ export default function InstructorTasks() {
                 {/* Attached Files Preview */}
                 {sub.attachedFiles.length > 0 && (
                   <div className="flex flex-wrap gap-2 pt-2 border-t border-outline-variant/40">
-                    {sub.attachedFiles.map((file, idx) => {
+                    {sub.attachedFiles?.map((file, idx) => {
                       const fileStyle = getFileIcon(file.type);
                       return (
                         <div
@@ -317,7 +317,7 @@ export default function InstructorTasks() {
                   {isAr ? 'الملفات المرفقة' : 'Attached Files'}
                 </h4>
                 <div className="space-y-2">
-                  {selectedSub.attachedFiles.map((file, idx) => {
+                  {selectedSub.attachedFiles?.map((file, idx) => {
                     const fileStyle = getFileIcon(file.type);
                     const isDownloading = downloadingFile === file.name;
                     return (
@@ -396,7 +396,7 @@ export default function InstructorTasks() {
                 onChange={(e) => setNewTaskClassId(e.target.value)}
                 className="w-full p-3 rounded-xl border border-outline-variant bg-surface-container-low text-sm font-medium focus:outline-none focus:border-primary"
               >
-                {classes.map(c => (
+                {classes?.map(c => (
                   <option key={c.id} value={c.id}>{c.nameEn}</option>
                 ))}
               </select>

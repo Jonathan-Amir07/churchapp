@@ -50,4 +50,47 @@ export class AuthService {
       },
     };
   }
+
+  async forgotPassword(
+    email: string,
+  ): Promise<{ message: string; token?: string }> {
+    const user = await this.usersService.findByUsernameOrEmail(email);
+    if (!user) {
+      // Return same response to prevent email enumeration
+      return {
+        message: 'If that email is registered, a reset link has been sent.',
+      };
+    }
+
+    const payload = { sub: user.id, purpose: 'password-reset' };
+    const token = await this.jwtService.signAsync(payload, {
+      expiresIn: '15m',
+    });
+
+    // We would inject MailService here, but since AuthService doesn't have it yet,
+    // we'll return the token to the controller to handle, or we can inject MailService.
+    return {
+      message: 'If that email is registered, a reset link has been sent.',
+      token,
+    };
+  }
+
+  async resetPassword(
+    token: string,
+    newPassword: string,
+  ): Promise<{ message: string }> {
+    try {
+      const payload = await this.jwtService.verifyAsync(token);
+      if (payload.purpose !== 'password-reset') {
+        throw new UnauthorizedException('Invalid token purpose');
+      }
+
+      await this.usersService.resetPassword(payload.sub, newPassword);
+      return { message: 'Password has been successfully reset' };
+    } catch (e) {
+      throw new UnauthorizedException(
+        'Invalid or expired password reset token',
+      );
+    }
+  }
 }

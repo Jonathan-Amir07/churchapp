@@ -14,35 +14,44 @@ import { CreateLessonDto } from './dto/create-lesson.dto';
 import { UpdateLessonDto } from './dto/update-lesson.dto';
 import { AddAttachmentDto } from './dto/add-attachment.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { RolesGuard } from '../auth/guards/roles.guard';
+import { Roles } from '../auth/roles.decorator';
 
 @Controller('lessons')
-@UseGuards(JwtAuthGuard)
+@UseGuards(JwtAuthGuard, RolesGuard)
 export class LessonsController {
   constructor(private readonly lessonsService: LessonsService) {}
 
+  @Roles('admin', 'instructor', 'priest')
   @Post()
   create(@Request() req: any, @Body() createLessonDto: CreateLessonDto) {
     return this.lessonsService.create(
       createLessonDto,
-      req.user.id,
+      req.user.userId,
       req.user.role,
     );
+  }
+
+  @Get()
+  findAllForUser(@Request() req: any) {
+    return this.lessonsService.findAllForUser(req.user.userId, req.user.role);
   }
 
   @Get('class/:classId')
   findAllForClass(@Request() req: any, @Param('classId') classId: string) {
     return this.lessonsService.findAllForClass(
       classId,
-      req.user.id,
+      req.user.userId,
       req.user.role,
     );
   }
 
   @Get(':id')
   findOne(@Request() req: any, @Param('id') id: string) {
-    return this.lessonsService.findOne(id, req.user.id, req.user.role);
+    return this.lessonsService.findOne(id, req.user.userId, req.user.role);
   }
 
+  @Roles('admin', 'instructor', 'priest')
   @Patch(':id')
   update(
     @Request() req: any,
@@ -52,16 +61,18 @@ export class LessonsController {
     return this.lessonsService.update(
       id,
       updateLessonDto,
-      req.user.id,
+      req.user.userId,
       req.user.role,
     );
   }
 
+  @Roles('admin', 'instructor', 'priest')
   @Delete(':id')
   remove(@Request() req: any, @Param('id') id: string) {
-    return this.lessonsService.remove(id, req.user.id, req.user.role);
+    return this.lessonsService.remove(id, req.user.userId, req.user.role);
   }
 
+  @Roles('admin', 'instructor', 'priest')
   @Post(':id/attachments')
   addAttachment(
     @Request() req: any,
@@ -71,18 +82,22 @@ export class LessonsController {
     return this.lessonsService.addAttachment(
       id,
       addAttachmentDto,
-      req.user.id,
+      req.user.userId,
       req.user.role,
     );
   }
 
   @Post(':id/start')
   startLesson(@Request() req: any, @Param('id') id: string) {
-    return this.lessonsService.startLesson(id, req.user.id, req.user.role);
+    return this.lessonsService.startLesson(id, req.user.userId, req.user.role);
   }
 
   @Post(':id/complete')
   completeLesson(@Request() req: any, @Param('id') id: string) {
-    return this.lessonsService.completeLesson(id, req.user.id, req.user.role);
+    return this.lessonsService.completeLesson(
+      id,
+      req.user.userId,
+      req.user.role,
+    );
   }
 }

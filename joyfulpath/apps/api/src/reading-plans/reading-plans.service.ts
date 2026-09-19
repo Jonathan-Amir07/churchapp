@@ -2,9 +2,14 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { UpdateProgressDto } from './dto/update-progress.dto';
 
+import { GamificationService } from '../gamification/gamification.service';
+
 @Injectable()
 export class ReadingPlansService {
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    private prisma: PrismaService,
+    private gamificationService: GamificationService,
+  ) {}
 
   async getActivePlan() {
     // Return the first available reading plan for demo purposes
@@ -66,13 +71,16 @@ export class ReadingPlansService {
 
     // Award XP if completed today
     if (updateProgressDto.completedToday) {
-      await this.prisma.user.update({
-        where: { id: userId },
-        data: {
-          totalXp: { increment: 10 },
-          currentStreak: { increment: 1 },
-        },
-      });
+      // Use the current date string as part of the sourceId to prevent farming on the same day
+      const todayString = new Date().toISOString().split('T')[0];
+      await this.gamificationService.awardActivity(
+        userId,
+        'reading_plan',
+        `${planId}_${todayString}`,
+        10,
+        0,
+      );
+      await this.gamificationService.processXpGain(userId);
     }
 
     return this.prisma.readingPlanProgress.update({

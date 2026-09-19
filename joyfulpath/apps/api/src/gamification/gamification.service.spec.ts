@@ -14,7 +14,11 @@ describe('GamificationService', () => {
           provide: PrismaService,
           useValue: {
             $transaction: jest.fn().mockImplementation((cb) => cb(prisma)),
-            xpEntry: { findFirst: jest.fn(), create: jest.fn(), update: jest.fn() },
+            xpEntry: {
+              findFirst: jest.fn(),
+              create: jest.fn(),
+              update: jest.fn(),
+            },
             user: { update: jest.fn(), findUnique: jest.fn() },
             pointsTransaction: { create: jest.fn() },
             level: { findMany: jest.fn() },

@@ -111,7 +111,7 @@ export default function NewLessonPage() {
                 className="w-full p-2 border border-outline-variant rounded-md bg-surface"
               >
                 {classes.length === 0 && <option value="">No classes available</option>}
-                {classes.map(c => (
+                {classes?.map(c => (
                   <option key={c.id} value={c.id}>{c.nameEn} ({c.gradeLevel})</option>
                 ))}
               </select>

@@ -16,7 +16,7 @@ export default function AdminFileManager() {
     { name: 'saint_mark.jpg', type: 'images', size: '1.2 MB', date: '2026-07-16' },
   ];
 
-  const filtered = files.filter(f => f.type === activeTab);
+  const filtered = files?.filter(f => f.type === activeTab);
 
   return (
     <div className="space-y-6 animate-[slide-up_0.4s_ease-out]">
@@ -61,7 +61,7 @@ export default function AdminFileManager() {
             {filtered.length === 0 ? (
               <div className="p-12 text-center text-on-surface-variant">{tFiles('noFiles')}</div>
             ) : (
-              filtered.map((file, i) => (
+              filtered?.map((file, i) => (
                 <div key={i} className="flex items-center justify-between p-4 hover:bg-surface-container transition-colors">
                   <div className="flex items-center gap-4">
                     <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center text-primary">

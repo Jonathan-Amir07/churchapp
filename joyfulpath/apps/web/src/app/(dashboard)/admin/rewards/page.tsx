@@ -38,15 +38,17 @@ export default function AdminRewards() {
   const fetchData = useCallback(async () => {
     try {
       const [resRewards, resReds] = await Promise.all([
-        fetch('/api/rewards'),
-        fetch('/api/rewards/redemptions')
+        fetch('/api/store/rewards'),
+        fetch('/api/store/redemptions/pending')
       ]);
       
       if (resRewards.ok) {
-        setRewards(await resRewards.json());
+        const data = await resRewards.json();
+        setRewards(Array.isArray(data) ? data : data.data || []);
       }
       if (resReds.ok) {
-        setRedemptions(await resReds.json());
+        const data = await resReds.json();
+        setRedemptions(Array.isArray(data) ? data : data.data || []);
       }
     } catch (e) {
       console.error(e);
@@ -64,7 +66,7 @@ export default function AdminRewards() {
   const filteredRewards = useMemo(() => {
     if (!searchQuery) return rewards;
     const q = searchQuery.toLowerCase();
-    return rewards.filter(
+    return rewards?.filter(
       (item) =>
         item.title.toLowerCase().includes(q) ||
         (item.titleAr && item.titleAr.toLowerCase().includes(q)) ||
@@ -75,7 +77,7 @@ export default function AdminRewards() {
   const filteredRedemptions = useMemo(() => {
     if (!searchQuery) return redemptions;
     const q = searchQuery.toLowerCase();
-    return redemptions.filter(
+    return redemptions?.filter(
       (r) =>
         r.studentName.toLowerCase().includes(q) ||
         r.itemTitle.toLowerCase().includes(q) ||
@@ -86,12 +88,12 @@ export default function AdminRewards() {
   const handleCreate = useCallback(async (e: React.FormEvent) => {
     e.preventDefault();
     if (!title || !titleAr || !description || !descriptionAr) {
-      addToast('Error: Please fill all fields!', 'error');
+      addToast(tRewards('errorOccurred'), 'error');
       return;
     }
 
     try {
-      const res = await fetch('/api/rewards', {
+      const res = await fetch('/api/store/rewards', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -115,10 +117,10 @@ export default function AdminRewards() {
         setIcon('emoji_events');
         setImageUrl('');
       } else {
-        addToast('Failed to create reward', 'error');
+        addToast(tRewards('failedProcess'), 'error');
       }
     } catch (error) {
-      addToast('Error occurred', 'error');
+      addToast(tRewards('errorOccurred'), 'error');
     }
   }, [title, titleAr, description, descriptionAr, pointsCost, stock, type, icon, imageUrl, addToast, tRewards, fetchData]);
 
@@ -127,25 +129,26 @@ export default function AdminRewards() {
     if (!selectedRedId) return;
 
     try {
-      const res = await fetch(`/api/rewards/redemptions/${selectedRedId}`, {
-        method: 'PUT',
+      const action = processStatus === 'approved' ? 'fulfill' : 'reject';
+      const res = await fetch(`/api/store/redemptions/${selectedRedId}/${action}`, {
+        method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ status: processStatus, feedback })
+        body: JSON.stringify({ feedback })
       });
 
       if (res.ok) {
-        addToast(`Redemption ${processStatus} successfully!`, 'success');
+        addToast(tRewards('processSuccess'), 'success');
         setIsFeedbackOpen(false);
         setSelectedRedId(null);
         setFeedback('');
         fetchData();
       } else {
-        addToast('Failed to process redemption', 'error');
+        addToast(tRewards('failedProcess'), 'error');
       }
     } catch (error) {
-      addToast('Error occurred', 'error');
+      addToast(tRewards('errorOccurred'), 'error');
     }
-  }, [selectedRedId, processStatus, feedback, addToast, fetchData]);
+  }, [selectedRedId, processStatus, feedback, addToast, fetchData, tRewards]);
 
   const openProcessModal = useCallback((id: string, status: 'approved' | 'rejected') => {
     setSelectedRedId(id);
@@ -181,7 +184,7 @@ export default function AdminRewards() {
                 : 'text-on-surface-variant hover:text-on-surface hover:bg-surface-container'
             }`}
           >
-            Store Catalog ({rewards.length})
+            {tRewards('catalogTab')} ({rewards.length})
           </button>
           <button
             onClick={() => setActiveTab('queue')}
@@ -191,13 +194,13 @@ export default function AdminRewards() {
                 : 'text-on-surface-variant hover:text-on-surface hover:bg-surface-container'
             }`}
           >
-            Redemption Requests ({redemptions.length})
+            {tRewards('queueTab')} ({redemptions.length})
           </button>
         </div>
 
         <SearchBar
           onSearch={handleSearch}
-          placeholder={activeTab === 'catalog' ? "Search store catalog..." : "Search redemption requests..."}
+          placeholder={activeTab === 'catalog' ? tRewards('searchCatalog') : tRewards('searchQueue')}
           resultCount={activeTab === 'catalog' ? filteredRewards.length : filteredRedemptions.length}
           totalCount={activeTab === 'catalog' ? rewards.length : redemptions.length}
           className="w-full sm:w-80"
@@ -207,7 +210,7 @@ export default function AdminRewards() {
       {/* ── TAB: CATALOG ──────────────────────────────────────────────────────── */}
       {activeTab === 'catalog' && (
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {filteredRewards.map((item) => (
+          {filteredRewards?.map((item) => (
             <Card key={item.id} className="border border-outline-variant bg-surface-container-lowest shadow-sm flex flex-col justify-between">
               <CardContent className="p-6 space-y-4">
                 <div className="flex justify-between items-start gap-4">
@@ -243,7 +246,7 @@ export default function AdminRewards() {
       {/* ── TAB: REDEMPTION QUEUE ───────────────────────────────────────────── */}
       {activeTab === 'queue' && (
         <div className="grid grid-cols-1 gap-4">
-          {filteredRedemptions.map((red) => (
+          {filteredRedemptions?.map((red) => (
             <Card key={red.id} className="border border-outline-variant bg-surface-container-lowest shadow-sm">
               <CardContent className="p-6 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
                 <div className="space-y-1">
@@ -252,7 +255,7 @@ export default function AdminRewards() {
                     <span className="text-xs text-outline">• {red.createdAt}</span>
                   </div>
                   <p className="text-xs text-on-surface-variant font-medium">
-                    Requested: <strong className="text-on-surface">{red.itemTitle}</strong> ({red.pointsCost} pts)
+                    {tRewards('requested')} <strong className="text-on-surface">{red.itemTitle}</strong> ({red.pointsCost} {tRewards('pts')})
                   </p>
                 </div>
 
@@ -265,14 +268,14 @@ export default function AdminRewards() {
                         className="text-error border-error/30 hover:bg-error/10"
                         onClick={() => openProcessModal(red.id, 'rejected')}
                       >
-                        Reject
+                        {tRewards('reject')}
                       </Button>
                       <Button
                         variant="primary"
                         size="sm"
                         onClick={() => openProcessModal(red.id, 'approved')}
                       >
-                        Approve
+                        {tRewards('approve')}
                       </Button>
                     </>
                   ) : (
@@ -306,11 +309,11 @@ export default function AdminRewards() {
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="space-y-1.5">
-                <label className="text-xs font-bold text-on-surface-variant">Description (English)</label>
+                <label className="text-xs font-bold text-on-surface-variant">{tRewards('descEn')}</label>
                 <Input required value={description} onChange={(e) => setDescription(e.target.value)} />
               </div>
               <div className="space-y-1.5">
-                <label className="text-xs font-bold text-on-surface-variant">Description (Arabic)</label>
+                <label className="text-xs font-bold text-on-surface-variant">{tRewards('descAr')}</label>
                 <Input required value={descriptionAr} onChange={(e) => setDescriptionAr(e.target.value)} />
               </div>
             </div>
@@ -331,7 +334,7 @@ export default function AdminRewards() {
             </div>
 
             <div className="space-y-1.5">
-              <label className="text-xs font-bold text-on-surface-variant">Image URL (Optional)</label>
+              <label className="text-xs font-bold text-on-surface-variant">{tRewards('imgUrlOpt')}</label>
               <Input value={imageUrl} onChange={(e) => setImageUrl(e.target.value)} placeholder="https://example.com/image.jpg" />
             </div>
 
@@ -349,13 +352,13 @@ export default function AdminRewards() {
 
       {/* Process Redemption Modal */}
       {isFeedbackOpen && (
-        <Modal isOpen={true} onClose={() => setIsFeedbackOpen(false)} title={`Confirm ${processStatus}`}>
+        <Modal isOpen={true} onClose={() => setIsFeedbackOpen(false)} title={processStatus === 'approved' ? tRewards('confirmApprove') : tRewards('confirmReject')}>
           <form onSubmit={handleProcessSubmit} className="space-y-4 pt-2">
             <p className="text-xs text-on-surface-variant">
-              Provide feedback or instructions for the student regarding this redemption request:
+              {tRewards('feedbackInstruct')}
             </p>
             <Input
-              placeholder="e.g. Pick up at Sunday School desk after liturgy"
+              placeholder={tRewards('feedbackPlace')}
               value={feedback}
               onChange={(e) => setFeedback(e.target.value)}
             />
@@ -364,7 +367,7 @@ export default function AdminRewards() {
                 {tCommon('cancel')}
               </Button>
               <Button variant="primary" size="sm" type="submit">
-                Submit Process
+                {tRewards('submitProcess')}
               </Button>
             </div>
           </form>

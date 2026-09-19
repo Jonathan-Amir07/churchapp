@@ -25,7 +25,7 @@ export default function StudentReadingPage() {
           </span>
         }
       >
-        <div className="absolute top-4 right-8 flex flex-col items-end">
+        <div className="absolute top-4 end-8 flex flex-col items-end">
           <div className="flex items-center gap-2 bg-black/20 px-4 py-2 rounded-full">
             <span className="material-symbols-outlined text-orange-400" style={{ fontVariationSettings: "'FILL' 1" }}>local_fire_department</span>
             <span className="font-bold">{streak} Day Streak</span>

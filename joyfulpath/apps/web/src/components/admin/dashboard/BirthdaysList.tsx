@@ -19,7 +19,7 @@ export function BirthdaysList() {
       </CardHeader>
       <CardContent>
         <div className="space-y-3">
-          {birthdays.map((b, i) => (
+          {birthdays?.map((b, i) => (
             <div key={i} className="flex items-center justify-between p-2 rounded-md hover:bg-surface-container transition-colors">
               <div className="flex items-center gap-3">
                 <div className="w-8 h-8 rounded-full bg-secondary/10 text-secondary flex items-center justify-center font-bold text-xs border border-secondary/20">

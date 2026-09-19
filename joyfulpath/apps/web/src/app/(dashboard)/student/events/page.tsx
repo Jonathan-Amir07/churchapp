@@ -21,7 +21,8 @@ export default function StudentEventsPage() {
         ]);
 
         if (eventsRes.ok) {
-          setEvents(await eventsRes.json());
+          const data = await eventsRes.json();
+          setEvents(Array.isArray(data) ? data : data.data || []);
         }
 
         if (rsvpRes && rsvpRes.ok) {
@@ -55,7 +56,7 @@ export default function StudentEventsPage() {
       if (res.ok && data.success) {
         addToast(data.message || 'Success!', 'success');
         if (isRegistered) {
-          setRegisteredEvents(prev => prev.filter(id => id !== eventId));
+          setRegisteredEvents(prev => prev?.filter(id => id !== eventId));
         } else {
           setRegisteredEvents(prev => [...prev, eventId]);
         }
@@ -100,7 +101,7 @@ export default function StudentEventsPage() {
             </div>
           ) : (
             <StaggerContainer className="space-y-4">
-              {events.map(ev => {
+              {events?.map(ev => {
                 const dateParts = new Date(ev.date).toDateString().split(' ');
                 const isRegistered = registeredEvents.includes(ev.id);
                 

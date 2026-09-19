@@ -3,9 +3,20 @@
 import { useUser } from '@/hooks/useUser';
 import { PageTransition } from '@/components/ui';
 import Link from 'next/link';
+import useSWR from 'swr';
+import { apiClient } from '@/lib/apiClient';
 
 export default function InstructorDashboard() {
   const { profile } = useUser();
+  const { data: stats, isLoading } = useSWR('/instructors/dashboard', (url) => apiClient.get(url));
+
+  if (isLoading) {
+    return (
+      <div className="flex justify-center items-center h-64">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+      </div>
+    );
+  }
 
   return (
     <PageTransition className="space-y-8 pb-20 md:pb-0">
@@ -26,28 +37,9 @@ export default function InstructorDashboard() {
                 الدروس اليوم
               </h2>
             </div>
-            <div className="relative pl-4 border-r-2 border-surface-variant z-10 space-y-6 ml-4">
-              {/* Lesson 1 */}
-              <div className="relative pr-6">
-                <div className="absolute -right-[7px] top-1 w-3 h-3 bg-primary rounded-full ring-4 ring-surface"></div>
-                <div className="bg-surface-container-low p-4 rounded-lg border border-outline-variant">
-                  <div className="flex justify-between items-start mb-2">
-                    <h3 className="text-lg font-bold text-on-background">مقدمة في العقيدة</h3>
-                    <span className="text-xs font-bold tracking-widest uppercase text-primary bg-primary/10 px-2 py-1 rounded">09:00 ص</span>
-                  </div>
-                  <p className="font-body-md text-on-surface-variant">الصف الأول الإعدادي • القاعة 3</p>
-                </div>
-              </div>
-              {/* Lesson 2 */}
-              <div className="relative pr-6">
-                <div className="absolute -right-[7px] top-1 w-3 h-3 bg-surface-variant rounded-full ring-4 ring-surface"></div>
-                <div className="bg-surface p-4 rounded-lg border border-outline-variant">
-                  <div className="flex justify-between items-start mb-2">
-                    <h3 className="text-lg font-bold text-on-background">تاريخ الكنيسة</h3>
-                    <span className="text-xs font-bold tracking-widest uppercase text-on-surface-variant bg-surface-variant px-2 py-1 rounded">11:30 ص</span>
-                  </div>
-                  <p className="font-body-md text-on-surface-variant">الصف الثالث الإعدادي • القاعة 1</p>
-                </div>
+            <div className="relative ps-4 border-e-2 border-surface-variant z-10 space-y-6 ms-4">
+              <div className="text-center text-on-surface-variant p-4">
+                قريباً: جدول الدروس المباشر
               </div>
             </div>
           </section>
@@ -57,11 +49,11 @@ export default function InstructorDashboard() {
             <div className="p-6 border-b border-outline-variant bg-surface-container-lowest">
               <h2 className="text-2xl font-bold text-on-background flex items-center gap-2">
                 <span className="material-symbols-outlined text-secondary">class</span>
-                الفصول المعينة
+                الفصول المعينة ({stats?.classes?.length || 0})
               </h2>
             </div>
             <div className="overflow-x-auto">
-              <table className="w-full text-right">
+              <table className="w-full text-end">
                 <thead className="bg-surface-container-low text-xs font-bold tracking-widest uppercase text-on-surface-variant">
                   <tr>
                     <th className="py-3 px-4">الفصل</th>
@@ -71,26 +63,24 @@ export default function InstructorDashboard() {
                   </tr>
                 </thead>
                 <tbody className="text-base text-on-background divide-y divide-outline-variant">
-                  <tr className="hover:bg-primary/5 transition-colors">
-                    <td className="py-4 px-4 font-bold">مجموعة القديس مرقس</td>
-                    <td className="py-4 px-4 text-on-surface-variant">مبتدئ</td>
-                    <td className="py-4 px-4">24</td>
-                    <td className="py-4 px-4 text-center">
-                      <button className="text-primary hover:text-primary-container">
-                        <span className="material-symbols-outlined">visibility</span>
-                      </button>
-                    </td>
-                  </tr>
-                  <tr className="hover:bg-primary/5 transition-colors">
-                    <td className="py-4 px-4 font-bold">مجموعة القديس جورج</td>
-                    <td className="py-4 px-4 text-on-surface-variant">متوسط</td>
-                    <td className="py-4 px-4">18</td>
-                    <td className="py-4 px-4 text-center">
-                      <button className="text-primary hover:text-primary-container">
-                        <span className="material-symbols-outlined">visibility</span>
-                      </button>
-                    </td>
-                  </tr>
+                  {stats?.classes?.length === 0 ? (
+                     <tr>
+                       <td colSpan={4} className="py-4 text-center text-on-surface-variant">لا توجد فصول معينة بعد</td>
+                     </tr>
+                  ) : (
+                    stats?.classes?.map((c: any) => (
+                      <tr key={c.id} className="hover:bg-primary/5 transition-colors">
+                        <td className="py-4 px-4 font-bold">{c.name}</td>
+                        <td className="py-4 px-4 text-on-surface-variant">{c.gradeLevel || '-'}</td>
+                        <td className="py-4 px-4">{c._count?.members || 0}</td>
+                        <td className="py-4 px-4 text-center">
+                          <Link href={`/instructor/classes/${c.id}`} className="text-primary hover:text-primary-container">
+                            <span className="material-symbols-outlined">visibility</span>
+                          </Link>
+                        </td>
+                      </tr>
+                    ))
+                  )}
                 </tbody>
               </table>
             </div>
@@ -110,14 +100,14 @@ export default function InstructorDashboard() {
                 <span className="material-symbols-outlined text-2xl font-bold">assignment_late</span>
               </div>
             </div>
-            <div className="text-5xl font-extrabold text-primary mb-4">12</div>
+            <div className="text-5xl font-extrabold text-primary mb-4">{stats?.pendingGrading || 0}</div>
             <div className="flex gap-2">
               <Link href="/instructor/tasks" className="flex-1 bg-primary text-center text-on-primary text-xs font-bold tracking-widest uppercase py-2 rounded hover:bg-primary-container transition-colors">
                 ابدأ التقييم
               </Link>
-              <button className="flex-1 border border-outline text-on-surface text-xs font-bold tracking-widest uppercase py-2 rounded hover:bg-surface-variant transition-colors">
+              <Link href="/instructor/tasks" className="text-center flex-1 border border-outline text-on-surface text-xs font-bold tracking-widest uppercase py-2 rounded hover:bg-surface-variant transition-colors">
                 عرض الكل
-              </button>
+              </Link>
             </div>
           </section>
           
@@ -125,7 +115,7 @@ export default function InstructorDashboard() {
           <Link href="/instructor/attendance" className="group bg-surface-container-low rounded-xl p-6 border border-outline-variant hover:border-primary transition-colors flex items-center justify-between">
             <div>
               <h3 className="text-xl font-bold text-on-background group-hover:text-primary transition-colors">نظرة عامة على الحضور</h3>
-              <p className="text-base text-on-surface-variant mt-1">سجل حضور اليوم</p>
+              <p className="text-base text-on-surface-variant mt-1">سجل حضور اليوم لـ {stats?.totalStudents || 0} طالب</p>
             </div>
             <div className="w-10 h-10 bg-surface rounded-full flex items-center justify-center border border-outline-variant group-hover:bg-primary/10 transition-colors">
               <span className="material-symbols-outlined text-on-surface-variant group-hover:text-primary rtl:-scale-x-100">arrow_forward</span>
@@ -136,24 +126,25 @@ export default function InstructorDashboard() {
           <section className="bg-surface rounded-xl p-6 border border-outline-variant">
             <h2 className="text-xl font-bold text-on-background mb-4">نشاط الطلاب الأخير</h2>
             <div className="space-y-4">
-              <div className="flex gap-3 items-start">
-                <div className="w-8 h-8 rounded-full bg-tertiary-container text-on-tertiary-container flex items-center justify-center flex-shrink-0 mt-1">
-                  <span className="material-symbols-outlined text-sm">check_circle</span>
-                </div>
-                <div>
-                  <p className="text-base text-on-background"><span className="font-bold">مينا يوسف</span> أكمل مهمة &quot;حفظ المزمور&quot;</p>
-                  <p className="text-xs font-bold tracking-widest uppercase text-on-surface-variant mt-1">منذ 10 دقائق</p>
-                </div>
-              </div>
-              <div className="flex gap-3 items-start">
-                <div className="w-8 h-8 rounded-full bg-primary-container text-on-primary-container flex items-center justify-center flex-shrink-0 mt-1">
-                  <span className="material-symbols-outlined text-sm">forum</span>
-                </div>
-                <div>
-                  <p className="text-base text-on-background"><span className="font-bold">مريم بطرس</span> طرحت سؤالاً في مجتمع الفصل</p>
-                  <p className="text-xs font-bold tracking-widest uppercase text-on-surface-variant mt-1">منذ 45 دقيقة</p>
-                </div>
-              </div>
+              {stats?.recentActivity?.length === 0 ? (
+                <p className="text-center text-on-surface-variant">لا توجد أنشطة حديثة</p>
+              ) : (
+                stats?.recentActivity?.map((activity: any) => (
+                  <div key={activity.id} className="flex gap-3 items-start">
+                    <div className="w-8 h-8 rounded-full bg-tertiary-container text-on-tertiary-container flex items-center justify-center flex-shrink-0 mt-1">
+                      <span className="material-symbols-outlined text-sm">notifications</span>
+                    </div>
+                    <div>
+                      <p className="text-base text-on-background">
+                        <span className="font-bold">{activity.user?.displayName}</span> {activity.action}
+                      </p>
+                      <p className="text-xs font-bold tracking-widest uppercase text-on-surface-variant mt-1">
+                        {new Date(activity.createdAt).toLocaleDateString('ar-EG')}
+                      </p>
+                    </div>
+                  </div>
+                ))
+              )}
             </div>
           </section>
         </div>
