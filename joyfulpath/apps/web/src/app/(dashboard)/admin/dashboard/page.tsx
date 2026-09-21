@@ -16,7 +16,7 @@ export default function AdminDashboard() {
             المركز الإداري
           </h1>
           <p className="text-on-surface-variant text-lg">
-            مرحباً بك في لوحة تحكم JoyfulPath
+            مرحباً بك في لوحة تحكم نوصل و نوصل للسماء
           </p>
         </div>
         {/* Quick Filters & Search */}

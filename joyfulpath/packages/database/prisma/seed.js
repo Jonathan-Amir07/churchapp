@@ -1,7 +1,7 @@
 const { PrismaClient } = require('@prisma/client');
 const bcrypt = require('bcryptjs');
 
-process.env.DATABASE_URL = 'file:./prisma/dev.db';
+process.env.DATABASE_URL = process.env.DATABASE_URL || 'file:./prisma/dev.db';
 
 const prisma = new PrismaClient();
 
@@ -9,23 +9,17 @@ async function main() {
   console.log('🌱 Seeding database with demo accounts...');
 
   // Clear existing data safely
-  await prisma.$executeRawUnsafe('PRAGMA foreign_keys = OFF');
-  await prisma.user.deleteMany();
-  await prisma.$executeRawUnsafe('PRAGMA foreign_keys = ON');
+  // await prisma.user.deleteMany();
 
-  // Demo account credentials as requested
-  const priestHash = bcrypt.hashSync('Priest@123', 10);
-  const adminHash = bcrypt.hashSync('Admin@123', 10);
-  const instructorHash = bcrypt.hashSync('Instructor@123', 10);
-  const parentHash = bcrypt.hashSync('Parent@123', 10);
-  const studentHash = bcrypt.hashSync('Student@123', 10);
+  // Demo account credentials as expected by the frontend UI
+  const sharedPasswordHash = bcrypt.hashSync('password123', 10);
 
   // 1. Priest / Senior Admin Account
   const priest = await prisma.user.create({
     data: {
-      username: 'priest',
+      username: 'test_priest',
       email: 'priest@joyfulpath.org',
-      passwordHash: priestHash,
+      passwordHash: sharedPasswordHash,
       firstName: 'Abouna',
       lastName: 'Markos',
       displayName: 'Father Markos',
@@ -40,9 +34,9 @@ async function main() {
   // 2. Admin Account
   const admin = await prisma.user.create({
     data: {
-      username: 'admin',
+      username: 'test_admin',
       email: 'admin@joyfulpath.org',
-      passwordHash: adminHash,
+      passwordHash: sharedPasswordHash,
       firstName: 'George',
       lastName: 'Bishop',
       displayName: 'George Bishop',
@@ -57,9 +51,9 @@ async function main() {
   // 3. Instructor Account
   const instructor = await prisma.user.create({
     data: {
-      username: 'instructor',
+      username: 'test_instructor',
       email: 'instructor@joyfulpath.org',
-      passwordHash: instructorHash,
+      passwordHash: sharedPasswordHash,
       firstName: 'Peter',
       lastName: 'Mark',
       displayName: 'Peter Mark',
@@ -74,9 +68,9 @@ async function main() {
   // 4. Student Account
   const student = await prisma.user.create({
     data: {
-      username: 'student',
+      username: 'test_student',
       email: 'student@joyfulpath.org',
-      passwordHash: studentHash,
+      passwordHash: sharedPasswordHash,
       firstName: 'Jonathan',
       lastName: 'Junior',
       displayName: 'Jonathan Junior',
@@ -95,9 +89,9 @@ async function main() {
   // 5. Parent Account
   const parent = await prisma.user.create({
     data: {
-      username: 'parent',
+      username: 'test_parent',
       email: 'parent@joyfulpath.org',
-      passwordHash: parentHash,
+      passwordHash: sharedPasswordHash,
       firstName: 'Samuel',
       lastName: 'Amir',
       displayName: 'Samuel Amir',

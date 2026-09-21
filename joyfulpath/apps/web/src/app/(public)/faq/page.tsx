@@ -23,7 +23,7 @@ export default function FAQPage() {
       <section className="text-center space-y-4 py-12">
         <h1 className="text-4xl font-black text-on-surface">{en ? 'Frequently Asked Questions' : 'الأسئلة الشائعة'}</h1>
         <p className="text-on-surface-variant max-w-xl mx-auto">
-          {en ? 'Find answers to common questions about JoyfulPath.' : 'اعثر على إجابات للأسئلة الشائعة حول JoyfulPath.'}
+          {en ? 'Find answers to common questions about newsl w nwasl ll sama.' : 'اعثر على إجابات للأسئلة الشائعة حول نوصل و نوصل للسماء.'}
         </p>
       </section>
 
