@@ -2,14 +2,14 @@
 
 import { useState, useEffect } from 'react';
 import { useUser } from '@/hooks/useUser';
-import { createClient } from '@/lib/supabase/client';
+
 import { Card } from '@/components/ui';
 import { useLocale } from 'next-intl';
 
 export default function ParentDashboard() {
   const { profile } = useUser();
   const currentLocale = useLocale();
-  const supabase = createClient();
+
   
   const [children, setChildren] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
@@ -70,7 +70,7 @@ export default function ParentDashboard() {
             return (
               <div key={child.id} className="grid grid-cols-1 lg:grid-cols-12 gap-6">
                 {/* Child Overview Card (Span 8) */}
-                <div className="lg:col-span-8 bg-surface rounded-xl p-6 flex flex-col sm:flex-row items-center gap-6 relative overflow-hidden border border-outline-variant/30 shadow-[0px_4px_20px_rgba(33,79,199,0.04)]">
+                <div className="lg:col-span-8 bg-surface-container-lowest rounded-xl p-6 flex flex-col sm:flex-row items-center gap-6 relative overflow-hidden border border-outline-variant/30 shadow-[0px_4px_20px_rgba(33,79,199,0.04)]">
                   <div className="relative shrink-0">
                     {child.avatarUrl ? (
                       <img alt="Child Portrait" src={child.avatarUrl} className="w-32 h-32 rounded-full border-4 border-surface shadow-md object-cover z-10 relative" />
@@ -109,7 +109,7 @@ export default function ParentDashboard() {
                 </div>
 
                 {/* Progress Rings (Span 4) */}
-                <div className="lg:col-span-4 bg-surface rounded-xl p-6 border border-outline-variant/30 flex flex-col justify-center shadow-[0px_4px_20px_rgba(33,79,199,0.04)]">
+                <div className="lg:col-span-4 bg-surface-container-lowest rounded-xl p-6 border border-outline-variant/30 flex flex-col justify-center shadow-[0px_4px_20px_rgba(33,79,199,0.04)]">
                   <h3 className="text-2xl font-bold text-on-surface mb-6 text-center">نظرة عامة على التقدم</h3>
                   <div className="flex justify-around items-center">
                     {/* Ring 1 */}

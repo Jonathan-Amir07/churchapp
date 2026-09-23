@@ -41,7 +41,7 @@ export default function StudentProfilePage() {
   return (
     <div className="max-w-5xl mx-auto space-y-6">
       {/* Header Profile */}
-      <div className="bg-surface rounded-2xl shadow-sm border border-outline-variant p-6 flex flex-col md:flex-row gap-6 items-center md:items-start">
+      <div className="bg-surface-container-lowest rounded-2xl shadow-sm border border-outline-variant p-6 flex flex-col md:flex-row gap-6 items-center md:items-start">
         <div className="w-24 h-24 rounded-full bg-primary/20 flex items-center justify-center text-primary text-3xl font-bold">
           {student.firstName?.[0]}{student.lastName?.[0]}
         </div>
@@ -64,7 +64,7 @@ export default function StudentProfilePage() {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {/* Personal & Education Info */}
         <div className="space-y-6">
-          <div className="bg-surface rounded-2xl shadow-sm border border-outline-variant p-6">
+          <div className="bg-surface-container-lowest rounded-2xl shadow-sm border border-outline-variant p-6">
             <h2 className="text-xl font-bold text-on-surface mb-4">Personal & Education</h2>
             <div className="space-y-3">
               <div className="flex justify-between border-b border-outline-variant pb-2">
@@ -97,7 +97,7 @@ export default function StudentProfilePage() {
 
         {/* Family & Church Info */}
         <div className="space-y-6">
-          <div className="bg-surface rounded-2xl shadow-sm border border-outline-variant p-6">
+          <div className="bg-surface-container-lowest rounded-2xl shadow-sm border border-outline-variant p-6">
             <h2 className="text-xl font-bold text-on-surface mb-4">Family</h2>
             <div className="space-y-3">
               <h3 className="font-semibold text-primary">Parents</h3>
@@ -129,7 +129,7 @@ export default function StudentProfilePage() {
                 These notes are only visible to Admins, Priests, and Instructors.
               </p>
               <textarea 
-                className="w-full h-24 p-3 rounded-lg border border-outline-variant bg-surface text-sm"
+                className="w-full h-24 p-3 rounded-lg border border-outline-variant bg-surface-container-lowest text-sm"
                 placeholder="Add a private note about this student..."
               ></textarea>
               <button className="mt-2 bg-error text-white px-4 py-2 rounded-lg text-sm font-bold hover:bg-error/90">

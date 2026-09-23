@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useSearchParams } from 'next/navigation';
-import { createClient } from '@/lib/supabase/client';
+
 import { Card, CardContent, CardHeader, CardTitle, ProgressBar, Button } from '@/components/ui';
 import { useLocale } from 'next-intl';
 import Link from 'next/link';
@@ -11,7 +11,7 @@ export default function ParentReports() {
   const searchParams = useSearchParams();
   const childId = searchParams.get('child');
   const currentLocale = useLocale();
-  const supabase = createClient();
+
 
   const [childProfile, setChildProfile] = useState<any>(null);
   const [lessonsProgress, setLessonsProgress] = useState<any[]>([]);

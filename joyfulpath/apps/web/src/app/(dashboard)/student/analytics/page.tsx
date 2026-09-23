@@ -36,22 +36,22 @@ export default function StudentAnalyticsPage() {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        <div className="bg-surface p-6 rounded-xl border border-outline-variant shadow-sm flex flex-col items-center">
+        <div className="bg-surface-container-lowest p-6 rounded-xl border border-outline-variant shadow-sm flex flex-col items-center">
           <span className="material-symbols-outlined text-4xl text-primary mb-2">stars</span>
           <h3 className="text-sm font-bold text-on-surface-variant uppercase tracking-widest">إجمالي النقاط</h3>
           <p className="text-3xl font-extrabold text-on-background mt-1">{analytics.overview.totalPoints}</p>
         </div>
-        <div className="bg-surface p-6 rounded-xl border border-outline-variant shadow-sm flex flex-col items-center">
+        <div className="bg-surface-container-lowest p-6 rounded-xl border border-outline-variant shadow-sm flex flex-col items-center">
           <span className="material-symbols-outlined text-4xl text-secondary mb-2">military_tech</span>
           <h3 className="text-sm font-bold text-on-surface-variant uppercase tracking-widest">الخبرة (XP)</h3>
           <p className="text-3xl font-extrabold text-on-background mt-1">{analytics.overview.totalXp}</p>
         </div>
-        <div className="bg-surface p-6 rounded-xl border border-outline-variant shadow-sm flex flex-col items-center">
+        <div className="bg-surface-container-lowest p-6 rounded-xl border border-outline-variant shadow-sm flex flex-col items-center">
           <span className="material-symbols-outlined text-4xl text-tertiary mb-2">local_fire_department</span>
           <h3 className="text-sm font-bold text-on-surface-variant uppercase tracking-widest">الاستمرارية الحالية</h3>
           <p className="text-3xl font-extrabold text-on-background mt-1">{analytics.overview.currentStreak} أيام</p>
         </div>
-        <div className="bg-surface p-6 rounded-xl border border-outline-variant shadow-sm flex flex-col items-center">
+        <div className="bg-surface-container-lowest p-6 rounded-xl border border-outline-variant shadow-sm flex flex-col items-center">
           <span className="material-symbols-outlined text-4xl text-primary mb-2">emoji_events</span>
           <h3 className="text-sm font-bold text-on-surface-variant uppercase tracking-widest">المستوى الحالي</h3>
           <p className="text-xl font-extrabold text-on-background mt-1">{analytics.overview.level}</p>
@@ -59,7 +59,7 @@ export default function StudentAnalyticsPage() {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
-        <section className="bg-surface rounded-xl border border-outline-variant shadow-sm overflow-hidden">
+        <section className="bg-surface-container-lowest rounded-xl border border-outline-variant shadow-sm overflow-hidden">
           <div className="p-6 border-b border-outline-variant bg-surface-container-lowest">
             <h2 className="text-2xl font-bold text-on-background flex items-center gap-2">
               <span className="material-symbols-outlined text-primary">event_available</span>
@@ -91,7 +91,7 @@ export default function StudentAnalyticsPage() {
           </div>
         </section>
 
-        <section className="bg-surface rounded-xl border border-outline-variant shadow-sm overflow-hidden">
+        <section className="bg-surface-container-lowest rounded-xl border border-outline-variant shadow-sm overflow-hidden">
           <div className="p-6 border-b border-outline-variant bg-surface-container-lowest">
             <h2 className="text-2xl font-bold text-on-background flex items-center gap-2">
               <span className="material-symbols-outlined text-secondary">school</span>

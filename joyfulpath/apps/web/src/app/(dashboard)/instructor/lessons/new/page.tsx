@@ -108,7 +108,7 @@ export default function NewLessonPage() {
                 required
                 value={form.classId}
                 onChange={(e) => setForm({ ...form, classId: e.target.value })}
-                className="w-full p-2 border border-outline-variant rounded-md bg-surface"
+                className="w-full p-2 border border-outline-variant rounded-md bg-surface-container-lowest"
               >
                 {classes.length === 0 && <option value="">No classes available</option>}
                 {classes?.map(c => (
@@ -124,7 +124,7 @@ export default function NewLessonPage() {
                 required 
                 value={form.title}
                 onChange={(e) => setForm({ ...form, title: e.target.value })}
-                className="w-full p-2 border border-outline-variant rounded-md bg-surface" 
+                className="w-full p-2 border border-outline-variant rounded-md bg-surface-container-lowest" 
                 placeholder="e.g. The Exodus" 
               />
             </div>
@@ -134,7 +134,7 @@ export default function NewLessonPage() {
               <select 
                 value={form.category}
                 onChange={(e) => setForm({ ...form, category: e.target.value })}
-                className="w-full p-2 border border-outline-variant rounded-md bg-surface"
+                className="w-full p-2 border border-outline-variant rounded-md bg-surface-container-lowest"
               >
                 <option>Old Testament</option>
                 <option>New Testament</option>
@@ -150,7 +150,7 @@ export default function NewLessonPage() {
                 rows={6} 
                 value={form.content}
                 onChange={(e) => setForm({ ...form, content: e.target.value })}
-                className="w-full p-2 border border-outline-variant rounded-md bg-surface" 
+                className="w-full p-2 border border-outline-variant rounded-md bg-surface-container-lowest" 
                 placeholder="Write the lesson content here..." 
               />
             </div>
@@ -161,7 +161,7 @@ export default function NewLessonPage() {
                 type="text" 
                 value={form.bibleReferences}
                 onChange={(e) => setForm({ ...form, bibleReferences: e.target.value })}
-                className="w-full p-2 border border-outline-variant rounded-md bg-surface" 
+                className="w-full p-2 border border-outline-variant rounded-md bg-surface-container-lowest" 
                 placeholder="e.g. Exodus 14:1-31" 
               />
             </div>

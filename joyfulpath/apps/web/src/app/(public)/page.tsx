@@ -9,6 +9,7 @@ import { Button, Card, CardContent } from '@/components/ui';
 
 
 export default function LandingPage() {
+  console.log("PUBLIC PAGE RENDERED");
   const currentLocale = useLocale();
   const [email, setEmail] = useState('');
   const [message, setMessage] = useState('');
@@ -498,7 +499,7 @@ export default function LandingPage() {
               </div>
               <div>
                 <h4 className="text-base font-black text-on-surface">{currentLocale === 'en' ? 'Email Us' : 'البريد الإلكتروني'}</h4>
-                <p className="text-sm font-medium text-on-surface-variant mt-1">sundayschool@joyfulpath.org</p>
+                <p className="text-sm font-medium text-on-surface-variant mt-1">sundayschool@nwaslsama.org</p>
               </div>
             </div>
             

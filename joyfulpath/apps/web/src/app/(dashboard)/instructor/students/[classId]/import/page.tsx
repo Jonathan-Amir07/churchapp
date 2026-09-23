@@ -122,7 +122,7 @@ export default function ImportStudentsPage() {
       </div>
 
       {!previewData && !results && (
-        <div className="bg-surface p-12 rounded-xl border-2 border-dashed border-outline-variant flex flex-col items-center justify-center gap-4">
+        <div className="bg-surface-container-lowest p-12 rounded-xl border-2 border-dashed border-outline-variant flex flex-col items-center justify-center gap-4">
            <span className="material-symbols-outlined text-4xl text-on-surface-variant/50">upload_file</span>
            <div className="text-center">
               <h3 className="font-bold text-on-surface">رفع ملف إكسل</h3>
@@ -148,7 +148,7 @@ export default function ImportStudentsPage() {
 
       {previewData && !results && (
         <div className="space-y-6">
-          <div className="bg-surface p-6 rounded-xl border border-outline-variant shadow-sm flex flex-col gap-4">
+          <div className="bg-surface-container-lowest p-6 rounded-xl border border-outline-variant shadow-sm flex flex-col gap-4">
             <h2 className="text-xl font-bold text-on-surface">معاينة الاستيراد</h2>
             <div className="flex gap-4 items-center flex-wrap">
                <div className="bg-success/10 text-success px-4 py-2 rounded-lg font-bold">
@@ -188,7 +188,7 @@ export default function ImportStudentsPage() {
 
       {results && (
         <div className="space-y-6">
-           <div className="bg-surface p-8 rounded-xl border border-outline-variant shadow-sm flex flex-col items-center justify-center gap-4">
+           <div className="bg-surface-container-lowest p-8 rounded-xl border border-outline-variant shadow-sm flex flex-col items-center justify-center gap-4">
               <span className="material-symbols-outlined text-5xl text-success">check_circle</span>
               <div className="text-center">
                  <h2 className="text-2xl font-bold text-on-surface">اكتمل الاستيراد!</h2>

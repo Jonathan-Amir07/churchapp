@@ -110,7 +110,7 @@ export default function InstructorStudents() {
   const columns = [
     {
       key: 'name',
-      header: 'Name',
+      header: 'الاسم',
       cell: (item: Student) => (
         <div className="flex flex-col">
           <Link href={`/admin/students/${item.id}`} className="font-bold text-primary hover:underline">
@@ -120,15 +120,15 @@ export default function InstructorStudents() {
         </div>
       )
     },
-    { key: 'phone', header: 'Phone' },
-    { key: 'school', header: 'School' },
-    { key: 'totalXp', header: 'XP' },
+    { key: 'phone', header: 'رقم الهاتف' },
+    { key: 'school', header: 'المدرسة' },
+    { key: 'totalXp', header: 'النقاط' },
     {
       key: 'actions',
-      header: 'Actions',
+      header: 'إجراءات',
       cell: (item: Student) => (
         <Button variant="outline" size="sm" onClick={() => setSelectedStudent(item)}>
-          Award
+          مكافأة
         </Button>
       )
     }
@@ -138,42 +138,42 @@ export default function InstructorStudents() {
     <div className="space-y-6 animate-[slide-up_0.4s_ease-out]">
       <div className="flex flex-col md:flex-row md:justify-between md:items-end gap-4">
         <div className="flex flex-col gap-2">
-          <h1 className="text-3xl font-extrabold tracking-tight text-on-surface">Member Directory</h1>
-          <p className="text-on-surface-variant text-sm max-w-2xl">Search and manage all members in the system.</p>
+          <h1 className="text-3xl font-extrabold tracking-tight text-on-surface">دليل المخدومين</h1>
+          <p className="text-on-surface-variant text-sm max-w-2xl">بحث وإدارة جميع المخدومين في النظام.</p>
         </div>
         <div className="flex gap-3">
           <Link href="/admin/students/new">
             <Button variant="primary" className="flex items-center gap-2">
               <span className="material-symbols-outlined text-[18px]">person_add</span>
-              Add Student
+              إضافة مخدوم
             </Button>
           </Link>
           <Link href="/admin/students/import">
             <Button variant="outline" className="flex items-center gap-2">
               <span className="material-symbols-outlined text-[18px]">upload_file</span>
-              Import Excel
+              استيراد إكسيل
             </Button>
           </Link>
         </div>
       </div>
 
       {/* Advanced Search Bar */}
-      <div className="bg-surface p-4 rounded-xl shadow-sm border border-outline-variant grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
+      <div className="bg-surface-container-lowest p-4 rounded-xl shadow-card border border-outline-variant grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
         <div>
-          <label className="text-xs font-bold text-on-surface-variant mb-1 block">Name</label>
-          <Input name="name" value={filters.name} onChange={handleFilterChange} placeholder="Search name..." />
+          <label className="text-xs font-bold text-on-surface-variant mb-1 block">الاسم</label>
+          <Input name="name" value={filters.name} onChange={handleFilterChange} placeholder="البحث بالاسم..." />
         </div>
         <div>
-          <label className="text-xs font-bold text-on-surface-variant mb-1 block">Phone</label>
-          <Input name="phone" value={filters.phone} onChange={handleFilterChange} placeholder="Search phone..." />
+          <label className="text-xs font-bold text-on-surface-variant mb-1 block">رقم الهاتف</label>
+          <Input name="phone" value={filters.phone} onChange={handleFilterChange} placeholder="البحث برقم الهاتف..." />
         </div>
         <div>
-          <label className="text-xs font-bold text-on-surface-variant mb-1 block">School</label>
-          <Input name="school" value={filters.school} onChange={handleFilterChange} placeholder="Search school..." />
+          <label className="text-xs font-bold text-on-surface-variant mb-1 block">المدرسة</label>
+          <Input name="school" value={filters.school} onChange={handleFilterChange} placeholder="البحث بالمدرسة..." />
         </div>
         <div>
-          <label className="text-xs font-bold text-on-surface-variant mb-1 block">Address</label>
-          <Input name="address" value={filters.address} onChange={handleFilterChange} placeholder="Search address..." />
+          <label className="text-xs font-bold text-on-surface-variant mb-1 block">العنوان</label>
+          <Input name="address" value={filters.address} onChange={handleFilterChange} placeholder="البحث بالعنوان..." />
         </div>
       </div>
 
@@ -186,17 +186,17 @@ export default function InstructorStudents() {
       />
 
       {selectedStudent && (
-        <Modal isOpen={true} onClose={() => setSelectedStudent(null)} title={`Award ${selectedStudent.name}`}>
+        <Modal isOpen={true} onClose={() => setSelectedStudent(null)} title={`مكافأة ${selectedStudent.name}`}>
           <form onSubmit={handleAward} className="space-y-4 pt-2">
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="space-y-1.5">
-                <label className="text-xs font-bold text-on-surface-variant">XP</label>
+                <label className="text-xs font-bold text-on-surface-variant">نقاط الخبرة (XP)</label>
                 <Input type="number" min={5} max={1000} required value={xpToAdd} onChange={(e) => setXpToAdd(Number(e.target.value))} />
               </div>
             </div>
             <div className="flex gap-3 justify-end pt-4 border-t border-outline-variant">
-              <Button variant="outline" size="sm" type="button" onClick={() => setSelectedStudent(null)}>Cancel</Button>
-              <Button variant="primary" size="sm" type="submit">Award Now</Button>
+              <Button variant="outline" size="sm" type="button" onClick={() => setSelectedStudent(null)}>إلغاء</Button>
+              <Button variant="primary" size="sm" type="submit">مكافأة الآن</Button>
             </div>
           </form>
         </Modal>

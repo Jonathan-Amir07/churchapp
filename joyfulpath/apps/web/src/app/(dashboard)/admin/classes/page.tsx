@@ -105,21 +105,21 @@ export default function AdminClasses() {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div className="space-y-1">
           <h1 className="text-3xl font-extrabold tracking-tight text-on-surface">
-            {tNav('classes')}
+            الفصول
           </h1>
           <p className="text-on-surface-variant text-sm">
-            {tClasses('description')}
+            إدارة الفصول، تعيين الخدام، ومتابعة الطلاب.
           </p>
         </div>
         <Button variant="primary" size="sm" onClick={() => setIsOpen(true)} icon="add" iconPosition="start">
-          {tClasses('addClass')}
+          إضافة فصل
         </Button>
       </div>
 
       {/* Search Bar */}
       <SearchBar
         onSearch={handleSearch}
-        placeholder="Search classes by name, servant or grade level..."
+        placeholder="ابحث عن فصل، خادم، أو مرحلة دراسية..."
         resultCount={filteredClasses.length}
         totalCount={classes.length}
       />
@@ -130,14 +130,14 @@ export default function AdminClasses() {
           const name = isAr ? c.nameAr : c.nameEn;
 
           return (
-            <Card key={c.id} className="border border-outline-variant bg-surface-container-lowest shadow-sm flex flex-col justify-between">
+            <Card key={c.id} className="border border-outline-variant bg-surface-container-lowest shadow-card flex flex-col justify-between">
               <CardContent className="p-6 space-y-4">
                 <div className="flex justify-between items-start gap-4">
                   <span className="text-xs font-black bg-primary/10 text-primary px-2.5 py-1 rounded-full border border-primary/20">
                     {c.gradeLevel}
                   </span>
                   <span className="text-xs font-bold text-outline">
-                    {tClasses('studentsCount', { count: c.studentsCount })}
+                    {c.studentsCount} مخدوم
                   </span>
                 </div>
 
@@ -146,13 +146,13 @@ export default function AdminClasses() {
                     {name}
                   </CardTitle>
                   <p className="text-xs text-on-surface-variant">
-                    <strong>{tClasses('instructor')}:</strong> {c.instructorName}
+                    <strong>الخادم:</strong> {c.instructorName}
                   </p>
                 </div>
 
                 <div className="flex justify-end gap-3 pt-2">
                   <Button variant="ghost" size="sm" className="h-9 px-3 text-xs">
-                    {tCommon('edit')}
+                    تعديل
                   </Button>
                 </div>
               </CardContent>
@@ -163,58 +163,59 @@ export default function AdminClasses() {
         {loading ? (
           <div className="col-span-full text-center py-16 bg-surface-container-lowest border border-outline-variant/60 rounded-2xl">
             <span className="material-symbols-outlined text-[48px] text-outline animate-spin">refresh</span>
-            <p className="text-on-surface-variant text-sm font-bold mt-2">Loading classes...</p>
+            <p className="text-on-surface-variant text-sm font-bold mt-2">جاري تحميل الفصول...</p>
           </div>
         ) : filteredClasses.length === 0 ? (
           <div className="col-span-full text-center py-16 bg-surface-container-lowest border border-outline-variant/60 rounded-2xl">
             <span className="material-symbols-outlined text-[48px] text-outline">school</span>
-            <p className="text-on-surface-variant text-sm font-bold mt-2">No classes found.</p>
+            <p className="text-on-surface-variant text-sm font-bold mt-2">لا توجد فصول مطابقة.</p>
           </div>
         ) : null}
       </div>
 
       {/* Creation Modal */}
       {isOpen && (
-        <Modal isOpen={true} onClose={() => setIsOpen(false)} title={tClasses('addClass')}>
+        <Modal isOpen={true} onClose={() => setIsOpen(false)} title="إضافة فصل جديد">
           <form onSubmit={handleCreate} className="space-y-4 pt-2">
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="space-y-1.5">
-                <label className="text-xs font-bold text-on-surface-variant">{tClasses('classNameEn')}</label>
+                <label className="text-xs font-bold text-on-surface-variant">اسم الفصل (إنجليزي)</label>
                 <Input required value={nameEn} onChange={(e) => setNameEn(e.target.value)} placeholder="e.g. Primary Class A" />
               </div>
               <div className="space-y-1.5">
-                <label className="text-xs font-bold text-on-surface-variant">{tClasses('classNameAr')}</label>
-                <Input required value={nameAr} onChange={(e) => setNameAr(e.target.value)} placeholder="مثال: الفئة الابتدائية أ" />
+                <label className="text-xs font-bold text-on-surface-variant">اسم الفصل (عربي)</label>
+                <Input required value={nameAr} onChange={(e) => setNameAr(e.target.value)} placeholder="مثال: فصل الملائكة" />
               </div>
             </div>
 
             <div className="space-y-1.5">
-              <label className="text-xs font-bold text-on-surface-variant">{tClasses('instructorLabel')}</label>
+              <label className="text-xs font-bold text-on-surface-variant">الخادم</label>
               <Input
                 value={instructorName}
                 onChange={(e) => setInstructorName(e.target.value)}
+                placeholder="اسم الخادم"
               />
             </div>
 
             <div className="space-y-1.5">
-              <label className="text-xs font-bold text-on-surface-variant">{tClasses('gradeLevelParam')}</label>
+              <label className="text-xs font-bold text-on-surface-variant">المرحلة الدراسية</label>
               <select
                 value={gradeLevel}
                 onChange={(e) => setGradeLevel(e.target.value)}
                 className="w-full p-3 rounded-xl border border-outline-variant bg-surface-container-low text-on-surface text-sm font-medium"
               >
-                <option value="Grades 1-3">{tClasses('grades1to3')}</option>
-                <option value="Grades 4-6">{tClasses('grades4to6')}</option>
-                <option value="Grades 7+">{tClasses('seniors')}</option>
+                <option value="Grades 1-3">الصفوف 1 - 3</option>
+                <option value="Grades 4-6">الصفوف 4 - 6</option>
+                <option value="Grades 7+">الخريجين / شباب</option>
               </select>
             </div>
 
             <div className="flex gap-3 justify-end pt-4 border-t border-outline-variant">
               <Button variant="outline" size="sm" type="button" onClick={() => setIsOpen(false)}>
-                {tCommon('cancel')}
+                إلغاء
               </Button>
               <Button variant="primary" size="sm" type="submit">
-                {tClasses('createClassBtn')}
+                إنشاء الفصل
               </Button>
             </div>
           </form>

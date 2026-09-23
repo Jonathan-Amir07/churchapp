@@ -38,6 +38,8 @@ export class AuthService {
       email: user.email,
       role: user.role,
       forcePasswordChange: user.forcePasswordChange,
+      accountStatus: user.accountStatus,
+      isProfileComplete: user.isProfileComplete,
     };
 
     return {
@@ -49,6 +51,30 @@ export class AuthService {
         displayName: user.displayName,
       },
     };
+  }
+
+  async refreshToken(userId: string): Promise<string> {
+    const user = await this.usersService.findOne(userId);
+    if (!user || !user.isActive) {
+      throw new UnauthorizedException('Invalid or deactivated user');
+    }
+
+    const payload = {
+      sub: user.id,
+      username: user.username,
+      email: user.email,
+      role: user.role,
+      forcePasswordChange: user.forcePasswordChange,
+      accountStatus: user.accountStatus,
+      isProfileComplete: user.isProfileComplete,
+    };
+
+    return this.jwtService.signAsync(payload);
+  }
+
+  async changePassword(userId: string, newPass: string): Promise<string> {
+    await this.usersService.changePassword(userId, newPass);
+    return this.refreshToken(userId);
   }
 
   async forgotPassword(

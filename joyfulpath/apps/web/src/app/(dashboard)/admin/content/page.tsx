@@ -106,7 +106,7 @@ export default function AdminContentManagement() {
 
       {showReadingPlans && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
-          <div className="w-full max-w-2xl bg-surface rounded-3xl shadow-2xl border border-outline-variant overflow-hidden flex flex-col max-h-[80vh]">
+          <div className="w-full max-w-2xl bg-surface-container-lowest rounded-3xl shadow-2xl border border-outline-variant overflow-hidden flex flex-col max-h-[80vh]">
             <div className="px-6 py-5 border-b border-outline-variant flex items-center justify-between">
               <h2 className="text-lg font-extrabold text-on-surface">Reading Plans</h2>
               <button

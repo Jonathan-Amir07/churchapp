@@ -19,7 +19,13 @@ export async function getSessionState(id: string) {
   const client = getRedisClient();
   if (client) {
     const v = await client.get(PREFIX + id);
-    if (v) return JSON.parse(v);
+    if (v) {
+      try {
+        return JSON.parse(v);
+      } catch (e) {
+        console.error('Failed to parse session state from Redis', e);
+      }
+    }
   }
   // fallback to DB
   const db = await prisma.gameSession.findUnique({ where: { id } });
@@ -31,7 +37,14 @@ export async function updateSessionState(id: string, patch: any) {
   let current = { state: {} } as any;
   if (client) {
     const v = await client.get(PREFIX + id);
-    current = v ? JSON.parse(v) : { state: {} };
+    if (v) {
+      try {
+        current = JSON.parse(v);
+      } catch (e) {
+        console.error('Failed to parse current session state from Redis', e);
+        current = { state: {} };
+      }
+    }
   }
   current.state = { ...(current.state || {}), ...(patch || {}) };
   if (client) {

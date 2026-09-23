@@ -1,4 +1,3 @@
-import prisma from '@/lib/db';
 import { cookies } from 'next/headers';
 
 /**
@@ -17,10 +16,10 @@ export async function auth() {
         const parsed = JSON.parse(payloadStr);
         return {
           user: {
-            id: parsed.id,
+            id: parsed.sub,
             role: parsed.role,
             email: parsed.email,
-            name: parsed.name,
+            name: parsed.username,
             accountStatus: parsed.accountStatus || 'active',
             isProfileComplete: parsed.isProfileComplete || false,
           }
@@ -28,9 +27,7 @@ export async function auth() {
       }
     }
 
-    // No mock cookie and no token — unauthenticated
-
-    // No mock cookie and no token — unauthenticated
+    // No token — unauthenticated
     return null;
   } catch (err) {
     console.error('auth() error:', err);

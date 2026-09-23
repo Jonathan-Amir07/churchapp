@@ -23,30 +23,30 @@ export default function NewQuizPage() {
           <form onSubmit={handleSave} className="space-y-4">
             <div>
               <label className="block text-sm font-bold mb-1">Title</label>
-              <input type="text" required className="w-full p-2 border border-outline-variant rounded-md bg-surface" placeholder="e.g. Genesis Chapter 1 Quiz" />
+              <input type="text" required className="w-full p-2 border border-outline-variant rounded-md bg-surface-container-lowest" placeholder="e.g. Genesis Chapter 1 Quiz" />
             </div>
             
             <div>
               <label className="block text-sm font-bold mb-1">Description</label>
-              <textarea rows={3} className="w-full p-2 border border-outline-variant rounded-md bg-surface" placeholder="Brief description of the quiz..." />
+              <textarea rows={3} className="w-full p-2 border border-outline-variant rounded-md bg-surface-container-lowest" placeholder="Brief description of the quiz..." />
             </div>
 
             <div className="grid grid-cols-2 gap-4">
               <div>
                 <label className="block text-sm font-bold mb-1">Time Limit (minutes)</label>
-                <input type="number" defaultValue={15} className="w-full p-2 border border-outline-variant rounded-md bg-surface" />
+                <input type="number" defaultValue={15} className="w-full p-2 border border-outline-variant rounded-md bg-surface-container-lowest" />
               </div>
               <div>
                 <label className="block text-sm font-bold mb-1">Max Attempts</label>
-                <input type="number" defaultValue={1} className="w-full p-2 border border-outline-variant rounded-md bg-surface" />
+                <input type="number" defaultValue={1} className="w-full p-2 border border-outline-variant rounded-md bg-surface-container-lowest" />
               </div>
               <div>
                 <label className="block text-sm font-bold mb-1">Passing Score (%)</label>
-                <input type="number" defaultValue={70} className="w-full p-2 border border-outline-variant rounded-md bg-surface" />
+                <input type="number" defaultValue={70} className="w-full p-2 border border-outline-variant rounded-md bg-surface-container-lowest" />
               </div>
               <div>
                 <label className="block text-sm font-bold mb-1">XP Reward</label>
-                <input type="number" defaultValue={100} className="w-full p-2 border border-outline-variant rounded-md bg-surface" />
+                <input type="number" defaultValue={100} className="w-full p-2 border border-outline-variant rounded-md bg-surface-container-lowest" />
               </div>
             </div>
 

@@ -211,7 +211,7 @@ export default function StudentGames() {
  {activeGame === 'none' && (
  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
  {/* Card Verse Builder */}
- <Card variant="interactive" className="border border-outline-variant bg-surface-container-lowest shadow-sm flex flex-col justify-between">
+ <Card variant="interactive" className="border border-outline-variant bg-surface-container-lowest shadow-card flex flex-col justify-between">
  <CardContent className="p-6 space-y-4">
  <div className="w-12 h-12 rounded-xl bg-orange-100 flex items-center justify-center text-orange-600">
  <span className="material-symbols-outlined text-[28px]">format_list_numbered</span>
@@ -231,7 +231,7 @@ export default function StudentGames() {
  </Card>
 
  {/* Card Memory Match */}
- <Card variant="interactive" className="border border-outline-variant bg-surface-container-lowest shadow-sm flex flex-col justify-between">
+ <Card variant="interactive" className="border border-outline-variant bg-surface-container-lowest shadow-card flex flex-col justify-between">
  <CardContent className="p-6 space-y-4">
  <div className="w-12 h-12 rounded-xl bg-teal-100 flex items-center justify-center text-teal-600">
  <span className="material-symbols-outlined text-[28px]">grid_view</span>
@@ -251,7 +251,7 @@ export default function StudentGames() {
  </Card>
 
  {/* Card Guess the Saint / Who Am I? */}
- <Card variant="interactive" className="border border-outline-variant bg-surface-container-lowest shadow-sm flex flex-col justify-between">
+ <Card variant="interactive" className="border border-outline-variant bg-surface-container-lowest shadow-card flex flex-col justify-between">
  <CardContent className="p-6 space-y-4">
  <div className="w-12 h-12 rounded-xl bg-purple-100 flex items-center justify-center text-purple-600">
  <span className="material-symbols-outlined text-[28px]">help_center</span>
@@ -274,7 +274,7 @@ export default function StudentGames() {
 
  {/* Render Verse Builder Active Game */}
  {activeGame === 'verse_builder' && (
- <Card className="border border-outline-variant bg-surface-container-lowest shadow-md max-w-2xl mx-auto">
+ <Card className="border border-outline-variant bg-surface-container-lowest shadow-card max-w-2xl mx-auto">
  <CardContent className="p-6 space-y-6">
  <div className="flex justify-between items-center pb-3 border-b border-outline-variant/60">
  <h3 className="text-base font-extrabold text-on-surface">Verse Builder: {originalVerse.ref}</h3>
@@ -287,7 +287,7 @@ export default function StudentGames() {
  <span className="text-xs font-bold text-on-surface-variant">Arrange target order below:</span>
  <div className="min-h-16 p-4 rounded-xl border-2 border-dashed border-outline-variant bg-surface-container-low flex flex-wrap gap-2 items-center">
  {selectedWords?.map((word, idx) => (
- <span key={idx} className="bg-primary text-on-primary px-3 py-1.5 rounded-lg text-xs font-bold shadow-sm">
+ <span key={idx} className="bg-primary text-on-primary px-3 py-1.5 rounded-lg text-xs font-bold shadow-card">
  {word}
  </span>
  ))}
@@ -301,7 +301,7 @@ export default function StudentGames() {
  <button
  key={index}
  onClick={() => selectWord(word, index)}
- className="py-1.5 px-3 bg-surface-container-high hover:bg-surface-container-highest text-on-surface border border-outline-variant/40 rounded-xl text-xs font-bold transition-all hover:scale-105 active:scale-95 shadow-sm"
+ className="py-1.5 px-3 bg-surface-container-high hover:bg-surface-container-highest text-on-surface border border-outline-variant/40 rounded-xl text-xs font-bold transition-all hover:scale-105 active:scale-95 shadow-card"
  >
  {word}
  </button>
@@ -320,7 +320,7 @@ export default function StudentGames() {
 
  {/* Render Memory Match Active Game */}
  {activeGame === 'memory_match' && (
- <Card className="border border-outline-variant bg-surface-container-lowest shadow-md max-w-md mx-auto">
+ <Card className="border border-outline-variant bg-surface-container-lowest shadow-card max-w-md mx-auto">
  <CardContent className="p-6 space-y-6">
  <div className="flex justify-between items-center pb-3 border-b border-outline-variant/60">
  <div className="space-y-0.5">
@@ -344,7 +344,7 @@ export default function StudentGames() {
  className={`aspect-square rounded-2xl flex flex-col items-center justify-center border transition-all duration-300 font-extrabold text-xs select-none ${
  isFlipped
  ? 'bg-teal-50 border-teal-200 text-teal-700 rotate-0'
- : 'bg-primary border-primary/20 text-on-primary hover:scale-[1.03] active:scale-95 shadow-md'
+ : 'bg-primary border-primary/20 text-on-primary hover:scale-[1.03] active:scale-95 shadow-card'
  }`}
  >
  {isFlipped ? (
@@ -371,7 +371,7 @@ export default function StudentGames() {
 
  {/* Render Guess the Saint Active Game */}
  {activeGame === 'guess_saint' && (
- <Card className="border border-outline-variant bg-surface-container-lowest shadow-md max-w-lg mx-auto">
+ <Card className="border border-outline-variant bg-surface-container-lowest shadow-card max-w-lg mx-auto">
  <CardContent className="p-6 space-y-6">
  <div className="flex justify-between items-center pb-3 border-b border-outline-variant/60">
  <h3 className="text-base font-extrabold text-on-surface">Who Am I? (Saint #{saintStep + 1})</h3>
@@ -439,7 +439,7 @@ export default function StudentGames() {
  const progressPct = (completedCount / plan.chapters.length) * 100;
  
  return (
- <Card key={plan.id} className="border border-outline-variant bg-surface-container-lowest shadow-sm hover:shadow-md transition-all">
+ <Card key={plan.id} className="border border-outline-variant bg-surface-container-lowest shadow-card hover:shadow-card transition-all">
  <CardContent className="p-6 space-y-4">
  <div className="flex justify-between items-start gap-4">
  <div className="space-y-1">
@@ -475,7 +475,7 @@ export default function StudentGames() {
  onClick={() => toggleChapterRead(plan.id, ch.book, ch.chapter)}
  className={`py-1.5 px-3 rounded-xl border text-xs font-black transition-all flex items-center gap-1.5 ${
  ch.read
- ? 'bg-emerald-50 border-emerald-300 text-emerald-700 shadow-sm'
+ ? 'bg-emerald-50 border-emerald-300 text-emerald-700 shadow-card'
  : 'bg-surface-container-lowest border-outline-variant hover:bg-surface-container text-on-surface'
  }`}
  >
@@ -498,7 +498,7 @@ export default function StudentGames() {
  {activeHubTab === 'memorization' && (
  <div className="space-y-6 max-w-2xl mx-auto">
  {memorizedVerses?.map((verse) => (
- <Card key={verse.id} className="border border-outline-variant bg-surface-container-lowest shadow-sm hover:shadow-md transition-all">
+ <Card key={verse.id} className="border border-outline-variant bg-surface-container-lowest shadow-card hover:shadow-card transition-all">
  <CardContent className="p-6 space-y-4">
  <div className="flex justify-between items-start gap-4">
  <div className="space-y-1">

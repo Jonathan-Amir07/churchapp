@@ -154,28 +154,28 @@ export default function InstructorAttendancePage() {
       <div className="flex justify-between items-center flex-wrap gap-4">
         <h1 className="text-2xl font-extrabold text-on-surface flex items-center gap-2">
           <span className="material-symbols-outlined text-primary" style={{ fontVariationSettings: "'FILL' 1" }}>fact_check</span>
-          Attendance Management
+          إدارة الغياب والحضور
         </h1>
         <div className="flex items-center gap-4">
           <select 
             value={selectedClassId} 
             onChange={(e) => setSelectedClassId(e.target.value)}
-            className="rounded-lg border border-outline-variant bg-surface px-4 py-2 text-on-surface outline-none"
+            className="rounded-lg border border-outline-variant bg-surface-container-lowest px-4 py-2 text-on-surface outline-none"
           >
-            <option value="">Select a class...</option>
+            <option value="">اختر الفصل...</option>
             {classes.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
           </select>
-          <Button variant="primary" onClick={generateQr} icon="qr_code_2" disabled={!selectedClassId}>Generate QR Code</Button>
+          <Button variant="primary" onClick={generateQr} icon="qr_code_2" disabled={!selectedClassId}>إنشاء رمز الاستجابة السريعة (QR)</Button>
         </div>
       </div>
 
       <StaggerContainer className="grid grid-cols-1 md:grid-cols-3 gap-6">
         <StaggerItem className="md:col-span-2">
-          <Card className="border border-outline-variant bg-surface-container-lowest">
+          <Card className="border border-outline-variant bg-surface-container-lowest shadow-card">
             <CardContent className="p-6 space-y-4">
               <div className="flex justify-between items-center border-b border-outline-variant pb-3">
-                <h3 className="font-bold text-on-surface">Manual Roster — Today</h3>
-                <Button variant="success" size="sm" icon="save" onClick={saveAttendance} loading={isSaving}>Save Attendance</Button>
+                <h3 className="font-bold text-on-surface">قائمة الحضور — اليوم</h3>
+                <Button variant="success" size="sm" icon="save" onClick={saveAttendance} loading={isSaving}>حفظ الحضور</Button>
               </div>
 
               {loading ? (
@@ -186,7 +186,7 @@ export default function InstructorAttendancePage() {
                 </div>
               ) : students.length === 0 ? (
                 <div className="text-center py-8 text-on-surface-variant font-medium">
-                  {selectedClassId ? 'No students found in this class.' : 'Select a class to view students.'}
+                  {selectedClassId ? 'لا يوجد مخدومين في هذا الفصل.' : 'اختر فصلاً لعرض المخدومين.'}
                 </div>
               ) : (
                 <div className="divide-y divide-outline-variant">
@@ -194,9 +194,9 @@ export default function InstructorAttendancePage() {
                     <div key={student.id} className="flex justify-between items-center py-3">
                       <span className="font-medium text-on-surface">{student.displayName || student.firstName + ' ' + student.lastName}</span>
                       <div className="flex gap-2">
-                        <Button onClick={() => markStudent(student.id, 'present')} variant={student.status === 'present' ? 'success' : 'ghost'} size="sm">Present</Button>
-                        <Button onClick={() => markStudent(student.id, 'absent')} variant={student.status === 'absent' ? 'danger' : 'ghost'} size="sm">Absent</Button>
-                        <Button onClick={() => markStudent(student.id, 'late')} variant={student.status === 'late' ? 'secondary' : 'ghost'} size="sm">Late</Button>
+                        <Button onClick={() => markStudent(student.id, 'present')} variant={student.status === 'present' ? 'success' : 'ghost'} size="sm">حاضر</Button>
+                        <Button onClick={() => markStudent(student.id, 'absent')} variant={student.status === 'absent' ? 'danger' : 'ghost'} size="sm">غائب</Button>
+                        <Button onClick={() => markStudent(student.id, 'late')} variant={student.status === 'late' ? 'secondary' : 'ghost'} size="sm">متأخر</Button>
                       </div>
                     </div>
                   ))}
@@ -207,36 +207,36 @@ export default function InstructorAttendancePage() {
         </StaggerItem>
 
         <StaggerItem>
-          <Card className="border border-outline-variant bg-surface-container-lowest text-center h-full">
+          <Card className="border border-outline-variant bg-surface-container-lowest text-center h-full shadow-card">
             <CardContent className="p-8">
-              <h3 className="font-bold text-on-surface mb-4">Quick Check-in</h3>
+              <h3 className="font-bold text-on-surface mb-4">تسجيل سريع</h3>
               
               <form onSubmit={handleScan} className="mb-6 space-y-3">
                 <Input
-                  placeholder="Enter Student ID"
+                  placeholder="أدخل معرف المخدوم"
                   value={scanId}
                   onChange={(e) => setScanId(e.target.value)}
                   disabled={scanning || !selectedClassId}
                 />
                 <Button type="submit" variant="secondary" fullWidth loading={scanning} icon="qr_code_scanner" disabled={!selectedClassId}>
-                  Scan ID
+                  تسجيل المعرف
                 </Button>
               </form>
 
               <div className="border-t border-outline-variant pt-6">
                 {qrToken ? (
                   <div className="space-y-4 animate-[scale-in_0.3s_ease-out]">
-                    <div className="w-32 h-32 bg-surface mx-auto flex items-center justify-center border-4 border-primary rounded-xl shadow-inner">
+                    <div className="w-32 h-32 bg-surface-container-lowest mx-auto flex items-center justify-center border-4 border-primary rounded-xl shadow-inner">
                       <span className="material-symbols-outlined text-[48px] text-primary">qr_code_2</span>
                     </div>
                     <p className="text-xl font-black tracking-widest text-on-surface">{qrToken}</p>
-                    <p className="text-xs text-on-surface-variant">Students can scan this code or enter the PIN to mark themselves present.</p>
-                    <Button variant="outline" size="sm" onClick={() => setQrToken(null)}>Close</Button>
+                    <p className="text-xs text-on-surface-variant">يمكن للمخدومين مسح هذا الرمز أو إدخال الرمز لتسجيل الحضور بأنفسهم.</p>
+                    <Button variant="outline" size="sm" onClick={() => setQrToken(null)}>إغلاق</Button>
                   </div>
                 ) : (
                   <div className="py-4 text-on-surface-variant">
                     <span className="material-symbols-outlined text-[48px] mb-2 opacity-50">qr_code_scanner</span>
-                    <p className="text-sm">Generate a code to project on the screen.</p>
+                    <p className="text-sm">قم بإنشاء رمز لعرضه على الشاشة.</p>
                   </div>
                 )}
               </div>

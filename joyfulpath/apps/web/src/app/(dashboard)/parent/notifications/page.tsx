@@ -33,7 +33,7 @@ export default function ParentNotificationsPage() {
         <p className="font-body-md text-on-surface-variant mt-2 text-lg">متابعة غياب وتقييمات أطفالك في مدارس الأحد.</p>
       </div>
 
-      <div className="bg-surface rounded-xl border border-outline-variant shadow-sm overflow-hidden">
+      <div className="bg-surface-container-lowest rounded-xl border border-outline-variant shadow-sm overflow-hidden">
         <div className="p-6 border-b border-outline-variant bg-surface-container-lowest flex justify-between items-center">
           <h2 className="text-xl font-bold text-on-background flex items-center gap-2">
             <span className="material-symbols-outlined text-primary">notifications</span>
@@ -51,13 +51,18 @@ export default function ParentNotificationsPage() {
             <div className="p-8 text-center text-on-surface-variant">لا توجد إشعارات حالياً</div>
           ) : (
             notifications.map((notification: any) => {
-              const payload = JSON.parse(notification.payload || '{}');
+              let payload: Record<string, any> = {};
+              try {
+                payload = typeof notification.payload === 'string' ? JSON.parse(notification.payload) : (notification.payload || {});
+              } catch (e) {
+                console.error('Failed to parse notification payload', e);
+              }
               const isUnread = !notification.readAt;
 
               return (
                 <div 
                   key={notification.id} 
-                  className={`p-4 md:p-6 transition-colors flex gap-4 ${isUnread ? 'bg-primary/5 hover:bg-primary/10' : 'bg-surface hover:bg-surface-container-lowest'}`}
+                  className={`p-4 md:p-6 transition-colors flex gap-4 ${isUnread ? 'bg-primary/5 hover:bg-primary/10' : 'bg-surface-container-lowest hover:bg-surface-container-lowest'}`}
                 >
                   <div className={`w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0 ${isUnread ? 'bg-primary text-on-primary' : 'bg-surface-container-high text-on-surface-variant'}`}>
                     <span className="material-symbols-outlined">

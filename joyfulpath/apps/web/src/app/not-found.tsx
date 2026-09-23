@@ -1,3 +1,4 @@
+console.log("NOT FOUND RENDERED");
 import Link from 'next/link';
 
 export default function NotFound() {

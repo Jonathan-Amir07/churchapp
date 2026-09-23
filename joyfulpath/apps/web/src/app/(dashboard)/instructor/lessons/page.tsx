@@ -34,7 +34,7 @@ export default function InstructorLessonsPage() {
               <Link 
                 key={c.id} 
                 href={`/instructor/classes/${c.id}`} 
-                className="bg-surface p-6 rounded-xl border border-outline-variant shadow-sm hover:border-primary hover:shadow-md transition-all group block"
+                className="bg-surface-container-lowest p-6 rounded-xl border border-outline-variant shadow-sm hover:border-primary hover:shadow-md transition-all group block"
               >
                 <div className="flex justify-between items-start mb-4">
                   <div className="w-12 h-12 bg-primary/10 rounded-xl flex items-center justify-center text-primary group-hover:scale-110 transition-transform">
@@ -48,7 +48,7 @@ export default function InstructorLessonsPage() {
               </Link>
             ))
           ) : (
-            <div className="col-span-full bg-surface rounded-xl border border-outline-variant p-8 text-center text-on-surface-variant">
+            <div className="col-span-full bg-surface-container-lowest rounded-xl border border-outline-variant p-8 text-center text-on-surface-variant">
               <span className="material-symbols-outlined text-4xl mb-2 text-outline">menu_book</span>
               <p>لا توجد فصول مخصصة لك حالياً.</p>
             </div>

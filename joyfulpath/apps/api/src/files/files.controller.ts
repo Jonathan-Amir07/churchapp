@@ -15,7 +15,7 @@ import { Roles } from '../auth/roles.decorator';
 @Controller('files')
 @UseGuards(JwtAuthGuard, RolesGuard)
 export class FilesController {
-  @Roles('admin', 'instructor', 'priest')
+  @Roles('admin', 'instructor', 'priest', 'student', 'parent')
   @Post('upload')
   @UseInterceptors(
     FileInterceptor('file', {

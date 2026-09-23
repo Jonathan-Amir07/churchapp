@@ -1,7 +1,6 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { createClient } from '@/lib/supabase/client';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, ResponsiveContainer, BarChart, Bar, Cell, PieChart, Pie } from 'recharts';
 import { useTranslations, useLocale } from 'next-intl';
 import { Card, CardContent, CardTitle, CardHeader, ProgressBar, BadgeTag } from '@/components/ui';
@@ -66,7 +65,7 @@ export default function AdminAnalytics() {
  const locale = useLocale();
  const isAr = locale === 'ar';
 
- const supabase = createClient();
+
  const [stats, setStats] = useState({
  totalStudents: 62,
  totalPointsRedeemed: 1450,
@@ -75,14 +74,10 @@ export default function AdminAnalytics() {
 
  useEffect(() => {
  async function fetchStats() {
- // Mock fetching some basic stats from supabase
- // const { count: studentCount } = await supabase.from('user_profiles').select('*', { count: 'exact', head: true }).eq('role', 'student');
- // if (studentCount) {
- // setStats(prev => ({ ...prev, totalStudents: studentCount }));
- // }
+
  }
  fetchStats();
- }, [supabase]);
+ }, []);
 
  const redeemPct = Math.round((stats.totalPointsRedeemed / stats.totalPointsAwarded) * 100);
 

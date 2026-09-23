@@ -29,7 +29,7 @@ export default function InstructorDashboard() {
         {/* Left Column (Main Focus) */}
         <div className="md:col-span-8 flex flex-col gap-6">
           {/* Today's Lessons Timeline */}
-          <section className="bg-surface rounded-xl p-6 border border-outline-variant shadow-sm relative overflow-hidden">
+          <section className="bg-surface-container-lowest rounded-xl p-6 border border-outline-variant shadow-sm relative overflow-hidden">
             <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-transparent pointer-events-none"></div>
             <div className="flex justify-between items-center mb-6 relative z-10">
               <h2 className="text-2xl font-bold text-on-background flex items-center gap-2">
@@ -45,7 +45,7 @@ export default function InstructorDashboard() {
           </section>
           
           {/* Assigned Classes List */}
-          <section className="bg-surface rounded-xl border border-outline-variant shadow-sm overflow-hidden">
+          <section className="bg-surface-container-lowest rounded-xl border border-outline-variant shadow-sm overflow-hidden">
             <div className="p-6 border-b border-outline-variant bg-surface-container-lowest">
               <h2 className="text-2xl font-bold text-on-background flex items-center gap-2">
                 <span className="material-symbols-outlined text-secondary">class</span>
@@ -90,7 +90,7 @@ export default function InstructorDashboard() {
         {/* Right Column (Widgets & Feeds) */}
         <div className="md:col-span-4 flex flex-col gap-6">
           {/* Pending Grading Widget */}
-          <section className="bg-surface rounded-xl p-6 border border-outline-variant shadow-[0_4px_20px_rgba(33,79,199,0.04)] relative">
+          <section className="bg-surface-container-lowest rounded-xl p-6 border border-outline-variant shadow-card relative">
             <div className="flex items-start justify-between mb-4">
               <div>
                 <h2 className="text-xl font-bold text-on-background mb-1">تقييمات معلقة</h2>
@@ -117,13 +117,13 @@ export default function InstructorDashboard() {
               <h3 className="text-xl font-bold text-on-background group-hover:text-primary transition-colors">نظرة عامة على الحضور</h3>
               <p className="text-base text-on-surface-variant mt-1">سجل حضور اليوم لـ {stats?.totalStudents || 0} طالب</p>
             </div>
-            <div className="w-10 h-10 bg-surface rounded-full flex items-center justify-center border border-outline-variant group-hover:bg-primary/10 transition-colors">
+            <div className="w-10 h-10 bg-surface-container-lowest rounded-full flex items-center justify-center border border-outline-variant group-hover:bg-primary/10 transition-colors">
               <span className="material-symbols-outlined text-on-surface-variant group-hover:text-primary rtl:-scale-x-100">arrow_forward</span>
             </div>
           </Link>
           
           {/* Recent Student Activity Feed */}
-          <section className="bg-surface rounded-xl p-6 border border-outline-variant">
+          <section className="bg-surface-container-lowest rounded-xl p-6 border border-outline-variant">
             <h2 className="text-xl font-bold text-on-background mb-4">نشاط الطلاب الأخير</h2>
             <div className="space-y-4">
               {stats?.recentActivity?.length === 0 ? (

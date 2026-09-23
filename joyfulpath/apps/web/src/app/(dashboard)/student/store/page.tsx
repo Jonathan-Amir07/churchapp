@@ -11,6 +11,7 @@ export default function StudentStorePage() {
   const locale = useLocale();
   const [rewards, setRewards] = useState<any[]>([]);
   const [points, setPoints] = useState(0);
+  const [isLoading, setIsLoading] = useState(true);
   const addToast = useNotificationStore(s => s.addToast);
 
   useEffect(() => {
@@ -30,6 +31,8 @@ export default function StudentStorePage() {
         }
       } catch (e) {
         console.error(e);
+      } finally {
+        setIsLoading(false);
       }
     }
     loadData();
@@ -75,9 +78,14 @@ export default function StudentStorePage() {
       </HeroBanner>
 
       <StaggerContainer className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        {rewards?.map(reward => (
+        {isLoading && (
+          [1, 2, 3].map((i) => (
+            <div key={i} className="h-64 bg-surface-container-low animate-pulse rounded-2xl"></div>
+          ))
+        )}
+        {!isLoading && rewards?.map(reward => (
           <StaggerItem key={reward.id}>
-            <Card variant="interactive" className="border border-outline-variant bg-surface-container-lowest h-full">
+            <Card variant="interactive" className="border border-outline-variant bg-surface-container-lowest shadow-card h-full">
               <CardContent className="p-6 text-center space-y-4">
                 <div className="w-24 h-24 bg-surface-container rounded-full mx-auto flex items-center justify-center text-primary overflow-hidden">
                   {reward.imageUrl ? (

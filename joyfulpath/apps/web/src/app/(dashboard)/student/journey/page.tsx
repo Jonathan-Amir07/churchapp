@@ -86,7 +86,7 @@ export default function MyJourneyPage() {
               <div key={node.id} className="absolute z-20 flex flex-col items-center gap-2" style={{ top: node.top, right: node.right }}>
                 <div className="w-24 h-24 rounded-[2rem] bg-inverse-surface/10 backdrop-blur-md border-4 border-surface-variant flex items-center justify-center shadow-xl relative">
                   <span className="material-symbols-outlined text-[48px] text-primary" style={{ fontVariationSettings: "'FILL' 1" }}>church</span>
-                  <div className="absolute -bottom-3 right-1/2 translate-x-1/2 bg-surface text-primary font-bold text-xs px-3 py-1 rounded-full border-2 border-surface-variant shadow-sm whitespace-nowrap">
+                  <div className="absolute -bottom-3 right-1/2 translate-x-1/2 bg-surface-container-lowest text-primary font-bold text-xs px-3 py-1 rounded-full border-2 border-surface-variant shadow-sm whitespace-nowrap">
                     {currentLocale === 'en' ? 'The Church' : 'الكنيسة'}
                   </div>
                 </div>
@@ -121,7 +121,7 @@ export default function MyJourneyPage() {
 
               {/* Tooltip / Details */}
               {(activeNode === node.id || isCurrent) && (
-                <div className="glass-panel px-4 py-3 rounded-2xl shadow-lg flex flex-col border-2 border-primary/20 bg-surface/95 z-40 max-w-xs">
+                <div className="glass-panel px-4 py-3 rounded-2xl shadow-lg flex flex-col border-2 border-primary/20 bg-surface-container-lowest/95 z-40 max-w-xs">
                   <span className="text-xs font-black text-primary mb-1">
                     {currentLocale === 'en' ? node.titleEn : node.titleAr}
                   </span>

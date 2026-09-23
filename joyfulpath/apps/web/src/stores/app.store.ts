@@ -140,7 +140,11 @@ interface AppState {
   tasks: Task[];
   quizzes: Quiz[];
   
+  // UI State
+  isMobileSidebarOpen: boolean;
+  
   // Actions
+  toggleMobileSidebar: (isOpen?: boolean) => void;
   addTask: (task: Omit<Task, 'id' | 'status' | 'submittedAt' | 'submissionText' | 'studentName'>) => void;
   addQuiz: (quiz: Omit<Quiz, 'id' | 'status'>) => void;
   addXP: (amount: number) => void;
@@ -167,6 +171,8 @@ export const useAppStore = create<AppState>()(
       level: 3,
       streak: 5,
       longestStreak: 12,
+      
+      isMobileSidebarOpen: false,
       
       monthlyRedemptionsCount: 0,
       lastRedemptionMonth: '',
@@ -537,6 +543,10 @@ export const useAppStore = create<AppState>()(
         });
       },
       
+      toggleMobileSidebar: (isOpen) => set((state) => ({ 
+        isMobileSidebarOpen: isOpen !== undefined ? isOpen : !state.isMobileSidebarOpen 
+      })),
+
       addPoints: (amount) => set((state) => ({ points: state.points + amount })),
       
       addPrayer: (type, content, isPrivate, studentName) => set((state) => ({

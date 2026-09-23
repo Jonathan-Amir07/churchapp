@@ -24,12 +24,12 @@ export default function NewTaskPage() {
           <form onSubmit={handleSave} className="space-y-4">
             <div>
               <label className="block text-sm font-bold mb-1">Title</label>
-              <input type="text" required className="w-full p-2 border border-outline-variant rounded-md bg-surface" placeholder="e.g. Memorize Psalm 50" />
+              <input type="text" required className="w-full p-2 border border-outline-variant rounded-md bg-surface-container-lowest" placeholder="e.g. Memorize Psalm 50" />
             </div>
             
             <div>
               <label className="block text-sm font-bold mb-1">Task Type</label>
-              <select className="w-full p-2 border border-outline-variant rounded-md bg-surface">
+              <select className="w-full p-2 border border-outline-variant rounded-md bg-surface-container-lowest">
                 <option>Memorization</option>
                 <option>Reading Summary</option>
                 <option>Homework Upload</option>
@@ -38,17 +38,17 @@ export default function NewTaskPage() {
 
             <div>
               <label className="block text-sm font-bold mb-1">Description / Instructions</label>
-              <textarea required rows={4} className="w-full p-2 border border-outline-variant rounded-md bg-surface" placeholder="Write what the student needs to do..." />
+              <textarea required rows={4} className="w-full p-2 border border-outline-variant rounded-md bg-surface-container-lowest" placeholder="Write what the student needs to do..." />
             </div>
 
             <div className="grid grid-cols-2 gap-4">
               <div>
                 <label className="block text-sm font-bold mb-1">XP Reward</label>
-                <input type="number" defaultValue={50} className="w-full p-2 border border-outline-variant rounded-md bg-surface" />
+                <input type="number" defaultValue={50} className="w-full p-2 border border-outline-variant rounded-md bg-surface-container-lowest" />
               </div>
               <div>
                 <label className="block text-sm font-bold mb-1">Due Date</label>
-                <input type="date" required className="w-full p-2 border border-outline-variant rounded-md bg-surface" />
+                <input type="date" required className="w-full p-2 border border-outline-variant rounded-md bg-surface-container-lowest" />
               </div>
             </div>
 

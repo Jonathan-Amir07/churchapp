@@ -76,7 +76,7 @@ export default function TakeQuizPage() {
             </div>
           ) : (
             <div className="pt-4">
-              <textarea rows={6} className="w-full p-4 border border-outline-variant rounded-xl bg-surface focus:border-primary" placeholder="Type your answer here..." />
+              <textarea rows={6} className="w-full p-4 border border-outline-variant rounded-xl bg-surface-container-lowest focus:border-primary" placeholder="Type your answer here..." />
             </div>
           )}
         </CardContent>

@@ -120,23 +120,23 @@ export default function ImportStudentsPage() {
     <div className="space-y-6 animate-[slide-up_0.4s_ease-out] pb-12">
       <div className="flex flex-col md:flex-row md:justify-between md:items-end gap-4">
         <div className="flex flex-col gap-2">
-          <h1 className="text-3xl font-extrabold tracking-tight text-on-surface">Import Students</h1>
-          <p className="text-on-surface-variant text-sm max-w-2xl">Upload an Excel file to bulk create student accounts.</p>
+          <h1 className="text-3xl font-extrabold tracking-tight text-on-surface">استيراد المخدومين</h1>
+          <p className="text-on-surface-variant text-sm max-w-2xl">قم برفع ملف إكسيل لإنشاء حسابات المخدومين دفعة واحدة.</p>
         </div>
         <div className="flex gap-3">
           <Button variant="outline" onClick={handleDownloadTemplate} className="flex items-center gap-2">
             <span className="material-symbols-outlined text-[18px]">download</span>
-            Download Template
+            تحميل القالب
           </Button>
         </div>
       </div>
 
       {!previewData && !results && (
-        <div className="bg-surface p-12 rounded-xl border-2 border-dashed border-outline-variant flex flex-col items-center justify-center gap-4">
+        <div className="bg-surface-container-lowest p-12 rounded-xl border-2 border-dashed border-outline-variant flex flex-col items-center justify-center gap-4">
            <span className="material-symbols-outlined text-4xl text-on-surface-variant/50">upload_file</span>
            <div className="text-center">
-              <h3 className="font-bold text-on-surface">Upload Excel File</h3>
-              <p className="text-sm text-on-surface-variant">Supported formats: .xlsx</p>
+              <h3 className="font-bold text-on-surface">رفع ملف إكسيل</h3>
+              <p className="text-sm text-on-surface-variant">الصيغ المدعومة: .xlsx</p>
            </div>
            <input 
               type="file" 
@@ -151,31 +151,31 @@ export default function ImportStudentsPage() {
               onClick={() => fileInputRef.current?.click()}
               disabled={isUploading}
            >
-              {isUploading ? 'Previewing...' : 'Browse & Preview'}
+              {isUploading ? 'جاري التحميل...' : 'تصفح ومعاينة'}
            </Button>
         </div>
       )}
 
       {previewData && !results && (
         <div className="space-y-6">
-          <div className="bg-surface p-6 rounded-xl border border-outline-variant shadow-sm flex flex-col gap-4">
-            <h2 className="text-xl font-bold text-on-surface">Preview Import</h2>
+          <div className="bg-surface-container-lowest p-6 rounded-xl border border-outline-variant shadow-card flex flex-col gap-4">
+            <h2 className="text-xl font-bold text-on-surface">معاينة الاستيراد</h2>
             <div className="flex gap-4 items-center flex-wrap">
                <div className="bg-success/10 text-success px-4 py-2 rounded-lg font-bold">
-                  {previewData.validCount} Valid Rows
+                  {previewData.validCount} صفوف صالحة
                </div>
                <div className="bg-error/10 text-error px-4 py-2 rounded-lg font-bold">
-                  {previewData.invalidCount} Invalid Rows
+                  {previewData.invalidCount} صفوف غير صالحة
                </div>
             </div>
 
             {previewData.invalidCount > 0 && (
               <div className="bg-error/5 border border-error/20 rounded-lg p-4 mt-2">
-                <h3 className="font-bold text-error mb-2">Errors Found</h3>
+                <h3 className="font-bold text-error mb-2">أخطاء تم العثور عليها</h3>
                 <ul className="text-sm text-error space-y-1 list-disc ps-5">
                   {previewData.invalidRows.map((r: any, i: number) => (
                     <li key={i}>
-                      Row {r.index}: {r.errors.join(', ')}
+                      صف {r.index}: {r.errors.join(', ')}
                     </li>
                   ))}
                 </ul>
@@ -183,25 +183,25 @@ export default function ImportStudentsPage() {
             )}
 
             <div className="border-t border-outline-variant pt-4 mt-2 flex flex-col gap-2">
-               <label className="text-sm font-bold text-on-surface-variant">Assign to Class (Optional)</label>
+               <label className="text-sm font-bold text-on-surface-variant">تعيين لفصل (اختياري)</label>
                <select 
                  className="p-2 border border-outline-variant rounded-lg max-w-sm"
                  value={selectedClassId}
                  onChange={e => setSelectedClassId(e.target.value)}
                >
-                 <option value="">-- No Class --</option>
+                 <option value="">-- بدون فصل --</option>
                  {classes.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
                </select>
             </div>
 
             <div className="flex gap-4 mt-4">
-               <Button variant="outline" onClick={() => setPreviewData(null)}>Cancel</Button>
+               <Button variant="outline" onClick={() => setPreviewData(null)}>إلغاء</Button>
                <Button 
                  variant="primary" 
                  disabled={isExecuting || previewData.validCount === 0}
                  onClick={executeImport}
                >
-                 {isExecuting ? 'Importing...' : 'Execute Import'}
+                 {isExecuting ? 'جاري الاستيراد...' : 'تأكيد الاستيراد'}
                </Button>
             </div>
           </div>
@@ -210,11 +210,11 @@ export default function ImportStudentsPage() {
 
       {results && (
         <div className="space-y-6">
-           <div className="bg-surface p-8 rounded-xl border border-outline-variant shadow-sm flex flex-col items-center justify-center gap-4">
+           <div className="bg-surface-container-lowest p-8 rounded-xl border border-outline-variant shadow-card flex flex-col items-center justify-center gap-4">
               <span className="material-symbols-outlined text-5xl text-success">check_circle</span>
               <div className="text-center">
-                 <h2 className="text-2xl font-bold text-on-surface">Import Completed!</h2>
-                 <p className="text-on-surface-variant">Created: {results.successful} | Failed: {results.failed}</p>
+                 <h2 className="text-2xl font-bold text-on-surface">تم الاستيراد بنجاح!</h2>
+                 <p className="text-on-surface-variant">تمت الإضافة: {results.successful} | فشل: {results.failed}</p>
                  {results.errors && results.errors.length > 0 && (
                     <div className="text-error text-sm mt-2 max-h-32 overflow-y-auto border p-2 text-start">
                       {results.errors?.map((r: any, i: number) => <div key={i}>{r.error}</div>)}
@@ -224,7 +224,7 @@ export default function ImportStudentsPage() {
               
               <div className="mt-4 flex gap-4">
                  <Button variant="outline" onClick={() => window.location.href = '/admin/students'}>
-                    Back to Students
+                    العودة للمخدومين
                  </Button>
               </div>
            </div>

@@ -191,7 +191,7 @@ export default function AdminUsers() {
   }, [addToast, tCommon]);
 
   const downloadTemplate = () => {
-    const csvContent = 'name,usernameOrEmail,role,password\nJohn Doe,john@joyfulpath.org,student,password123';
+    const csvContent = 'name,usernameOrEmail,role,password\nJohn Doe,john@nwaslsama.org,student,password123';
     const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
     const url = URL.createObjectURL(blob);
     const link = document.createElement('a');

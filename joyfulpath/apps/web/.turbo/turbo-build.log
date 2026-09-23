@@ -3,14 +3,16 @@
 > next build
 
 ▲ Next.js 16.2.9 (Turbopack)
-- Environments: .env.local
+- Environments: .env.local, .env
 
   Creating an optimized production build ...
-✓ Compiled successfully in 5.3s
-  Finished TypeScript in 7.6s    ✓ Finished TypeScript in 7.6s 
-  Collecting page data using 21 workers in 2.5s    ✓ Collecting page data using 21 workers in 2.5s 
-✓ Generating static pages using 21 workers (19/19) in 646ms
-  Finalizing page optimization in 11ms    ✓ Finalizing page optimization in 11ms 
+✓ Compiled successfully in 9.1s
+  Finished TypeScript in 15.7s    ✓ Finished TypeScript in 15.7s 
+NOT FOUND RENDERED
+  Collecting page data using 21 workers in 5.4s    ✓ Collecting page data using 21 workers in 5.4s 
+NOT FOUND RENDERED
+✓ Generating static pages using 21 workers (20/20) in 1162ms
+  Finalizing page optimization in 26ms    ✓ Finalizing page optimization in 26ms 
 
 Route (app)
 ┌ ƒ /
@@ -35,6 +37,7 @@ Route (app)
 ├ ƒ /admin/students
 ├ ƒ /admin/students/[id]
 ├ ƒ /admin/students/import
+├ ƒ /admin/students/new
 ├ ƒ /admin/tasks
 ├ ƒ /admin/users
 ├ ƒ /branches
@@ -45,14 +48,20 @@ Route (app)
 ├ ƒ /gallery
 ├ ƒ /instructor/analytics
 ├ ƒ /instructor/attendance
+├ ƒ /instructor/classes
 ├ ƒ /instructor/classes/[id]
 ├ ƒ /instructor/dashboard
+├ ƒ /instructor/lessons
 ├ ƒ /instructor/lessons/new
 ├ ƒ /instructor/prayer-requests
+├ ƒ /instructor/quizzes
 ├ ƒ /instructor/quizzes/[id]/builder
 ├ ƒ /instructor/quizzes/[id]/grading
 ├ ƒ /instructor/quizzes/new
 ├ ƒ /instructor/store
+├ ƒ /instructor/students
+├ ƒ /instructor/students/[classId]
+├ ƒ /instructor/students/[classId]/import
 ├ ƒ /instructor/tasks
 ├ ƒ /instructor/tasks/[taskId]
 ├ ƒ /instructor/tasks/new
@@ -62,6 +71,7 @@ Route (app)
 ├ ƒ /parent/events
 ├ ƒ /parent/gamification
 ├ ƒ /parent/grades
+├ ƒ /parent/notifications
 ├ ƒ /parent/profile
 ├ ƒ /parent/reading
 ├ ƒ /parent/reports
@@ -77,6 +87,7 @@ Route (app)
 ├ ƒ /register
 ├ ƒ /reset-password
 ├ ƒ /saints
+├ ƒ /student/analytics
 ├ ƒ /student/attendance
 ├ ƒ /student/badges
 ├ ƒ /student/challenges
@@ -99,6 +110,7 @@ Route (app)
 ├ ƒ /student/tasks
 ├ ƒ /students/[id]
 ├ ƒ /terms
+├ ƒ /test
 ├ ƒ /unauthorized
 └ ƒ /verify-email
 

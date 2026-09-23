@@ -73,12 +73,21 @@ export class UsersService {
   }
 
   async completeProfile(id: string, data: any): Promise<User> {
+    const { fatherName, fatherPhone, motherName, motherPhone, dateOfBirth, ...validData } = data;
+    
+    // Cast dateOfBirth to Date if present
+    const processedData: any = {
+      ...validData,
+      isProfileComplete: true,
+    };
+    
+    if (dateOfBirth) {
+      processedData.dateOfBirth = new Date(dateOfBirth);
+    }
+
     return this.prisma.user.update({
       where: { id },
-      data: {
-        ...data,
-        isProfileComplete: true,
-      },
+      data: processedData,
     });
   }
 
@@ -199,6 +208,14 @@ export class UsersService {
     return this.prisma.user.update({
       where: { id },
       data: { passwordHash, forcePasswordChange: true },
+    });
+  }
+
+  async changePassword(id: string, newPass: string): Promise<User> {
+    const passwordHash = await bcrypt.hash(newPass, 10);
+    return this.prisma.user.update({
+      where: { id },
+      data: { passwordHash, forcePasswordChange: false },
     });
   }
 

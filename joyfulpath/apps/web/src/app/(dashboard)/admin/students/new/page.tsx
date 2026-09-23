@@ -73,7 +73,7 @@ export default function NewStudentPage() {
         <p className="text-on-surface-variant text-sm">قم بإدخال بيانات الطالب وعائلته لإنشاء حسابه وتخصيصه لفصل.</p>
       </div>
 
-      <form onSubmit={handleSubmit} className="space-y-8 bg-surface p-8 rounded-xl border border-outline-variant shadow-sm">
+      <form onSubmit={handleSubmit} className="space-y-8 bg-surface-container-lowest p-8 rounded-xl border border-outline-variant shadow-card">
         
         {/* Student Section */}
         <div className="space-y-4">
@@ -117,7 +117,7 @@ export default function NewStudentPage() {
                 name="classId" 
                 value={formData.classId} 
                 onChange={handleChange}
-                className="w-full rounded-lg border border-outline-variant bg-surface px-4 py-2 text-on-surface focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-colors"
+                className="w-full rounded-lg border border-outline-variant bg-surface-container-lowest px-4 py-2 text-on-surface focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-colors"
               >
                 <option value="">-- بدون فصل --</option>
                 {classes.map(c => (

@@ -2,7 +2,6 @@
 
 import { useState } from 'react';
 import { useTranslations, useLocale } from 'next-intl';
-import { createClient } from '@/lib/supabase/client';
 import { Button, Input, Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui';
 import { useNotificationStore } from '@/stores/notifications.store';
 import Link from 'next/link';

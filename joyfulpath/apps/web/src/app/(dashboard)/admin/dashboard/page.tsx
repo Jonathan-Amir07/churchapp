@@ -37,7 +37,7 @@ export default function AdminDashboard() {
 
       {/* Summary Cards (KPI Widgets) */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-        <div className="bg-surface rounded-xl p-6 border border-surface-variant shadow-[0_4px_20px_rgba(33,79,199,0.04)] flex flex-col gap-2">
+        <div className="bg-surface-container-lowest rounded-xl p-6 border border-outline-variant shadow-card flex flex-col gap-2">
           <div className="flex justify-between items-center text-on-surface-variant">
             <span className="text-xs font-bold tracking-widest uppercase">إجمالي الطلاب</span>
             <span className="material-symbols-outlined text-tertiary-container">group</span>
@@ -49,7 +49,7 @@ export default function AdminDashboard() {
           </div>
         </div>
 
-        <div className="bg-surface rounded-xl p-6 border border-surface-variant shadow-[0_4px_20px_rgba(33,79,199,0.04)] flex flex-col gap-2">
+        <div className="bg-surface-container-lowest rounded-xl p-6 border border-outline-variant shadow-card flex flex-col gap-2">
           <div className="flex justify-between items-center text-on-surface-variant">
             <span className="text-xs font-bold tracking-widest uppercase">الصفوف النشطة</span>
             <span className="material-symbols-outlined text-primary-container">class</span>
@@ -61,7 +61,7 @@ export default function AdminDashboard() {
           </div>
         </div>
 
-        <div className="bg-surface rounded-xl p-6 border border-surface-variant shadow-[0_4px_20px_rgba(33,79,199,0.04)] flex flex-col gap-2">
+        <div className="bg-surface-container-lowest rounded-xl p-6 border border-outline-variant shadow-card flex flex-col gap-2">
           <div className="flex justify-between items-center text-on-surface-variant">
             <span className="text-xs font-bold tracking-widest uppercase">المهام المعلقة</span>
             <span className="material-symbols-outlined text-secondary-container">pending_actions</span>
@@ -73,7 +73,7 @@ export default function AdminDashboard() {
           </div>
         </div>
 
-        <div className="bg-surface rounded-xl p-6 border border-surface-variant shadow-[0_4px_20px_rgba(33,79,199,0.04)] flex flex-col gap-2">
+        <div className="bg-surface-container-lowest rounded-xl p-6 border border-outline-variant shadow-card flex flex-col gap-2">
           <div className="flex justify-between items-center text-on-surface-variant">
             <span className="text-xs font-bold tracking-widest uppercase">تسجيلات الدخول الأخيرة</span>
             <span className="material-symbols-outlined text-tertiary">login</span>
@@ -89,7 +89,7 @@ export default function AdminDashboard() {
       {/* Main Dashboard Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Student Growth Analytics */}
-        <div className="lg:col-span-2 bg-surface rounded-xl border border-surface-variant shadow-[0_4px_20px_rgba(33,79,199,0.04)] p-6 flex flex-col">
+        <div className="lg:col-span-2 bg-surface-container-lowest rounded-xl border border-outline-variant shadow-card p-6 flex flex-col">
           <h3 className="text-xl font-bold text-on-surface mb-6">تحليلات نمو الطلاب</h3>
           <div className="relative w-full h-64 mt-auto rounded-lg overflow-hidden bg-surface-container-lowest border border-outline-variant flex items-end px-4 pt-8 pb-4">
             <div className="absolute end-0 top-0 bottom-0 w-12 flex flex-col justify-between text-xs text-outline-variant pe-2 py-4 items-end">
@@ -126,7 +126,7 @@ export default function AdminDashboard() {
         </div>
 
         {/* Activity Timeline */}
-        <div className="bg-surface rounded-xl border border-surface-variant shadow-[0_4px_20px_rgba(33,79,199,0.04)] p-6">
+        <div className="bg-surface-container-lowest rounded-xl border border-outline-variant shadow-card p-6">
           <h3 className="text-xl font-bold text-on-surface mb-6">الجدول الزمني للنشاط</h3>
           <div className="relative border-e-2 border-surface-variant pe-6 flex flex-col gap-6">
             <div className="relative">
@@ -158,7 +158,7 @@ export default function AdminDashboard() {
       </div>
 
       {/* Data Table Section */}
-      <div className="bg-surface rounded-xl border border-surface-variant shadow-[0_4px_20px_rgba(33,79,199,0.04)] overflow-hidden flex flex-col">
+      <div className="bg-surface-container-lowest rounded-xl border border-outline-variant shadow-card overflow-hidden flex flex-col">
         <div className="p-6 border-b border-surface-variant flex justify-between items-center bg-surface-container-lowest">
           <h3 className="text-xl font-bold text-on-surface">أحدث التسجيلات</h3>
           <button className="text-primary text-xs font-bold tracking-widest uppercase hover:underline">عرض الكل</button>

@@ -72,9 +72,8 @@ export default function LoginPage() {
         const data = await res.json();
         addToast(tCommon('success'), 'success');
         
-        // Save token
-        document.cookie = `ACCESS_TOKEN=${data.access_token}; path=/; max-age=${2 * 60 * 60}`;
-        
+        // The API now sets the ACCESS_TOKEN cookie securely via Set-Cookie (HttpOnly)
+        // No need to set it via document.cookie here.
         const user = data.user;
         if (user.forcePasswordChange) {
           document.cookie = `HAS_CHANGED_PASSWORD=false; path=/`;
@@ -86,8 +85,12 @@ export default function LoginPage() {
         const userRole = user.role;
         
         const redirectPath =
-          (userRole === 'admin' || userRole === 'instructor' || userRole === 'priest')
+          userRole === 'admin'
             ? `/admin/dashboard`
+            : userRole === 'priest'
+            ? `/priest/dashboard`
+            : userRole === 'instructor'
+            ? `/instructor/dashboard`
             : userRole === 'parent'
             ? `/parent/dashboard`
             : `/student/dashboard`;
@@ -119,7 +122,7 @@ export default function LoginPage() {
         </Button>
       </div>
 
-      <Card variant="elevated" className="w-full overflow-hidden border border-outline-variant bg-surface-container-lowest/90 backdrop-blur-md shadow-2xl rounded-3xl grid grid-cols-1 md:grid-cols-2">
+      <Card variant="elevated" className="w-full overflow-hidden border border-outline-variant bg-surface-container-lowest/90 backdrop-blur-md shadow-elevated rounded-2xl grid grid-cols-1 md:grid-cols-2">
         
         {/* Left Side: Coptic Imagery */}
         <div className="hidden md:flex flex-col justify-between bg-gradient-to-br from-primary via-primary-container to-secondary p-12 relative overflow-hidden text-on-primary">
@@ -138,7 +141,7 @@ export default function LoginPage() {
             <h2 className="text-4xl font-extrabold leading-tight">
               {currentLocale === 'en' ? 'Continue Your Spiritual Journey' : 'أكمل مسارك الروحي'}
             </h2>
-            <p className="text-primary-container-on font-medium text-lg opacity-90 leading-relaxed">
+            <p className="text-on-primary-container font-medium text-lg opacity-90 leading-relaxed">
               {currentLocale === 'en' 
                 ? 'Join your Sunday School class, learn biblical history, and earn spiritual blessings along the way.'
                 : 'انضم لفصل مدارس الأحد، وتعلم تاريخ الكتاب المقدس، واحصل على بركات روحية في مسارك.'}
@@ -267,7 +270,7 @@ export default function LoginPage() {
                   onClick={() => {
                     setRole(acc.roleName);
                     setUsername(acc.user);
-                    setPassword('password123');
+                    setPassword('demo123');
                   }}
                   className="px-2.5 py-2 rounded-xl text-xs font-extrabold border border-outline-variant hover:border-primary hover:bg-primary/5 active:scale-95 transition-all text-start flex flex-col justify-center"
                 >
@@ -277,7 +280,7 @@ export default function LoginPage() {
               ))}
             </div>
             <p className="text-[11px] text-center text-on-surface-variant mt-2 font-medium">
-              {currentLocale === 'en' ? 'Password for all demo accounts: password123' : 'كلمة المرور لجميع الحسابات التجريبية: password123'}
+              {currentLocale === 'en' ? 'Password for all demo accounts: demo123' : 'كلمة المرور لجميع الحسابات التجريبية: demo123'}
             </p>
           </div>
 

@@ -3,7 +3,6 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useTranslations, useLocale } from 'next-intl';
-import { createClient } from '@/lib/supabase/client';
 import { Button, Input, Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui';
 import { useNotificationStore } from '@/stores/notifications.store';
 
@@ -12,7 +11,6 @@ export default function ChangePasswordPage() {
   const currentLocale = useLocale();
   const router = useRouter();
   const addToast = useNotificationStore((state) => state.addToast);
-  const supabase = createClient();
 
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');

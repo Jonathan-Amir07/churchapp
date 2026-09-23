@@ -82,7 +82,7 @@ export default function StudentDashboard() {
             icon="local_fire_department"
             label={t('streak')}
             value={`${streak} ${t('days')}`}
-            iconColor="text-orange-500 bg-orange-100 dark:text-orange-400 dark:bg-orange-950/30 glow-gold"
+            iconColor="text-orange-500 bg-orange-100 glow-gold"
           />
         </StaggerItem>
 
@@ -106,8 +106,8 @@ export default function StudentDashboard() {
       </StaggerContainer>
 
       {/* Gamification Level Progress Meter */}
-      <Card variant="default" className="border border-outline-variant bg-surface-container-lowest shadow-sm overflow-hidden relative">
-        <div className="absolute inset-0 bg-coptic-pattern opacity-[0.02] pointer-events-none" />
+      <Card variant="default" className="border border-secondary/30 bg-surface-container-lowest shadow-sm overflow-hidden relative glow-gold">
+        <div className="absolute inset-0 bg-coptic-pattern opacity-[0.05] pointer-events-none" />
         <CardHeader className="pb-2">
           <div className="flex items-center justify-between">
             <CardTitle className="text-lg font-bold text-on-surface">
@@ -121,124 +121,128 @@ export default function StudentDashboard() {
         <CardContent className="p-6 pt-0 space-y-3">
           <ProgressBar value={progressPct} size="lg" />
           <div className="flex justify-between text-xs font-bold text-on-surface-variant/80">
-            <span>Level {currentLevelNum}</span>
-            <span>Level {currentLevelNum + 1}</span>
+            <span>{isAr ? 'المستوى الحالي' : `Level ${currentLevelNum}`}</span>
+            <span>{isAr ? 'المستوى التالي' : `Level ${currentLevelNum + 1}`}</span>
           </div>
         </CardContent>
       </Card>
 
+      <div className="coptic-divider my-8" />
+
       {/* Quick Action Navigation Panels */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 relative z-10">
         {/* Lesson panel */}
-        <Card variant="interactive" className="border-2 border-secondary/20 bg-surface-container-lowest shadow-sm hover:shadow-md hover:-translate-y-1 transition-all flex flex-col justify-between">
+        <Card variant="interactive" className="border-2 border-secondary/20 bg-surface-container-lowest hover:-translate-y-1 transition-all flex flex-col justify-between btn-tactile group">
           <CardContent className="p-5 space-y-4">
-            <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center">
+            <div className="w-12 h-12 rounded-2xl bg-primary/10 flex items-center justify-center badge-icon">
               <span className="material-symbols-outlined text-[24px] text-primary">menu_book</span>
             </div>
             <div className="space-y-1">
-              <h3 className="text-base font-extrabold text-on-surface">Explore Lessons</h3>
+              <h3 className="text-base font-extrabold text-on-surface">{t('exploreLessons')}</h3>
               <p className="text-xs text-on-surface-variant leading-relaxed">
-                Read biblical histories and complete weekly quiz chapters.
+                {t('exploreLessonsDesc')}
               </p>
             </div>
           </CardContent>
           <div className="p-5 pt-0">
             <Link href="/student/lessons">
-              <Button variant="primary" fullWidth size="sm">
-                Open Lessons
+              <Button variant="primary" fullWidth size="sm" className="btn-tactile">
+                {t('openLessons')}
               </Button>
             </Link>
           </div>
         </Card>
 
         {/* Tasks Panel */}
-        <Card variant="interactive" className="border-2 border-secondary/20 bg-surface-container-lowest shadow-sm hover:shadow-md hover:-translate-y-1 transition-all flex flex-col justify-between">
+        <Card variant="interactive" className="border-2 border-secondary/20 bg-surface-container-lowest hover:-translate-y-1 transition-all flex flex-col justify-between btn-tactile group">
           <CardContent className="p-5 space-y-4">
-            <div className="w-10 h-10 rounded-xl bg-orange-100 flex items-center justify-center text-orange-600">
-              <span className="material-symbols-outlined text-[24px]">task</span>
+            <div className="w-12 h-12 rounded-2xl bg-orange-100 flex items-center justify-center text-orange-600 badge-icon">
+              <span className="material-symbols-outlined text-[28px]">task</span>
             </div>
             <div className="space-y-1">
-              <h3 className="text-base font-extrabold text-on-surface">My Tasks</h3>
+              <h3 className="text-base font-extrabold text-on-surface">{t('myTasks')}</h3>
               <p className="text-xs text-on-surface-variant leading-relaxed">
-                Complete assignments from your instructor.
+                {t('myTasksDesc')}
               </p>
             </div>
           </CardContent>
           <div className="p-5 pt-0">
             <Link href="/student/tasks">
-              <Button variant="outline" fullWidth size="sm" className="border-orange-200 text-orange-700 hover:bg-orange-50">
-                View Tasks
+              <Button variant="outline" fullWidth size="sm" className="border-orange-200 text-orange-700 hover:bg-orange-50 btn-tactile">
+                {t('viewTasks')}
               </Button>
             </Link>
           </div>
         </Card>
 
         {/* Reading Plan */}
-        <Card variant="interactive" className="border-2 border-secondary/20 bg-surface-container-lowest shadow-sm hover:shadow-md hover:-translate-y-1 transition-all flex flex-col justify-between">
+        <Card variant="interactive" className="border-2 border-secondary/20 bg-surface-container-lowest hover:-translate-y-1 transition-all flex flex-col justify-between btn-tactile group">
           <CardContent className="p-5 space-y-4">
-            <div className="w-10 h-10 rounded-xl bg-purple-100 flex items-center justify-center text-purple-600">
-              <span className="material-symbols-outlined text-[24px]">auto_stories</span>
+            <div className="w-12 h-12 rounded-2xl bg-purple-100 flex items-center justify-center text-purple-600 badge-icon">
+              <span className="material-symbols-outlined text-[28px]">auto_stories</span>
             </div>
             <div className="space-y-1">
-              <h3 className="text-base font-extrabold text-on-surface">Reading Plan</h3>
+              <h3 className="text-base font-extrabold text-on-surface">{t('readingPlan')}</h3>
               <p className="text-xs text-on-surface-variant leading-relaxed">
-                Track your daily Bible reading progress.
+                {t('readingPlanDesc')}
               </p>
             </div>
           </CardContent>
           <div className="p-5 pt-0">
             <Link href="/student/reading">
-              <Button variant="outline" fullWidth size="sm" className="border-purple-200 text-purple-700 hover:bg-purple-50">
-                Open Plan
+              <Button variant="outline" fullWidth size="sm" className="border-purple-200 text-purple-700 hover:bg-purple-50 btn-tactile">
+                {t('openPlan')}
               </Button>
             </Link>
           </div>
         </Card>
 
         {/* Rewards Panel */}
-        <Card variant="interactive" className="border-2 border-secondary/20 bg-surface-container-lowest shadow-sm hover:shadow-md hover:-translate-y-1 transition-all flex flex-col justify-between">
+        <Card variant="interactive" className="border-2 border-secondary/20 bg-surface-container-lowest hover:-translate-y-1 transition-all flex flex-col justify-between btn-tactile group">
           <CardContent className="p-5 space-y-4">
-            <div className="w-10 h-10 rounded-xl bg-yellow-100 flex items-center justify-center text-yellow-600">
-              <span className="material-symbols-outlined text-[24px]">stars</span>
+            <div className="w-12 h-12 rounded-2xl bg-yellow-100 flex items-center justify-center text-yellow-600 badge-icon">
+              <span className="material-symbols-outlined text-[28px]">stars</span>
             </div>
             <div className="space-y-1">
-              <h3 className="text-base font-extrabold text-on-surface">Rewards</h3>
+              <h3 className="text-base font-extrabold text-on-surface">{t('rewards')}</h3>
               <p className="text-xs text-on-surface-variant leading-relaxed">
-                Redeem your points for badges and prizes.
+                {t('rewardsDesc')}
               </p>
             </div>
           </CardContent>
           <div className="p-5 pt-0">
             <Link href="/student/store">
-              <Button variant="outline" fullWidth size="sm" className="border-yellow-200 text-yellow-700 hover:bg-yellow-50">
-                View Rewards
+              <Button variant="outline" fullWidth size="sm" className="border-yellow-200 text-yellow-700 hover:bg-yellow-50 btn-tactile">
+                {t('viewRewards')}
               </Button>
             </Link>
           </div>
         </Card>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <div className="coptic-divider my-8" />
+
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 relative z-10">
         {/* Daily Challenge Card (Left 1 col) */}
         <div className="lg:col-span-1 space-y-4">
           <h2 className="text-lg font-bold text-on-surface flex items-center gap-2">
             <span className="material-symbols-outlined text-orange-500" style={{ fontVariationSettings: "'FILL' 1" }}>
               explore
             </span>
-            Active Challenge
+            {t('activeChallenge')}
           </h2>
           
           {activeDaily ? (
             <Card className="border border-outline-variant bg-surface-container-lowest shadow-sm">
               <CardContent className="p-5 space-y-4">
                 <div className="space-y-1">
-                  <h3 className="text-sm font-extrabold text-on-surface">{activeDaily.title}</h3>
-                  <p className="text-xs text-on-surface-variant leading-relaxed font-medium">{activeDaily.description}</p>
+                  <h3 className="text-sm font-extrabold text-on-surface">{isAr ? activeDaily.titleAr : activeDaily.title}</h3>
+                  <p className="text-xs text-on-surface-variant leading-relaxed font-medium">{isAr ? activeDaily.descriptionAr : activeDaily.description}</p>
                 </div>
                 
                 <div className="space-y-2">
                   <div className="flex justify-between items-center text-xs font-bold text-on-surface-variant">
-                    <span>Progress</span>
+                    <span>{t('progress')}</span>
                     <span>{activeDaily.current} / {activeDaily.target}</span>
                   </div>
                   <ProgressBar value={(activeDaily.current / activeDaily.target) * 100} size="sm" />
@@ -246,7 +250,7 @@ export default function StudentDashboard() {
                 
                 <Link href="/student/challenges" className="block pt-2">
                   <Button variant="outline" fullWidth size="sm" className="text-xs h-9">
-                    View All Challenges
+                    {t('viewAllChallenges')}
                   </Button>
                 </Link>
               </CardContent>
@@ -255,11 +259,11 @@ export default function StudentDashboard() {
             <Card className="border border-outline-variant bg-surface-container-lowest shadow-sm">
               <CardContent className="p-5 text-center space-y-2">
                 <span className="material-symbols-outlined text-[36px] text-success">check_circle</span>
-                <h3 className="text-sm font-extrabold text-on-surface">Daily Complete!</h3>
-                <p className="text-xs text-on-surface-variant">You have finished all daily objectives.</p>
+                <h3 className="text-sm font-extrabold text-on-surface">{t('dailyComplete')}</h3>
+                <p className="text-xs text-on-surface-variant">{t('dailyCompleteDesc')}</p>
                 <Link href="/student/challenges" className="block pt-2">
                   <Button variant="outline" fullWidth size="sm" className="text-xs h-9">
-                    View Weekly/Seasonal
+                    {t('viewWeeklySeasonal')}
                   </Button>
                 </Link>
               </CardContent>
@@ -288,10 +292,10 @@ export default function StudentDashboard() {
                     iconColor = 'text-success bg-success/10';
                   } else if (activity.action === 'badge_unlocked') {
                     icon = 'military_tech';
-                    iconColor = 'text-yellow-600 dark:text-yellow-400 bg-yellow-50 dark:bg-yellow-950/20';
+                    iconColor = 'text-yellow-600 bg-yellow-50';
                   } else if (activity.action === 'level_gained') {
                     icon = 'award_star';
-                    iconColor = 'text-purple-600 dark:text-purple-400 bg-purple-50 dark:bg-purple-950/20';
+                    iconColor = 'text-purple-600 bg-purple-50';
                   }
 
                   return (

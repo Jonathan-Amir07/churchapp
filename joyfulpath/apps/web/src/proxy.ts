@@ -32,11 +32,17 @@ const PRIEST_ONLY_ADMIN_PATHS = [
 ];
 
 export default async function proxy(request: NextRequest) {
+  const locale = request.cookies.get('NEXT_LOCALE')?.value || 'ar';
+  
+  request.headers.set('X-Next-Intl-Locale', locale);
+  
   const response = NextResponse.next({
     request: {
       headers: request.headers,
     },
   });
+  
+  response.headers.set('X-Next-Intl-Locale', locale);
 
   let user: any = null;
 
@@ -44,11 +50,16 @@ export default async function proxy(request: NextRequest) {
   const token = request.cookies.get('ACCESS_TOKEN')?.value;
   if (token) {
     try {
-      const secret = new TextEncoder().encode(process.env.JWT_SECRET || 'super-secret-jwt-key');
+      if (!process.env.JWT_SECRET) {
+        console.error('CRITICAL ERROR: JWT_SECRET is not set in Edge Middleware environment.');
+        // Fast fail, don't try to verify with an empty secret
+        throw new Error('Missing JWT_SECRET configuration');
+      }
+      const secret = new TextEncoder().encode(process.env.JWT_SECRET);
       const { payload } = await jwtVerify(token, secret);
       user = payload;
     } catch (e) {
-      console.warn('Failed to verify JWT in middleware', e);
+      console.warn('Failed to verify JWT in middleware:', (e as Error).message);
     }
   }
 

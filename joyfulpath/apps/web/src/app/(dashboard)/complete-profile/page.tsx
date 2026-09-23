@@ -33,12 +33,14 @@ export default function CompleteProfilePage() {
  body: JSON.stringify(formData),
  });
 
- if (res.ok) {
- // Force reload to update session cookies or redirect
- window.location.href = '/student/dashboard';
- } else {
- alert('Failed to complete profile. Please try again.');
- }
+  if (res.ok) {
+    // Refresh the token to update isProfileComplete status
+    await fetch('/api/auth/refresh');
+    // Force reload to update session cookies or redirect
+    window.location.href = '/student/dashboard';
+  } else {
+    alert('Failed to complete profile. Please try again.');
+  }
  } catch (error) {
  console.error(error);
  alert('An error occurred.');

@@ -4,14 +4,12 @@ import { useEffect, useRef, useState } from 'react';
 import { Html5QrcodeScanner } from 'html5-qrcode';
 import { Button, Card, CardContent } from '@/components/ui';
 import { useNotificationStore } from '@/stores/notifications.store';
-import { createClient } from '@/lib/supabase/client';
 
 export function QRScanner({ onScanSuccess }: { onScanSuccess?: () => void }) {
   const [scannedId, setScannedId] = useState<string | null>(null);
   const [successAnim, setSuccessAnim] = useState(false);
   const scannerRef = useRef<Html5QrcodeScanner | null>(null);
   const addToast = useNotificationStore((state) => state.addToast);
-  const supabase = createClient();
 
   useEffect(() => {
     scannerRef.current = new Html5QrcodeScanner(
@@ -27,13 +25,13 @@ export function QRScanner({ onScanSuccess }: { onScanSuccess?: () => void }) {
 
       // Record attendance and award points
       try {
-        const { error } = await supabase.from('attendance').insert({
-          student_id: decodedText,
-          status: 'present',
-          date: new Date().toISOString().split('T')[0]
+        const res = await fetch('/api/attendance/qr/scan', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ token: decodedText })
         });
         
-        if (error && error.code !== '23505') throw error; // Ignore unique constraint if already scanned
+        if (!res.ok) throw new Error('Failed to record attendance');
 
         setSuccessAnim(true);
         addToast('Attendance recorded! +10 Blessings', 'success');
@@ -57,7 +55,7 @@ export function QRScanner({ onScanSuccess }: { onScanSuccess?: () => void }) {
     return () => {
       scannerRef.current?.clear().catch(console.error);
     };
-  }, [scannedId, addToast, supabase, onScanSuccess]);
+  }, [scannedId, addToast, onScanSuccess]);
 
   return (
     <Card className="border border-outline-variant bg-surface-container-lowest shadow-elevated w-full max-w-sm mx-auto overflow-hidden relative">

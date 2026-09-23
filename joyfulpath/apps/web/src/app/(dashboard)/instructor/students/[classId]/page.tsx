@@ -128,7 +128,7 @@ export default function InstructorClassStudents() {
         </div>
       </div>
 
-      <div className="bg-surface p-4 rounded-xl shadow-sm border border-outline-variant grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
+      <div className="bg-surface-container-lowest p-4 rounded-xl shadow-sm border border-outline-variant grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
         <div className="md:col-span-2">
           <label className="text-xs font-bold text-on-surface-variant mb-1 block">البحث الذكي</label>
           <Input name="search" value={filters.search} onChange={handleFilterChange} placeholder="ابحث بالاسم، اسم المستخدم..." />

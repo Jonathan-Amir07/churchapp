@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { createClient } from '@/lib/supabase/client';
+
 import { useTranslations, useLocale } from 'next-intl';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, Button, Modal, BadgeTag, ProgressBar } from '@/components/ui';
 import { useNotificationStore } from '@/stores/notifications.store';

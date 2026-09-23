@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { Card, CardContent, Button, PageTransition, HeroBanner, StaggerContainer, StaggerItem } from '@/components/ui';
 import { useUser } from '@/hooks/useUser';
 import { useNotificationStore } from '@/stores/notifications.store';
+import { EventCard } from '@/components/domain/events/EventCard';
 
 export default function StudentEventsPage() {
   const { profile } = useUser();
@@ -102,42 +103,16 @@ export default function StudentEventsPage() {
           ) : (
             <StaggerContainer className="space-y-4">
               {events?.map(ev => {
-                const dateParts = new Date(ev.date).toDateString().split(' ');
                 const isRegistered = registeredEvents.includes(ev.id);
-                
                 return (
                   <StaggerItem key={ev.id}>
-                    <Card variant="interactive" className="border border-outline-variant bg-surface-container-lowest">
-                      <CardContent className="p-0 flex">
-                        <div className="bg-primary/10 text-primary w-24 flex flex-col items-center justify-center p-4 border-e border-outline-variant/50">
-                          <span className="text-xs font-bold uppercase">{dateParts[1]}</span>
-                          <span className="text-2xl font-black">{dateParts[2]}</span>
-                        </div>
-                        <div className="p-4 flex-1 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                          <div>
-                            <div className="flex items-center gap-2 mb-1">
-                              <h3 className="font-bold text-lg text-on-surface">{ev.title}</h3>
-                              <span className={`text-[10px] font-bold uppercase tracking-wider px-2 py-1 rounded ${typeColors[ev.type] || 'bg-surface-container text-on-surface-variant'}`}>
-                                {ev.type}
-                              </span>
-                            </div>
-                            <div className="flex gap-4 text-sm text-on-surface-variant">
-                              <span className="flex items-center gap-1"><span className="material-symbols-outlined text-[16px]">schedule</span> {ev.time}</span>
-                              <span className="flex items-center gap-1"><span className="material-symbols-outlined text-[16px]">location_on</span> {ev.location}</span>
-                            </div>
-                          </div>
-                          <div className="flex-shrink-0">
-                             <Button 
-                               variant={isRegistered ? "outline" : "primary"} 
-                               size="sm" 
-                               onClick={() => handleRSVP(ev.id, isRegistered)}
-                             >
-                               {isRegistered ? 'Cancel RSVP' : 'RSVP Now'}
-                             </Button>
-                          </div>
-                        </div>
-                      </CardContent>
-                    </Card>
+                    <EventCard 
+                      event={ev} 
+                      isRegistered={isRegistered} 
+                      onAction={() => handleRSVP(ev.id, isRegistered)}
+                      actionLabel={isRegistered ? 'Cancel RSVP' : 'RSVP Now'}
+                      actionVariant={isRegistered ? 'outline' : 'primary'}
+                    />
                   </StaggerItem>
                 );
               })}
@@ -147,7 +122,7 @@ export default function StudentEventsPage() {
 
         <div className="space-y-4">
           <h2 className="text-xl font-bold text-on-surface">Latest Announcements</h2>
-          <Card className="border border-outline-variant bg-surface-container-lowest">
+          <Card className="border border-outline-variant bg-surface-container-lowest shadow-card">
             <CardContent className="p-4 space-y-4">
               <div className="border-b border-outline-variant/50 pb-4">
                 <div className="flex items-center gap-2 mb-2">

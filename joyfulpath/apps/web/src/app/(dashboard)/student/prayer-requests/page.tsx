@@ -72,7 +72,7 @@ export default function StudentPrayerRequestsPage() {
                   rows={5} 
                   value={requestText}
                   onChange={e => setRequestText(e.target.value)}
-                  className="w-full p-4 border border-outline-variant rounded-xl bg-surface focus:border-primary text-on-surface" 
+                  className="w-full p-4 border border-outline-variant rounded-xl bg-surface-container-lowest focus:border-primary text-on-surface" 
                   placeholder="What can we pray for?" 
                 />
                 <div className="flex items-center gap-2">

@@ -32,7 +32,7 @@ export default function PriestDashboard() {
           <p className="text-lg text-on-surface-variant mt-1">نظرة عامة على الأداء - أبرشية القديس مرقس - أبونا {profile?.display_name || ''}</p>
         </div>
         <div className="hidden md:flex gap-3">
-          <button className="p-2 rounded-full border border-outline-variant text-on-surface-variant hover:bg-surface-variant transition-colors bg-surface">
+          <button className="p-2 rounded-full border border-outline-variant text-on-surface-variant hover:bg-surface-variant transition-colors bg-surface-container-lowest">
             <span className="material-symbols-outlined">download</span>
           </button>
           <button className="flex items-center gap-2 px-4 py-2 rounded-full bg-primary-container text-on-primary-container text-xs font-bold tracking-widest uppercase hover:bg-primary/20 transition-colors">
@@ -45,7 +45,7 @@ export default function PriestDashboard() {
       {/* KPI Widgets */}
       <section className="grid grid-cols-1 md:grid-cols-3 gap-4">
         {/* KPI 1 */}
-        <div className="bg-surface rounded-xl border border-outline-variant p-6 flex flex-col justify-between shadow-sm relative overflow-hidden group hover:border-primary/50 transition-colors">
+        <div className="bg-surface-container-lowest rounded-xl border border-outline-variant p-6 flex flex-col justify-between shadow-sm relative overflow-hidden group hover:border-primary/50 transition-colors">
           <div className="absolute -end-4 -top-4 w-24 h-24 bg-primary/5 rounded-full blur-xl group-hover:bg-primary/10 transition-colors"></div>
           <div className="flex justify-between items-start mb-4">
             <h3 className="text-xs font-bold tracking-widest uppercase text-on-surface-variant">الطلاب المسجلين</h3>
@@ -57,7 +57,7 @@ export default function PriestDashboard() {
         </div>
 
         {/* KPI 2 */}
-        <div className="bg-surface rounded-xl border border-outline-variant p-6 flex flex-col justify-between shadow-sm relative overflow-hidden group hover:border-primary/50 transition-colors">
+        <div className="bg-surface-container-lowest rounded-xl border border-outline-variant p-6 flex flex-col justify-between shadow-sm relative overflow-hidden group hover:border-primary/50 transition-colors">
           <div className="absolute -end-4 -top-4 w-24 h-24 bg-tertiary/5 rounded-full blur-xl group-hover:bg-tertiary/10 transition-colors"></div>
           <div className="flex justify-between items-start mb-4">
             <h3 className="text-xs font-bold tracking-widest uppercase text-on-surface-variant">معدل الحضور</h3>
@@ -72,7 +72,7 @@ export default function PriestDashboard() {
         </div>
 
         {/* KPI 3 */}
-        <div className="bg-surface rounded-xl border border-outline-variant p-6 flex flex-col justify-between shadow-sm relative overflow-hidden group hover:border-primary/50 transition-colors">
+        <div className="bg-surface-container-lowest rounded-xl border border-outline-variant p-6 flex flex-col justify-between shadow-sm relative overflow-hidden group hover:border-primary/50 transition-colors">
           <div className="absolute -end-4 -top-4 w-24 h-24 bg-secondary/5 rounded-full blur-xl group-hover:bg-secondary/10 transition-colors"></div>
           <div className="flex justify-between items-start mb-4">
             <h3 className="text-xs font-bold tracking-widest uppercase text-on-surface-variant">الدروس الإجمالية</h3>
@@ -87,7 +87,7 @@ export default function PriestDashboard() {
       {/* Dashboard Bento Grid */}
       <section className="grid grid-cols-1 lg:grid-cols-12 gap-6">
         {/* Main Chart Area (Spans 8 cols) */}
-        <div className="lg:col-span-8 bg-surface rounded-xl border border-outline-variant p-6 flex flex-col shadow-sm">
+        <div className="lg:col-span-8 bg-surface-container-lowest rounded-xl border border-outline-variant p-6 flex flex-col shadow-sm">
           <div className="flex justify-between items-center mb-6">
             <h3 className="text-xl font-bold text-on-background">مؤشرات الحضور السنوية</h3>
             <button className="p-1 rounded text-on-surface-variant hover:bg-surface-variant">
@@ -112,7 +112,7 @@ export default function PriestDashboard() {
         </div>
 
         {/* Events Calendar (Spans 4 cols) */}
-        <div className="lg:col-span-4 bg-surface rounded-xl border border-outline-variant p-6 flex flex-col shadow-sm">
+        <div className="lg:col-span-4 bg-surface-container-lowest rounded-xl border border-outline-variant p-6 flex flex-col shadow-sm">
           <div className="flex justify-between items-center mb-6">
             <h3 className="text-xl font-bold text-on-background">الفعاليات القادمة</h3>
           </div>
@@ -160,7 +160,7 @@ export default function PriestDashboard() {
       </section>
 
       {/* Audit Log / Timeline */}
-      <section className="bg-surface rounded-xl border border-outline-variant shadow-sm overflow-hidden">
+      <section className="bg-surface-container-lowest rounded-xl border border-outline-variant shadow-sm overflow-hidden">
         <div className="p-6 border-b border-outline-variant/30 bg-surface-container-lowest">
           <h3 className="text-xl font-bold text-on-background">سجل النشاط الحديث</h3>
         </div>

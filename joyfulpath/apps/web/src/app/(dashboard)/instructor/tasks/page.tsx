@@ -225,7 +225,7 @@ export default function InstructorTasks() {
           const title = isAr ? sub.taskTitleAr : sub.taskTitleEn;
 
           return (
-            <Card key={sub.id} className="border border-outline-variant bg-surface-container-lowest shadow-sm">
+            <Card key={sub.id} className="border border-outline-variant bg-surface-container-lowest shadow-card">
               <CardContent className="p-6 space-y-4">
                 <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                   <div className="space-y-3 flex-1">

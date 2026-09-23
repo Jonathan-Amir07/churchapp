@@ -95,7 +95,7 @@ export default function InstructorPrayerRequestsPage() {
                   <div className="mt-4 pt-4 border-t border-outline-variant/50">
                     <textarea 
                       rows={2} 
-                      className="w-full p-2 border border-outline-variant rounded text-sm bg-surface text-on-surface mb-2" 
+                      className="w-full p-2 border border-outline-variant rounded text-sm bg-surface-container-lowest text-on-surface mb-2" 
                       placeholder="Write a response or encouragement..."
                       value={responses[req.id] || ''}
                       onChange={(e) => setResponses(prev => ({ ...prev, [req.id]: e.target.value }))}

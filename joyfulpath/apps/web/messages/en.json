@@ -1,6 +1,6 @@
 {
   "common": {
-    "appName": "JoyfulPath",
+    "appName": "Nwesl w Nwasl ll Sama",
     "loading": "Loading...",
     "save": "Save",
     "cancel": "Cancel",
@@ -78,7 +78,8 @@
     "gamification": "Rewards & Progress",
     "families": "Families",
     "progress": "Progress",
-    "more": "More"
+    "more": "More",
+    "logout": "Logout"
   },
   "dashboard": {
     "welcomeMessage": "You're only {xpNeeded} XP away from Level {nextLevel}! Keep going!",
@@ -93,7 +94,26 @@
     "endsIn": "Ends in {days} days",
     "progress": "Progress",
     "reward": "Blessing",
-    "recentActivity": "Recent Activity"
+    "recentActivity": "Recent Activity",
+    "exploreLessons": "Explore Lessons",
+    "exploreLessonsDesc": "Read biblical histories and complete weekly quiz chapters.",
+    "openLessons": "Open Lessons",
+    "myTasks": "My Tasks",
+    "myTasksDesc": "Complete assignments from your instructor.",
+    "viewTasks": "View Tasks",
+    "readingPlan": "Reading Plan",
+    "readingPlanDesc": "Track your daily Bible reading progress.",
+    "openPlan": "Open Plan",
+    "rewards": "Rewards",
+    "rewardsDesc": "Redeem your points for badges and prizes.",
+    "viewRewards": "View Rewards",
+    "activeChallenge": "Active Challenge",
+    "viewAllChallenges": "View All Challenges",
+    "dailyComplete": "Daily Complete!",
+    "dailyCompleteDesc": "You have finished all daily objectives.",
+    "viewWeeklySeasonal": "View Weekly/Seasonal",
+    "noTasks": "No tasks pending.",
+    "noQuizzes": "No quizzes pending."
   },
   "lessons": {
     "masterYourQuest": "Master Your Quest",

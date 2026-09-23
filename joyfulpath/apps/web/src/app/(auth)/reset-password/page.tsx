@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useTranslations, useLocale } from 'next-intl';
-import { createClient } from '@/lib/supabase/client';
+import { useSearchParams } from 'next/navigation';
 import { Button, Input, Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui';
 import { useNotificationStore } from '@/stores/notifications.store';
 
@@ -12,7 +12,8 @@ export default function ResetPasswordPage() {
   const currentLocale = useLocale();
   const router = useRouter();
   const addToast = useNotificationStore((state) => state.addToast);
-  const supabase = createClient();
+  const searchParams = useSearchParams();
+  const token = searchParams.get('token');
 
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
@@ -31,14 +32,25 @@ export default function ResetPasswordPage() {
 
     setLoading(true);
     try {
-      const { error } = await supabase.auth.updateUser({ password });
-
-      if (error) {
-        addToast(error.message, 'error');
-      } else {
-        addToast('Password successfully updated!', 'success');
-        router.push('/login');
+      if (!token) {
+        addToast('Invalid or missing reset token', 'error');
+        setLoading(false);
+        return;
       }
+
+      const res = await fetch('/api/auth/reset-password', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ token, password })
+      });
+
+      if (!res.ok) {
+        const errData = await res.json();
+        throw new Error(errData.message || 'Failed to reset password');
+      }
+
+      addToast('Password successfully updated!', 'success');
+      router.push('/login');
     } catch (err: any) {
       addToast(err.message || 'An error occurred', 'error');
     } finally {

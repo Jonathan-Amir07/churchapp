@@ -143,8 +143,8 @@ export default function AdminAttendancePage() {
   }, []);
 
   const tabs: { id: Tab; label: string; icon: string }[] = useMemo(() => [
-    { id: 'roster',  label: 'Attendance Roster',  icon: 'list_alt' },
-    { id: 'scanner', label: 'QR Check-in Scanner', icon: 'qr_code_scanner' },
+    { id: 'roster',  label: 'قائمة الحضور',  icon: 'list_alt' },
+    { id: 'scanner', label: 'ماسح الرمز السريع (QR)', icon: 'qr_code_scanner' },
   ], []);
 
   return (
@@ -167,7 +167,7 @@ export default function AdminAttendancePage() {
             onClick={() => setActiveTab(tab.id)}
             className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-bold transition-all duration-200 ${
               activeTab === tab.id
-                ? 'bg-primary text-on-primary shadow-sm'
+                ? 'bg-primary text-on-primary shadow-card'
                 : 'text-on-surface-variant hover:text-on-surface hover:bg-surface-container'
             }`}
           >
@@ -181,7 +181,7 @@ export default function AdminAttendancePage() {
       {activeTab === 'roster' && (
         <>
           {/* Filters & Search */}
-          <div className="flex flex-col sm:flex-row gap-4 items-center justify-between bg-surface-container-lowest p-4 rounded-2xl border border-outline-variant/60 shadow-sm">
+          <div className="flex flex-col sm:flex-row gap-4 items-center justify-between bg-surface-container-lowest p-4 rounded-2xl border border-outline-variant/60 shadow-card">
             <div className="flex flex-col sm:flex-row gap-4 w-full sm:w-auto flex-1">
               <div className="flex flex-col gap-1 w-full sm:w-48">
                 <label className="text-xs font-bold text-on-surface-variant">
@@ -192,7 +192,7 @@ export default function AdminAttendancePage() {
                   onChange={(e) => setSelectedClassId(e.target.value)}
                   className="h-10 px-3 rounded-xl border border-outline-variant bg-surface-container-low text-on-surface focus:outline-none focus:border-primary text-sm font-medium"
                 >
-                  <option value="">-- Select Class --</option>
+                  <option value="">-- اختر الفصل --</option>
                   {classes.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
                 </select>
               </div>
@@ -228,28 +228,28 @@ export default function AdminAttendancePage() {
           </div>
 
           {/* Roster Table */}
-          <Card className="border border-outline-variant bg-surface-container-lowest shadow-sm">
+          <Card className="border border-outline-variant bg-surface-container-lowest shadow-card">
             <CardContent className="p-0">
               <div className="overflow-x-auto">
                 <table className="w-full text-start border-collapse text-sm">
                   <thead>
                     <tr className="border-b border-outline-variant/60 text-outline text-xs uppercase font-black">
-                      <th className="px-6 py-4 text-start">Student</th>
-                      <th className="px-6 py-4 text-start">Streak</th>
-                      <th className="px-6 py-4 text-end">Status</th>
+                      <th className="px-6 py-4 text-start">المخدوم</th>
+                      <th className="px-6 py-4 text-start">المواظبة</th>
+                      <th className="px-6 py-4 text-end">الحالة</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-outline-variant/40">
                     {loading ? (
                       <tr>
                          <td colSpan={3} className="px-6 py-8 text-center text-on-surface-variant">
-                            Loading students...
+                            جاري تحميل المخدومين...
                          </td>
                       </tr>
                     ) : filteredStudents.length === 0 ? (
                       <tr>
                          <td colSpan={3} className="px-6 py-8 text-center text-on-surface-variant">
-                            No students found.
+                            لا يوجد مخدومين.
                          </td>
                       </tr>
                     ) : (
@@ -286,12 +286,12 @@ export default function AdminAttendancePage() {
                                     className={`px-3 py-1.5 rounded-lg text-xs font-black transition-all duration-150 ${
                                       isActive
                                         ? status === 'present'
-                                          ? 'bg-tertiary text-on-tertiary shadow-sm'
+                                          ? 'bg-tertiary text-on-tertiary shadow-card'
                                           : status === 'absent'
-                                          ? 'bg-error text-on-error shadow-sm'
+                                          ? 'bg-error text-on-error shadow-card'
                                           : status === 'late'
-                                          ? 'bg-secondary text-on-secondary shadow-sm'
-                                          : 'bg-outline text-white shadow-sm'
+                                          ? 'bg-secondary text-on-secondary shadow-card'
+                                          : 'bg-outline text-white shadow-card'
                                         : 'text-on-surface-variant hover:text-on-surface'
                                     }`}
                                   >
@@ -317,7 +317,7 @@ export default function AdminAttendancePage() {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {/* Scanner left col */}
           <div className="space-y-4">
-            <Card className="border border-outline-variant bg-surface-container-lowest shadow-sm">
+            <Card className="border border-outline-variant bg-surface-container-lowest shadow-card">
               <CardContent className="p-6 space-y-4">
                 <div className="flex items-center gap-3">
                   <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center">
@@ -329,9 +329,9 @@ export default function AdminAttendancePage() {
                     </span>
                   </div>
                   <div>
-                    <h2 className="font-extrabold text-on-surface text-base">Scan Student QR Code</h2>
+                    <h2 className="font-extrabold text-on-surface text-base">مسح رمز المخدوم</h2>
                     <p className="text-xs text-on-surface-variant">
-                      Point the camera at the student&apos;s QR code to check them in.
+                      وجه الكاميرا نحو رمز المخدوم لتسجيل حضوره.
                     </p>
                   </div>
                 </div>
@@ -355,21 +355,21 @@ export default function AdminAttendancePage() {
                 <span className="material-symbols-outlined text-success" style={{ fontVariationSettings: "'FILL' 1" }}>
                   fact_check
                 </span>
-                Today&apos;s Check-ins
+                تسجيلات اليوم
               </h2>
-              <BadgeTag variant="success">{checkIns.length} checked in</BadgeTag>
+              <BadgeTag variant="success">{checkIns.length} حضروا</BadgeTag>
             </div>
 
-            <Card className="border border-outline-variant bg-surface-container-lowest shadow-sm">
+            <Card className="border border-outline-variant bg-surface-container-lowest shadow-card">
               <CardContent className="p-0">
                 {checkIns.length === 0 ? (
                   <div className="p-10 text-center space-y-2">
                     <span className="material-symbols-outlined text-[40px] text-outline">
                       qr_code
                     </span>
-                    <p className="text-sm font-bold text-on-surface-variant">No check-ins yet</p>
+                    <p className="text-sm font-bold text-on-surface-variant">لا توجد تسجيلات بعد</p>
                     <p className="text-xs text-on-surface-variant/70">
-                      Scan a student&apos;s QR code to record their attendance.
+                      قم بمسح رمز المخدوم لتسجيل حضوره.
                     </p>
                   </div>
                 ) : (
@@ -388,9 +388,9 @@ export default function AdminAttendancePage() {
                           <div>
                             <p className="text-sm font-extrabold text-on-surface">{c.studentName}</p>
                             <div className="flex items-center gap-2 text-[10px] text-on-surface-variant font-medium">
-                              <span>🔥 {c.streak}-day streak</span>
+                              <span>🔥 {c.streak} أيام مواظبة</span>
                               <span>·</span>
-                              <span className="text-primary font-bold">+{c.xp} XP</span>
+                              <span className="text-primary font-bold">+{c.xp} نقطة</span>
                             </div>
                           </div>
                         </div>
@@ -405,18 +405,18 @@ export default function AdminAttendancePage() {
             {/* Stats summary */}
             {checkIns.length > 0 && (
               <div className="grid grid-cols-2 gap-3">
-                <Card className="border border-outline-variant bg-surface-container-lowest shadow-sm">
+                <Card className="border border-outline-variant bg-surface-container-lowest shadow-card">
                   <CardContent className="p-4 text-center space-y-1">
                     <p className="text-2xl font-extrabold text-success">{checkIns.length}</p>
-                    <p className="text-[10px] uppercase font-black text-on-surface-variant/70 tracking-wider">Checked In</p>
+                    <p className="text-[10px] uppercase font-black text-on-surface-variant/70 tracking-wider">تم تسجيلهم</p>
                   </CardContent>
                 </Card>
-                <Card className="border border-outline-variant bg-surface-container-lowest shadow-sm">
+                <Card className="border border-outline-variant bg-surface-container-lowest shadow-card">
                   <CardContent className="p-4 text-center space-y-1">
                     <p className="text-2xl font-extrabold text-primary">
                       +{checkIns.reduce((sum, c) => sum + c.xp, 0)}
                     </p>
-                    <p className="text-[10px] uppercase font-black text-on-surface-variant/70 tracking-wider">XP Awarded</p>
+                    <p className="text-[10px] uppercase font-black text-on-surface-variant/70 tracking-wider">النقاط الممنوحة</p>
                   </CardContent>
                 </Card>
               </div>

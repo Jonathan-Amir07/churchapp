@@ -316,7 +316,7 @@ export default function AdminEventsPage() {
       {/* ── Create / Edit Modal ─────────────────────────────────────────────── */}
       {showForm && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
-          <div className="w-full max-w-lg bg-surface rounded-3xl shadow-2xl border border-outline-variant overflow-hidden">
+          <div className="w-full max-w-lg bg-surface-container-lowest rounded-3xl shadow-2xl border border-outline-variant overflow-hidden">
             <div className="px-6 py-5 border-b border-outline-variant flex items-center justify-between">
               <h2 className="text-lg font-extrabold text-on-surface">
                 {editingId ? 'Edit Event' : 'Create New Event'}
@@ -452,7 +452,7 @@ export default function AdminEventsPage() {
       {/* ── Delete Confirm Modal ─────────────────────────────────────────────── */}
       {deleteConfirm && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
-          <div className="w-full max-w-sm bg-surface rounded-3xl shadow-2xl border border-outline-variant p-6 space-y-4">
+          <div className="w-full max-w-sm bg-surface-container-lowest rounded-3xl shadow-2xl border border-outline-variant p-6 space-y-4">
             <div className="flex items-center gap-3">
               <div className="w-12 h-12 rounded-2xl bg-error/10 flex items-center justify-center">
                 <span className="material-symbols-outlined text-[24px] text-error" style={{ fontVariationSettings: "'FILL' 1" }}>

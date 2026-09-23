@@ -67,7 +67,7 @@ export default function StudentQRCodePage() {
             <div className="w-48 h-48 rounded-2xl bg-surface-container-high animate-pulse" />
           ) : (
             <div
-              className={`p-4 bg-white rounded-2xl shadow-sm border border-outline-variant/40 transition-all duration-500 ${
+              className={`p-4 bg-surface-container-lowest rounded-2xl shadow-sm border border-outline-variant/40 transition-all duration-500 ${
                 pulse ? 'scale-100 opacity-100' : 'scale-95 opacity-0'
               }`}
             >

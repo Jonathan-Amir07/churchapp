@@ -21,7 +21,7 @@ export function MobileNav() {
   const [isMoreOpen, setIsMoreOpen] = useState(false);
 
   const rawRole = profile?.role as string | undefined;
-  const role = rawRole as 'student' | 'admin' | 'parent' | 'instructor' | undefined;
+  const role = rawRole as 'student' | 'admin' | 'parent' | 'instructor' | 'priest' | undefined;
   
   // Close "more" menu when route changes
   useEffect(() => {
@@ -51,8 +51,22 @@ export function MobileNav() {
     sheetItems = allItems?.filter(item => 
       !['dashboard', 'users', 'classes', 'analytics'].includes(item.key)
     );
+  } else if (role === 'instructor') {
+    bottomBarItems = allItems?.filter(item => 
+      ['dashboard', 'lessons', 'tasks', 'classes'].includes(item.key)
+    );
+    sheetItems = allItems?.filter(item => 
+      !['dashboard', 'lessons', 'tasks', 'classes'].includes(item.key)
+    );
+  } else if (role === 'priest') {
+    bottomBarItems = allItems?.filter(item => 
+      ['dashboard', 'families', 'students', 'attendance'].includes(item.key)
+    );
+    sheetItems = allItems?.filter(item => 
+      !['dashboard', 'families', 'students', 'attendance'].includes(item.key)
+    );
   } else {
-    // Parent has exactly 5 items, fit all directly
+    // Parent or unknown — fit all directly
     bottomBarItems = [...allItems];
   }
 

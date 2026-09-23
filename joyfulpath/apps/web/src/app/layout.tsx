@@ -1,35 +1,36 @@
 import type { Metadata } from 'next';
-import { Inter, Cairo } from 'next/font/google';
+import { IBM_Plex_Sans, IBM_Plex_Sans_Arabic } from 'next/font/google';
 import { NextIntlClientProvider } from 'next-intl';
-import { getLocale, getMessages } from 'next-intl/server';
+import { getLocale, getMessages, setRequestLocale } from 'next-intl/server';
 import { getDirection } from '@/lib/utils';
 import { ToastContainer } from '@/components/ui';
 import './globals.css';
 
-const inter = Inter({
+const ibmPlexSans = IBM_Plex_Sans({
   subsets: ['latin'],
-  variable: '--font-sans-en',
+  variable: '--font-ibm-plex-sans',
   display: 'swap',
+  weight: ['400', '500', '600', '700'],
 });
 
-const cairo = Cairo({
+const ibmPlexSansArabic = IBM_Plex_Sans_Arabic({
   subsets: ['arabic'],
-  variable: '--font-sans-ar',
+  variable: '--font-ibm-plex-sans-ar',
   display: 'swap',
-  weight: ['400', '500', '600', '700', '800'],
+  weight: ['400', '500', '600', '700'],
 });
 
 export const metadata: Metadata = {
   title: {
-    default: 'نوصل و نوصل للسماء — مدارس الأحد للتعلم التفاعلي',
-    template: '%s | نوصل و نوصل للسماء',
+    default: 'نوصل ونوصل للسماء — مدارس الأحد للتعلم التفاعلي',
+    template: '%s | نوصل ونوصل للسماء',
   },
   description:
     'An engaging gamified learning platform for Sunday School children. Learn Bible stories, earn XP, unlock badges, and climb the leaderboard!',
   keywords: ['Sunday School', 'Bible', 'gamified learning', 'children', 'education', 'church'],
-  authors: [{ name: 'newsl w nwasl ll sama' }],
+  authors: [{ name: 'نوصل ونوصل للسماء' }],
   openGraph: {
-    title: 'نوصل و نوصل للسماء — مدارس الأحد للتعلم التفاعلي',
+    title: 'نوصل ونوصل للسماء — مدارس الأحد للتعلم التفاعلي',
     description: 'Learn Bible stories, earn XP, unlock badges!',
     type: 'website',
   },
@@ -41,6 +42,8 @@ export default async function RootLayout({
   children: React.ReactNode;
 }>) {
   const locale = await getLocale();
+  setRequestLocale(locale);
+  console.log("LAYOUT LOCALE:", locale);
   const messages = await getMessages();
   const dir = getDirection(locale);
 
@@ -48,7 +51,7 @@ export default async function RootLayout({
     <html
       lang={locale}
       dir={dir}
-      className={`${cairo.variable} ${inter.variable} h-full`}
+      className={`${ibmPlexSansArabic.variable} ${ibmPlexSans.variable} h-full`}
       data-scroll-behavior="smooth"
     >
       <head>
@@ -59,7 +62,7 @@ export default async function RootLayout({
         />
       </head>
       <body className="min-h-full flex flex-col antialiased">
-        <NextIntlClientProvider messages={messages}>
+        <NextIntlClientProvider locale={locale} messages={messages}>
           {children}
           <ToastContainer />
         </NextIntlClientProvider>

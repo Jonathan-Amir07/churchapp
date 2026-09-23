@@ -1,7 +1,6 @@
 'use client';
 
 import { useState, useRef, useEffect } from 'react';
-import { createClient } from '@/lib/supabase/client';
 import { useTranslations, useLocale } from 'next-intl';
 import { Card, CardContent, CardTitle, Button, Modal, BadgeTag, ProgressBar } from '@/components/ui';
 import { useNotificationStore } from '@/stores/notifications.store';
@@ -20,7 +19,6 @@ export default function StudentTasks() {
  const tCommon = useTranslations('common');
  const addToast = useNotificationStore(s => s.addToast);
  
- const supabase = createClient();
  const { addActivity } = useAppStore();
  
  const [localTasks, setLocalTasks] = useState<any[]>([]);
@@ -98,22 +96,24 @@ export default function StudentTasks() {
  try {
  if (!selectedTask) throw new Error('No task selected');
  
- const { data, error } = await supabase.storage
- .from('homework')
- .upload(`student-submissions/${selectedTask.id}/${file.name}`, file, {
- upsert: true 
+ const formData = new FormData();
+ formData.append('file', file);
+
+ const res = await fetch('/api/files/upload', {
+ method: 'POST',
+ body: formData,
  });
 
- if (error) throw error;
- setUploadProgress(100);
+ if (!res.ok) throw new Error('Upload failed');
+ const data = await res.json();
  
- const { data: urlData } = supabase.storage.from('homework').getPublicUrl(data.path);
+ setUploadProgress(100);
 
  setUploadedFile({ 
  name: file.name, 
  size, 
  type: file.type,
- url: urlData.publicUrl 
+ url: data.url 
  });
  } catch (err) {
  console.error('Upload failed:', err);
@@ -204,7 +204,7 @@ export default function StudentTasks() {
  const isRevise = task.status === 'revise' || task.status === 'rejected';
 
  return (
- <Card key={task.id} className="border border-outline-variant bg-surface-container-lowest shadow-sm">
+ <Card key={task.id} className="border border-outline-variant bg-surface-container-lowest shadow-card">
  <CardContent className="p-6 flex flex-col md:flex-row md:items-center justify-between gap-6">
  <div className="space-y-3 flex-1">
  <div className="flex items-center gap-3 flex-wrap">

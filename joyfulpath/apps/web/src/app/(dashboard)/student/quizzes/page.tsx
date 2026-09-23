@@ -167,7 +167,7 @@ export default function StudentQuizzes() {
 
           return (
             <StaggerItem key={quiz.id}>
-              <Card className="border border-outline-variant bg-surface-container-lowest shadow-sm flex flex-col justify-between h-full">
+              <Card className="border border-outline-variant bg-surface-container-lowest shadow-card flex flex-col justify-between h-full">
                 <CardContent className="p-6 space-y-4">
                   <div className="flex justify-between items-start gap-4">
                     <BadgeTag
