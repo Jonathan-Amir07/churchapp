@@ -30,6 +30,7 @@ import { StoreModule } from './store/store.module';
 import { AnalyticsModule } from './analytics/analytics.module';
 import { GamesModule } from './games/games.module';
 import { MailModule } from './mail/mail.module';
+import { RedisModule } from './redis/redis.module';
 
 @Module({
   imports: [
@@ -70,6 +71,7 @@ import { MailModule } from './mail/mail.module';
     AnalyticsModule,
     GamesModule,
     MailModule,
+    RedisModule,
   ],
   controllers: [AppController],
   providers: [

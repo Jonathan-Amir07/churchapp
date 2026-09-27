@@ -10,7 +10,11 @@ export class AnalyticsController {
   constructor(private readonly analyticsService: AnalyticsService) {}
 
   @Get('class/:classId/overview')
-  getClassOverview(@Request() req: any, @Param('classId') classId: string) {
+  getClassOverview(
+    @Request()
+    req: { user: { userId: string; role: string; familyId?: string } },
+    @Param('classId') classId: string,
+  ) {
     return this.analyticsService.getClassOverview(
       classId,
       req.user.id,
@@ -19,13 +23,19 @@ export class AnalyticsController {
   }
 
   @Get('dashboard')
-  getGlobalDashboard(@Request() req: any) {
+  getGlobalDashboard(
+    @Request()
+    req: {
+      user: { userId: string; role: string; familyId?: string };
+    },
+  ) {
     return this.analyticsService.getGlobalDashboard(req.user.role);
   }
 
   @Get('student/:studentId')
   getStudentAnalytics(
-    @Request() req: any,
+    @Request()
+    req: { user: { userId: string; role: string; familyId?: string } },
     @Param('studentId') studentId: string,
   ) {
     return this.analyticsService.getStudentAnalytics(

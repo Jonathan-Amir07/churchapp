@@ -3,25 +3,21 @@ import {
   ForbiddenException,
   NotFoundException,
   BadRequestException,
+  Inject,
 } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { QrGenerateDto, QrScanDto } from './dto/qr.dto';
 import { ManualAttendanceDto } from './dto/manual-attendance.dto';
+import { Redis } from 'ioredis';
 
 import { GamificationService } from '../gamification/gamification.service';
-
-// In a real application, you'd use a Redis cache or signed JWTs for QR tokens.
-// For this prototype, we'll store active QR tokens in memory.
-const activeQrTokens = new Map<
-  string,
-  { classId: string; expiresAt: number }
->();
 
 @Injectable()
 export class AttendanceService {
   constructor(
     private prisma: PrismaService,
     private gamificationService: GamificationService,
+    @Inject('REDIS_CLIENT') private redis: Redis,
   ) {}
 
   async generateQr(dto: QrGenerateDto, userId: string, role: string) {
@@ -36,10 +32,16 @@ export class AttendanceService {
     }
 
     const token = Math.random().toString(36).substring(2, 10).toUpperCase();
-    const expiresAt = Date.now() + 15 * 60 * 1000; // 15 minutes valid
-    activeQrTokens.set(token, { classId: dto.classId, expiresAt });
 
-    return { token, expiresAt };
+    // Store in Redis with a 15 minute TTL
+    await this.redis.set(
+      `qr:${token}`,
+      JSON.stringify({ classId: dto.classId }),
+      'EX',
+      15 * 60,
+    );
+
+    return { token, expiresAt: Date.now() + 15 * 60 * 1000 };
   }
 
   private async verifyInstructorClassAccess(
@@ -66,14 +68,11 @@ export class AttendanceService {
   }
 
   async scanQr(dto: QrScanDto, userId: string) {
-    const session = activeQrTokens.get(dto.token);
-    if (!session) {
+    const sessionStr = await this.redis.get(`qr:${dto.token}`);
+    if (!sessionStr) {
       throw new BadRequestException('Invalid or expired QR code');
     }
-    if (Date.now() > session.expiresAt) {
-      activeQrTokens.delete(dto.token);
-      throw new BadRequestException('QR code has expired');
-    }
+    const session = JSON.parse(sessionStr);
 
     const membership = await this.prisma.classMember.findUnique({
       where: { classId_userId: { classId: session.classId, userId } },

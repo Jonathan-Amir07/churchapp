@@ -21,7 +21,11 @@ export class AttendanceController {
 
   @Roles('admin', 'instructor', 'priest')
   @Post('qr/generate')
-  generateQr(@Request() req: any, @Body() dto: QrGenerateDto) {
+  generateQr(
+    @Request()
+    req: { user: { userId: string; role: string; familyId?: string } },
+    @Body() dto: QrGenerateDto,
+  ) {
     return this.attendanceService.generateQr(
       dto,
       req.user.userId,
@@ -30,13 +34,21 @@ export class AttendanceController {
   }
 
   @Post('qr/scan')
-  scanQr(@Request() req: any, @Body() dto: QrScanDto) {
+  scanQr(
+    @Request()
+    req: { user: { userId: string; role: string; familyId?: string } },
+    @Body() dto: QrScanDto,
+  ) {
     return this.attendanceService.scanQr(dto, req.user.userId);
   }
 
   @Roles('admin', 'instructor', 'priest')
   @Post('manual')
-  submitManual(@Request() req: any, @Body() dto: ManualAttendanceDto) {
+  submitManual(
+    @Request()
+    req: { user: { userId: string; role: string; familyId?: string } },
+    @Body() dto: ManualAttendanceDto,
+  ) {
     return this.attendanceService.submitManual(
       dto,
       req.user.userId,
@@ -45,7 +57,11 @@ export class AttendanceController {
   }
 
   @Get('class/:classId')
-  getReports(@Request() req: any, @Param('classId') classId: string) {
+  getReports(
+    @Request()
+    req: { user: { userId: string; role: string; familyId?: string } },
+    @Param('classId') classId: string,
+  ) {
     return this.attendanceService.getReports(
       classId,
       req.user.userId,
@@ -54,7 +70,8 @@ export class AttendanceController {
   }
   @Get('percentage/:classId/:studentId')
   getStudentPercentage(
-    @Request() req: any,
+    @Request()
+    req: { user: { userId: string; role: string; familyId?: string } },
     @Param('classId') classId: string,
     @Param('studentId') studentId: string,
   ) {

@@ -18,8 +18,7 @@ export default getRequestConfig(async () => {
   const locale = (localeCookie && locales.includes(localeCookie as any)
     ? localeCookie
     : defaultLocale) as Locale;
-
-  let messages = messagesMap[locale];
+  const messages = messagesMap[locale];
 
   return {
     locale,

@@ -18,14 +18,19 @@ export class GamesController {
 
   @Roles('admin', 'instructor', 'priest')
   @Post('start')
-  startSession(@Request() req: any, @Body('gameType') gameType: string) {
+  startSession(
+    @Request()
+    req: { user: { userId: string; role: string; familyId?: string } },
+    @Body('gameType') gameType: string,
+  ) {
     return this.gamesService.startSession(req.user.id, gameType);
   }
 
   @Roles('admin', 'instructor', 'priest')
   @Post(':sessionId/progress')
   updateProgress(
-    @Request() req: any,
+    @Request()
+    req: { user: { userId: string; role: string; familyId?: string } },
     @Param('sessionId') sessionId: string,
     @Body('score') score: number,
     @Body('checkpoint') checkpoint: string,
@@ -41,7 +46,8 @@ export class GamesController {
   @Roles('admin', 'instructor', 'priest')
   @Post(':sessionId/end')
   endSession(
-    @Request() req: any,
+    @Request()
+    req: { user: { userId: string; role: string; familyId?: string } },
     @Param('sessionId') sessionId: string,
     @Body('finalScore') finalScore: number,
   ) {

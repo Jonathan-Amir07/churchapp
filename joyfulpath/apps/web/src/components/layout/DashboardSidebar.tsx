@@ -13,13 +13,9 @@ type Role = 'admin' | 'priest' | 'instructor' | 'parent' | 'student';
 
 function getRoleFromCookie(): Role | null {
   try {
-    const match = document.cookie.match(new RegExp('(^| )ACCESS_TOKEN=([^;]+)'));
+    const match = document.cookie.match(new RegExp('(^| )USER_ROLE=([^;]+)'));
     if (!match) return null;
-    const token = match[2];
-    const parts = token.split('.');
-    if (parts.length !== 3) return null;
-    const payload = JSON.parse(atob(parts[1]));
-    return payload.role as Role;
+    return match[2] as Role;
   } catch {
     return null;
   }

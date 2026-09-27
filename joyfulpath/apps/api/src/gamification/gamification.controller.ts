@@ -28,7 +28,8 @@ export class GamificationController {
   @Get('leaderboard/class/:classId')
   async getClassLeaderboard(
     @Param('classId') classId: string,
-    @Request() req: any,
+    @Request()
+    req: { user: { userId: string; role: string; familyId?: string } },
   ) {
     if (req.user.role === 'student' || req.user.role === 'parent') {
       const isMember = await this.prisma.classMember.findFirst({

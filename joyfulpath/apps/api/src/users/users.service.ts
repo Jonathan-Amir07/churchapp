@@ -8,7 +8,10 @@ export class UsersService {
   constructor(private prisma: PrismaService) {}
 
   async create(data: Prisma.UserCreateInput): Promise<User> {
-    return this.prisma.user.create({ data });
+    const user = await this.prisma.user.create({ data });
+    delete (user as any).passwordHash;
+    delete (user as any).pinHash;
+    return user;
   }
 
   async findAll(currentUser: any, query: any) {
@@ -69,26 +72,41 @@ export class UsersService {
       this.prisma.user.count({ where }),
     ]);
 
-    return { data, total, page: Number(page), limit: take };
+    const sanitizedData = data.map((u) => {
+      const { passwordHash, pinHash, ...rest } = u as any;
+      return rest;
+    });
+
+    return { data: sanitizedData, total, page: Number(page), limit: take };
   }
 
   async completeProfile(id: string, data: any): Promise<User> {
-    const { fatherName, fatherPhone, motherName, motherPhone, dateOfBirth, ...validData } = data;
-    
+    const {
+      fatherName,
+      fatherPhone,
+      motherName,
+      motherPhone,
+      dateOfBirth,
+      ...validData
+    } = data;
+
     // Cast dateOfBirth to Date if present
     const processedData: any = {
       ...validData,
       isProfileComplete: true,
     };
-    
+
     if (dateOfBirth) {
       processedData.dateOfBirth = new Date(dateOfBirth);
     }
 
-    return this.prisma.user.update({
+    const user = await this.prisma.user.update({
       where: { id },
       data: processedData,
     });
+    delete (user as any).passwordHash;
+    delete (user as any).pinHash;
+    return user;
   }
 
   async getSiblings(id: string, currentUser?: any): Promise<User[]> {
@@ -98,13 +116,18 @@ export class UsersService {
     const user = await this.prisma.user.findUnique({ where: { id } });
     if (!user || !user.familyId) return [];
 
-    return this.prisma.user.findMany({
+    const siblings = await this.prisma.user.findMany({
       where: {
         familyId: user.familyId,
         id: { not: id },
         role: 'student',
       },
     });
+
+    return siblings.map((u) => {
+      const { passwordHash, pinHash, ...rest } = u as any;
+      return rest;
+    }) as any;
   }
 
   async findOne(id: string, currentUser?: any): Promise<User | null> {
@@ -112,6 +135,9 @@ export class UsersService {
     if (!user || !currentUser) return user;
 
     await this.verifyUserAccess(id, currentUser, user);
+
+    delete (user as any).passwordHash;
+    delete (user as any).pinHash;
     return user;
   }
 
@@ -200,23 +226,32 @@ export class UsersService {
         delete data.totalPoints;
       }
     }
-    return this.prisma.user.update({ where: { id }, data });
+    const user = await this.prisma.user.update({ where: { id }, data });
+    delete (user as any).passwordHash;
+    delete (user as any).pinHash;
+    return user;
   }
 
   async resetPassword(id: string, newPass: string): Promise<User> {
     const passwordHash = await bcrypt.hash(newPass, 10);
-    return this.prisma.user.update({
+    const user = await this.prisma.user.update({
       where: { id },
       data: { passwordHash, forcePasswordChange: true },
     });
+    delete (user as any).passwordHash;
+    delete (user as any).pinHash;
+    return user;
   }
 
   async changePassword(id: string, newPass: string): Promise<User> {
     const passwordHash = await bcrypt.hash(newPass, 10);
-    return this.prisma.user.update({
+    const user = await this.prisma.user.update({
       where: { id },
       data: { passwordHash, forcePasswordChange: false },
     });
+    delete (user as any).passwordHash;
+    delete (user as any).pinHash;
+    return user;
   }
 
   async remove(id: string, currentUser?: any): Promise<User> {
@@ -224,7 +259,7 @@ export class UsersService {
       throw new Error('Forbidden: Only admin/priest can remove users');
     }
     // Soft delete
-    return this.prisma.user.update({
+    const user = await this.prisma.user.update({
       where: { id },
       data: {
         isActive: false,
@@ -232,5 +267,8 @@ export class UsersService {
         deletedAt: new Date(),
       },
     });
+    delete (user as any).passwordHash;
+    delete (user as any).pinHash;
+    return user;
   }
 }

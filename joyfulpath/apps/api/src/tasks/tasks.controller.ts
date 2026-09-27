@@ -25,7 +25,11 @@ export class TasksController {
 
   @Roles('admin', 'instructor', 'priest')
   @Post()
-  create(@Request() req: any, @Body() createTaskDto: CreateTaskDto) {
+  create(
+    @Request()
+    req: { user: { userId: string; role: string; familyId?: string } },
+    @Body() createTaskDto: CreateTaskDto,
+  ) {
     return this.tasksService.create(
       createTaskDto,
       req.user.userId,
@@ -34,17 +38,31 @@ export class TasksController {
   }
 
   @Get()
-  findAllForUser(@Request() req: any) {
+  findAllForUser(
+    @Request()
+    req: {
+      user: { userId: string; role: string; familyId?: string };
+    },
+  ) {
     return this.tasksService.findAllForUser(req.user.userId, req.user.role);
   }
 
   @Get('submissions')
-  findAllSubmissions(@Request() req: any) {
+  findAllSubmissions(
+    @Request()
+    req: {
+      user: { userId: string; role: string; familyId?: string };
+    },
+  ) {
     return this.tasksService.findAllSubmissions(req.user.userId, req.user.role);
   }
 
   @Get('class/:classId')
-  findAllForClass(@Request() req: any, @Param('classId') classId: string) {
+  findAllForClass(
+    @Request()
+    req: { user: { userId: string; role: string; familyId?: string } },
+    @Param('classId') classId: string,
+  ) {
     return this.tasksService.findAllForClass(
       classId,
       req.user.userId,
@@ -53,14 +71,19 @@ export class TasksController {
   }
 
   @Get(':id')
-  findOne(@Request() req: any, @Param('id') id: string) {
+  findOne(
+    @Request()
+    req: { user: { userId: string; role: string; familyId?: string } },
+    @Param('id') id: string,
+  ) {
     return this.tasksService.findOne(id, req.user.userId, req.user.role);
   }
 
   @Roles('admin', 'instructor', 'priest')
   @Patch(':id')
   update(
-    @Request() req: any,
+    @Request()
+    req: { user: { userId: string; role: string; familyId?: string } },
     @Param('id') id: string,
     @Body() updateTaskDto: UpdateTaskDto,
   ) {
@@ -74,14 +97,19 @@ export class TasksController {
 
   @Roles('admin', 'instructor', 'priest')
   @Delete(':id')
-  remove(@Request() req: any, @Param('id') id: string) {
+  remove(
+    @Request()
+    req: { user: { userId: string; role: string; familyId?: string } },
+    @Param('id') id: string,
+  ) {
     return this.tasksService.remove(id, req.user.userId, req.user.role);
   }
 
   @Roles('student')
   @Post(':id/submit')
   submitTask(
-    @Request() req: any,
+    @Request()
+    req: { user: { userId: string; role: string; familyId?: string } },
     @Param('id') id: string,
     @Body() submitTaskDto: SubmitTaskDto,
   ) {
@@ -91,7 +119,8 @@ export class TasksController {
   @Roles('admin', 'instructor', 'priest')
   @Patch('submissions/:id/review')
   reviewSubmission(
-    @Request() req: any,
+    @Request()
+    req: { user: { userId: string; role: string; familyId?: string } },
     @Param('id') id: string,
     @Body() reviewTaskDto: ReviewTaskDto,
   ) {

@@ -24,14 +24,19 @@ export class PrayerRequestsController {
 
   @Roles('admin', 'instructor', 'priest', 'student', 'parent')
   @Post()
-  create(@Request() req: any, @Body() dto: CreatePrayerRequestDto) {
+  create(
+    @Request()
+    req: { user: { userId: string; role: string; familyId?: string } },
+    @Body() dto: CreatePrayerRequestDto,
+  ) {
     return this.prayerRequestsService.create(dto, req.user.userId);
   }
 
   @Roles('admin', 'instructor', 'priest', 'student', 'parent')
   @Patch(':id')
   update(
-    @Request() req: any,
+    @Request()
+    req: { user: { userId: string; role: string; familyId?: string } },
     @Param('id') id: string,
     @Body() dto: UpdatePrayerRequestDto,
   ) {
@@ -44,7 +49,12 @@ export class PrayerRequestsController {
   }
 
   @Get()
-  findAll(@Request() req: any) {
+  findAll(
+    @Request()
+    req: {
+      user: { userId: string; role: string; familyId?: string };
+    },
+  ) {
     return this.prayerRequestsService.findAll(req.user.userId, req.user.role);
   }
 }

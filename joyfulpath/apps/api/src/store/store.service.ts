@@ -20,7 +20,9 @@ export class StoreService {
       let meta: any = {};
       try {
         if (r.metadata) meta = JSON.parse(r.metadata);
-      } catch (e) {}
+      } catch (e) {
+        meta = {};
+      }
 
       return {
         ...r,
@@ -149,7 +151,9 @@ export class StoreService {
       let meta: any = {};
       try {
         if (r.reward.metadata) meta = JSON.parse(r.reward.metadata);
-      } catch (e) {}
+      } catch (e) {
+        meta = {};
+      }
 
       return {
         id: r.id,

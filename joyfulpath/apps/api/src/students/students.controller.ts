@@ -27,7 +27,8 @@ export class StudentsController {
   @Roles('admin', 'priest', 'instructor')
   @Get()
   findAll(
-    @Request() req: any,
+    @Request()
+    req: { user: { userId: string; role: string; familyId?: string } },
     @Query('search') search?: string,
     @Query('classId') classId?: string,
     @Query('skip') skip?: string,
@@ -45,13 +46,22 @@ export class StudentsController {
 
   @Roles('admin', 'priest')
   @Post()
-  create(@Body() body: any, @Request() req: any) {
+  create(
+    @Body() body: any,
+    @Request()
+    req: { user: { userId: string; role: string; familyId?: string } },
+  ) {
     return this.studentsService.createStudent(body, req.user);
   }
 
   @Roles('admin', 'priest')
   @Patch(':id')
-  update(@Param('id') id: string, @Body() body: any, @Request() req: any) {
+  update(
+    @Param('id') id: string,
+    @Body() body: any,
+    @Request()
+    req: { user: { userId: string; role: string; familyId?: string } },
+  ) {
     return this.studentsService.updateStudent(id, body, req.user);
   }
 
@@ -76,7 +86,8 @@ export class StudentsController {
   @Post('import/execute')
   async importExecute(
     @Body() body: { validRows: any[]; classId?: string },
-    @Request() req: any,
+    @Request()
+    req: { user: { userId: string; role: string; familyId?: string } },
   ) {
     if (!body || !body.validRows || !Array.isArray(body.validRows)) {
       throw new BadRequestException(

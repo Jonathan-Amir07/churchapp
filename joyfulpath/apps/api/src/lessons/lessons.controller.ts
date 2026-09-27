@@ -24,7 +24,11 @@ export class LessonsController {
 
   @Roles('admin', 'instructor', 'priest')
   @Post()
-  create(@Request() req: any, @Body() createLessonDto: CreateLessonDto) {
+  create(
+    @Request()
+    req: { user: { userId: string; role: string; familyId?: string } },
+    @Body() createLessonDto: CreateLessonDto,
+  ) {
     return this.lessonsService.create(
       createLessonDto,
       req.user.userId,
@@ -33,12 +37,21 @@ export class LessonsController {
   }
 
   @Get()
-  findAllForUser(@Request() req: any) {
+  findAllForUser(
+    @Request()
+    req: {
+      user: { userId: string; role: string; familyId?: string };
+    },
+  ) {
     return this.lessonsService.findAllForUser(req.user.userId, req.user.role);
   }
 
   @Get('class/:classId')
-  findAllForClass(@Request() req: any, @Param('classId') classId: string) {
+  findAllForClass(
+    @Request()
+    req: { user: { userId: string; role: string; familyId?: string } },
+    @Param('classId') classId: string,
+  ) {
     return this.lessonsService.findAllForClass(
       classId,
       req.user.userId,
@@ -47,14 +60,19 @@ export class LessonsController {
   }
 
   @Get(':id')
-  findOne(@Request() req: any, @Param('id') id: string) {
+  findOne(
+    @Request()
+    req: { user: { userId: string; role: string; familyId?: string } },
+    @Param('id') id: string,
+  ) {
     return this.lessonsService.findOne(id, req.user.userId, req.user.role);
   }
 
   @Roles('admin', 'instructor', 'priest')
   @Patch(':id')
   update(
-    @Request() req: any,
+    @Request()
+    req: { user: { userId: string; role: string; familyId?: string } },
     @Param('id') id: string,
     @Body() updateLessonDto: UpdateLessonDto,
   ) {
@@ -68,14 +86,19 @@ export class LessonsController {
 
   @Roles('admin', 'instructor', 'priest')
   @Delete(':id')
-  remove(@Request() req: any, @Param('id') id: string) {
+  remove(
+    @Request()
+    req: { user: { userId: string; role: string; familyId?: string } },
+    @Param('id') id: string,
+  ) {
     return this.lessonsService.remove(id, req.user.userId, req.user.role);
   }
 
   @Roles('admin', 'instructor', 'priest')
   @Post(':id/attachments')
   addAttachment(
-    @Request() req: any,
+    @Request()
+    req: { user: { userId: string; role: string; familyId?: string } },
     @Param('id') id: string,
     @Body() addAttachmentDto: AddAttachmentDto,
   ) {
@@ -88,12 +111,20 @@ export class LessonsController {
   }
 
   @Post(':id/start')
-  startLesson(@Request() req: any, @Param('id') id: string) {
+  startLesson(
+    @Request()
+    req: { user: { userId: string; role: string; familyId?: string } },
+    @Param('id') id: string,
+  ) {
     return this.lessonsService.startLesson(id, req.user.userId, req.user.role);
   }
 
   @Post(':id/complete')
-  completeLesson(@Request() req: any, @Param('id') id: string) {
+  completeLesson(
+    @Request()
+    req: { user: { userId: string; role: string; familyId?: string } },
+    @Param('id') id: string,
+  ) {
     return this.lessonsService.completeLesson(
       id,
       req.user.userId,

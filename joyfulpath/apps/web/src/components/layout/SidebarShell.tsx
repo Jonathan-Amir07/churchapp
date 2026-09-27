@@ -36,10 +36,15 @@ export function SidebarShell({ items, roleLabel }: SidebarShellProps) {
     return clean === href || clean.startsWith(href + '/');
   };
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
+    try {
+      await fetch('/api/auth/logout', { method: 'POST' });
+    } catch (e) {
+      console.error('Logout error', e);
+    }
     localStorage.clear();
     sessionStorage.clear();
-    document.cookie = 'ACCESS_TOKEN=; path=/; max-age=0; expires=Thu, 01 Jan 1970 00:00:00 GMT';
+    document.cookie = 'USER_ROLE=; path=/; max-age=0; expires=Thu, 01 Jan 1970 00:00:00 GMT';
     window.location.replace('/login');
   };
 

@@ -22,7 +22,11 @@ export class EventsController {
 
   @Roles('admin', 'instructor', 'priest')
   @Post()
-  create(@Request() req: any, @Body() createEventDto: CreateEventDto) {
+  create(
+    @Request()
+    req: { user: { userId: string; role: string; familyId?: string } },
+    @Body() createEventDto: CreateEventDto,
+  ) {
     return this.eventsService.create(
       createEventDto,
       req.user.id,
@@ -31,14 +35,20 @@ export class EventsController {
   }
 
   @Get()
-  findAll(@Request() req: any) {
+  findAll(
+    @Request()
+    req: {
+      user: { userId: string; role: string; familyId?: string };
+    },
+  ) {
     return this.eventsService.findAll(req.user.role);
   }
 
   @Roles('admin', 'instructor', 'priest')
   @Patch(':id')
   update(
-    @Request() req: any,
+    @Request()
+    req: { user: { userId: string; role: string; familyId?: string } },
     @Param('id') id: string,
     @Body() updateEventDto: any,
   ) {
@@ -47,13 +57,21 @@ export class EventsController {
 
   @Roles('admin', 'instructor', 'priest')
   @Delete(':id')
-  remove(@Request() req: any, @Param('id') id: string) {
+  remove(
+    @Request()
+    req: { user: { userId: string; role: string; familyId?: string } },
+    @Param('id') id: string,
+  ) {
     return this.eventsService.remove(id, req.user.role);
   }
 
   @Roles('admin', 'instructor', 'priest')
   @Post(':id/rsvp')
-  rsvp(@Request() req: any, @Param('id') id: string) {
+  rsvp(
+    @Request()
+    req: { user: { userId: string; role: string; familyId?: string } },
+    @Param('id') id: string,
+  ) {
     return this.eventsService.rsvp(id, req.user.id);
   }
 }

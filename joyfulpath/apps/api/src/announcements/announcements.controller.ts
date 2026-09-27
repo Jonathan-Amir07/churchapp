@@ -20,7 +20,11 @@ export class AnnouncementsController {
 
   @Roles('admin', 'instructor', 'priest')
   @Post()
-  create(@Request() req: any, @Body() dto: CreateAnnouncementDto) {
+  create(
+    @Request()
+    req: { user: { userId: string; role: string; familyId?: string } },
+    @Body() dto: CreateAnnouncementDto,
+  ) {
     return this.announcementsService.create(dto, req.user.id, req.user.role);
   }
 

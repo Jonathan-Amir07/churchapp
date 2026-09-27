@@ -1,3 +1,4 @@
+import { PrismaService } from '../prisma/prisma.service';
 import { Test, TestingModule } from '@nestjs/testing';
 import { InstructorsService } from './instructors.service';
 
@@ -9,7 +10,7 @@ describe('InstructorsService', () => {
       providers: [
         InstructorsService,
         {
-          provide: 'PrismaService',
+          provide: PrismaService,
           useValue: {
             user: { findMany: jest.fn() },
           },

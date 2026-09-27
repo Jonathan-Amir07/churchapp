@@ -42,6 +42,14 @@ export class AuthController {
       maxAge: 2 * 60 * 60 * 1000, // 2 hours in ms
     });
 
+    response.cookie('USER_ROLE', result.user.role, {
+      httpOnly: false,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'lax',
+      path: '/',
+      maxAge: 2 * 60 * 60 * 1000,
+    });
+
     return result;
   }
 
@@ -69,10 +77,21 @@ export class AuthController {
     @Body('password') password: string,
     @Res({ passthrough: true }) response: any,
   ) {
-    const newToken = await this.authService.changePassword(req.user.userId, password);
-    
+    const newToken = await this.authService.changePassword(
+      req.user.userId,
+      password,
+    );
+
     response.cookie('ACCESS_TOKEN', newToken, {
       httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'lax',
+      path: '/',
+      maxAge: 2 * 60 * 60 * 1000,
+    });
+
+    response.cookie('USER_ROLE', req.user.role, {
+      httpOnly: false,
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'lax',
       path: '/',
@@ -84,12 +103,9 @@ export class AuthController {
 
   @UseGuards(JwtAuthGuard)
   @Get('refresh')
-  async refresh(
-    @Req() req: any,
-    @Res({ passthrough: true }) response: any,
-  ) {
+  async refresh(@Req() req: any, @Res({ passthrough: true }) response: any) {
     const newToken = await this.authService.refreshToken(req.user.userId);
-    
+
     response.cookie('ACCESS_TOKEN', newToken, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
@@ -98,6 +114,36 @@ export class AuthController {
       maxAge: 2 * 60 * 60 * 1000,
     });
 
+    response.cookie('USER_ROLE', req.user.role, {
+      httpOnly: false,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'lax',
+      path: '/',
+      maxAge: 2 * 60 * 60 * 1000,
+    });
+
     return { success: true };
+  }
+
+  @Post('logout')
+  @HttpCode(HttpStatus.OK)
+  async logout(@Res({ passthrough: true }) response: any) {
+    response.cookie('ACCESS_TOKEN', '', {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'lax',
+      path: '/',
+      maxAge: 0,
+    });
+
+    response.cookie('USER_ROLE', '', {
+      httpOnly: false,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'lax',
+      path: '/',
+      maxAge: 0,
+    });
+
+    return { success: true, message: 'Logged out successfully' };
   }
 }

@@ -24,14 +24,19 @@ export class ReadingPlansController {
   }
 
   @Get(':id/progress')
-  getProgress(@Request() req: any, @Param('id') id: string) {
+  getProgress(
+    @Request()
+    req: { user: { userId: string; role: string; familyId?: string } },
+    @Param('id') id: string,
+  ) {
     return this.readingPlansService.getProgress(id, req.user.id);
   }
 
   @Roles('admin', 'instructor', 'priest')
   @Post(':id/progress')
   updateProgress(
-    @Request() req: any,
+    @Request()
+    req: { user: { userId: string; role: string; familyId?: string } },
     @Param('id') id: string,
     @Body() updateProgressDto: UpdateProgressDto,
   ) {

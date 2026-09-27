@@ -27,14 +27,23 @@ export class StoreController {
 
   @Roles('student', 'admin', 'instructor', 'priest')
   @Post('redeem/:id')
-  redeemReward(@Request() req: any, @Param('id') id: string) {
+  redeemReward(
+    @Request()
+    req: { user: { userId: string; role: string; familyId?: string } },
+    @Param('id') id: string,
+  ) {
     // If instructor is doing it, they would need a studentId payload, but currently it's hardcoded to req.user.userId.
     // This implies only the logged-in user can redeem for themselves.
     return this.storeService.redeemReward(id, req.user.userId);
   }
 
   @Get('redemptions/pending')
-  getPendingRedemptions(@Request() req: any) {
+  getPendingRedemptions(
+    @Request()
+    req: {
+      user: { userId: string; role: string; familyId?: string };
+    },
+  ) {
     return this.storeService.getPendingRedemptions(
       req.user.role,
       req.user.userId,
@@ -43,7 +52,11 @@ export class StoreController {
 
   @Roles('admin', 'instructor', 'priest')
   @Get('redemptions/export')
-  async exportRedemptions(@Request() req: any, @Res() res: any) {
+  async exportRedemptions(
+    @Request()
+    req: { user: { userId: string; role: string; familyId?: string } },
+    @Res() res: any,
+  ) {
     const csv = await this.storeService.exportRedemptions(
       req.user.role,
       req.user.userId,
@@ -55,7 +68,11 @@ export class StoreController {
 
   @Roles('admin', 'instructor', 'priest')
   @Patch('redemptions/:id/fulfill')
-  fulfillRedemption(@Request() req: any, @Param('id') id: string) {
+  fulfillRedemption(
+    @Request()
+    req: { user: { userId: string; role: string; familyId?: string } },
+    @Param('id') id: string,
+  ) {
     return this.storeService.fulfillRedemption(
       id,
       req.user.userId,
@@ -65,7 +82,11 @@ export class StoreController {
 
   @Roles('admin', 'instructor', 'priest')
   @Patch('redemptions/:id/reject')
-  rejectRedemption(@Request() req: any, @Param('id') id: string) {
+  rejectRedemption(
+    @Request()
+    req: { user: { userId: string; role: string; familyId?: string } },
+    @Param('id') id: string,
+  ) {
     return this.storeService.rejectRedemption(
       id,
       req.user.userId,
@@ -75,14 +96,19 @@ export class StoreController {
 
   @Roles('admin', 'instructor', 'priest')
   @Post('rewards')
-  createReward(@Request() req: any, @Body() body: any) {
+  createReward(
+    @Request()
+    req: { user: { userId: string; role: string; familyId?: string } },
+    @Body() body: any,
+  ) {
     return this.storeService.createReward(body, req.user.userId, req.user.role);
   }
 
   @Roles('admin', 'instructor', 'priest')
   @Patch('rewards/:id')
   updateReward(
-    @Request() req: any,
+    @Request()
+    req: { user: { userId: string; role: string; familyId?: string } },
     @Param('id') id: string,
     @Body() body: any,
   ) {
@@ -96,7 +122,11 @@ export class StoreController {
 
   @Roles('admin', 'instructor', 'priest')
   @Patch('rewards/:id/deactivate')
-  deactivateReward(@Request() req: any, @Param('id') id: string) {
+  deactivateReward(
+    @Request()
+    req: { user: { userId: string; role: string; familyId?: string } },
+    @Param('id') id: string,
+  ) {
     return this.storeService.deactivateReward(
       id,
       req.user.userId,

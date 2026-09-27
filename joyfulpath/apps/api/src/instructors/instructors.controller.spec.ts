@@ -1,3 +1,4 @@
+import { InstructorsService } from './instructors.service';
 import { Test, TestingModule } from '@nestjs/testing';
 import { InstructorsController } from './instructors.controller';
 
@@ -9,7 +10,7 @@ describe('InstructorsController', () => {
       controllers: [InstructorsController],
       providers: [
         {
-          provide: 'InstructorsService',
+          provide: InstructorsService,
           useValue: {},
         },
       ],
